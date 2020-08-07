@@ -1,0 +1,14 @@
+# python
+.venv/
+.virtualenv/
+__pycache__/
+.pytest_cache/
+build/
+dist/
+*.egg-info/
+.coverage
+
+# misc
+srcgen
+output/
+/tests/functional/test_input.tx

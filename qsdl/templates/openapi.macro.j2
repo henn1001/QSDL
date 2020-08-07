@@ -1,0 +1,137 @@
+{% macro get_parameters(operation) %}
+{% for parameter in operation.parameters %}
+  - name: {{ parameter.name }}
+    in: {{ parameter.in }}
+    required: {{ parameter.required }}
+    schema:
+  {% if parameter.type._tx_fqn == "entity.Object" %}
+      $ref: '#/components/schemas/{{ parameter.type.name|capitalize }}'
+  {% else %}
+      type: {{ parameter.type | oapi_type }}
+    {% endif %} 
+{% endfor %}
+{% endmacro %}
+
+
+{% macro get_requestBody(operation) %}
+  required: true
+  content:
+    application/json:
+      schema:
+  {% set ns = namespace(var=true) %}
+  {% for parameter in operation.request %}
+    {# handle auto CRUD Objects #}
+    {% if parameter._tx_fqn == "entity.Object" %}
+        $ref: '#/components/schemas/{{ parameter.name|capitalize }}'
+    {# handle query and mutation with array object input #}
+    {% elif parameter.value._tx_fqn == "entity.Object" and parameter.array %}
+        type: array
+        items:
+          $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
+    {# handle query and mutation with object input #}
+    {% elif parameter.value._tx_fqn == "entity.Object" %}
+        $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
+    {% else %}
+    {# handle query and mutation with custom input #}
+      {% if ns.var %}
+        type: object
+        properties:
+        {% set ns.var = false %}
+      {% endif %}
+          {{ parameter.name }}:
+        {% if parameter.array %}
+            type: array
+            items:
+              {{ get_parameter_type(parameter) | indent(2) | trim }}
+            {% if get_parameter_format(parameter) %}
+            {{ get_parameter_format(parameter) | indent(2) | trim  }}
+            {% endif %}
+        {% else %}
+            {{ get_parameter_type(parameter) | indent(4) | trim }}
+            {% if get_parameter_format(parameter) %}
+            {{ get_parameter_format(parameter) | indent(2) | trim }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+
+{% macro get_response(operation) %}
+{% set field = operation.response  %}
+  content:
+    application/json:
+      schema:
+    {% if field.array %}
+        type: array
+        items:
+          {{ get_parameter_type(field, true) | indent(2) | trim }}
+        {% if get_parameter_format(field) %}
+        {{ get_parameter_format(field) | indent(2) | trim  }}
+        {% endif %}
+    {% else %}
+        {{ get_parameter_type(field, true) | indent(0) | trim }}
+        {% if get_parameter_format(field) %}
+        {{ get_parameter_format(field) | indent(2) | trim }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+
+{% macro get_schema(type) %}
+{% for field in util.get_fields_as_list(type) if util.get_filtered_fields(field) %}
+  {{ field.name }}:
+  {% if field.description %}
+    description: |
+      {{ field.description | indent | trim("\"") | trim }}
+  {% endif %}
+  {% if field.array %}
+    type: array
+    items:
+      {{ get_parameter_type(field) | indent(2) | trim }}
+    {% if get_parameter_format(field) %}
+    {{ get_parameter_format(field) | indent(2) | trim  }}
+    {% endif %}
+  {% else %}
+    {{ get_parameter_type(field) | indent(2) | trim }}
+    {% if get_parameter_format(field) %}
+    {{ get_parameter_format(field) | indent(2) | trim }}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+{% endmacro %}
+
+
+{% macro get_parameter_type(field, response=false) %}
+{% if field.value._tx_fqn == "entity.Object" or field.value._tx_fqn == "entity.Interface" %}
+  {% if field.nested and (field.readOnly or field.writeOnly) %}
+  allOf:
+    - $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
+  {% elif field.nested or response %}
+  $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
+  {% else %}
+  type: string
+  {% endif %}
+{% elif field.value._tx_fqn == "entity.Enum" %}
+  type: string
+  enum: [{% for value in field.value.values -%}{{value}}{{ ", " if not loop.last }}{%- endfor %}]
+{% else %}
+  type: {{ field.value|oapi_type }}
+{% endif %}
+{% endmacro %}
+
+
+{% macro get_parameter_format(field) %}
+{% if field.value.name == "Int" %}
+  format: int32
+{% elif field.value.name == "Float" %}
+  format: float
+{% elif field.value.name == "Date" %}
+  format: date-time
+{% endif %}
+{% if field.readOnly %}
+  readOnly: true
+{% elif field.writeOnly %}
+  writeOnly: true
+{% endif %}
+{% endmacro %}

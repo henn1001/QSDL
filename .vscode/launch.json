@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: QSDL",
+            "type": "python",
+            "request": "launch",
+            "module": "qsdl",
+            "justMyCode": false,
+            "console": "integratedTerminal"
+        }
+    ]
+}

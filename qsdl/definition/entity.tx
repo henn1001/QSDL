@@ -1,0 +1,153 @@
+/*
+  DSL grammar.
+*/
+
+EntityModel:
+    'title' ':' title=STRING
+    'version' ':' version=STRING
+    'description' ':' description=Description
+    'servers' ':' '[' servers+=STRING[','] ']'
+    types*=TypeWithNamespace
+;
+
+Type:
+    Scalar | Enum | Interface | Query | Mutation | Object
+;
+
+TypeWithNamespace:
+    NameSpace | Type
+;
+
+FieldType:
+    Scalar | Enum | Interface | Object
+;
+
+ParamType:
+    Scalar | Enum | Input | Object
+;
+
+NameSpace:
+    'namespace' name=ID '{'
+        types*=Type
+    '}'
+;
+
+Scalar:
+    'scalar' name=ID
+;
+
+Enum:
+    'enum' name=ID '{'
+        values+=/[A-Z_]*/
+    '}'
+;
+
+Interface:
+    description=Description?
+    'interface' name=ID
+    ('implements' superType=[Interface])? '{'
+        fields+=Field
+    '}'
+;
+
+Input :
+    description=Description?
+    'input' name=ID '{'
+        fields*=Field
+    '}'
+;
+
+Query :
+    description=Description?
+    'type' 'Query' '{'
+        fields+=Field
+    '}'
+;
+
+Mutation :
+    description=Description?
+    'type' 'Mutation' '{'
+        fields+=Field
+    '}'
+;
+
+Object:
+    description=Description?
+    'type' name=ID
+    ('implements' superType=[Interface])?
+    ('alias' alias=STRING)?
+    (deprecated?='deprecated')? '{'
+        fields*=Field
+        query=Query?
+        mutation=Mutation?
+    '}'
+;
+
+Field:
+    description=Description?
+    // LHS
+    name=ID
+    (function?='(' &/.*\)/)?
+    (parameters+=Parameter[','])?
+    ')'?
+
+    // Delimiter
+    ':'
+
+    // RHS
+    (array?='[' &/.*\]/)?
+    value=[FieldType]
+    (nonNullableArray?='!' & ']')?
+    (']')?
+    (nonNullable?='!')?
+
+    // Special directives
+    ( query?='@query'
+        nested?='@nested'
+        readOnly?='@readOnly'
+        writeOnly?='@writeOnly'
+        composition?='@composition'
+        aggregation?='@aggregation'
+        ('@path(value=' path=STRING ')')?
+        put?='@put'
+        delete?='@delete'
+        )#
+
+    // Custom directives
+    directives*=Directive
+;
+
+Parameter:
+    // LHS
+    name=ID
+
+    // Delimiter
+    ':'
+
+    // RHS
+    (array?='[' &/.*\]/)?
+    value=[ParamType]
+    (nonNullableArray?='!' & ']')?
+    (']')?
+    (nonNullable?='!')?
+;
+
+Directive:
+    value=/\@\w+(?:\(.*?\))?/
+;
+
+Description:
+    SingleLine | MultiLine
+;
+
+SingleLine:
+    /\"([^\"\n\r]+?)\"/
+;
+
+MultiLine:
+    /(?ms)\"{3}(.+?)\"{3}/
+;
+
+Comment:
+    /\/\/.*$/
+;

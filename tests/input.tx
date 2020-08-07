@@ -1,0 +1,128 @@
+title: "Test API"
+version: "1.0"
+description: """
+This example should test every option of this generator.
+"""
+
+servers: ["https://localhost:8080/api/v1", "https://localhost:8082/api/v1"]
+
+enum Status {
+    OPEN
+    TO_DO
+    CLOSED
+}
+
+interface Rating {
+    user: User
+    scores: [Float]
+}
+
+interface Metric {
+    likes: Int
+    ratings: [Rating] @nested
+}
+
+interface BaseType {
+    id: ID! @readOnly
+    name: String! @query
+    "Optional description"
+    description: String
+    creation_by: String @readOnly
+    creation_date: Date @readOnly
+    last_update_by: String @readOnly
+    last_update_date: Date @readOnly
+    """ 
+    Accepts any valid json object.
+    """
+    meta_inf: Object
+}
+
+namespace Management {
+
+    """ 
+    Test multiline description for objects
+    """
+    type Project implements BaseType {
+        "Archive this Project"
+        archive: Boolean @writeOnly
+        """ 
+        A nested metrics object.
+        """
+        metrics: [Metric] @nested
+        tickets: [Ticket] @composition
+        roles: [Role] @composition
+        milestones: [Milestone] @composition
+    }
+
+    "Test singleline description for objects"
+    type Role {
+        role: ID!
+        users: [User] @aggregation @nested
+    }
+
+    type User {
+        name: ID! @query
+        full_name: String
+        emails: [String]
+        password: String
+    }
+
+}
+
+namespace Incident {
+
+    type Ticket {
+        number: ID!
+        title: String
+        issuer: User
+        issuer_body: User @nested @readOnly
+        body: String
+        status: Status
+        milestones: [Milestone] @aggregation
+    }
+
+    type Milestone {
+        milestone: ID!
+        sprints: [Sprint] @composition
+    }
+
+    type Sprint {
+        name: ID!
+        roles: [Role] @composition @nested
+    }
+
+    "To test object without a ID"
+    type Buzzword {
+        id: ID!
+        name: String!
+        test: QueryMachine @composition
+
+        type Query {
+            getBuzzword(id: ID!): Buzzword
+            getBuzzwords(name: String): [Buzzword]
+        }
+
+        type Mutation {
+            createBuzzword(body: Buzzword): Buzzword
+            updateBuzzword(id: ID!, body: String, test: [Boolean]): Buzzword @put
+            deleteBuzzword(id: ID!): Void @delete
+        }
+    }
+
+    "To test custom paths"
+    type QueryMachine {
+        request: String! @writeOnly
+        response: Object @readOnly
+
+        type Mutation {
+            "something"
+            submitQuery(body: QueryMachine): QueryMachine @path(value="query/submit")
+        }
+    }
+
+    type Mutation {
+        "something else"
+        submitQury(body: QueryMachine): QueryMachine @path(value="query/submit")
+    }
+
+}

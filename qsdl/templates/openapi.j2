@@ -1,0 +1,142 @@
+{% import 'openapi.macro.j2' as macro with context %}
+openapi: 3.0.3
+info:
+  title: {{ model.title }}
+  description: |
+    {{ model.description|indent|trim("\"") }}
+  version: '{{ model.version }}'
+servers:
+  {% for server in model.servers %}
+  - url: '{{ server }}'
+  {% endfor %}
+security:
+  - ApiKeyAuth: []
+{% if mfunc.get_children_of_type("NameSpace", model) %}
+tags:
+{% for namespace in mfunc.get_children_of_type("NameSpace", model) %}
+  - name: {{ namespace.name }}
+{% endfor %}
+{% endif %}
+
+paths:
+{% for operation in util.get_operations() %}
+  {% if util.is_path_unique(operation.path) %}
+  '{{ operation.path }}':
+  {% endif %}
+    {{ operation.method }}:
+  {% if operation.tag %}
+      tags:
+        - {{ operation.tag }}
+  {% endif %}
+      summary: {{ operation.summary }}
+    {% if operation.description %}
+      description: |
+        {{ operation.description | indent | trim("\"") | trim }}
+    {% endif %}
+      operationId: {{ operation.name }}
+  {% if operation.parameters %}
+      parameters:
+        {{ macro.get_parameters(operation) | indent(6) | trim }}
+  {% endif %}
+  {% if operation.request %}
+      requestBody:
+        {{ macro.get_requestBody(operation) | indent(6) | trim }}
+  {% endif %}
+      responses:
+        '200':
+          description: OK
+  {% if operation.response and operation.response.value.name != 'Void' %}
+          {{ macro.get_response(operation) | indent(8) | trim }}
+  {% endif %}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+{% endfor %}
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      name: X-API-Key
+      in: header
+
+  responses:
+    BadRequest:
+      description: The specified model was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified model was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+{% for interface in mfunc.get_children_of_type("Interface", model) %}
+  {% if util.is_nested(interface, model) %}
+    {{ interface.name|capitalize }}:
+    {% if interface.description %}
+      description: |
+        {{ interface.description | indent | trim("\"") | trim }}
+    {% endif %}
+    {% if util.get_required(interface) %}
+      required:
+      {% for field in util.get_required(object) %}
+        - {{field.name}}
+      {% endfor %}
+    {% endif %}
+      type: object
+      properties:
+        {{ macro.get_schema(interface) | indent(6) | trim }}
+
+  {% endif %}
+{% endfor %}
+{% for object in mfunc.get_children_of_type("Object", model) %}
+    {{ object.name|capitalize }}:
+    {% if object.description %}
+      description: |
+        {{ object.description | indent | trim("\"") | trim }}
+    {% endif %}
+    {% if util.get_required(object) %}
+      required:
+      {% for field in util.get_required(object) %}
+        - {{field.name}}
+      {% endfor %}
+    {% endif %}
+      type: object
+      properties:
+        {{ macro.get_schema(object) | indent(6) | trim }}
+
+{% endfor %}
+    Error:
+      title: Error
+      required:
+        - error_code
+        - message
+      type: object
+      properties:
+        error_code:
+          type: integer
+          format: int32
+        message:
+          type: string
