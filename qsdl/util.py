@@ -62,6 +62,24 @@ def pluralize(word: str) -> str:
     return inflect.engine().plural(word)
 
 
+def get_namespaces() -> list:
+    """Return all NameSpaces.
+
+    Returns:
+        list[str]: All NameSpaces
+    """
+    namespaces = []
+    tmp = []
+
+    for obj in config.domain_objects:
+        if obj.namespace:
+            tmp.append(obj.namespace)
+
+    namespaces = list(set(tmp))
+
+    return namespaces
+
+
 def get_domain_objects() -> list:
     """Return all global domain objects.
 

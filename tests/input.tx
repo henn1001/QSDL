@@ -37,41 +37,39 @@ interface BaseType {
     meta_inf: Object
 }
 
-namespace Management {
 
+// NameSpace Management
+""" 
+Test multiline description for objects
+"""
+type Project implements BaseType @namespace(value="Management") {
+    "Archive this Project"
+    archive: Boolean @writeOnly
     """ 
-    Test multiline description for objects
+    A nested metrics object.
     """
-    type Project implements BaseType {
-        "Archive this Project"
-        archive: Boolean @writeOnly
-        """ 
-        A nested metrics object.
-        """
-        metrics: [Metric] @nested
-        tickets: [Ticket] @composition
-        roles: [Role] @composition
-        milestones: [Milestone] @composition
-    }
-
-    "Test singleline description for objects"
-    type Role {
-        role: ID!
-        users: [User] @aggregation @nested
-    }
-
-    type User {
-        name: ID! @query
-        full_name: String
-        emails: [String]
-        password: String
-    }
-
+    metrics: [Metric] @nested
+    tickets: [Ticket] @composition
+    roles: [Role] @composition
+    milestones: [Milestone] @composition
 }
 
-namespace Incident {
+"Test singleline description for objects"
+type Role @namespace(value="Management"){
+    role: ID!
+    users: [User] @aggregation @nested
+}
 
-    type Ticket {
+type User @namespace(value="Management"){
+    name: ID! @query
+    full_name: String
+    emails: [String]
+    password: String
+}
+
+
+// NameSpace Incident
+    type Ticket @namespace(value="Incident"){
         number: ID!
         title: String
         issuer: User
@@ -81,18 +79,18 @@ namespace Incident {
         milestones: [Milestone] @aggregation
     }
 
-    type Milestone {
+    type Milestone @namespace(value="Incident"){
         milestone: ID!
         sprints: [Sprint] @composition
     }
 
-    type Sprint {
+    type Sprint @namespace(value="Incident"){
         name: ID!
         roles: [Role] @composition @nested
     }
 
     "To test object without a ID"
-    type Buzzword {
+    type Buzzword @namespace(value="Incident"){
         id: ID!
         name: String!
         test: QueryMachine @composition
@@ -110,7 +108,7 @@ namespace Incident {
     }
 
     "To test custom paths"
-    type QueryMachine {
+    type QueryMachine @namespace(value="Incident"){
         request: String! @writeOnly
         response: Object @readOnly
 
@@ -120,9 +118,7 @@ namespace Incident {
         }
     }
 
-    type Mutation {
+    type Mutation @namespace(value="Incident"){
         "something else"
         submitQury(body: QueryMachine): QueryMachine @path(value="query/submit")
     }
-
-}

@@ -7,15 +7,11 @@ EntityModel:
     'version' ':' version=STRING
     'description' ':' description=Description
     'servers' ':' '[' servers+=STRING[','] ']'
-    types*=TypeWithNamespace
+    types*=Type
 ;
 
 Type:
     Scalar | Enum | Interface | Query | Mutation | Object
-;
-
-TypeWithNamespace:
-    NameSpace | Type
 ;
 
 FieldType:
@@ -24,12 +20,6 @@ FieldType:
 
 ParamType:
     Scalar | Enum | Input | Object
-;
-
-NameSpace:
-    'namespace' name=ID '{'
-        types*=Type
-    '}'
 ;
 
 Scalar:
@@ -44,39 +34,94 @@ Enum:
 
 Interface:
     description=Description?
+
     'interface' name=ID
-    ('implements' superType=[Interface])? '{'
+
+    ('implements' superType=[Interface])? 
+    
+    // Special directives
+    ( deprecated?='@deprecated'
+        ('@namespace(value=' namespace=STRING ')')?
+        )#
+
+    // Custom directives
+    directives*=Directive
+
+    '{'
         fields+=Field
     '}'
 ;
 
 Input :
     description=Description?
-    'input' name=ID '{'
-        fields*=Field
+
+    'input' name=ID 
+
+    // Special directives
+    ( deprecated?='@deprecated'
+        ('@namespace(value=' namespace=STRING ')')?
+        )#
+
+    // Custom directives
+    directives*=Directive
+
+    '{'
+        fields+=Field
     '}'
 ;
 
 Query :
     description=Description?
-    'type' 'Query' '{'
+
+    'type' 'Query' 
+
+    // Special directives
+    ( deprecated?='@deprecated'
+        ('@namespace(value=' namespace=STRING ')')?
+        )#
+
+    // Custom directives
+    directives*=Directive
+
+    '{'
         fields+=Field
     '}'
 ;
 
 Mutation :
     description=Description?
-    'type' 'Mutation' '{'
+
+    'type' 'Mutation' 
+
+    // Special directives
+    ( deprecated?='@deprecated'
+        ('@namespace(value=' namespace=STRING ')')?
+        )#
+
+    // Custom directives
+    directives*=Directive
+
+    '{'
         fields+=Field
     '}'
 ;
 
 Object:
     description=Description?
+
     'type' name=ID
+
     ('implements' superType=[Interface])?
-    ('alias' alias=STRING)?
-    (deprecated?='deprecated')? '{'
+
+    // Special directives
+    ( deprecated?='@deprecated'
+        ('@namespace(value=' namespace=STRING ')')?
+        )#
+
+    // Custom directives
+    directives*=Directive
+
+    '{'
         fields*=Field
         query=Query?
         mutation=Mutation?
@@ -85,6 +130,7 @@ Object:
 
 Field:
     description=Description?
+
     // LHS
     name=ID
     (function?='(' &/.*\)/)?

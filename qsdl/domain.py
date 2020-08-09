@@ -46,8 +46,8 @@ def operation_helper(entity: object) -> tuple:
     """
 
     namespace = None
-    if entity.parent._tx_fqn == "entity.NameSpace":
-        namespace = entity.parent.name
+    if entity.namespace:
+        namespace = entity.namespace
 
     d_parent = None
     if hasattr(entity, "d_parent"):

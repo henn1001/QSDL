@@ -36,7 +36,10 @@ abstract class {{interface.name}} {% if interface.superType %}<extends {{interfa
 ```plantuml
 @startuml
 
-{% for object in mfunc.get_children_of_type("Object", model) if not object.parent._tx_fqn == "entity.NameSpace" %}
+{% for object in mfunc.get_children_of_type("Object", model) %}
+{% if object.namespace %}
+namespace {{object.namespace}} #DDDDDD {
+{% endif %}
 class {{object.name}} {% if object.superType %}<implements {{object.superType.name}}> {% endif %}{
     {% for field in util.get_fields_as_list(object) if util.get_filtered_fields(field) %}
     {{field.name}}: {% if field.array %}[{% endif %}{{field.value.name}}{% if field.array %}]{% endif %}
@@ -47,34 +50,18 @@ class {{object.name}} {% if object.superType %}<implements {{object.superType.na
     {method} {{ operation.method | upper }} {{ operation.name }}()
     {% endfor %}
 }
-
-{% endfor %}
-
-{% for namespace in mfunc.get_children_of_type("NameSpace", model) %}
-namespace {{namespace.name}} #DDDDDD {
-{% for object in mfunc.get_children_of_type("Object", namespace) %}
-
-    class {{object.name}} {% if object.superType %}<implements {{object.superType.name}}> {% endif %}{
-        {% for field in util.get_fields_as_list(object) if util.get_filtered_fields(field) %}
-        {{field.name}}: {% if field.array %}[{% endif %}{{field.value.name}}{% if field.array %}]{% endif %}
-
-        {% endfor %}
-
-        {% for operation in util.get_operations_of_object(object) %}
-        {method} {{ operation.method | upper }} {{ operation.name }}()
-        {% endfor %}
-    }
-{% endfor %}
+{% if object.namespace %}
 }
+{% endif %}
 
 {% endfor %}
 
 {% for obj in util.get_domain_objects() %}
     {% if util.is_aggregation(obj, obj.d_parent) %}
-{% if obj.d_parent.parent %}{{obj.d_parent.parent.name}}.{% endif %}{{ obj.d_parent.name }} --o {% if obj.parent %}{{obj.parent.name}}.{% endif %}{{ obj.name }}
+{% if obj.d_parent.namespace %}{{obj.d_parent.namespace}}.{% endif %}{{ obj.d_parent.name }} --o {% if obj.parent %}{{obj.namespace}}.{% endif %}{{ obj.name }}
     {% endif %}
     {% if util.is_composition(obj, obj.d_parent) %}
-{% if obj.d_parent.parent %}{{obj.d_parent.parent.name}}.{% endif %}{{ obj.d_parent.name }} --* {% if obj.parent %}{{obj.parent.name}}.{% endif %}{{ obj.name }}
+{% if obj.d_parent.namespace %}{{obj.d_parent.namespace}}.{% endif %}{{ obj.d_parent.name }} --* {% if obj.parent %}{{obj.namespace}}.{% endif %}{{ obj.name }}
     {% endif %}
 {% endfor %}
 

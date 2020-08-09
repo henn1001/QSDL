@@ -2,7 +2,6 @@
 
 ## ToDo:
 
-* remove namespace and turn it into directive
 * fix nested inputs for GraphQL
 * write readme
 * write more openapi tests
@@ -37,12 +36,6 @@ Field
 
   * `Object`:
 
-
-### Namespace
-
-* `Namespace` names should use `PascalCase`
-
-* `Namespace` can be used for grouping.
 
 ### Enum
 

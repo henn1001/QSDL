@@ -11,10 +11,10 @@ servers:
   {% endfor %}
 security:
   - ApiKeyAuth: []
-{% if mfunc.get_children_of_type("NameSpace", model) %}
+{% if util.get_namespaces() %}
 tags:
-{% for namespace in mfunc.get_children_of_type("NameSpace", model) %}
-  - name: {{ namespace.name }}
+{% for namespace in util.get_namespaces() %}
+  - name: {{ namespace }}
 {% endfor %}
 {% endif %}
 

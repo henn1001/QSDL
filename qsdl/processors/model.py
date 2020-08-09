@@ -63,7 +63,6 @@ def validate_type_names(model: object, metamodel: TextXMetaModel):
 
     entities = []
 
-    entities.extend(mfunc.get_children_of_type("NameSpace", model))
     entities.extend(mfunc.get_children_of_type("Scalar", model))
     entities.extend(mfunc.get_children_of_type("Enum", model))
     entities.extend(mfunc.get_children_of_type("Interface", model))
@@ -72,6 +71,14 @@ def validate_type_names(model: object, metamodel: TextXMetaModel):
     for entity in entities:
         if not re.match(r"[A-Z][a-zA-Z]*", entity.name):
             msg = f"The type {entity.name} does not confirm to the naming convention."
+            raise TextXSemanticError(msg, filename=model._tx_filename)
+
+        if (
+            entity._tx_fqn == "entity.Object"
+            and entity.namespace
+            and not re.match(r"[A-Z][a-zA-Z]*", entity.namespace)
+        ):
+            msg = f"The namespace of type {entity.name} does not confirm to the naming convention."
             raise TextXSemanticError(msg, filename=model._tx_filename)
 
 

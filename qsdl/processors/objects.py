@@ -15,15 +15,6 @@
 """Object pre-processor"""
 
 
-def namespace_processor(entity: object):
-    """The namespace pre-processor.
-
-    Args:
-        entity (object): The namespace object.
-    """
-    _ = entity
-
-
 def scalar_processor(entity: object):
     """The scalar pre-processor.
 
@@ -115,7 +106,6 @@ def directive_processor(entity: object):
 
 
 obj_processors = {
-    "NameSpace": namespace_processor,
     "Scalar": scalar_processor,
     "Enum": enum_processor,
     "Interface": interface_processor,
