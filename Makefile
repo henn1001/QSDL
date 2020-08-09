@@ -58,7 +58,6 @@ install:
 clean:
 	@echo "cleaning..."
 	@rm -rf .pytest_cache/
-	@rm -rf output/
 	@rm -rf srcgen/
 	@rm -rf dist/
 	@rm -rf .coverage

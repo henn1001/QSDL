@@ -133,11 +133,11 @@ def validate_parameter_id(model: object, metamodel: TextXMetaModel):
         count = 0
 
         # check for multiple IDs
-        for parameter in field.parameters:
-            if parameter.value.name == "ID":
+        for argument in field.arguments:
+            if argument.value.name == "ID":
                 count = count + 1
 
-                if parameter.array:
+                if argument.array:
                     msg = f"Array ID found for Object {field.name}"
                     raise TextXSemanticError(msg, filename=model._tx_filename)
 
@@ -149,11 +149,11 @@ def validate_parameter_id(model: object, metamodel: TextXMetaModel):
         count = 0
         is_ref = False
 
-        for parameter in field.parameters:
-            if parameter.value.name != "ID":
+        for argument in field.arguments:
+            if argument.value.name != "ID":
                 count = count + 1
 
-                if parameter.value._tx_fqn == "entity.Object":
+                if argument.value._tx_fqn == "entity.Object":
                     is_ref = True
 
         if is_ref and count > 1:

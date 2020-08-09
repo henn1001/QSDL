@@ -3,8 +3,6 @@
 ## ToDo:
 
 * remove namespace and turn it into directive
-* rename parameter to argument
-* make use of null/missing field value instead of scalar Void
 * fix nested inputs for GraphQL
 * write readme
 * write more openapi tests

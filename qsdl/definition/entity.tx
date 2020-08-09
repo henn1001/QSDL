@@ -88,7 +88,7 @@ Field:
     // LHS
     name=ID
     (function?='(' &/.*\)/)?
-    (parameters+=Parameter[','])?
+    (arguments+=Argument[','])?
     ')'?
 
     // Delimiter
@@ -117,7 +117,7 @@ Field:
     directives*=Directive
 ;
 
-Parameter:
+Argument:
     // LHS
     name=ID
 

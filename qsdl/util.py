@@ -328,9 +328,9 @@ def get_id(entity: object) -> str:
 
     if entity._tx_fqn == "entity.Field":
 
-        for parameter in entity.parameters:
-            if parameter.value.name == "ID":
-                return parameter.name
+        for argument in entity.arguments:
+            if argument.value.name == "ID":
+                return argument.name
 
     return field_entity_name
 
@@ -357,9 +357,9 @@ def get_id_field(entity: object) -> object:
 
     if entity._tx_fqn == "entity.Field":
 
-        for parameter in entity.parameters:
-            if parameter.value.name == "ID":
-                return parameter
+        for argument in entity.arguments:
+            if argument.value.name == "ID":
+                return argument
 
     return field_entity
 
@@ -611,8 +611,8 @@ def get_path_parameters(entity: object, parent: object = None, include_id: bool 
 
     if entity._tx_fqn == "entity.Field":
 
-        for parameter in entity.parameters:
-            if parameter.value.name == "ID":
+        for argument in entity.arguments:
+            if argument.value.name == "ID":
                 name = get_id(entity)
                 param = {
                     "name": name,
@@ -662,11 +662,11 @@ def get_query_parameters(entity: object) -> list:
 
     if entity._tx_fqn == "entity.Field":
 
-        for parameter in entity.parameters:
-            if parameter.value.name != "ID":
+        for argument in entity.arguments:
+            if argument.value.name != "ID":
                 param = {
-                    "name": parameter.name,
-                    "type": parameter.value,
+                    "name": argument.name,
+                    "type": argument.value,
                     "in": "query",
                     "required": "false",
                 }
@@ -695,8 +695,8 @@ def get_request_parameters(entity: object) -> list:
 
     if entity._tx_fqn == "entity.Field":
 
-        for parameter in entity.parameters:
-            if parameter.value.name != "ID":
-                parameters.append(parameter)
+        for argument in entity.arguments:
+            if argument.value.name != "ID":
+                parameters.append(argument)
 
     return parameters
