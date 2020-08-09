@@ -12,12 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import textwrap
-from pathlib import Path
-
-import yaml
-
-from qsdl.core import generate
+from . import wrapper_generate
+from . import wrapper_generate_failure
 
 
 class TestScalarsOpenApi:
@@ -36,20 +32,7 @@ class TestScalarsOpenApi:
             }
         """
 
-        test_input = textwrap.dedent(test_input)
-        test_input_file = "tests/functional/test_input.tx"
-
-        with open(test_input_file, "w") as file:
-            file.write(test_input)
-
-        generate(test_input_file, output_folder="srcgen/")
-
-        openapi_file = Path("srcgen/openapi.yaml")
-
-        assert openapi_file.is_file()
-
-        with open(openapi_file) as file:
-            openapi = yaml.load(file, Loader=yaml.FullLoader)
+        openapi = wrapper_generate(test_input)
 
         properties = openapi["components"]["schemas"]["Scalar"]["properties"]
 
@@ -88,20 +71,7 @@ class TestScalarsOpenApi:
             }
         """
 
-        test_input = textwrap.dedent(test_input)
-        test_input_file = "tests/functional/test_input.tx"
-
-        with open(test_input_file, "w") as file:
-            file.write(test_input)
-
-        generate(test_input_file, output_folder="srcgen/")
-
-        openapi_file = Path("srcgen/openapi.yaml")
-
-        assert openapi_file.is_file()
-
-        with open(openapi_file) as file:
-            openapi = yaml.load(file, Loader=yaml.FullLoader)
+        openapi = wrapper_generate(test_input)
 
         properties = openapi["components"]["schemas"]["Scalar"]["properties"]
 
@@ -139,12 +109,4 @@ class TestScalarsOpenApi:
             }
         """
 
-        test_input = textwrap.dedent(test_input)
-        test_input_file = "tests/functional/test_input.tx"
-
-        with open(test_input_file, "w") as file:
-            file.write(test_input)
-
-        # with pytest.raises(TextXSemanticError):
-        assert generate(test_input_file, output_folder="srcgen/") != 0
-
+        wrapper_generate_failure(test_input)
