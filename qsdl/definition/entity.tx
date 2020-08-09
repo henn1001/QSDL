@@ -27,6 +27,8 @@ Scalar:
 ;
 
 Enum:
+    description=Description?
+
     'enum' name=ID '{'
         values+=/[A-Z_]*/
     '}'
