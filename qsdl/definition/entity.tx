@@ -3,10 +3,10 @@
 */
 
 EntityModel:
-    'title' ':' title=STRING
-    'version' ':' version=STRING
-    'description' ':' description=Description
-    'servers' ':' '[' servers+=STRING[','] ']'
+    ('title' ':' title=STRING)?
+    ('version' ':' version=STRING)?
+    ('description' ':' description=Description)?
+    ('servers' ':' '[' servers+=STRING[','] ']')?
     types*=Type
 ;
 

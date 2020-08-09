@@ -25,12 +25,6 @@ class TestScalarsOpenApi:
         """Verify that we can use basic types"""
 
         test_input = """\
-            title: "Test API"
-            version: "1.0"
-            description: "Test"
-
-            servers: ["https://localhost:8080/api/v1"]
-
             type Scalar {
                 id: ID
                 int: Int
@@ -84,12 +78,6 @@ class TestScalarsOpenApi:
         """Verify that we can use array types"""
 
         test_input = """\
-            title: "Test API"
-            version: "1.0"
-            description: "Test"
-
-            servers: ["https://localhost:8080/api/v1"]
-
             type Scalar {
                 int: [Int]
                 float: [Float]
@@ -146,12 +134,6 @@ class TestScalarsOpenApi:
         """Verify that we can not use array IDs"""
 
         test_input = """\
-            title: "Test API"
-            version: "1.0"
-            description: "Test"
-
-            servers: ["https://localhost:8080/api/v1"]
-
             type Scalar {
                 id: [ID]
             }

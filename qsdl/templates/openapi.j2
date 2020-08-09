@@ -1,14 +1,26 @@
 {% import 'openapi.macro.j2' as macro with context %}
 openapi: 3.0.3
 info:
+{% if model.title %}
   title: {{ model.title }}
+{% else %}
+  title: Untitled API
+{% endif %}
+{% if model.description %}
   description: |
     {{ model.description|indent|trim("\"") }}
+{% endif %}
+{% if model.version %}
   version: '{{ model.version }}'
+{% else %}
+  version: '0.1.0'
+{% endif %}
+{% if model.servers %}
 servers:
   {% for server in model.servers %}
   - url: '{{ server }}'
   {% endfor %}
+{% endif %}
 security:
   - ApiKeyAuth: []
 {% if util.get_namespaces() %}
