@@ -15,11 +15,7 @@ class entity.Type <<abstract>> {
 }
 
 
-class entity.FieldType <<abstract>> {
-}
-
-
-class entity.ParamType <<abstract>> {
+class entity.ValueType <<abstract>> {
 }
 
 
@@ -36,14 +32,6 @@ class entity.Enum  {
 
 
 class entity.Base  {
-  Description description
-  ID name
-  optional<BOOL> deprecated
-  STRING namespace
-}
-
-
-class entity.Input  {
   Description description
   ID name
   optional<BOOL> deprecated
@@ -164,19 +152,13 @@ entity.Type <|-- entity.Base
 entity.Type <|-- entity.Query
 entity.Type <|-- entity.Mutation
 entity.Type <|-- entity.Object
-entity.FieldType <|-- entity.Scalar
-entity.FieldType <|-- entity.Enum
-entity.FieldType <|-- entity.Base
-entity.FieldType <|-- entity.Object
-entity.ParamType <|-- entity.Scalar
-entity.ParamType <|-- entity.Enum
-entity.ParamType <|-- entity.Input
-entity.ParamType <|-- entity.Object
+entity.ValueType <|-- entity.Scalar
+entity.ValueType <|-- entity.Enum
+entity.ValueType <|-- entity.Base
+entity.ValueType <|-- entity.Object
 entity.Base o-- entity.Base
 entity.Base *-- "0..*" entity.Directive
 entity.Base *-- "1..*" entity.Field
-entity.Input *-- "0..*" entity.Directive
-entity.Input *-- "1..*" entity.Field
 entity.Query *-- "0..*" entity.Directive
 entity.Query *-- "1..*" entity.Field
 entity.Mutation *-- "0..*" entity.Directive
@@ -187,9 +169,9 @@ entity.Object *-- "0..*" entity.Field
 entity.Object *-- entity.Query
 entity.Object *-- entity.Mutation
 entity.Field *-- "1..*" entity.Argument
-entity.Field o-- entity.FieldType
+entity.Field o-- entity.ValueType
 entity.Field *-- "0..*" entity.Directive
-entity.Argument o-- entity.ParamType
+entity.Argument o-- entity.ValueType
 NUMBER <|-- STRICTFLOAT
 NUMBER <|-- INT
 BASETYPE <|-- NUMBER

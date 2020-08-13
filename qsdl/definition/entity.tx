@@ -14,12 +14,8 @@ Type:
     Scalar | Enum | Base | Query | Mutation | Object
 ;
 
-FieldType:
+ValueType:
     Scalar | Enum | Base | Object
-;
-
-ParamType:
-    Scalar | Enum | Input | Object
 ;
 
 Scalar:
@@ -41,24 +37,6 @@ Base:
 
     ('implements' superType=[Base])? 
     
-    // Special directives
-    ( deprecated?='@deprecated'
-        ('@namespace(value=' namespace=STRING ')')?
-        )#
-
-    // Custom directives
-    directives*=Directive
-
-    '{'
-        fields+=Field
-    '}'
-;
-
-Input :
-    description=Description?
-
-    'input' name=ID 
-
     // Special directives
     ( deprecated?='@deprecated'
         ('@namespace(value=' namespace=STRING ')')?
@@ -144,7 +122,7 @@ Field:
 
     // RHS
     (array?='[' &/.*\]/)?
-    value=[FieldType]
+    value=[ValueType]
     (nonNullableArray?='!' & ']')?
     (']')?
     (nonNullable?='!')?
@@ -174,7 +152,7 @@ Argument:
 
     // RHS
     (array?='[' &/.*\]/)?
-    value=[ParamType]
+    value=[ValueType]
     (nonNullableArray?='!' & ']')?
     (']')?
     (nonNullable?='!')?
