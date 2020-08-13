@@ -30,7 +30,7 @@ Enum:
     description=Description?
 
     'enum' name=ID '{'
-        values+=/[A-Z_]*/
+        values+=/^[A-Z_]*$/
     '}'
 ;
 

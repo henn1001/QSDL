@@ -15,20 +15,11 @@ class entity.Type <<abstract>> {
 }
 
 
-class entity.TypeWithNamespace <<abstract>> {
-}
-
-
 class entity.FieldType <<abstract>> {
 }
 
 
 class entity.ParamType <<abstract>> {
-}
-
-
-class entity.NameSpace  {
-  ID name
 }
 
 
@@ -38,6 +29,7 @@ class entity.Scalar  {
 
 
 class entity.Enum  {
+  Description description
   ID name
   list[STRING] values
 }
@@ -46,30 +38,38 @@ class entity.Enum  {
 class entity.Interface  {
   Description description
   ID name
+  optional<BOOL> deprecated
+  STRING namespace
 }
 
 
 class entity.Input  {
   Description description
   ID name
+  optional<BOOL> deprecated
+  STRING namespace
 }
 
 
 class entity.Query  {
   Description description
+  optional<BOOL> deprecated
+  STRING namespace
 }
 
 
 class entity.Mutation  {
   Description description
+  optional<BOOL> deprecated
+  STRING namespace
 }
 
 
 class entity.Object  {
   Description description
   ID name
-  STRING alias
   optional<BOOL> deprecated
+  STRING namespace
 }
 
 
@@ -92,7 +92,7 @@ class entity.Field  {
 }
 
 
-class entity.Parameter  {
+class entity.Argument  {
   ID name
   optional<BOOL> array
   optional<BOOL> nonNullableArray
@@ -157,15 +157,13 @@ class OBJECT <<abstract>> {
 }
 
 
-entity.EntityModel *-- "0..*" entity.TypeWithNamespace
+entity.EntityModel *-- "0..*" entity.Type
 entity.Type <|-- entity.Scalar
 entity.Type <|-- entity.Enum
 entity.Type <|-- entity.Interface
 entity.Type <|-- entity.Query
 entity.Type <|-- entity.Mutation
 entity.Type <|-- entity.Object
-entity.TypeWithNamespace <|-- entity.NameSpace
-entity.TypeWithNamespace <|-- entity.Type
 entity.FieldType <|-- entity.Scalar
 entity.FieldType <|-- entity.Enum
 entity.FieldType <|-- entity.Interface
@@ -174,20 +172,24 @@ entity.ParamType <|-- entity.Scalar
 entity.ParamType <|-- entity.Enum
 entity.ParamType <|-- entity.Input
 entity.ParamType <|-- entity.Object
-entity.NameSpace *-- "0..*" entity.Type
 entity.Interface o-- entity.Interface
+entity.Interface *-- "0..*" entity.Directive
 entity.Interface *-- "1..*" entity.Field
-entity.Input *-- "0..*" entity.Field
+entity.Input *-- "0..*" entity.Directive
+entity.Input *-- "1..*" entity.Field
+entity.Query *-- "0..*" entity.Directive
 entity.Query *-- "1..*" entity.Field
+entity.Mutation *-- "0..*" entity.Directive
 entity.Mutation *-- "1..*" entity.Field
 entity.Object o-- entity.Interface
+entity.Object *-- "0..*" entity.Directive
 entity.Object *-- "0..*" entity.Field
 entity.Object *-- entity.Query
 entity.Object *-- entity.Mutation
-entity.Field *-- "1..*" entity.Parameter
+entity.Field *-- "1..*" entity.Argument
 entity.Field o-- entity.FieldType
 entity.Field *-- "0..*" entity.Directive
-entity.Parameter o-- entity.ParamType
+entity.Argument o-- entity.ParamType
 NUMBER <|-- STRICTFLOAT
 NUMBER <|-- INT
 BASETYPE <|-- NUMBER

@@ -50,7 +50,7 @@ def validate_type_names(model: object, metamodel: TextXMetaModel):
     Expect that NameSpaces, Scalars, Enums, Interfaces and Objects
     start with a uppercase letter.
 
-    The used regex is [A-Z][a-zA-Z]*"
+    The used regex is ^[A-Z][a-zA-Z]*$"
 
     Args:
         model (object): The python object graph.
@@ -69,16 +69,16 @@ def validate_type_names(model: object, metamodel: TextXMetaModel):
     entities.extend(mfunc.get_children_of_type("Object", model))
 
     for entity in entities:
-        if not re.match(r"[A-Z][a-zA-Z]*", entity.name):
-            msg = f"The type {entity.name} does not confirm to the naming convention."
+        if not re.match(r"^[A-Z][a-zA-Z]*$", entity.name):
+            msg = f"The type {entity.name} does not conform to the naming convention."
             raise TextXSemanticError(msg, filename=model._tx_filename)
 
         if (
             entity._tx_fqn == "entity.Object"
             and entity.namespace
-            and not re.match(r"[A-Z][a-zA-Z]*", entity.namespace)
+            and not re.match(r"^[A-Z][a-zA-Z]*$", entity.namespace)
         ):
-            msg = f"The namespace of type {entity.name} does not confirm to the naming convention."
+            msg = f"The namespace of type {entity.name} does not conform to the naming convention."
             raise TextXSemanticError(msg, filename=model._tx_filename)
 
 

@@ -16,16 +16,19 @@ from . import wrapper_generate
 from . import wrapper_generate_failure
 
 
-class TestDescriptionOpenApi:
+class TestDescriptionsOpenApi:
     """Test descriptions.
 
-    * A description can be added after version, for `Enum`, `Interface`, `Query`, `Mutation`, `Object` or `Field`.
+    * A description can be added after version, for `Enum`, 
+        `Interface`, `Query`, `Mutation`, `Object` or `Field`.
 
     * A description can be `SingleLine` or `MultiLine`.
 
-    * A `SingleLine` description should be presented between quotation marks and at least one character in between e.g. `"X"`.
+    * A `SingleLine` description should be presented between 
+        quotation marks and at least one character in between e.g. `"X"`.
 
-    * A `MultiLine` description should be presented between three quotation marks and at least one character in between e.g. `""\"X\"""`.
+    * A `MultiLine` description should be presented between three 
+        quotation marks and at least one character in between e.g. `""\"X\"""`.
 
     """
 
