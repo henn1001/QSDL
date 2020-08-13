@@ -1,7 +1,29 @@
 # QSDL
 
-## ToDo:
+A Schema-Definition-Language Generator inspired by GraphQl.
 
+## Overview
+
+The QSDL Generator allows a domain model based approach to generate OpenAPI and GraphQL specifications. The Language is mainly inspired by GraphQL with minor modifications to accommodate OpenAPI and sensible QoL features.
+
+Internally QSDL leverages mainly [textX](https://github.com/textX/textX) for describing the meta-language and [Jinja2](https://github.com/pallets/jinja) as template generator.
+
+Currently the following generators are available:
+
+* OpenAPI
+
+* GraphQL
+
+* PlantUML
+
+## Language
+
+
+## ToDo:
+* rename interface to basetype
+* remove input
+* refactor query and mutation to operation
+* refactor generator function to accept strings for parallel tests
 * fix nested inputs for GraphQL
 * write readme
 * write more openapi tests
@@ -18,46 +40,13 @@ Field
 
 
 
-### Scalar
-
-* There are 7 build in `Scalar` types.
-
-  * `Int`: A signed 32‐bit integer
-
-  * `Float`:
-
-  * `String`:
-
-  * `Boolean`:
-
-  * `ID`:
-
-  * `Date`:
-
-  * `Object`:
-
-
-### Enum
-
-* `Enum` names should use `PascalCase`
-
-* `Enum` values should use `ALL_CAPS`, because they are similar to constants.
-
-* `Enum` should at least contain one value.
-
-* `Enum` can be used for `Field` assignment.
-
-### Interface
-
-* `Interface` names should use `PascalCase`
-
-* `Interface` can be used for `Field` assignment together with a `@nested` `Directive`.
-
-* `Interface` can be used as a superType by other `Interface`s or by `Object`s.
-
 ### Object
 
 * `Object` names should use `PascalCase`
+
+* `Object` can be used as `Field` value.
+
+* `Object` can be used as `Argument` value.
 
 ### Field
 
@@ -87,13 +76,13 @@ Field
 
 ### Description
 
-* A description can be added for either a `Object` or `Field`.
+* A description can be added after version, for `Enum`, `Interface`, `Query`, `Mutation`, `Object` or `Field`.
 
 * A description can be `SingleLine` or `MultiLine`.
 
 * A `SingleLine` description should be presented between quotation marks and at least one character in between e.g. `"X"`.
 
-* A `MultiLine` description should be presented between three quotation marks and at least one character in between e.g. `"""X"""`.
+* A `MultiLine` description should be presented between three quotation marks and at least one character in between e.g. `""\"X\"""`.
 
 ## Semantic checks
 * If composition or aggregation is used, the object needs to have a ID field

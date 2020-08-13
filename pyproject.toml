@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "qsdl"
 version = "0.1.0"
-description = "A Schema-Definition-Language inspired by GraphQl"
+description = "A Schema-Definition-Language Generator inspired by GraphQl."
 authors = ["henn1001 <henn1001@outlook.com>"]
 license = "Apache-2.0"
 include = [
