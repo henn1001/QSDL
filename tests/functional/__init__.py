@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import textwrap
+import uuid
+
 from pathlib import Path
 
 import yaml
@@ -29,11 +31,13 @@ def wrapper_generate(test_input: str) -> dict:
     Returns:
         dict: The OpenAPI specification as dict.
     """
+    test_seed = str(uuid.uuid4())[:8]
     test_input = textwrap.dedent(test_input)
+    test_output = Path("srcgen/" + test_seed + "/")
 
-    assert generate(test_input, Path("srcgen/")) == 0
+    assert generate(test_input, test_output) == 0
 
-    openapi_file = Path("srcgen/openapi.yaml")
+    openapi_file = Path("srcgen/" + test_seed + "/" + "openapi.yaml")
 
     assert openapi_file.is_file()
 
@@ -49,6 +53,8 @@ def wrapper_generate_failure(test_input: str):
     Args:
         test_input (str): The QSDL definition.
     """
+    test_seed = str(uuid.uuid4())[:8]
     test_input = textwrap.dedent(test_input)
+    test_output = Path("srcgen/" + test_seed + "/")
 
-    assert generate(test_input, Path("srcgen/")) != 0
+    assert generate(test_input, test_output) != 0
