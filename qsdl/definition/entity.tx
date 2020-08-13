@@ -11,11 +11,11 @@ EntityModel:
 ;
 
 Type:
-    Scalar | Enum | Interface | Query | Mutation | Object
+    Scalar | Enum | Base | Query | Mutation | Object
 ;
 
 FieldType:
-    Scalar | Enum | Interface | Object
+    Scalar | Enum | Base | Object
 ;
 
 ParamType:
@@ -34,12 +34,12 @@ Enum:
     '}'
 ;
 
-Interface:
+Base:
     description=Description?
 
-    'interface' name=ID
+    'base' name=ID
 
-    ('implements' superType=[Interface])? 
+    ('implements' superType=[Base])? 
     
     // Special directives
     ( deprecated?='@deprecated'
@@ -113,7 +113,7 @@ Object:
 
     'type' name=ID
 
-    ('implements' superType=[Interface])?
+    ('implements' superType=[Base])?
 
     // Special directives
     ( deprecated?='@deprecated'

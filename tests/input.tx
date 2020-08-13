@@ -12,17 +12,17 @@ enum Status {
     CLOSED
 }
 
-interface Rating {
+base Rating {
     user: User
     scores: [Float]
 }
 
-interface Metric {
+base Metric {
     likes: Int
     ratings: [Rating] @nested
 }
 
-interface BaseType {
+base BaseType {
     id: ID! @readOnly
     name: String! @query
     "Optional description"

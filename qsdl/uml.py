@@ -74,10 +74,10 @@ def generate_png(uml_markdown_file: Path):
 
     # these are our expected sections
     enums = uml_markdown_file.parent / (uml_markdown_file.stem + ".enums.png")
-    interfaces = uml_markdown_file.parent / (uml_markdown_file.stem + ".interfaces.png")
+    bases = uml_markdown_file.parent / (uml_markdown_file.stem + ".bases.png")
     overview = uml_markdown_file.parent / (uml_markdown_file.stem + ".overview.png")
 
-    files = [enums, interfaces, overview]
+    files = [enums, bases, overview]
 
     # create the pngs and save them along the markdown file
     for definition in definitions:

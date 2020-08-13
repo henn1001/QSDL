@@ -103,7 +103,7 @@
 
 
 {% macro get_parameter_type(field, response=false) %}
-{% if field.value._tx_fqn == "entity.Object" or field.value._tx_fqn == "entity.Interface" %}
+{% if field.value._tx_fqn == "entity.Object" or field.value._tx_fqn == "entity.Base" %}
   {% if field.nested and (field.readOnly or field.writeOnly) %}
   allOf:
     - $ref: '#/components/schemas/{{ field.value.name|capitalize }}'

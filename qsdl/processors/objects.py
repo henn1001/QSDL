@@ -33,11 +33,11 @@ def enum_processor(entity: object):
     _ = entity
 
 
-def interface_processor(entity: object):
-    """The interface pre-processor.
+def base_processor(entity: object):
+    """The base pre-processor.
 
     Args:
-        entity (object): The interface object.
+        entity (object): The base object.
     """
     _ = entity
 
@@ -108,7 +108,7 @@ def directive_processor(entity: object):
 obj_processors = {
     "Scalar": scalar_processor,
     "Enum": enum_processor,
-    "Interface": interface_processor,
+    "Base": base_processor,
     "Input": input_processor,
     "Query": query_processor,
     "Mutation": mutation_processor,

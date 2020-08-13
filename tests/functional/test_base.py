@@ -16,143 +16,143 @@ from . import wrapper_generate
 from . import wrapper_generate_failure
 
 
-class TestInterface:
-    """Test Interfaces.
+class Testbase:
+    """Test Bases.
 
-    1. `Interface` names should use `PascalCase`.
+    1. `Base` names should use `PascalCase`.
 
-    2. `Interface` should at least contain one value.
+    2. `Base` should at least contain one value.
 
-    3. `Interface` can be used as `Field` value for `Object`s when marked as `@nested`.
+    3. `Base` can be used as `Field` value for `Object`s when marked as `@nested`.
 
-    4. `Interface` can be used as `Field` value for `Operations`.
+    4. `Base` can be used as `Field` value for `Operations`.
 
-    5. `Interface` can be used as `Argument` value for `Operations`.
+    5. `Base` can be used as `Argument` value for `Operations`.
 
-    6. `Interface` can be used as a superType by `Interface`s.
+    6. `Base` can be used as a superType by `Base`s.
 
-    7. `Interface` can be used as a superType by `Object`s.
+    7. `Base` can be used as a superType by `Object`s.
 
     """
 
-    def test_interface_1_positive(self):
+    def test_base_1_positive(self):
         """Verify PascalCase naming convention"""
         test_input = """\
-            interface Interface {
+            base Base {
                 field: ID
             }
         """
 
         wrapper_generate(test_input)
 
-    def test_interface_1_negative(self):
+    def test_base_1_negative(self):
         """Verify PascalCase naming convention"""
         inputs = []
 
-        inputs.append("interface wrong { test: String } ")
-        inputs.append("interface Wro-Ng { test: String } ")
-        inputs.append("interface WRO_NG { test: String } ")
+        inputs.append("base wrong { test: String } ")
+        inputs.append("base Wro-Ng { test: String } ")
+        inputs.append("base WRO_NG { test: String } ")
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_interface_2_positive(self):
-        """Verify empty interfaces"""
+    def test_base_2_positive(self):
+        """Verify empty bases"""
         test_input = """\
-            interface Interface {
+            base Base {
                 field: ID
             }
         """
 
         wrapper_generate(test_input)
 
-    def test_interface_2_negative(self):
-        """Verify empty interfaces"""
+    def test_base_2_negative(self):
+        """Verify empty bases"""
         test_input = """\
-            interface Interface {
+            base Base {
             }
         """
 
         wrapper_generate_failure(test_input)
 
-    def test_interface_3_positive(self):
-        """Verify nested interfaces"""
+    def test_base_3_positive(self):
+        """Verify nested bases"""
         test_input = """\
-            interface Interface {
+            base Base {
                 field: ID
             }
 
             type Object {
-                field: Interface @nested
+                field: Base @nested
             }
         """
 
         wrapper_generate(test_input)
 
-    def test_interface_3_negative(self):
-        """Verify nested interfaces"""
+    def test_base_3_negative(self):
+        """Verify nested bases"""
         test_input = """\
-            interface Interface {
+            base Base {
                 field: ID
             }
 
             type Object {
-                field: Interface
+                field: Base
             }
         """
 
         wrapper_generate_failure(test_input)
 
-    def test_interface_4_positive(self):
-        """Verify interface as operations response"""
+    def test_base_4_positive(self):
+        """Verify base as operations response"""
         test_input = """\
-            interface Interface {
+            base Base {
                 field: ID
             }
 
             type Query {
-                field: Interface @path(value="test")
+                field: Base @path(value="test")
             }
         """
 
         wrapper_generate(test_input)
 
-    def test_interface_5_positive(self):
-        """Verify interface as argument value"""
+    def test_base_5_positive(self):
+        """Verify base as argument value"""
         test_input = """\
-            interface Interface {
+            base Base {
                 field: ID
             }
 
             type Query {
-                field(arg: Interface): Void @path(value="test")
+                field(arg: Base): Void @path(value="test")
             }
         """
 
         wrapper_generate(test_input)
 
-    def test_interface_6_positive(self):
-        """Verify interface implenets interface"""
+    def test_base_6_positive(self):
+        """Verify base implenets base"""
         test_input = """\
-            interface InterfaceOne {
+            base BaseOne {
                 id: ID
             }
 
-            interface InterfaceTwo implements InterfaceOne {
+            base BaseTwo implements BaseOne {
                 name: String
             }
         """
 
         wrapper_generate(test_input)
 
-    def test_interface_7_positive(self):
-        """Verify object implements interface"""
+    def test_base_7_positive(self):
+        """Verify object implements base"""
         test_input = """\
-            interface Interface {
+            base Base {
                 id: ID
             }
 
-            type Object implements Interface {
+            type Object implements Base {
                 name: String
             }
         """

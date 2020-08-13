@@ -20,7 +20,6 @@ Currently the following generators are available:
 
 
 ## ToDo:
-* rename interface to basetype
 * remove input
 * refactor query and mutation to operation
 * fix nested inputs for GraphQL
@@ -32,7 +31,7 @@ Currently the following generators are available:
 
 
 Input values can be Scalar, Enum, or Input.
-Output values can be Scalar, Object, Interface, Union, or Enum.
+Output values can be Scalar, Object, Base, Union, or Enum.
 
 Field
     name (name: Input) : output
@@ -51,7 +50,7 @@ Field
 
 * `Field` names should use `camelCase`. 
 
-* `Field` values can be either a `Scalar`, `Enum`, `Interface` or  `Object`.
+* `Field` values can be either a `Scalar`, `Enum`, `Base` or  `Object`.
 
 * `Field` values should accept array assignments via brackets e.g. `[String]`
 
@@ -75,7 +74,7 @@ Field
 
 ### Description
 
-* A description can be added after version, for `Enum`, `Interface`, `Query`, `Mutation`, `Object` or `Field`.
+* A description can be added after version, for `Enum`, `Base`, `Query`, `Mutation`, `Object` or `Field`.
 
 * A description can be `SingleLine` or `MultiLine`.
 

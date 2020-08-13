@@ -20,7 +20,7 @@ class TestDescriptionsOpenApi:
     """Test descriptions.
 
     1. A description can be added after version, for `Enum`,
-        `Interface`, `Query`, `Mutation`, `Object` or `Field`.
+        `Base`, `Query`, `Mutation`, `Object` or `Field`.
 
     2. A description can be `SingleLine` or `MultiLine`.
 
@@ -44,7 +44,7 @@ class TestDescriptionsOpenApi:
             }
 
             "single line description"
-            interface Interface{
+            base Base{
                 "single line description"
                 null: Void
             }
@@ -90,7 +90,7 @@ class TestDescriptionsOpenApi:
             \"""
             Multi line description
             \"""
-            interface Interface {
+            base Base {
                 \"""
                 Multi line description
                 \"""

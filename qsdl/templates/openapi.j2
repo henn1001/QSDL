@@ -104,14 +104,14 @@ components:
             $ref: '#/components/schemas/Error'
 
   schemas:
-{% for interface in mfunc.get_children_of_type("Interface", model) %}
-  {% if util.is_nested(interface, model) %}
-    {{ interface.name|capitalize }}:
-    {% if interface.description %}
+{% for base in mfunc.get_children_of_type("Base", model) %}
+  {% if util.is_nested(base, model) %}
+    {{ base.name|capitalize }}:
+    {% if base.description %}
       description: |
-        {{ interface.description | indent | trim("\"") | trim }}
+        {{ base.description | indent | trim("\"") | trim }}
     {% endif %}
-    {% if util.get_required(interface) %}
+    {% if util.get_required(base) %}
       required:
       {% for field in util.get_required(object) %}
         - {{field.name}}
@@ -119,7 +119,7 @@ components:
     {% endif %}
       type: object
       properties:
-        {{ macro.get_schema(interface) | indent(6) | trim }}
+        {{ macro.get_schema(base) | indent(6) | trim }}
 
   {% endif %}
 {% endfor %}

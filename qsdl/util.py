@@ -335,7 +335,7 @@ def get_id(entity: object) -> str:
     """
     field_entity_name = None
 
-    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Interface":
+    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Base":
 
         if entity.superType:
             field_entity_name = get_id(entity.superType)
@@ -364,7 +364,7 @@ def get_id_field(entity: object) -> object:
     """
     field_entity = None
 
-    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Interface":
+    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Base":
 
         if entity.superType:
             field_entity = get_id_field(entity.superType)
@@ -463,10 +463,10 @@ def is_aggregation(child: object, parent: object) -> bool:
 
 
 def is_nested(entity: object, model: object) -> bool:
-    """Checks if the provided object or interface is nested.
+    """Checks if the provided object or base is nested.
 
     Args:
-        entity (object): entity.Object or entity.Interface
+        entity (object): entity.Object or entity.Base
         model (object): The python object graph.
 
     Returns:
@@ -615,7 +615,7 @@ def get_path_parameters(entity: object, parent: object = None, include_id: bool 
         }
         parameters.append(param)
 
-    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Interface":
+    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Base":
 
         if include_id:
             name = get_id(entity)
@@ -659,7 +659,7 @@ def get_query_parameters(entity: object) -> list:
     """
     parameters = []
 
-    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Interface":
+    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Base":
 
         tmp = entity
         while True:
@@ -708,7 +708,7 @@ def get_request_parameters(entity: object) -> list:
     """
     parameters = []
 
-    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Interface":
+    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Base":
         parameters.append(entity)
 
     if entity._tx_fqn == "entity.Field":

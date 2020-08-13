@@ -71,7 +71,7 @@ class TestEnum:
                 CLOSED
             }
 
-            interface Interface {
+            base Base {
                 value: Enum
             }
 

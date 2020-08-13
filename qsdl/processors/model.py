@@ -41,13 +41,13 @@ def model_processor(model: object, metamodel: TextXMetaModel):
     validate_parameter_id(model, metamodel)
     validate_reference(model, metamodel)
     validate_custom_operations(model, metamodel)
-    validate_nested_interfaces(model, metamodel)
+    validate_nested_bases(model, metamodel)
 
 
 def validate_type_names(model: object, metamodel: TextXMetaModel):
     """Validate the naming convention.
 
-    Expect that NameSpaces, Scalars, Enums, Interfaces and Objects
+    Expect that NameSpaces, Scalars, Enums, Bases and Objects
     start with a uppercase letter.
 
     The used regex is ^[A-Z][a-zA-Z]*$"
@@ -65,7 +65,7 @@ def validate_type_names(model: object, metamodel: TextXMetaModel):
 
     entities.extend(mfunc.get_children_of_type("Scalar", model))
     entities.extend(mfunc.get_children_of_type("Enum", model))
-    entities.extend(mfunc.get_children_of_type("Interface", model))
+    entities.extend(mfunc.get_children_of_type("Base", model))
     entities.extend(mfunc.get_children_of_type("Object", model))
 
     for entity in entities:
@@ -94,7 +94,7 @@ def validate_field_id(model: object, metamodel: TextXMetaModel):
     """
     _ = metamodel
 
-    # loop for objects and their supertypes (interfaces)
+    # loop for objects and their supertypes (bases)
     objects = mfunc.get_children_of_type("Object", model)
 
     for obj in objects:
@@ -223,8 +223,8 @@ def validate_custom_operations(model: object, metamodel: TextXMetaModel):
                 raise TextXSemanticError(msg, filename=model._tx_filename)
 
 
-def validate_nested_interfaces(model: object, metamodel: TextXMetaModel):
-    """Check that used interfaces are declared as nested.
+def validate_nested_bases(model: object, metamodel: TextXMetaModel):
+    """Check that used bases are declared as nested.
 
     Args:
         model (object): The python object graph.
@@ -235,11 +235,11 @@ def validate_nested_interfaces(model: object, metamodel: TextXMetaModel):
     """
     _ = metamodel
 
-    interfaces = mfunc.get_children_of_type("Interface", model)
+    bases = mfunc.get_children_of_type("Base", model)
 
-    for interface in interfaces:
+    for base in bases:
         for field in mfunc.get_children_of_type("Field", model):
-            if field.value == interface:
+            if field.value == base:
                 if not field.nested:
-                    msg = f"The Interface {interface.name} is used but is not declared as nested."
+                    msg = f"The Base {base.name} is used but is not declared as nested."
                     raise TextXSemanticError(msg, filename=model._tx_filename)

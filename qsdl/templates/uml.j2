@@ -15,13 +15,13 @@ enum {{enum.name}} {
 ```
 
 
-# Interfaces
+# Bases
 ```plantuml
 @startuml
 
-{% for interface in mfunc.get_children_of_type("Interface", model) %}
-abstract class {{interface.name}} {% if interface.superType %}<extends {{interface.superType.name}}> {% endif %}{
-    {% for field in util.get_fields_as_list(interface) %}
+{% for base in mfunc.get_children_of_type("Base", model) %}
+abstract class {{base.name}} {% if base.superType %}<extends {{base.superType.name}}> {% endif %}{
+    {% for field in util.get_fields_as_list(base) %}
     {{field.name}}: {{field.value.name}}
     {% endfor %}
 }

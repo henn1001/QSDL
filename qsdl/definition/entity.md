@@ -35,7 +35,7 @@ class entity.Enum  {
 }
 
 
-class entity.Interface  {
+class entity.Base  {
   Description description
   ID name
   optional<BOOL> deprecated
@@ -160,28 +160,28 @@ class OBJECT <<abstract>> {
 entity.EntityModel *-- "0..*" entity.Type
 entity.Type <|-- entity.Scalar
 entity.Type <|-- entity.Enum
-entity.Type <|-- entity.Interface
+entity.Type <|-- entity.Base
 entity.Type <|-- entity.Query
 entity.Type <|-- entity.Mutation
 entity.Type <|-- entity.Object
 entity.FieldType <|-- entity.Scalar
 entity.FieldType <|-- entity.Enum
-entity.FieldType <|-- entity.Interface
+entity.FieldType <|-- entity.Base
 entity.FieldType <|-- entity.Object
 entity.ParamType <|-- entity.Scalar
 entity.ParamType <|-- entity.Enum
 entity.ParamType <|-- entity.Input
 entity.ParamType <|-- entity.Object
-entity.Interface o-- entity.Interface
-entity.Interface *-- "0..*" entity.Directive
-entity.Interface *-- "1..*" entity.Field
+entity.Base o-- entity.Base
+entity.Base *-- "0..*" entity.Directive
+entity.Base *-- "1..*" entity.Field
 entity.Input *-- "0..*" entity.Directive
 entity.Input *-- "1..*" entity.Field
 entity.Query *-- "0..*" entity.Directive
 entity.Query *-- "1..*" entity.Field
 entity.Mutation *-- "0..*" entity.Directive
 entity.Mutation *-- "1..*" entity.Field
-entity.Object o-- entity.Interface
+entity.Object o-- entity.Base
 entity.Object *-- "0..*" entity.Directive
 entity.Object *-- "0..*" entity.Field
 entity.Object *-- entity.Query
