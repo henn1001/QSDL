@@ -30,12 +30,8 @@ def wrapper_generate(test_input: str) -> dict:
         dict: The OpenAPI specification as dict.
     """
     test_input = textwrap.dedent(test_input)
-    test_input_file = "tests/functional/test_input.tx"
 
-    with open(test_input_file, "w") as file:
-        file.write(test_input)
-
-    assert generate(test_input_file, output_folder="srcgen/") == 0
+    assert generate(test_input, Path("srcgen/")) == 0
 
     openapi_file = Path("srcgen/openapi.yaml")
 
@@ -54,10 +50,5 @@ def wrapper_generate_failure(test_input: str):
         test_input (str): The QSDL definition.
     """
     test_input = textwrap.dedent(test_input)
-    test_input_file = "tests/functional/test_input.tx"
 
-    with open(test_input_file, "w") as file:
-        file.write(test_input)
-
-    # with pytest.raises(TextXSemanticError):
-    assert generate(test_input_file, output_folder="srcgen/") != 0
+    assert generate(test_input, Path("srcgen/")) != 0

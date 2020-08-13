@@ -23,7 +23,6 @@ Currently the following generators are available:
 * rename interface to basetype
 * remove input
 * refactor query and mutation to operation
-* refactor generator function to accept strings for parallel tests
 * fix nested inputs for GraphQL
 * write readme
 * write more openapi tests

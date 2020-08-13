@@ -19,13 +19,39 @@ More description.
 
 import sys
 
+from pathlib import Path
+
 from qsdl.core import generate
 
 
-def entrypoint():
-    """This will be our cli interface"""
-    print("hello-world")
+def entrypoint(input_str: str = None, output: str = None) -> int:
+    """This will be our cli interface
+
+    Args:
+        input (str): The path to the schema definition file.
+        output (str, optional): Path to a output folder.
+            Defaults to a srcgen folder at the definition location.
+
+    Returns:
+        int: 0 on success, 1 on failure
+    """
+
+    input_path = Path(input_str)
+
+    if not input_path.exists():
+        print(f"No such file or directory: '{input_path}'")
+        sys.exit(1)
+
+    with open(input_path) as file:
+        schema = file.read()
+
+    if output:
+        output_folder = Path(output)
+    else:
+        output_folder = input_path.parent / "srcgen"
+
+    sys.exit(generate(schema, output_folder))
 
 
 if __name__ == "__main__":
-    sys.exit(generate("tests/input.tx", output_folder="srcgen/"))
+    entrypoint("tests/input.tx", output="srcgen/")

@@ -74,23 +74,6 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     return metamodel
 
 
-def get_model(metamodel: TextXMetaModel, input_path: Path) -> object:
-    """Builds and returns a model from the provided schema definition file.
-
-    Args:
-        metamodel (TextXMetaModel): The metamodel.
-        input_path (Path): Path to the schema definition file.
-
-    Returns:
-        object: The python object graph consisting of POPOs
-            (Plain Old Python Objects) constructed from the
-            input string.
-    """
-    model = metamodel.model_from_file(input_path)
-
-    return model
-
-
 def render(
     output_file: Path,
     model: object,
@@ -190,43 +173,36 @@ def generate_plantuml(srcgen_folder: Path, model: object):
     uml.generate_png(output_file)
 
 
-def generate(input_file: str, output_folder: str = None) -> int:
+def generate(schema: str, output_folder: Path) -> int:
     """The main function of QSDL.
 
     Generates various things from the provided schema definition.
 
     Args:
-        input_file (str): Path to the schema definition file.
+        schema (str): The schema definition.
         output_folder (str, optional): Path to a output folder.
-            Defaults to a srcgen folder at the definition location.
 
     Returns:
         int: 0 on success, 1 on failure
     """
     try:
-        input_path = Path(input_file)
 
         # create the output folder
-        if output_folder:
-            srcgen_folder = Path(output_folder)
-        else:
-            srcgen_folder = input_path.parent / "srcgen"
-
-        srcgen_folder.mkdir(exist_ok=True, parents=True)
+        output_folder.mkdir(exist_ok=True, parents=True)
 
         # instantiate the Entity meta-model
         metamodel = get_metamodel()
 
         # build a model from schema definition file
-        model = get_model(metamodel, input_path)
+        model = metamodel.model_from_str(schema)
 
         # init domain model
         domain.build_domain_model(model)
 
         # call generators
-        generate_openapi(srcgen_folder, model)
-        generate_graphql(srcgen_folder, model)
-        generate_plantuml(srcgen_folder, model)
+        generate_openapi(output_folder, model)
+        generate_graphql(output_folder, model)
+        generate_plantuml(output_folder, model)
 
     except (TextXSyntaxError, TextXSemanticError) as ex:
         print(ex)
