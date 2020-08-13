@@ -16,8 +16,26 @@ from . import wrapper_generate
 from . import wrapper_generate_failure
 
 
-class TestScalarsOpenApi:
-    def test_basic(self):
+class TestScalar:
+    """Test Scalars.
+
+    1. `Scalar` value can be one of the following
+        * `ID`
+        * `Int`
+        * `Float`
+        * `String`
+        * `Boolean`
+        * `Date`
+        * `Object`
+        * `Void`
+
+    2. `Scalar` value can be a list when enclosed with brackets.
+
+    3. `Scalar` value can not be a list of `ID`.
+
+    """
+
+    def test_scalar_1_positive(self):
         """Verify that we can use basic types"""
 
         test_input = """\
@@ -57,7 +75,7 @@ class TestScalarsOpenApi:
             else:
                 assert False
 
-    def test_array(self):
+    def test_scalar_2_positive(self):
         """Verify that we can use array types"""
 
         test_input = """\
@@ -100,7 +118,7 @@ class TestScalarsOpenApi:
             else:
                 assert False
 
-    def test_id_array(self):
+    def test_scalar_3_negative(self):
         """Verify that we can not use array IDs"""
 
         test_input = """\

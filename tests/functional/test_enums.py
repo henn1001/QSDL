@@ -16,19 +16,52 @@ from . import wrapper_generate
 from . import wrapper_generate_failure
 
 
-class TestEnumsOpenApi:
+class TestEnum:
     """Test Enums.
 
-    * `Enum` names should use `PascalCase`.
+    1. `Enum` names should use `PascalCase`.
 
-    * `Enum` values should use `ALL_CAPS`.
+    2. `Enum` values should use `ALL_CAPS`.
 
-    * `Enum` should at least contain one value.
+    3. `Enum` should at least contain one value.
 
-    * A description can be added after version, for `Enum`,
-        `Interface`, `Query`, `Mutation`, `Object` or `Field`.
+    4. `Enum` can be used as `Field` value.
 
+    5. `Enum` can be used as `Argument` value.
     """
+
+    def test_enum_1_negative(self):
+        """Verify PascalCase naming convention"""
+        inputs = []
+
+        inputs.append("enum wrong { OPEN } ")
+        inputs.append("enum Wro-Ng { OPEN } ")
+        inputs.append("enum WRO_NG { OPEN } ")
+
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
+
+    def test_enum_2_negative(self):
+        """Verify value naming convention"""
+        inputs = []
+
+        inputs.append("enum Enum { Open } ")
+        inputs.append("enum Enum { opEN } ")
+        inputs.append("enum Enum { OP-EN } ")
+        inputs.append("enum Enum { open } ")
+        inputs.append("enum Enum { OPEN } ")
+
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
+
+    def test_enum_3_negative(self):
+        """Verify empty enums"""
+        test_input = """\
+            enum Enum {
+            }
+        """
+
+        wrapper_generate_failure(test_input)
 
     def test_usage(self):
         """Verify usage."""
@@ -56,82 +89,3 @@ class TestEnumsOpenApi:
         openapi = wrapper_generate(test_input)
 
         # TODO: add openAPI verification
-
-    def test_invalid_name(self):
-        """Verify name naming convention"""
-        inputs = []
-
-        inputs.append(
-            """\
-            enum wrong {
-                OPEN
-            }
-        """
-        )
-
-        inputs.append(
-            """\
-            enum Wro-Ng {
-                OPEN
-            }
-        """
-        )
-
-        inputs.append(
-            """\
-            enum WRO_NG {
-                OPEN
-            }
-        """
-        )
-
-        for test_input in inputs:
-            wrapper_generate_failure(test_input)
-
-    def test_invalid_values(self):
-        """Verify value naming convention"""
-        inputs = []
-
-        inputs.append(
-            """\
-            enum Enum {
-                Open
-            }
-        """
-        )
-
-        inputs.append(
-            """\
-            enum Enum {
-                opEN
-            }
-        """
-        )
-
-        inputs.append(
-            """\
-            enum Enum {
-                OP-EN
-            }
-        """
-        )
-
-        inputs.append(
-            """\
-            enum Enum {
-                open
-            }
-        """
-        )
-
-        for test_input in inputs:
-            wrapper_generate_failure(test_input)
-
-    def test_empty_enum(self):
-        """Verify empty enums"""
-        test_input = """\
-            enum Enum {
-            }
-        """
-
-        wrapper_generate_failure(test_input)
