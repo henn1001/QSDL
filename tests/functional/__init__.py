@@ -31,7 +31,8 @@ def wrapper_generate(test_input: str) -> dict:
     Returns:
         dict: The OpenAPI specification as dict.
     """
-    test_seed = str(uuid.uuid4())[:8]
+    test_seed = ""
+    # test_seed = str(uuid.uuid4())[:8] needed when we want to test in parallel
     test_input = textwrap.dedent(test_input)
     test_output = Path("srcgen/" + test_seed + "/")
 
@@ -53,7 +54,8 @@ def wrapper_generate_failure(test_input: str):
     Args:
         test_input (str): The QSDL definition.
     """
-    test_seed = str(uuid.uuid4())[:8]
+    test_seed = ""
+    # test_seed = str(uuid.uuid4())[:8] needed when we want to test in parallel
     test_input = textwrap.dedent(test_input)
     test_output = Path("srcgen/" + test_seed + "/")
 

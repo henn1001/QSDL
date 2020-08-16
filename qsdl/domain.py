@@ -352,8 +352,11 @@ def check_duplicates():
 
     e.g. addUserForRole
     """
-    config.dupl_objects = set()
     seen = set()
+
+    # reset global config
+    config.dupl_objects = set()
+    config.used_paths = []
 
     for obj in config.domain_objects:
         if obj.name not in seen:

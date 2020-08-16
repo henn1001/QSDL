@@ -229,7 +229,7 @@ def validate_nested_bases(model: object, metamodel: TextXMetaModel):
 
     for base in bases:
         for field in mfunc.get_children_of_type("Field", model):
-            if field.value == base:
+            if field.parent._tx_fqn == "entity.Object" and  field.value == base:
                 if not field.nested:
                     msg = f"The Base {base.name} is used but is not declared as nested."
                     raise TextXSemanticError(msg, filename=model._tx_filename)
