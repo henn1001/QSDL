@@ -80,7 +80,7 @@ class TestEnum:
                 values: Enum
             }
 
-            type Query {
+            extend Operation {
                 query(input: Enum): Enum @path(value="somepath")
                 queries(input: [Enum]): [Enum] @path(value="somepath")
             }

@@ -114,6 +114,31 @@ def get_operations_of_object(obj: object) -> list:
     return operations
 
 
+def get_operations_of_object_of_queries(obj: object) -> list:
+    """Return all operations for this Object with method == get
+
+    Args:
+        obj (object): entity.Object
+
+    Returns:
+        list: [Operations]
+    """
+    operations = list(filter(lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name) and x.method == "get", config.operations))
+    return operations
+
+
+def get_operations__of_object_of_mutations(obj: object) -> list:
+    """Return all operations for this Object with method != get
+
+    Args:
+        obj (object): entity.Object
+
+    Returns:
+        list: [Operations]
+    """
+    operations = list(filter(lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name) and x.method != "get", config.operations))
+    return operations
+
 def get_operations_of_queries() -> list:
     """Return all operations with method == get
 
@@ -575,11 +600,11 @@ def get_operation_method(field: object) -> str:
     elif field.delete:
         method = "delete"
 
-    elif field.parent._tx_fqn == "entity.Query":
-        method = "get"
-
-    elif field.parent._tx_fqn == "entity.Mutation":
+    elif field.post:
         method = "post"
+
+    else:
+        method = "get"
 
     return method
 

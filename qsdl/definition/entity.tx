@@ -11,7 +11,7 @@ EntityModel:
 ;
 
 Type:
-    Scalar | Enum | Base | Query | Mutation | Object
+    Scalar | Enum | Base | Operation | Object
 ;
 
 ValueType:
@@ -50,28 +50,10 @@ Base:
     '}'
 ;
 
-Query :
+Operation :
     description=Description?
 
-    'type' 'Query' 
-
-    // Special directives
-    ( deprecated?='@deprecated'
-        ('@namespace(value=' namespace=STRING ')')?
-        )#
-
-    // Custom directives
-    directives*=Directive
-
-    '{'
-        fields+=Field
-    '}'
-;
-
-Mutation :
-    description=Description?
-
-    'type' 'Mutation' 
+    'extend' 'Operation' 
 
     // Special directives
     ( deprecated?='@deprecated'
@@ -103,8 +85,7 @@ Object:
 
     '{'
         fields*=Field
-        query=Query?
-        mutation=Mutation?
+        operation=Operation?
     '}'
 ;
 
@@ -135,6 +116,7 @@ Field:
         composition?='@composition'
         aggregation?='@aggregation'
         ('@path(value=' path=STRING ')')?
+        post?='@post'
         put?='@put'
         delete?='@delete'
         )#

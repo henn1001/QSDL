@@ -14,7 +14,7 @@ enum {{enum.name}} {
 
 {################################################################}
 {% macro render_base(base) %}
-base {{base.name}}{
+interface {{base.name}}{
     {{ render_fields(base) | indent(2) | trim }}
 }
 {% endmacro %}
@@ -25,10 +25,10 @@ base {{base.name}}{
 type {{object.name}} {% if object.superType %}implements {{object.superType.name}} {% endif %}{
     {{ render_fields(object, filter_wo=True) | indent(2) | trim }}
 }
-{% if (not object.query and not object.mutation) or object.query %}
+{% if util.get_operations_of_object_of_queries(object) %}
 
 extend type Query {
-    {% for operation in util.get_operations_of_object(object) if operation.method == "get" %}
+    {% for operation in util.get_operations_of_object_of_queries(object) %}
     {{ operation.name -}}
         {{ render_arguments(operation) | trim -}}
       {% if operation.response %}: {{ render_response(operation) | trim }}
@@ -37,15 +37,15 @@ extend type Query {
     {% endfor %}
 }
 {% endif %}
-{% if (not object.query and not object.mutation) or object.mutation %}
+{% if util.get_operations__of_object_of_mutations(object) %}
 
 extend type Mutation {
-  {% for operation in util.get_operations_of_object(object) if operation.method != "get" %}
+  {% for operation in util.get_operations__of_object_of_mutations(object) %}
     {{ operation.name -}}
         {{ render_arguments(operation) | trim -}}: {{ operation.name }}Payload
   {% endfor %}
 }
-  {% for operation in util.get_operations_of_object(object) if operation.method != "get" and operation.request %}
+  {% for operation in util.get_operations__of_object_of_mutations(object) if operation.request %}
 
 input {{ operation.name }}Input {
     {% for parameter in operation.request %}
@@ -59,7 +59,7 @@ input {{ operation.name }}Input {
     {% endfor %}
 }
   {% endfor %}
-  {% for operation in util.get_operations_of_object(object) if operation.method != "get"%}
+  {% for operation in util.get_operations__of_object_of_mutations(object) %}
 
 type {{ operation.name }}Payload implements Response {
     code: String!

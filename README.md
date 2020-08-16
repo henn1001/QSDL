@@ -20,9 +20,8 @@ Currently the following generators are available:
 
 
 ## ToDo:
-* remove input
-* refactor query and mutation to operation
 * fix nested inputs for GraphQL
+* implement Operations to query/mutation in GraphQL
 * write readme
 * write more openapi tests
 * write graphql tests

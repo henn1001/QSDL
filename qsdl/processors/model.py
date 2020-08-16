@@ -203,23 +203,13 @@ def validate_custom_operations(model: object, metamodel: TextXMetaModel):
     _ = metamodel
 
     # get all queries who do not belong to objects
-    queries = mfunc.get_children_of_type("Query", model)
-    queries = list(filter(lambda x: x.parent._tx_fqn != "entity.Object", queries))
+    operations = mfunc.get_children_of_type("Operation", model)
+    operations = list(filter(lambda x: x.parent._tx_fqn != "entity.Object", operations))
 
-    for query in queries:
-        for field in query.fields:
+    for operation in operations:
+        for field in operation.fields:
             if not field.path:
-                msg = f"The custom Query {field.name} needs to specify a path."
-                raise TextXSemanticError(msg, filename=model._tx_filename)
-
-    # get all mutations who do not belong to objects
-    mutations = mfunc.get_children_of_type("Mutation", model)
-    mutations = list(filter(lambda x: x.parent._tx_fqn != "entity.Object", mutations))
-
-    for mutation in mutations:
-        for field in mutation.fields:
-            if not field.path:
-                msg = f"The custom Mutation {field.name} needs to specify a path."
+                msg = f"The custom Operation {field.name} needs to specify a path."
                 raise TextXSemanticError(msg, filename=model._tx_filename)
 
 

@@ -82,7 +82,7 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
     """Returns a custom Operation object for Queries and Mutation fields.
 
     Args:
-        entity (object): entity.Object | entity.Query | entity.Mutation
+        entity (object): entity.Object | entity.Operation
         field (object): entity.Field
         method (str): The operations method.
 
@@ -150,7 +150,7 @@ def build_custom_queries(entities: list) -> list:
     """Returns a list of operations for custom Queries and Mutations.
 
     Args:
-        entities (list): [entity.Object | entity.Query | entity.Mutation]
+        entities (list): [entity.Object | entity.Operation]
 
     Returns:
         list: [Operation]
@@ -162,12 +162,10 @@ def build_custom_queries(entities: list) -> list:
         fields = []
 
         if entity._tx_fqn == "entity.Object":
-            if entity.query:
-                fields.extend(entity.query.fields)
-            if entity.mutation:
-                fields.extend(entity.mutation.fields)
+            if entity.operation:
+                fields.extend(entity.operation.fields)
 
-        if entity._tx_fqn in ["entity.Query", "entity.Mutation"]:
+        if entity._tx_fqn == "entity.Operation":
             fields.extend(entity.fields)
 
         for field in fields:
@@ -418,19 +416,18 @@ def build_domain_model(model: object):
     config.domain_objects = get_endpoints()
     check_duplicates()
 
-    tmp = mfunc.get_children_of_type("Query", config.model)
-    tmp.extend(mfunc.get_children_of_type("Mutation", config.model))
+    tmp = mfunc.get_children_of_type("Operation", config.model)
 
     # crud objects
     objects = []
-    objects.extend(list(filter(lambda x: not x.query and not x.mutation, config.domain_objects)))
+    objects.extend(list(filter(lambda x: not x.operation, config.domain_objects)))
     crud_operations = build_crud(objects)
     operations.extend(crud_operations)
 
     # custom queries/mutations
     entities = []
     entities.extend(list(filter(lambda x: x.parent._tx_fqn != "entity.Object", tmp)))
-    entities.extend(list(filter(lambda x: x.query or x.mutation, config.domain_objects)))
+    entities.extend(list(filter(lambda x: x.operation, config.domain_objects)))
     custom_operations = build_custom_queries(entities)
     operations.extend(custom_operations)
 

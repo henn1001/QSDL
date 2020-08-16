@@ -95,13 +95,10 @@ type User @namespace(value="Management"){
         name: String!
         test: QueryMachine @composition
 
-        type Query {
+        extend Operation {
             getBuzzword(id: ID!): Buzzword
             getBuzzwords(name: String): [Buzzword]
-        }
-
-        type Mutation {
-            createBuzzword(body: Buzzword): Buzzword
+            createBuzzword(body: Buzzword): Buzzword @post
             updateBuzzword(id: ID!, body: String, test: [Boolean]): Buzzword @put
             deleteBuzzword(id: ID!): Void @delete
         }
@@ -112,13 +109,13 @@ type User @namespace(value="Management"){
         request: String! @writeOnly
         response: Object @readOnly
 
-        type Mutation {
+         extend Operation {
             "something"
-            submitQuery(body: QueryMachine): QueryMachine @path(value="query/submit")
+            submitQuery(body: QueryMachine): QueryMachine @path(value="query/submit") @post
         }
     }
 
-    type Mutation @namespace(value="Incident"){
-        "something else"
-        submitQury(body: QueryMachine): QueryMachine @path(value="query/submit")
-    }
+extend Operation {
+    "something else"
+    submitQury(body: QueryMachine): QueryMachine @path(value="query/submits") @post
+}

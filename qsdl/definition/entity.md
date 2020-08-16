@@ -39,14 +39,7 @@ class entity.Base  {
 }
 
 
-class entity.Query  {
-  Description description
-  optional<BOOL> deprecated
-  STRING namespace
-}
-
-
-class entity.Mutation  {
+class entity.Operation  {
   Description description
   optional<BOOL> deprecated
   STRING namespace
@@ -75,6 +68,7 @@ class entity.Field  {
   optional<BOOL> composition
   optional<BOOL> aggregation
   STRING path
+  optional<BOOL> post
   optional<BOOL> put
   optional<BOOL> delete
 }
@@ -149,8 +143,7 @@ entity.EntityModel *-- "0..*" entity.Type
 entity.Type <|-- entity.Scalar
 entity.Type <|-- entity.Enum
 entity.Type <|-- entity.Base
-entity.Type <|-- entity.Query
-entity.Type <|-- entity.Mutation
+entity.Type <|-- entity.Operation
 entity.Type <|-- entity.Object
 entity.ValueType <|-- entity.Scalar
 entity.ValueType <|-- entity.Enum
@@ -159,15 +152,12 @@ entity.ValueType <|-- entity.Object
 entity.Base o-- entity.Base
 entity.Base *-- "0..*" entity.Directive
 entity.Base *-- "1..*" entity.Field
-entity.Query *-- "0..*" entity.Directive
-entity.Query *-- "1..*" entity.Field
-entity.Mutation *-- "0..*" entity.Directive
-entity.Mutation *-- "1..*" entity.Field
+entity.Operation *-- "0..*" entity.Directive
+entity.Operation *-- "1..*" entity.Field
 entity.Object o-- entity.Base
 entity.Object *-- "0..*" entity.Directive
 entity.Object *-- "0..*" entity.Field
-entity.Object *-- entity.Query
-entity.Object *-- entity.Mutation
+entity.Object *-- entity.Operation
 entity.Field *-- "1..*" entity.Argument
 entity.Field o-- entity.ValueType
 entity.Field *-- "0..*" entity.Directive

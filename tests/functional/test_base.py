@@ -110,7 +110,7 @@ class Testbase:
                 field: ID
             }
 
-            type Query {
+            extend Operation {
                 field: Base @path(value="test")
             }
         """
@@ -124,7 +124,7 @@ class Testbase:
                 field: ID
             }
 
-            type Query {
+            extend Operation {
                 field(arg: Base): Void @path(value="test")
             }
         """

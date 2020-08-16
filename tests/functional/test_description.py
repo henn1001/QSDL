@@ -50,7 +50,7 @@ class TestDescriptionsOpenApi:
             }
 
             "single line description"
-            type Query {
+            extend Operation {
                 "single line description"
                 null: Void @path(value="x")
             }
@@ -100,7 +100,7 @@ class TestDescriptionsOpenApi:
             \"""
             Multi line description
             \"""
-            type Query {
+            extend Operation {
                 \"""
                 Multi line description
                 \"""
