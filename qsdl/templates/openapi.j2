@@ -105,7 +105,6 @@ components:
 
   schemas:
 {% for base in mfunc.get_children_of_type("Base", model) %}
-  {% if util.is_nested(base, model) %}
     {{ base.name|capitalize }}:
     {% if base.description %}
       description: |
@@ -121,7 +120,6 @@ components:
       properties:
         {{ macro.get_schema(base) | indent(6) | trim }}
 
-  {% endif %}
 {% endfor %}
 {% for object in mfunc.get_children_of_type("Object", model) %}
     {{ object.name|capitalize }}:
