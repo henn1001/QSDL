@@ -16,41 +16,41 @@ from tests import wrapper_generate
 from tests import wrapper_generate_failure
 
 
-class TestBase:
-    """Test Bases.
+class TestObject:
+    """Test Objects.
 
-    1. `Base` names should use `PascalCase`.
+    1. `Object` names should use `PascalCase`.
 
-    2. `Base` should at least contain one `Field`.
+    2. `Object` should at least contain one `Field`.
 
-    3. `Base` can inherit `Field`s from a `Base`.
+    3. `Object` can inherit `Field`s from a `Base`.
 
-    4. `Base` name should be unique between `Object`, `Base` and `Scalar`.
+    4. `Object` name should be unique between `Object`, `Base` and `Scalar`.
 
     """
 
-    def test_base_1_positive(self):
+    def test_object_1_positive(self):
         """Verify PascalCase naming convention"""
         test_input = """\
-            base Base {
-                field: ID
+            type Object {
+                field: String
             }
         """
 
         wrapper_generate(test_input)
 
-    def test_base_1_negative(self):
+    def test_object_1_negative(self):
         """Verify PascalCase naming convention"""
         inputs = []
 
-        inputs.append("base wrong { test: String } ")
-        inputs.append("base Wro-Ng { test: String } ")
-        inputs.append("base WRO_NG { test: String } ")
+        inputs.append("type wrong { field: String } ")
+        inputs.append("type Wro-Ng { field: String } ")
+        inputs.append("type WRO_NG { field: String } ")
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_base_2_positive(self):
+    def test_object_2_positive(self):
         """Verify empty fields"""
         test_input = """\
             base Base {
@@ -60,7 +60,7 @@ class TestBase:
 
         wrapper_generate(test_input)
 
-    def test_base_2_negative(self):
+    def test_object_2_negative(self):
         """Verify empty fields"""
         test_input = """\
             base Base {
@@ -69,14 +69,14 @@ class TestBase:
 
         wrapper_generate_failure(test_input)
 
-    def test_base_3_positive(self):
-        """Verify base implements base"""
+    def test_object_3_positive(self):
+        """Verify object implements base"""
         test_input = """\
-            base BaseOne {
+            base Base {
                 id: ID
             }
 
-            base BaseTwo implements BaseOne {
+            type Object implements Base {
                 name: String
             }
         """

@@ -16,10 +16,10 @@ from tests import wrapper_generate
 from tests import wrapper_generate_failure
 
 
-class TestScalar:
-    """Test Scalars.
+class TestBaseField:
+    """Test Fields for Bases.
 
-    1. `Scalar` value can be one of the following
+    1. `Field` of `Base` can be a `Scalar` value with one one of the following:
         * `ID`
         * `Int`
         * `Float`
@@ -29,17 +29,28 @@ class TestScalar:
         * `Object`
         * `Void`
 
-    2. `Scalar` value can be a list when enclosed with brackets.
+    2. `Field` of `Base` value can be a `Enum`.
 
-    3. `Scalar` value can not be a list of `ID`.
+    3. `Field` of `Base` value can be a `Base` when marked as `@nested`.
+
+    4. `Field` of `Base` value can be a `Object`.
+
+    5. `Field` of `Base` value can be a list when enclosed with brackets.
+
+    6. `Field` of `Base` value can not be a list for `Scalar` `ID`.
+
+    7. `Field` of `Base` value and list value can be marked as mandatory.
+
+    8. `Field` of `Base` values can only have one `ID`. This includes inherited values.
 
     """
 
-    def test_scalar_1_positive(self):
+
+    def test_field_base_1_positive(self):
         """Verify that we can use basic types"""
 
         test_input = """\
-            type Scalar {
+            type Type {
                 id: ID
                 int: Int
                 float: Float
@@ -52,7 +63,7 @@ class TestScalar:
 
         openapi = wrapper_generate(test_input)
 
-        properties = openapi["components"]["schemas"]["Scalar"]["properties"]
+        properties = openapi["components"]["schemas"]["Type"]["properties"]
 
         for key, value in properties.items():
             if key == "id":
@@ -75,11 +86,68 @@ class TestScalar:
             else:
                 assert False
 
-    def test_scalar_2_positive(self):
+    def test_field_base_2_positive(self):
+        """Verify enum usage."""
+        test_input = """\
+            enum Enum {
+                OPEN
+                CLOSED
+            }
+
+            type Object {
+                value: Enum
+            }
+        """
+
+        openapi = wrapper_generate(test_input)
+
+    def test_field_base_3_positive(self):
+        """Verify base usage"""
+        test_input = """\
+            base Base {
+                field: ID
+            }
+
+            type Object {
+                field: Base @nested
+            }
+        """
+
+        wrapper_generate(test_input)
+
+    def test_field_base_3_negative(self):
+        """Verify base usage"""
+        test_input = """\
+            base Base {
+                field: ID
+            }
+
+            type Object {
+                field: Base
+            }
+        """
+
+        wrapper_generate_failure(test_input)
+
+    def test_field_base_4_positive(self):
+        """Verify object usage"""
+        test_input = """\
+            type One {
+                field: ID
+            }
+
+            type Two {
+                field: One
+            }
+        """
+
+        wrapper_generate(test_input)
+
+    def test_field_base_5_positive(self):
         """Verify that we can use array types"""
 
         test_input = """\
-            type Scalar {
+            type Type {
                 int: [Int]
                 float: [Float]
                 string: [String]
@@ -91,7 +159,7 @@ class TestScalar:
 
         openapi = wrapper_generate(test_input)
 
-        properties = openapi["components"]["schemas"]["Scalar"]["properties"]
+        properties = openapi["components"]["schemas"]["Type"]["properties"]
 
         for key, value in properties.items():
             if key == "int":
@@ -118,12 +186,43 @@ class TestScalar:
             else:
                 assert False
 
-    def test_scalar_3_negative(self):
+    def test_field_base_6_negative(self):
         """Verify that we can not use array IDs"""
 
         test_input = """\
-            type Scalar {
-                id: [ID]
+            type Object {
+                field: [ID]
+            }
+        """
+
+        wrapper_generate_failure(test_input)
+
+    def test_field_base_7_negative(self):
+        """Verify required"""
+        test_input = """\
+            type Type {
+                field1: String!
+                field2: [String]!
+                field3: [String!]!
+            }
+        """
+
+        wrapper_generate(test_input)
+
+    def test_field_base_8_negative(self):
+        """Verify multiple IDs"""
+
+        test_input = """\
+            base One {
+                id: ID
+            }
+
+            base Two implements One{
+                name: String
+            }
+
+            type Three implements Two {
+                field: ID
             }
         """
 

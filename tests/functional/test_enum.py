@@ -25,8 +25,6 @@ class TestEnum:
 
     3. `Enum` should at least contain one value.
 
-    4. `Enum` can be used as `Field` value.
-
     """
 
     def test_enum_1_negative(self):
@@ -61,30 +59,3 @@ class TestEnum:
         """
 
         wrapper_generate_failure(test_input)
-
-    def test_usage(self):
-        """Verify usage."""
-        test_input = """\
-            enum Enum {
-                OPEN
-                CLOSED
-            }
-
-            base Base {
-                value: Enum
-            }
-
-            type Object {
-                value: Enum
-                values: Enum
-            }
-
-            extend Operation {
-                query(input: Enum): Enum @path(value:"somepath")
-                queries(input: [Enum]): [Enum] @path(value:"somepath")
-            }
-        """
-
-        openapi = wrapper_generate(test_input)
-
-        # TODO: add openAPI verification
