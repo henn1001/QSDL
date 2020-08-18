@@ -123,7 +123,12 @@ def get_operations_of_object_of_queries(obj: object) -> list:
     Returns:
         list: [Operations]
     """
-    operations = list(filter(lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name) and x.method == "get", config.operations))
+    operations = list(
+        filter(
+            lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name) and x.method == "get",
+            config.operations,
+        )
+    )
     return operations
 
 
@@ -136,8 +141,14 @@ def get_operations__of_object_of_mutations(obj: object) -> list:
     Returns:
         list: [Operations]
     """
-    operations = list(filter(lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name) and x.method != "get", config.operations))
+    operations = list(
+        filter(
+            lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name) and x.method != "get",
+            config.operations,
+        )
+    )
     return operations
+
 
 def get_operations_of_queries() -> list:
     """Return all operations with method == get
