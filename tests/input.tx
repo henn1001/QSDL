@@ -111,11 +111,11 @@ type User @namespace(value="Management"){
 
          extend Operation {
             "something"
-            submitQuery(body: QueryMachine): QueryMachine @path(value="query/submit") @post
+            submitQuery(body: QueryMachine): QueryMachine @path(value:"query/submit") @post
         }
     }
 
 extend Operation {
     "something else"
-    submitQury(body: QueryMachine): QueryMachine @path(value="query/submits") @post
+    submitQury(body: QueryMachine): QueryMachine @path(value:"query/submits") @post
 }

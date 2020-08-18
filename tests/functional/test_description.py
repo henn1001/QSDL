@@ -20,7 +20,7 @@ class TestDescriptionsOpenApi:
     """Test descriptions.
 
     1. A description can be added after version, for `Enum`,
-        `Base`, `Query`, `Mutation`, `Object` or `Field`.
+        `Base`, `Operation`, `Object` or `Field`.
 
     2. A description can be `SingleLine` or `MultiLine`.
 
@@ -52,13 +52,13 @@ class TestDescriptionsOpenApi:
             "single line description"
             extend Operation {
                 "single line description"
-                null: Void @path(value="x")
+                null: Void @path(value:"x")
             }
 
             "single line description"
             type Mutation {
                 "single line description"
-                null: Void @path(value="x")
+                null: Void @path(value:"x")
             }
 
             "single line description"
@@ -104,7 +104,7 @@ class TestDescriptionsOpenApi:
                 \"""
                 Multi line description
                 \"""
-                null: Void @path(value="x")
+                null: Void @path(value:"x")
             }
 
             \"""
@@ -114,7 +114,7 @@ class TestDescriptionsOpenApi:
                 \"""
                 Multi line description
                 \"""
-                null: Void @path(value="x")
+                null: Void @path(value:"x")
             }
             \"""
             Multi line description

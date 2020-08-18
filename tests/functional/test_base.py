@@ -16,18 +16,16 @@ from tests import wrapper_generate
 from tests import wrapper_generate_failure
 
 
-class Testbase:
+class TestBase:
     """Test Bases.
 
     1. `Base` names should use `PascalCase`.
 
-    2. `Base` should at least contain one value.
+    2. `Base` should at least contain one `Field`.
 
     3. `Base` can be used as `Field` value for `Object`s when marked as `@nested`.
 
     4. `Base` can be used as `Field` value for `Operations`.
-
-    5. `Base` can be used as `Argument` value for `Operations`.
 
     6. `Base` can be used as a superType by `Base`s.
 
@@ -111,21 +109,7 @@ class Testbase:
             }
 
             extend Operation {
-                field: Base @path(value="test")
-            }
-        """
-
-        wrapper_generate(test_input)
-
-    def test_base_5_positive(self):
-        """Verify base as argument value"""
-        test_input = """\
-            base Base {
-                field: ID
-            }
-
-            extend Operation {
-                field(arg: Base): Void @path(value="test")
+                field: Base @path(value:"test")
             }
         """
 

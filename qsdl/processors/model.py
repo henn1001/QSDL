@@ -40,7 +40,7 @@ def model_processor(model: object, metamodel: TextXMetaModel):
     validate_field_id(model, metamodel)
     validate_parameter_id(model, metamodel)
     validate_reference(model, metamodel)
-    validate_custom_operations(model, metamodel)
+    validate_custom_operations_path(model, metamodel)
     validate_nested_bases(model, metamodel)
 
 
@@ -190,8 +190,8 @@ def validate_reference(model: object, metamodel: TextXMetaModel):
             raise TextXSemanticError(msg, filename=model._tx_filename)
 
 
-def validate_custom_operations(model: object, metamodel: TextXMetaModel):
-    """Check that custom queries and mutations specify a path.
+def validate_custom_operations_path(model: object, metamodel: TextXMetaModel):
+    """Check that custom operations specify a path.
 
     Args:
         model (object): The python object graph.
@@ -229,7 +229,7 @@ def validate_nested_bases(model: object, metamodel: TextXMetaModel):
 
     for base in bases:
         for field in mfunc.get_children_of_type("Field", model):
-            if field.parent._tx_fqn == "entity.Object" and  field.value == base:
+            if field.parent._tx_fqn == "entity.Object" and field.value == base:
                 if not field.nested:
                     msg = f"The Base {base.name} is used but is not declared as nested."
                     raise TextXSemanticError(msg, filename=model._tx_filename)

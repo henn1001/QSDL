@@ -115,7 +115,7 @@ Field:
         writeOnly?='@writeOnly'
         composition?='@composition'
         aggregation?='@aggregation'
-        ('@path(value=' path=STRING ')')?
+        ('@path(value:' path=STRING ')')?
         post?='@post'
         put?='@put'
         delete?='@delete'

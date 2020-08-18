@@ -27,7 +27,6 @@ class TestEnum:
 
     4. `Enum` can be used as `Field` value.
 
-    5. `Enum` can be used as `Argument` value.
     """
 
     def test_enum_1_negative(self):
@@ -81,8 +80,8 @@ class TestEnum:
             }
 
             extend Operation {
-                query(input: Enum): Enum @path(value="somepath")
-                queries(input: [Enum]): [Enum] @path(value="somepath")
+                query(input: Enum): Enum @path(value:"somepath")
+                queries(input: [Enum]): [Enum] @path(value:"somepath")
             }
         """
 
