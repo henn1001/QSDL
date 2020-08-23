@@ -19,17 +19,17 @@ from tests import wrapper_generate_failure
 class TestBase:
     """Test Bases.
 
-    1. `Base` names must use `PascalCase`.
+    01. `Base` names must use `PascalCase`.
 
-    2. `Base` must at least contain one `Field`.
+    02. `Base` must at least contain one `Field`.
 
-    3. `Base` can inherit `Field`s from a `Base`.
+    03. `Base` can inherit `Field`s from a `Base`.
 
-    4. `Base` name must be unique between `Object`, `Base` and `Scalar`.
+    04. `Base` name must be unique between `Object`, `Base` and `Scalar`.
 
     """
 
-    def test_base_1_positive(self):
+    def test_base_01_positive(self):
         """Verify PascalCase naming convention"""
         test_input = """\
             base Base {
@@ -39,7 +39,7 @@ class TestBase:
 
         wrapper_generate(test_input)
 
-    def test_base_1_negative(self):
+    def test_base_01_negative(self):
         """Verify PascalCase naming convention"""
         inputs = []
 
@@ -50,7 +50,7 @@ class TestBase:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_base_2_positive(self):
+    def test_base_02_positive(self):
         """Verify empty fields"""
         test_input = """\
             base Base {
@@ -60,7 +60,7 @@ class TestBase:
 
         wrapper_generate(test_input)
 
-    def test_base_2_negative(self):
+    def test_base_02_negative(self):
         """Verify empty fields"""
         test_input = """\
             base Base {
@@ -69,7 +69,7 @@ class TestBase:
 
         wrapper_generate_failure(test_input)
 
-    def test_base_3_positive(self):
+    def test_base_03_positive(self):
         """Verify base implements base"""
         test_input = """\
             base BaseOne {

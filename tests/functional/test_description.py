@@ -19,15 +19,15 @@ from tests import wrapper_generate_failure
 class TestDescriptionsOpenApi:
     """Test descriptions.
 
-    1. A description can be added after version, for `Enum`,
+    01. A description can be added after version, for `Enum`,
         `Base`, `Operation`, `Object` or `Field`.
 
-    2. A description can be `SingleLine` or `MultiLine`.
+    02. A description can be `SingleLine` or `MultiLine`.
 
-    3. A `SingleLine` description should be presented between
+    03. A `SingleLine` description should be presented between
         quotation marks and at least one character in between e.g. `"X"`.
 
-    4. A `MultiLine` description should be presented between three
+    04. A `MultiLine` description should be presented between three
         quotation marks and at least one character in between e.g. `""\"X\"""`.
 
     """

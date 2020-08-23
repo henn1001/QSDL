@@ -19,25 +19,25 @@ from tests import wrapper_generate_failure
 class TestOperation:
     """Test Operations.
 
-    1. `Operation`s must at least contain one `Field`.
+    01. `Operation`s must at least contain one `Field`.
 
-    2. `Operation`s may be used multiple times for a schema to define custom operations.
+    02. `Operation`s may be used multiple times for a schema to define custom operations.
 
-    3. `Operation` `Field`s must specify a path with the @path `Directive`.
+    03. `Operation` `Field`s must specify a path with the @path `Directive`.
 
-    4. `Operation` `Field`s may specify one method besides the default get with the @method(value: POST), @method(value: PUT), @method(value: DELETE) `Directive`.
+    04. `Operation` `Field`s may specify one method besides the default get with the @method(value: POST), @method(value: PUT), @method(value: DELETE) `Directive`.
 
-    5. `Operation` `Field`s must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
+    05. `Operation` `Field`s must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
 
-    6. `Operation`s may be used once inside a `Object` to overwrite the default CRUD operations.
+    06. `Operation`s may be used once inside a `Object` to overwrite the default CRUD operations.
 
-    7. `Operation` `Field`s may optionally specify a path when used inside `Object`.
+    07. `Operation` `Field`s may optionally specify a path when used inside `Object`.
 
-    8. `Operation`s may be part of a NameSpace.
+    08. `Operation`s may be part of a NameSpace.
 
     """
 
-    def test_operation_1_positive(self):
+    def test_operation_01_positive(self):
         """Verify empty fields"""
         test_input = """\
             extend Operation {
@@ -47,7 +47,7 @@ class TestOperation:
 
         wrapper_generate(test_input)
 
-    def test_operation_1_negative(self):
+    def test_operation_01_negative(self):
         """Verify empty fields"""
         test_input = """\
             extend Operation {
@@ -56,7 +56,7 @@ class TestOperation:
 
         wrapper_generate_failure(test_input)
 
-    def test_operation_2_positive(self):
+    def test_operation_02_positive(self):
         """Verify PascalCase naming convention"""
         test_input = """\
             extend Operation {
@@ -74,7 +74,7 @@ class TestOperation:
 
         wrapper_generate(test_input)
 
-    def test_operation_3_positive(self):
+    def test_operation_03_positive(self):
         """Verify empty fields"""
         test_input = """\
             extend Operation {
@@ -84,7 +84,7 @@ class TestOperation:
 
         wrapper_generate(test_input)
 
-    def test_operation_3_negative(self):
+    def test_operation_03_negative(self):
         """Verify empty fields"""
         test_input = """\
             extend Operation {
@@ -94,7 +94,7 @@ class TestOperation:
 
         wrapper_generate_failure(test_input)
 
-    def test_operation_10_positive(self):
+    def test_operation_010_positive(self):
         """Verify PascalCase naming convention"""
         test_input = """\
             type Object {

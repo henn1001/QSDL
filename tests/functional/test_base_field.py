@@ -19,7 +19,7 @@ from tests import wrapper_generate_failure
 class TestBaseField:
     """Test Fields for Bases.
 
-    1. `Field` of `Base` may be a `Scalar` value with one one of the following:
+    01. `Field` of `Base` may be a `Scalar` value with one one of the following:
         * `ID`
         * `Int`
         * `Float`
@@ -29,24 +29,24 @@ class TestBaseField:
         * `Object`
         * `Void`
 
-    2. `Field` of `Base` value may be a `Enum`.
+    02. `Field` of `Base` value may be a `Enum`.
 
-    3. `Field` of `Base` value may be a `Base` when marked as `@nested`.
+    03. `Field` of `Base` value may be a `Base` when marked as `@nested`.
 
-    4. `Field` of `Base` value may be a `Object`.
+    04. `Field` of `Base` value may be a `Object`.
 
-    5. `Field` of `Base` value may be a list when enclosed with brackets.
+    05. `Field` of `Base` value may be a list when enclosed with brackets.
 
-    6. `Field` of `Base` value may not be a list for `Scalar` `ID`.
+    06. `Field` of `Base` value may not be a list for `Scalar` `ID`.
 
-    7. `Field` of `Base` value and list value may be marked as mandatory.
+    07. `Field` of `Base` value and list value may be marked as mandatory.
 
-    8. `Field` of `Base` values may only have one `ID`. This includes inherited values.
+    08. `Field` of `Base` values may only have one `ID`. This includes inherited values.
 
     """
 
 
-    def test_field_base_1_positive(self):
+    def test_field_base_01_positive(self):
         """Verify that we can use basic types"""
 
         test_input = """\
@@ -86,7 +86,7 @@ class TestBaseField:
             else:
                 assert False
 
-    def test_field_base_2_positive(self):
+    def test_field_base_02_positive(self):
         """Verify enum usage."""
         test_input = """\
             enum Enum {
@@ -101,7 +101,7 @@ class TestBaseField:
 
         openapi = wrapper_generate(test_input)
 
-    def test_field_base_3_positive(self):
+    def test_field_base_03_positive(self):
         """Verify base usage"""
         test_input = """\
             base Base {
@@ -115,7 +115,7 @@ class TestBaseField:
 
         wrapper_generate(test_input)
 
-    def test_field_base_3_negative(self):
+    def test_field_base_03_negative(self):
         """Verify base usage"""
         test_input = """\
             base Base {
@@ -129,7 +129,7 @@ class TestBaseField:
 
         wrapper_generate_failure(test_input)
 
-    def test_field_base_4_positive(self):
+    def test_field_base_04_positive(self):
         """Verify object usage"""
         test_input = """\
             type One {
@@ -143,7 +143,7 @@ class TestBaseField:
 
         wrapper_generate(test_input)
 
-    def test_field_base_5_positive(self):
+    def test_field_base_05_positive(self):
         """Verify that we can use array types"""
 
         test_input = """\
@@ -186,7 +186,7 @@ class TestBaseField:
             else:
                 assert False
 
-    def test_field_base_6_negative(self):
+    def test_field_base_06_negative(self):
         """Verify that we can not use array IDs"""
 
         test_input = """\
@@ -197,7 +197,7 @@ class TestBaseField:
 
         wrapper_generate_failure(test_input)
 
-    def test_field_base_7_negative(self):
+    def test_field_base_07_negative(self):
         """Verify required"""
         test_input = """\
             type Type {
@@ -209,7 +209,7 @@ class TestBaseField:
 
         wrapper_generate(test_input)
 
-    def test_field_base_8_negative(self):
+    def test_field_base_08_negative(self):
         """Verify multiple IDs"""
 
         test_input = """\

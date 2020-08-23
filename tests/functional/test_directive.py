@@ -21,24 +21,24 @@ class TestDirective:
 
     These directives change the OpenAPI generation.
 
-    1. `Directive` @query may be use on any Base or Object Field to create a query parameter for the get all method.
+    01. `Directive` @query may be use on any Base or Object Field to create a query parameter for the get all method.
 
-    2. `Directive` @nested may be use on any Base or Object Field when the Field value is a Object. This creates a nested JSON Object.
+    02. `Directive` @nested may be use on any Base or Object Field when the Field value is a Object. This creates a nested JSON Object.
 
-    3. `Directive` @nested must be use on any Base or Object Field when the Field value is a Base. This creates a nested JSON Object.
+    03. `Directive` @nested must be use on any Base or Object Field when the Field value is a Base. This creates a nested JSON Object.
 
-    3. `Directive` @readOnly may be use on any Base or Object Field to mark a field as read only.
+    04. `Directive` @readOnly may be use on any Base or Object Field to mark a field as read only.
 
-    4. `Directive` @writeOnly may be use on any Base or Object Field to mark a field as write only.
+    05. `Directive` @writeOnly may be use on any Base or Object Field to mark a field as write only.
 
-    5. `Directive` @composition
+    06. `Directive` @composition
 
-    6. `Directive` @aggregation
+    07. `Directive` @aggregation
 
-    7. `Directive` @path must be used on any Operation Field which are not part of a Object. This specifies the API Path.
+    08. `Directive` @path must be used on any Operation Field which are not part of a Object. This specifies the API Path.
 
-    7. `Directive` @path may be used on any Operation Field which is part of a Object. This specifies the API Path.
+    09. `Directive` @path may be used on any Operation Field which is part of a Object. This specifies the API Path.
 
-    8. `Directive` @method
+    10. `Directive` @method
 
     """

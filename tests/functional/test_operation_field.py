@@ -19,7 +19,7 @@ from tests import wrapper_generate_failure
 class TestOperationField:
     """Test Fields for Operations.
 
-    1. `Field` of `Operation` may be a `Scalar` value with one one of the following:
+    01. `Field` of `Operation` may be a `Scalar` value with one one of the following:
         * `ID`
         * `Int`
         * `Float`
@@ -29,19 +29,19 @@ class TestOperationField:
         * `Object`
         * `Void`
 
-    2. `Field` of `Operation` value may be a `Enum`.
+    02. `Field` of `Operation` value may be a `Enum`.
 
-    3. `Field` of `Operation` value may be a `Base`.
+    03. `Field` of `Operation` value may be a `Base`.
 
-    4. `Field` of `Operation` value may be a `Object`.
+    04. `Field` of `Operation` value may be a `Object`.
 
-    5. `Field` of `Operation` value may be a list when enclosed with brackets.
+    05. `Field` of `Operation` value may be a list when enclosed with brackets.
 
-    7. `Field` of `Operation` value and list value may be marked as mandatory.
+    07. `Field` of `Operation` value and list value may be marked as mandatory.
 
     """
 
-    def test_field_object_1_positive(self):
+    def test_field_object_01_positive(self):
         """Verify that we can use basic types"""
 
         test_input = """\
@@ -58,7 +58,7 @@ class TestOperationField:
 
         openapi = wrapper_generate(test_input)
 
-    def test_field_object_2_positive(self):
+    def test_field_object_02_positive(self):
         """Verify enum usage."""
         test_input = """\
             enum Enum {
@@ -73,7 +73,7 @@ class TestOperationField:
 
         openapi = wrapper_generate(test_input)
 
-    def test_field_operation_3_positive(self):
+    def test_field_operation_03_positive(self):
         """Verify base usage"""
         test_input = """\
             base Base {
@@ -87,7 +87,7 @@ class TestOperationField:
 
         wrapper_generate(test_input)
 
-    def test_field_object_4_positive(self):
+    def test_field_object_04_positive(self):
         """Verify object usage"""
         test_input = """\
             type One {
@@ -101,7 +101,7 @@ class TestOperationField:
 
         wrapper_generate(test_input)
 
-    def test_field_object_5_positive(self):
+    def test_field_object_05_positive(self):
         """Verify that we can use array types"""
 
         test_input = """\
@@ -117,7 +117,7 @@ class TestOperationField:
 
         openapi = wrapper_generate(test_input)
 
-    def test_field_object_7_negative(self):
+    def test_field_object_07_negative(self):
         """Verify required"""
         test_input = """\
             extend Operation {

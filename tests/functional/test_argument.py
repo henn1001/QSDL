@@ -19,33 +19,33 @@ from tests import wrapper_generate_failure
 class TestArgument:
     """Test Arguments.
 
-    1. `Argument` names must use `TBD`.
+    01. `Argument` names must use `TBD`.
 
-    2. `Argument` must contain at least one name/value pair.
+    02. `Argument` must contain at least one name/value pair.
 
-    3. `Argument` value must be one of the following
+    03. `Argument` value must be one of the following
         * `Scalar`
         * `Enum`
         * `Base`
         * `Object`
 
-    4. `Argument` may contain a maximum of one `Scalar` value of `ID`.
+    04. `Argument` may contain a maximum of one `Scalar` value of `ID`.
 
-    5. `Argument` value may be a list when enclosed with brackets.
+    05. `Argument` value may be a list when enclosed with brackets.
 
-    6. `Argument` value and list value may be marked as mandatory.
+    06. `Argument` value and list value may be marked as mandatory.
 
-    7. `Argument` name/value pairs for get methods are query parameters. [OpenAPI]
+    07. `Argument` name/value pairs for get methods are query parameters. [OpenAPI]
 
-    8. `Argument` name/value pairs for post/put methods are requestBody. [OpenAPI]
+    08. `Argument` name/value pairs for post/put methods are requestBody. [OpenAPI]
 
-    9. `Argument` value must be a `Scalar` of `ID` for delete method. [OpenAPI]
+    09. `Argument` value must be a `Scalar` of `ID` for delete method. [OpenAPI]
 
     10. `Argument` must be used by `Field` of `Operation` only.
 
     """
 
-    def test_argument_1_positive(self):
+    def test_argument_01_positive(self):
         """Verify TBD naming convention"""
         test_input = """\
             extend Operation {
@@ -55,7 +55,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_argument_1_negative(self):
+    def test_argument_01_negative(self):
         """Verify TBD naming convention"""
         inputs = []
 
@@ -64,7 +64,7 @@ class TestArgument:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_argument_2_positive(self):
+    def test_argument_02_positive(self):
         """Verify empty arguments"""
         test_input = """\
             extend Operation {
@@ -74,7 +74,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_argument_2_negative(self):
+    def test_argument_02_negative(self):
         """Verify empty arguments"""
         test_input = """\
             extend Operation {
@@ -83,7 +83,7 @@ class TestArgument:
 
         wrapper_generate_failure(test_input)
 
-    def test_argument_3_positive(self):
+    def test_argument_03_positive(self):
         """Verify  argument value types"""
         test_input = """\
             base Base {
@@ -109,7 +109,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_argument_3_negative(self):
+    def test_argument_03_negative(self):
         """Verify  argument value types"""
         test_input = """\
 
@@ -121,7 +121,7 @@ class TestArgument:
 
         wrapper_generate_failure(test_input)
 
-    def test_argument_4_positive(self):
+    def test_argument_04_positive(self):
         """Verify multiple IDs"""
         test_input = """\
             extend Operation {
@@ -131,7 +131,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_argument_4_negative(self):
+    def test_argument_04_negative(self):
         """Verify multiple IDs"""
         test_input = """\
             extend Operation {
@@ -141,7 +141,7 @@ class TestArgument:
 
         wrapper_generate_failure(test_input)
 
-    def test_argument_5_positive(self):
+    def test_argument_05_positive(self):
         """Verify value list"""
         test_input = """\
             extend Operation {
@@ -155,7 +155,7 @@ class TestArgument:
         # TODO: verify openAPI
         assert False
 
-    def test_argument_6_positive(self):
+    def test_argument_06_positive(self):
         """Verify required"""
         test_input = """\
             extend Operation {
@@ -174,7 +174,7 @@ class TestArgument:
         # TODO: verify openAPI
         assert False
 
-    def test_argument_7_positive(self):
+    def test_argument_07_positive(self):
         """Verify argument is query for get"""
         test_input = """\
             extend Operation {
@@ -186,7 +186,7 @@ class TestArgument:
 
         assert openapi["paths"]["/path"]["get"]["parameters"][0]["in"] == "query"
 
-    def test_argument_8_positive(self):
+    def test_argument_08_positive(self):
         """Verify argument is requestbody for post/put"""
         test_input = """\
             extend Operation {
@@ -201,7 +201,7 @@ class TestArgument:
 
         assert openapi["paths"]["/path"]["put"]["requestBody"]["content"]
 
-    def test_argument_9_positive(self):
+    def test_argument_09_positive(self):
         """Verify argument is only of ID for delete"""
         test_input = """\
             extend Operation {
@@ -211,7 +211,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_argument_9_negative(self):
+    def test_argument_09_negative(self):
         """Verify argument is only of ID for delete"""
         test_input = """\
             extend Operation {

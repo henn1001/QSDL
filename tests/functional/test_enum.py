@@ -19,15 +19,15 @@ from tests import wrapper_generate_failure
 class TestEnum:
     """Test Enums.
 
-    1. `Enum` names must use `PascalCase`.
+    01. `Enum` names must use `PascalCase`.
 
-    2. `Enum` values must use `ALL_CAPS`.
+    02. `Enum` values must use `ALL_CAPS`.
 
-    3. `Enum` must at least contain one value.
+    03. `Enum` must at least contain one value.
 
     """
 
-    def test_enum_1_negative(self):
+    def test_enum_01_negative(self):
         """Verify PascalCase naming convention"""
         inputs = []
 
@@ -38,7 +38,7 @@ class TestEnum:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_enum_2_negative(self):
+    def test_enum_02_negative(self):
         """Verify value naming convention"""
         inputs = []
 
@@ -51,7 +51,7 @@ class TestEnum:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_enum_3_negative(self):
+    def test_enum_03_negative(self):
         """Verify empty enums"""
         test_input = """\
             enum Enum {
