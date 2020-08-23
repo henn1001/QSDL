@@ -112,7 +112,7 @@ components:
     {% endif %}
     {% if util.get_required(base) %}
       required:
-      {% for field in util.get_required(object) %}
+      {% for field in util.get_required(base) %}
         - {{field.name}}
       {% endfor %}
     {% endif %}
