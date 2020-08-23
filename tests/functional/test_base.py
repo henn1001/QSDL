@@ -19,13 +19,13 @@ from tests import wrapper_generate_failure
 class TestBase:
     """Test Bases.
 
-    1. `Base` names should use `PascalCase`.
+    1. `Base` names must use `PascalCase`.
 
-    2. `Base` should at least contain one `Field`.
+    2. `Base` must at least contain one `Field`.
 
     3. `Base` can inherit `Field`s from a `Base`.
 
-    4. `Base` name should be unique between `Object`, `Base` and `Scalar`.
+    4. `Base` name must be unique between `Object`, `Base` and `Scalar`.
 
     """
 

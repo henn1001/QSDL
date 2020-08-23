@@ -19,29 +19,29 @@ from tests import wrapper_generate_failure
 class TestArgument:
     """Test Arguments.
 
-    1. `Argument` names should use `TBD`.
+    1. `Argument` names must use `TBD`.
 
-    2. `Argument` should at least contain one name/value pair.
+    2. `Argument` must contain at least one name/value pair.
 
-    3. `Argument` value can be one of the following
+    3. `Argument` value must be one of the following
         * `Scalar`
         * `Enum`
         * `Base`
         * `Object`
 
-    4. `Argument` can contain 0-1 `Scalar` values of `ID`.
+    4. `Argument` may contain a maximum of one `Scalar` value of `ID`.
 
-    5. `Argument` value can be a list when enclosed with brackets.
+    5. `Argument` value may be a list when enclosed with brackets.
 
-    6. `Argument` value and list value can be marked as mandatory.
+    6. `Argument` value and list value may be marked as mandatory.
 
     7. `Argument` name/value pairs for get methods are query parameters. [OpenAPI]
 
     8. `Argument` name/value pairs for post/put methods are requestBody. [OpenAPI]
 
-    9. `Argument` value should only be a `Scalar` of `ID` for delete method. [OpenAPI]
+    9. `Argument` value must be a `Scalar` of `ID` for delete method. [OpenAPI]
 
-    10. `Argument` can only be used by `Field` of `Operation`.
+    10. `Argument` must be used by `Field` of `Operation` only.
 
     """
 
@@ -83,7 +83,7 @@ class TestArgument:
 
         wrapper_generate_failure(test_input)
 
-    def test_base_3_positive(self):
+    def test_argument_3_positive(self):
         """Verify  argument value types"""
         test_input = """\
             base Base {
@@ -109,7 +109,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_base_3_negative(self):
+    def test_argument_3_negative(self):
         """Verify  argument value types"""
         test_input = """\
 

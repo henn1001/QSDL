@@ -19,7 +19,7 @@ from tests import wrapper_generate_failure
 class TestDirective:
     """Test Directives.
 
-    1. `Directive` @query can used on any Base or Object Field to create a query parameter for the get all method. [OpenAPI]
+    1. `Directive` @query may be use on any Base or Object Field to create a query parameter for the get all method.
 
     2. `Directive` @nested
 

@@ -19,7 +19,7 @@ from tests import wrapper_generate_failure
 class TestBaseField:
     """Test Fields for Bases.
 
-    1. `Field` of `Base` can be a `Scalar` value with one one of the following:
+    1. `Field` of `Base` may be a `Scalar` value with one one of the following:
         * `ID`
         * `Int`
         * `Float`
@@ -29,19 +29,19 @@ class TestBaseField:
         * `Object`
         * `Void`
 
-    2. `Field` of `Base` value can be a `Enum`.
+    2. `Field` of `Base` value may be a `Enum`.
 
-    3. `Field` of `Base` value can be a `Base` when marked as `@nested`.
+    3. `Field` of `Base` value may be a `Base` when marked as `@nested`.
 
-    4. `Field` of `Base` value can be a `Object`.
+    4. `Field` of `Base` value may be a `Object`.
 
-    5. `Field` of `Base` value can be a list when enclosed with brackets.
+    5. `Field` of `Base` value may be a list when enclosed with brackets.
 
-    6. `Field` of `Base` value can not be a list for `Scalar` `ID`.
+    6. `Field` of `Base` value may not be a list for `Scalar` `ID`.
 
-    7. `Field` of `Base` value and list value can be marked as mandatory.
+    7. `Field` of `Base` value and list value may be marked as mandatory.
 
-    8. `Field` of `Base` values can only have one `ID`. This includes inherited values.
+    8. `Field` of `Base` values may only have one `ID`. This includes inherited values.
 
     """
 

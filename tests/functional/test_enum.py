@@ -19,11 +19,11 @@ from tests import wrapper_generate_failure
 class TestEnum:
     """Test Enums.
 
-    1. `Enum` names should use `PascalCase`.
+    1. `Enum` names must use `PascalCase`.
 
-    2. `Enum` values should use `ALL_CAPS`.
+    2. `Enum` values must use `ALL_CAPS`.
 
-    3. `Enum` should at least contain one value.
+    3. `Enum` must at least contain one value.
 
     """
 

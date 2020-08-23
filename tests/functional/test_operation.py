@@ -19,21 +19,21 @@ from tests import wrapper_generate_failure
 class TestOperation:
     """Test Operations.
 
-    1. `Operation`s should at least contain one `Field`.
+    1. `Operation`s must at least contain one `Field`.
 
-    2. `Operation`s can be used 0-n times for a schema to define custom operations.
+    2. `Operation`s may be used multiple times for a schema to define custom operations.
 
-    3. `Operation` `Field`s should specify a path with the @path `Directive`.
+    3. `Operation` `Field`s must specify a path with the @path `Directive`.
 
-    4. `Operation` `Field`s can specify one method besides the default get with the @post, @put, @delete `Directive`.
+    4. `Operation` `Field`s may specify one method besides the default get with the @post, @put, @delete `Directive`.
 
-    5. `Operation` `Field`s can only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
+    5. `Operation` `Field`s must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
 
-    6. `Operation`s can be used once inside a `Object` to overwrite the default CRUD operations.
+    6. `Operation`s may be used once inside a `Object` to overwrite the default CRUD operations.
 
-    7. `Operation` `Field`s can optionally specify a path when used inside `Object`.
+    7. `Operation` `Field`s may optionally specify a path when used inside `Object`.
 
-    8. `Operation`s can be part of a NameSpace.
+    8. `Operation`s may be part of a NameSpace.
 
     """
 

@@ -19,7 +19,7 @@ from tests import wrapper_generate_failure
 class TestObjectField:
     """Test Fields for Objects.
 
-    1. `Field` of `Object` can be a `Scalar` value with one one of the following:
+    1. `Field` of `Object` may be a `Scalar` value with one one of the following:
         * `ID`
         * `Int`
         * `Float`
@@ -29,19 +29,19 @@ class TestObjectField:
         * `Object`
         * `Void`
 
-    2. `Field` of `Object` value can be a `Enum`.
+    2. `Field` of `Object` value may be a `Enum`.
 
-    3. `Field` of `Object` value can be a `Base` when marked as `@nested`.
+    3. `Field` of `Object` value may be a `Base` when marked as `@nested`.
 
-    4. `Field` of `Object` value can be a `Object`.
+    4. `Field` of `Object` value may be a `Object`.
 
-    5. `Field` of `Object` value can be a list when enclosed with brackets.
+    5. `Field` of `Object` value may be a list when enclosed with brackets.
 
-    6. `Field` of `Object` value can not be a list for `Scalar` `ID`.
+    6. `Field` of `Object` value may not be a list for `Scalar` `ID`.
 
-    7. `Field` of `Object` value and list value can be marked as mandatory.
+    7. `Field` of `Object` value and list value may be marked as mandatory.
 
-    8. `Field` of `Object` values can only have one `ID`. This includes inherited values.
+    8. `Field` of `Object` values may only have one `ID`. This includes inherited values.
 
     """
 
