@@ -16,23 +16,20 @@ from tests import wrapper_generate
 from tests import wrapper_generate_failure
 
 
-class TestDescriptionsOpenApi:
+class TestDescription:
     """Test descriptions.
 
-    01. A description can be added after version, for `Enum`,
-        `Base`, `Operation`, `Object` or `Field`.
+    01. A description may be added after version, for `Enum`, `Base`, `Operation`, `Object` or `Field`.
 
-    02. A description can be `SingleLine` or `MultiLine`.
+    02. A description may be `SingleLine` or `MultiLine`.
 
-    03. A `SingleLine` description should be presented between
-        quotation marks and at least one character in between e.g. `"X"`.
+    03. A `SingleLine` description must be presented between quotation marks and at least one character in between e.g. `"X"`.
 
-    04. A `MultiLine` description should be presented between three
-        quotation marks and at least one character in between e.g. `""\"X\"""`.
+    04. A `MultiLine` description must be presented between three quotation marks and at least one character in between e.g. `""\"X\"""`.
 
     """
 
-    def test_single_line(self):
+    def test_description_01_positive(self):
         """Verify SingleLine for all entitys."""
 
         test_input = """\
@@ -56,12 +53,6 @@ class TestDescriptionsOpenApi:
             }
 
             "single line description"
-            type Mutation {
-                "single line description"
-                null: Void @path(value:"x")
-            }
-
-            "single line description"
             type Object {
                 "single line description"
                 null: Void
@@ -72,7 +63,7 @@ class TestDescriptionsOpenApi:
 
         # TODO: add openAPI description verification
 
-    def test_multi_line(self):
+    def test_description_02_positive(self):
         """Verify MultiLine for all entitys."""
 
         test_input = """\
@@ -110,15 +101,6 @@ class TestDescriptionsOpenApi:
             \"""
             Multi line description
             \"""
-            type Mutation {
-                \"""
-                Multi line description
-                \"""
-                null: Void @path(value:"x")
-            }
-            \"""
-            Multi line description
-            \"""
             type Object {
                 \"""
                 Multi line description
@@ -131,20 +113,7 @@ class TestDescriptionsOpenApi:
 
         # TODO: add openAPI description verification
 
-    def test_single_line_break(self):
-        """Verify SingleLine syntax."""
-
-        test_input = """\
-            description: "something
-            should
-            fail
-            here
-            "
-        """
-
-        wrapper_generate_failure(test_input)
-
-    def test_single_line_mimimum(self):
+    def test_description_03_negative(self):
         """Verify SingleLine minimum character."""
 
         test_input = """\
@@ -153,7 +122,7 @@ class TestDescriptionsOpenApi:
 
         wrapper_generate_failure(test_input)
 
-    def test_multi_line_minimum(self):
+    def test_description_04_negative(self):
         """Verify MultiLine minimum character."""
 
         test_input = """\

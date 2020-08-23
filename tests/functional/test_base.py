@@ -23,7 +23,7 @@ class TestBase:
 
     02. `Base` must at least contain one `Field`.
 
-    03. `Base` can inherit `Field`s from a `Base`.
+    03. `Base` may inherit `Field`s from a `Base`.
 
     04. `Base` name must be unique between `Object`, `Base` and `Scalar`.
 

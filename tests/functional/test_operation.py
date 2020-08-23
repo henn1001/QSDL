@@ -19,21 +19,15 @@ from tests import wrapper_generate_failure
 class TestOperation:
     """Test Operations.
 
-    01. `Operation`s must at least contain one `Field`.
+    01. `Operation` must at least contain one `Field`.
 
-    02. `Operation`s may be used multiple times for a schema to define custom operations.
+    02. `Operations may be used multiple times for a schema to define custom operations.
 
-    03. `Operation` `Field`s must specify a path with the @path `Directive`.
+    03. `Operation` may be used once inside a `Object` to overwrite the default CRUD operations.
 
-    04. `Operation` `Field`s may specify one method besides the default get with the @method(value: POST), @method(value: PUT), @method(value: DELETE) `Directive`.
+    04. `Operation` must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
 
-    05. `Operation` `Field`s must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
-
-    06. `Operation`s may be used once inside a `Object` to overwrite the default CRUD operations.
-
-    07. `Operation` `Field`s may optionally specify a path when used inside `Object`.
-
-    08. `Operation`s may be part of a NameSpace.
+    05. `Operation` names must be globally unique. This overlaps with auto generated CRUD operations for `Object`s.
 
     """
 
@@ -57,7 +51,7 @@ class TestOperation:
         wrapper_generate_failure(test_input)
 
     def test_operation_02_positive(self):
-        """Verify PascalCase naming convention"""
+        """Verify operation multiple usage in schema"""
         test_input = """\
             extend Operation {
                 getObject1: String @path(value:"object1")
@@ -75,36 +69,90 @@ class TestOperation:
         wrapper_generate(test_input)
 
     def test_operation_03_positive(self):
-        """Verify empty fields"""
+        """Verify operation CRUD overwrite"""
         test_input = """\
-            extend Operation {
-                getObjects: [String] @path(value:"objects")
+            type Type {
+                id: ID
+                name: String
+
+                extend Operation {
+                    getTypes: [Type]
+                }
             }
         """
 
         wrapper_generate(test_input)
 
     def test_operation_03_negative(self):
-        """Verify empty fields"""
+        """Verify operation CRUD overwrite"""
         test_input = """\
-            extend Operation {
-                getObjects: [String] @path(value:"objects")
+            type Type {
+                id: ID
+                name: String
+
+                extend Operation {
+                    getType: Type
+                }
+
+                extend Operation {
+                    getTypes: [Type]
+                }
             }
         """
 
         wrapper_generate_failure(test_input)
 
-    def test_operation_010_positive(self):
-        """Verify PascalCase naming convention"""
-        test_input = """\
-            type Object {
-                id: ID
-                name: String
+    def test_operation_04_negative(self):
+        """Verify unique paths"""
+        inputs = []
 
-                extend Operation {
-                    getObjects: [Object]
-                }
+        test_input = """\
+            extend Operation {
+                getObject1: String @path(value:"object")
+                getObject2: String @path(value:"object")
             }
         """
+        inputs.append(test_input)
 
-        wrapper_generate(test_input)
+        test_input = """\
+            type Type {
+                id: ID
+                name: String
+            }
+
+            extend Operation {
+                getObject: String @path(value:"type")
+            }
+        """
+        inputs.append(test_input)
+
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
+
+    def test_operation_05_negative(self):
+        """Verify unique operation names"""
+        inputs = []
+
+        test_input = """\
+            extend Operation {
+                getObject: String @path(value:"object1")
+                getObject: String @path(value:"object2")
+            }
+        """
+        inputs.append(test_input)
+
+        test_input = """\
+            type Type {
+                id: ID
+                name: String
+            }
+
+            extend Operation {
+                getType: String @path(value:"test")
+            }
+        """
+        inputs.append(test_input)
+
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
+
