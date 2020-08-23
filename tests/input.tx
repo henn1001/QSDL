@@ -42,7 +42,7 @@ base BaseType {
 """ 
 Test multiline description for objects
 """
-type Project implements BaseType @namespace(value="Management") {
+type Project implements BaseType @namespace(value:"Management") {
     "Archive this Project"
     archive: Boolean @writeOnly
     """ 
@@ -55,12 +55,12 @@ type Project implements BaseType @namespace(value="Management") {
 }
 
 "Test singleline description for objects"
-type Role @namespace(value="Management"){
+type Role @namespace(value:"Management"){
     role: ID!
     users: [User] @aggregation @nested
 }
 
-type User @namespace(value="Management"){
+type User @namespace(value:"Management"){
     name: ID! @query
     full_name: String
     emails: [String]
@@ -69,7 +69,7 @@ type User @namespace(value="Management"){
 
 
 // NameSpace Incident
-    type Ticket @namespace(value="Incident"){
+    type Ticket @namespace(value:"Incident"){
         number: ID!
         title: String
         issuer: User
@@ -79,18 +79,18 @@ type User @namespace(value="Management"){
         milestones: [Milestone] @aggregation
     }
 
-    type Milestone @namespace(value="Incident"){
+    type Milestone @namespace(value:"Incident"){
         milestone: ID!
         sprints: [Sprint] @composition
     }
 
-    type Sprint @namespace(value="Incident"){
+    type Sprint @namespace(value:"Incident"){
         name: ID!
         roles: [Role] @composition @nested
     }
 
     "To test object without a ID"
-    type Buzzword @namespace(value="Incident"){
+    type Buzzword @namespace(value:"Incident"){
         id: ID!
         name: String!
         test: QueryMachine @composition
@@ -98,24 +98,24 @@ type User @namespace(value="Management"){
         extend Operation {
             getBuzzword(id: ID!): Buzzword
             getBuzzwords(name: String): [Buzzword]
-            createBuzzword(body: Buzzword): Buzzword @post
-            updateBuzzword(id: ID!, body: String, test: [Boolean]): Buzzword @put
-            deleteBuzzword(id: ID!): Void @delete
+            createBuzzword(body: Buzzword): Buzzword @method(value: POST)
+            updateBuzzword(id: ID!, body: String, test: [Boolean]): Buzzword @method(value: PUT)
+            deleteBuzzword(id: ID!): Void @method(value: DELETE)
         }
     }
 
     "To test custom paths"
-    type QueryMachine @namespace(value="Incident"){
+    type QueryMachine @namespace(value:"Incident"){
         request: String! @writeOnly
         response: Object @readOnly
 
          extend Operation {
             "something"
-            submitQuery(body: QueryMachine): QueryMachine @path(value:"query/submit") @post
+            submitQuery(body: QueryMachine): QueryMachine @path(value:"query/submit") @method(value: POST)
         }
     }
 
 extend Operation {
     "something else"
-    submitQury(body: QueryMachine): QueryMachine @path(value:"query/submits") @post
+    submitQury(body: QueryMachine): QueryMachine @path(value:"query/submits") @method(value: POST)
 }

@@ -25,7 +25,7 @@ class TestOperation:
 
     3. `Operation` `Field`s must specify a path with the @path `Directive`.
 
-    4. `Operation` `Field`s may specify one method besides the default get with the @post, @put, @delete `Directive`.
+    4. `Operation` `Field`s may specify one method besides the default get with the @method(value: POST), @method(value: PUT), @method(value: DELETE) `Directive`.
 
     5. `Operation` `Field`s must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
 

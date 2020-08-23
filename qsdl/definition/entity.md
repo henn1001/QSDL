@@ -68,9 +68,7 @@ class entity.Field  {
   optional<BOOL> composition
   optional<BOOL> aggregation
   STRING path
-  optional<BOOL> post
-  optional<BOOL> put
-  optional<BOOL> delete
+  Method method
 }
 
 
@@ -79,6 +77,10 @@ class entity.Argument  {
   optional<BOOL> array
   optional<BOOL> nonNullableArray
   optional<BOOL> nonNullable
+}
+
+
+class entity.Method <<match>> {
 }
 
 

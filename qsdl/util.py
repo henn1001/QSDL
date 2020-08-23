@@ -605,17 +605,20 @@ def get_operation_method(field: object) -> str:
     """
     method = None
 
-    if field.put:
+    if field.method is None or field.method == "GET":
+        method = "get"
+
+    elif field.method == "PUT":
         method = "put"
 
-    elif field.delete:
+    elif field.method == "DELETE":
         method = "delete"
 
-    elif field.post:
+    elif field.method == "POST":
         method = "post"
 
     else:
-        method = "get"
+        print("something went wrong in get_operation_method")
 
     return method
 

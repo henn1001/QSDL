@@ -39,7 +39,7 @@ Base:
     
     // Special directives
     ( deprecated?='@deprecated'
-        ('@namespace(value=' namespace=STRING ')')?
+        ('@namespace(value:' namespace=STRING ')')?
         )#
 
     // Custom directives
@@ -57,7 +57,7 @@ Operation :
 
     // Special directives
     ( deprecated?='@deprecated'
-        ('@namespace(value=' namespace=STRING ')')?
+        ('@namespace(value:' namespace=STRING ')')?
         )#
 
     // Custom directives
@@ -77,7 +77,7 @@ Object:
 
     // Special directives
     ( deprecated?='@deprecated'
-        ('@namespace(value=' namespace=STRING ')')?
+        ('@namespace(value:' namespace=STRING ')')?
         )#
 
     // Custom directives
@@ -116,9 +116,7 @@ Field:
         composition?='@composition'
         aggregation?='@aggregation'
         ('@path(value:' path=STRING ')')?
-        post?='@post'
-        put?='@put'
-        delete?='@delete'
+        ('@method(value:' method=Method ')')?
         )#
 
     // Custom directives
@@ -138,6 +136,10 @@ Argument:
     (nonNullableArray?='!' & ']')?
     (']')?
     (nonNullable?='!')?
+;
+
+Method:
+    "GET" | "POST" | "PUT" | "DELETE"
 ;
 
 Directive:

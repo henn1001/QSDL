@@ -146,7 +146,7 @@ class TestArgument:
         test_input = """\
             extend Operation {
                 field1(arg: [String]): Void @path(value:"path1")
-                field2(arg: [String]): Void @path(value:"path2") @post
+                field2(arg: [String]): Void @path(value:"path2") @method(value: POST)
             }
         """
 
@@ -163,9 +163,9 @@ class TestArgument:
                 field2(arg: [String]!): Void @path(value:"path2")
                 field3(arg: [String!]!): Void @path(value:"path3")
 
-                field4(arg: String!): Void @path(value:"path4") @post
-                field5(arg: [String]!): Void @path(value:"path5") @post
-                field6(arg: [String!]!): Void @path(value:"path6") @post
+                field4(arg: String!): Void @path(value:"path4") @method(value: POST)
+                field5(arg: [String]!): Void @path(value:"path5") @method(value: POST)
+                field6(arg: [String!]!): Void @path(value:"path6") @method(value: POST)
             }
         """
 
@@ -190,8 +190,8 @@ class TestArgument:
         """Verify argument is requestbody for post/put"""
         test_input = """\
             extend Operation {
-                field1(arg: String): Void @path(value:"path") @post
-                field2(arg: String): Void @path(value:"path") @put
+                field1(arg: String): Void @path(value:"path") @method(value: POST)
+                field2(arg: String): Void @path(value:"path") @method(value: PUT)
             }
         """
 
@@ -205,7 +205,7 @@ class TestArgument:
         """Verify argument is only of ID for delete"""
         test_input = """\
             extend Operation {
-                field1(arg: ID): Void @path(value:"path") @delete
+                field1(arg: ID): Void @path(value:"path") @method(value: DELETE)
             }
         """
 
@@ -215,7 +215,7 @@ class TestArgument:
         """Verify argument is only of ID for delete"""
         test_input = """\
             extend Operation {
-                field1(arg: String): Void @path(value:"path") @delete
+                field1(arg: String): Void @path(value:"path") @method(value: DELETE)
             }
         """
 
