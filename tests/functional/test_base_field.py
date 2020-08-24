@@ -45,12 +45,11 @@ class TestBaseField:
 
     """
 
-
     def test_field_base_01_positive(self):
         """Verify that we can use basic types"""
 
         test_input = """\
-            type Type {
+            base Foo {
                 id: ID
                 int: Int
                 float: Float
@@ -63,7 +62,7 @@ class TestBaseField:
 
         openapi = wrapper_generate(test_input)
 
-        properties = openapi["components"]["schemas"]["Type"]["properties"]
+        properties = openapi["components"]["schemas"]["Foo"]["properties"]
 
         for key, value in properties.items():
             if key == "id":
@@ -89,31 +88,40 @@ class TestBaseField:
     def test_field_base_02_positive(self):
         """Verify enum usage."""
         test_input = """\
-            enum Enum {
+            enum Foo {
                 OPEN
                 CLOSED
             }
 
-            type Object {
-                value: Enum
+            base Bar {
+                field: Foo
             }
         """
 
         openapi = wrapper_generate(test_input)
 
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+
+        assert properties["field"]["type"] == "string"
+        assert properties["field"]["enum"] == ["OPEN", "CLOSED"]
+
     def test_field_base_03_positive(self):
         """Verify base usage"""
         test_input = """\
-            base Base {
+            base Foo {
                 field: ID
             }
 
-            type Object {
-                field: Base @nested
+            base Bar {
+                field: Foo @nested
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+
+        assert properties["field"]["$ref"] == "#/components/schemas/Foo"
 
     def test_field_base_03_negative(self):
         """Verify base usage"""
@@ -122,32 +130,38 @@ class TestBaseField:
                 field: ID
             }
 
-            type Object {
+            base Type {
                 field: Base
             }
         """
 
         wrapper_generate_failure(test_input)
 
+        # FIXME
+
     def test_field_base_04_positive(self):
         """Verify object usage"""
         test_input = """\
-            type One {
+            type Foo {
                 field: ID
             }
 
-            type Two {
-                field: One
+            base Bar {
+                field: Foo
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+
+        assert properties["field"]["type"] == "string"
 
     def test_field_base_05_positive(self):
         """Verify that we can use array types"""
 
         test_input = """\
-            type Type {
+            base Foo {
                 int: [Int]
                 float: [Float]
                 string: [String]
@@ -159,7 +173,7 @@ class TestBaseField:
 
         openapi = wrapper_generate(test_input)
 
-        properties = openapi["components"]["schemas"]["Type"]["properties"]
+        properties = openapi["components"]["schemas"]["Foo"]["properties"]
 
         for key, value in properties.items():
             if key == "int":
@@ -190,24 +204,32 @@ class TestBaseField:
         """Verify that we can not use array IDs"""
 
         test_input = """\
-            type Object {
+            base Foo {
                 field: [ID]
             }
         """
 
         wrapper_generate_failure(test_input)
 
-    def test_field_base_07_negative(self):
+        # FIXME
+
+    def test_field_base_07_positive(self):
         """Verify required"""
         test_input = """\
-            type Type {
+            base Foo {
                 field1: String!
                 field2: [String]!
                 field3: [String!]!
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        required = openapi["components"]["schemas"]["Foo"]["required"]
+
+        assert "field1" in required
+        assert "field2" in required
+        assert "field3" in required
 
     def test_field_base_08_negative(self):
         """Verify multiple IDs"""
@@ -221,9 +243,11 @@ class TestBaseField:
                 name: String
             }
 
-            type Three implements Two {
+            base Three implements Two {
                 field: ID
             }
         """
 
         wrapper_generate_failure(test_input)
+
+        # FIXME

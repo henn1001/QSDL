@@ -32,7 +32,7 @@ class TestObject:
     def test_object_01_positive(self):
         """Verify PascalCase naming convention"""
         test_input = """\
-            type Object {
+            type Foo {
                 field: String
             }
         """
@@ -53,7 +53,7 @@ class TestObject:
     def test_object_02_positive(self):
         """Verify empty fields"""
         test_input = """\
-            base Base {
+            type Foo {
                 field: ID
             }
         """
@@ -63,7 +63,7 @@ class TestObject:
     def test_object_02_negative(self):
         """Verify empty fields"""
         test_input = """\
-            base Base {
+            type Foo {
             }
         """
 
@@ -72,13 +72,19 @@ class TestObject:
     def test_object_03_positive(self):
         """Verify object implements base"""
         test_input = """\
-            base Base {
+            base Foo {
                 id: ID
             }
 
-            type Object implements Base {
+            type Bar implements Foo {
                 name: String
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+
+        assert "id" in properties
+        assert "name" in properties
+

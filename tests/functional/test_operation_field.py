@@ -58,48 +58,89 @@ class TestOperationField:
 
         openapi = wrapper_generate(test_input)
 
+        def get_schema(openapi, path, method):
+            var = openapi["paths"][path][method]["responses"]
+            return var["200"]["content"]["application/json"]["schema"]
+
+        ops = [
+            ("/path1", "get", "string", None),
+            ("/path2", "get", "integer", "int32"),
+            ("/path3", "get", "number", "float"),
+            ("/path4", "get", "string", None),
+            ("/path5", "get", "boolean", None),
+            ("/path6", "get", "string", "date-time"),
+            ("/path7", "get", "object", None),
+        ]
+
+        for _path, _method, _type, _format in ops:
+            schema = get_schema(openapi, _path, _method)
+
+            assert schema["type"] == _type
+
+            if _format:
+                assert schema["format"] == _format
+
     def test_field_object_02_positive(self):
         """Verify enum usage."""
         test_input = """\
-            enum Enum {
+            enum Foo {
                 OPEN
                 CLOSED
             }
 
             extend Operation {
-                field: Enum @path(value:"test")
+                field: Foo @path(value:"path")
             }
         """
 
         openapi = wrapper_generate(test_input)
 
+        def get_schema(openapi, path):
+            var = openapi["paths"][path]["get"]["responses"]
+            return var["200"]["content"]["application/json"]["schema"]
+
+        assert get_schema(openapi, "/path")["type"] == "string"
+        assert get_schema(openapi, "/path")["enum"] == ["OPEN", "CLOSED"]
+
     def test_field_operation_03_positive(self):
         """Verify base usage"""
         test_input = """\
-            base Base {
+            base Foo {
                 field: ID
             }
 
             extend Operation {
-                field: Base @path(value:"test")
+                field: Foo @path(value:"path")
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        def get_schema(openapi, path):
+            var = openapi["paths"][path]["get"]["responses"]
+            return var["200"]["content"]["application/json"]["schema"]
+
+        assert get_schema(openapi, "/path")["$ref"] == "#/components/schemas/Foo"
 
     def test_field_object_04_positive(self):
         """Verify object usage"""
         test_input = """\
-            type One {
+            type Foo {
                 field: ID
             }
 
-            base Type {
-                field: One @path(value:"test")
+            extend Operation {
+                field: Foo @path(value:"path")
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        def get_schema(openapi, path):
+            var = openapi["paths"][path]["get"]["responses"]
+            return var["200"]["content"]["application/json"]["schema"]
+
+        assert get_schema(openapi, "/path")["$ref"] == "#/components/schemas/Foo"
 
     def test_field_object_05_positive(self):
         """Verify that we can use array types"""
@@ -117,7 +158,29 @@ class TestOperationField:
 
         openapi = wrapper_generate(test_input)
 
-    def test_field_object_07_negative(self):
+        def get_schema(openapi, path, method):
+            var = openapi["paths"][path][method]["responses"]
+            return var["200"]["content"]["application/json"]["schema"]
+
+        ops = [
+            ("/path2", "get", "integer", "int32"),
+            ("/path3", "get", "number", "float"),
+            ("/path4", "get", "string", None),
+            ("/path5", "get", "boolean", None),
+            ("/path6", "get", "string", "date-time"),
+            ("/path7", "get", "object", None),
+        ]
+
+        for _path, _method, _type, _format in ops:
+            schema = get_schema(openapi, _path, _method)
+
+            assert schema["type"] == "array"
+            assert schema["items"]["type"] == _type
+
+            if _format:
+                assert schema["format"] == _format
+
+    def test_field_object_07_positive(self):
         """Verify required"""
         test_input = """\
             extend Operation {

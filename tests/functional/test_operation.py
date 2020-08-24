@@ -35,11 +35,14 @@ class TestOperation:
         """Verify empty fields"""
         test_input = """\
             extend Operation {
-                getObjects: [String] @path(value:"objects")
+                getFoo: Object @path(value:"foo")
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        assert "get" in openapi["paths"]["/foo"]
+        assert "getFoo" in openapi["paths"]["/foo"]["get"]["operationId"]
 
     def test_operation_01_negative(self):
         """Verify empty fields"""
@@ -54,34 +57,50 @@ class TestOperation:
         """Verify operation multiple usage in schema"""
         test_input = """\
             extend Operation {
-                getObject1: String @path(value:"object1")
+                getFoo: Object @path(value:"foo")
             }
 
             extend Operation {
-                getObject2: String @path(value:"object2")
+                getBar: Object @path(value:"bar")
             }
 
             extend Operation {
-                getObject3: String @path(value:"object3")
+                getFruit: Object @path(value:"fruit")
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        assert "get" in openapi["paths"]["/foo"]
+        assert "getFoo" in openapi["paths"]["/foo"]["get"]["operationId"]
+
+        assert "get" in openapi["paths"]["/bar"]
+        assert "getBar" in openapi["paths"]["/bar"]["get"]["operationId"]
+
+        assert "get" in openapi["paths"]["/fruit"]
+        assert "getFruit" in openapi["paths"]["/fruit"]["get"]["operationId"]
 
     def test_operation_03_positive(self):
         """Verify operation CRUD overwrite"""
         test_input = """\
-            type Type {
+            type Foo {
                 id: ID
                 name: String
 
                 extend Operation {
-                    getTypes: [Type]
+                    getFoo: Foo
                 }
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        assert "get" in openapi["paths"]["/foos"]
+        assert "getFoo" in openapi["paths"]["/foos"]["get"]["operationId"]
+
+        assert "post" not in openapi["paths"]["/foos"]
+        assert "put" not in openapi["paths"]["/foos"]
+        assert "delete" not in openapi["paths"]["/foos"]
 
     def test_operation_03_negative(self):
         """Verify operation CRUD overwrite"""
@@ -129,6 +148,8 @@ class TestOperation:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
+        # FIXME
+
     def test_operation_05_negative(self):
         """Verify unique operation names"""
         inputs = []
@@ -155,4 +176,6 @@ class TestOperation:
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
+
+        # FIXME
 

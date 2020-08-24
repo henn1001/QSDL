@@ -42,11 +42,11 @@ class TestEnum:
         """Verify value naming convention"""
         inputs = []
 
-        inputs.append("enum Enum { Open } ")
-        inputs.append("enum Enum { opEN } ")
-        inputs.append("enum Enum { OP-EN } ")
-        inputs.append("enum Enum { open } ")
-        inputs.append("enum Enum { OPEN } ")
+        inputs.append("enum Foo { Open } ")
+        inputs.append("enum Foo { opEN } ")
+        inputs.append("enum Foo { OP-EN } ")
+        inputs.append("enum Foo { open } ")
+        inputs.append("enum Foo { OPEN } ")
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
@@ -54,7 +54,7 @@ class TestEnum:
     def test_enum_03_negative(self):
         """Verify empty enums"""
         test_input = """\
-            enum Enum {
+            enum Foo {
             }
         """
 
