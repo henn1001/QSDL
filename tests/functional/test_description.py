@@ -36,32 +36,44 @@ class TestDescription:
             description: "single line description"
 
             "single line description"
-            enum Enum {
+            enum Foo {
                 DUMMY
             }
 
             "single line description"
-            base Base{
+            base Bar{
                 "single line description"
-                null: Void
+                field: String
             }
 
             "single line description"
             extend Operation {
                 "single line description"
-                null: Void @path(value:"x")
+                field: Void @path(value:"path")
             }
 
             "single line description"
-            type Object {
+            type Fruit {
                 "single line description"
-                null: Void
+                field: String
             }
         """
 
         openapi = wrapper_generate(test_input)
 
-        # TODO: add openAPI description verification
+        desr = "single line description"
+
+        assert desr in openapi["info"]["description"]
+
+        schema = openapi["components"]["schemas"]
+        assert desr in schema["Bar"]["description"]
+        assert desr in schema["Bar"]["properties"]["field"]["description"]
+
+        assert desr in openapi["paths"]["/path"]["get"]["description"]
+
+        schema = openapi["components"]["schemas"]
+        assert desr in schema["Fruit"]["description"]
+        assert desr in schema["Fruit"]["properties"]["field"]["description"]
 
     def test_description_02_positive(self):
         """Verify MultiLine for all entitys."""
@@ -74,18 +86,18 @@ class TestDescription:
             \"""
             Multi line description
             \"""
-            enum Enum {
+            enum Foo {
                 DUMMY
             }
 
             \"""
             Multi line description
             \"""
-            base Base {
+            base Bar {
                 \"""
                 Multi line description
                 \"""
-                null: Void
+                field: String
             }
 
             \"""
@@ -95,23 +107,35 @@ class TestDescription:
                 \"""
                 Multi line description
                 \"""
-                null: Void @path(value:"x")
+                field: Void @path(value:"path")
             }
 
             \"""
             Multi line description
             \"""
-            type Object {
+            type Fruit {
                 \"""
                 Multi line description
                 \"""
-                null: Void
+                field: String
             }
         """
 
         openapi = wrapper_generate(test_input)
 
-        # TODO: add openAPI description verification
+        desr = "Multi line description"
+
+        assert desr in openapi["info"]["description"]
+
+        schema = openapi["components"]["schemas"]
+        assert desr in schema["Bar"]["description"]
+        assert desr in schema["Bar"]["properties"]["field"]["description"]
+
+        assert desr in openapi["paths"]["/path"]["get"]["description"]
+
+        schema = openapi["components"]["schemas"]
+        assert desr in schema["Fruit"]["description"]
+        assert desr in schema["Fruit"]["properties"]["field"]["description"]
 
     def test_description_03_negative(self):
         """Verify SingleLine minimum character."""

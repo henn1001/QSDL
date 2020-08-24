@@ -52,3 +52,5 @@ class TestSpecificsOpenAPI:
         """
 
         wrapper_generate_failure(test_input)
+
+        # FIXME: failing

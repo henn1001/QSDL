@@ -158,7 +158,7 @@ entity.Operation *-- "0..*" entity.Directive
 entity.Operation *-- "1..*" entity.Field
 entity.Object o-- entity.Base
 entity.Object *-- "0..*" entity.Directive
-entity.Object *-- "0..*" entity.Field
+entity.Object *-- "1..*" entity.Field
 entity.Object *-- entity.Operation
 entity.Field *-- "1..*" entity.Argument
 entity.Field o-- entity.ValueType
