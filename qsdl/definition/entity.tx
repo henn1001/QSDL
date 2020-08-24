@@ -84,7 +84,7 @@ Object:
     directives*=Directive
 
     '{'
-        fields*=Field
+        fields+=Field
         operation=Operation?
     '}'
 ;

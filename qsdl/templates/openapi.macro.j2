@@ -4,11 +4,28 @@
     in: {{ parameter.in }}
     required: {{ parameter.required }}
     schema:
-  {% if parameter.type._tx_fqn == "entity.Object" %}
-      $ref: '#/components/schemas/{{ parameter.type.name|capitalize }}'
+  {% set parameter = parameter.type %}
+  {% if parameter.value._tx_fqn in ["entity.Object", "entity.Base"] and parameter.array %}
+      type: array
+      items:
+        $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
+  {% elif parameter.value._tx_fqn in ["entity.Object", "entity.Base"] %}
+      $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
   {% else %}
-      type: {{ parameter.type | oapi_type }}
-    {% endif %} 
+    {% if parameter.array %}
+      type: array
+      items:
+        {{ get_parameter_type(parameter) | indent(2) | trim }}
+      {% if get_parameter_format(parameter) %}
+      {{ get_parameter_format(parameter) | indent(2) | trim  }}
+      {% endif %}
+    {% else %}
+      {{ get_parameter_type(parameter) | indent(4) | trim }}
+      {% if get_parameter_format(parameter) %}
+      {{ get_parameter_format(parameter) | indent(2) | trim }}
+      {% endif %}
+    {% endif %}
+  {% endif %}
 {% endfor %}
 {% endmacro %}
 
@@ -24,12 +41,12 @@
     {% if parameter._tx_fqn == "entity.Object" %}
         $ref: '#/components/schemas/{{ parameter.name|capitalize }}'
     {# handle query and mutation with array object input #}
-    {% elif parameter.value._tx_fqn == "entity.Object" and parameter.array %}
+    {% elif parameter.value._tx_fqn in ["entity.Object", "entity.Base"] and parameter.array %}
         type: array
         items:
           $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
     {# handle query and mutation with object input #}
-    {% elif parameter.value._tx_fqn == "entity.Object" %}
+    {% elif parameter.value._tx_fqn in ["entity.Object", "entity.Base"] %}
         $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
     {% else %}
     {# handle query and mutation with custom input #}
@@ -47,7 +64,7 @@
             {{ get_parameter_format(parameter) | indent(2) | trim  }}
             {% endif %}
         {% else %}
-            {{ get_parameter_type(parameter) | indent(4) | trim }}
+            {{ get_parameter_type(parameter) | indent(10) | trim }}
             {% if get_parameter_format(parameter) %}
             {{ get_parameter_format(parameter) | indent(2) | trim }}
             {% endif %}
@@ -70,7 +87,7 @@
         {{ get_parameter_format(field) | indent(2) | trim  }}
         {% endif %}
     {% else %}
-        {{ get_parameter_type(field, true) | indent(0) | trim }}
+        {{ get_parameter_type(field, true) | indent(6) | trim }}
         {% if get_parameter_format(field) %}
         {{ get_parameter_format(field) | indent(2) | trim }}
         {% endif %}

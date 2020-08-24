@@ -648,7 +648,7 @@ def get_path_parameters(entity: object, parent: object = None, include_id: bool 
         name = parent.name.lower() + "_" + get_id(parent)
         param = {
             "name": name,
-            "type": get_id_field(parent).value,
+            "type": get_id_field(parent),
             "in": "path",
             "required": "true",
         }
@@ -660,7 +660,7 @@ def get_path_parameters(entity: object, parent: object = None, include_id: bool 
             name = get_id(entity)
             param = {
                 "name": name,
-                "type": get_id_field(entity).value,
+                "type": get_id_field(entity),
                 "in": "path",
                 "required": "true",
             }
@@ -673,7 +673,7 @@ def get_path_parameters(entity: object, parent: object = None, include_id: bool 
                 name = get_id(entity)
                 param = {
                     "name": name,
-                    "type": get_id_field(entity).value,
+                    "type": get_id_field(entity),
                     "in": "path",
                     "required": "true",
                 }
@@ -704,12 +704,7 @@ def get_query_parameters(entity: object) -> list:
         while True:
             for field in tmp.fields:
                 if field.query:
-                    param = {
-                        "name": field.name,
-                        "type": field.value,
-                        "in": "query",
-                        "required": "false",
-                    }
+                    param = {"name": field.name, "type": field, "in": "query", "required": "false"}
                     parameters.append(param)
 
             if tmp.superType:
@@ -723,7 +718,7 @@ def get_query_parameters(entity: object) -> list:
             if argument.value.name != "ID":
                 param = {
                     "name": argument.name,
-                    "type": argument.value,
+                    "type": argument,
                     "in": "query",
                     "required": "false",
                 }
