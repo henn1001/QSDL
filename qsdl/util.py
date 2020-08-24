@@ -182,7 +182,9 @@ def get_compositions(obj: object) -> list:
     comp_fields = []
 
     occurrence = get_parents(obj)
-    comp_fields = list(filter(lambda x: x.composition, occurrence))
+    comp_fields = list(
+        filter(lambda x: x.composition and x.value._tx_fqn == "entity.Object", occurrence)
+    )
 
     return comp_fields
 
@@ -199,7 +201,9 @@ def get_aggregation(obj: object) -> list:
     agg_fields = []
 
     occurrence = get_parents(obj)
-    agg_fields = list(filter(lambda x: x.aggregation, occurrence))
+    agg_fields = list(
+        filter(lambda x: x.aggregation and x.value._tx_fqn == "entity.Object", occurrence)
+    )
 
     return agg_fields
 
@@ -234,8 +238,12 @@ def get_childs(obj: object) -> list:
     childs = []
     child_fields = []
 
-    child_fields.extend(list(filter(lambda x: x.composition, obj.fields)))
-    child_fields.extend(list(filter(lambda x: x.aggregation, obj.fields)))
+    child_fields.extend(
+        list(filter(lambda x: x.composition and x.value._tx_fqn == "entity.Object", obj.fields))
+    )
+    child_fields.extend(
+        list(filter(lambda x: x.aggregation and x.value._tx_fqn == "entity.Object", obj.fields))
+    )
 
     for field in child_fields:
         childs.append(field.value)
@@ -282,7 +290,13 @@ def get_filtered_fields(field: object) -> bool:
     """
     ret = False
 
-    if not ((field.composition or field.aggregation) and not field.nested):
+    if not (
+        (
+            (field.composition and field.value._tx_fqn == "entity.Object")
+            or (field.aggregation and field.value._tx_fqn == "entity.Object")
+        )
+        and not field.nested
+    ):
         ret = True
 
     return ret
@@ -430,7 +444,7 @@ def has_composition(obj):
     ret = False
 
     for field in obj.fields:
-        if field.composition:
+        if field.composition and field.value._tx_fqn == "entity.Object":
             ret = True
             break
 
@@ -451,7 +465,9 @@ def is_composition(child: object, parent: object) -> bool:
 
     if parent:
         for field in parent.fields:
-            if field.value.name == child.name and field.composition:
+            if field.value.name == child.name and (
+                field.composition and field.value._tx_fqn == "entity.Object"
+            ):
                 ret = True
                 break
 
@@ -470,7 +486,7 @@ def has_aggregation(obj: object) -> bool:
     ret = False
 
     for field in obj.fields:
-        if field.aggregation:
+        if field.aggregation and field.value._tx_fqn == "entity.Object":
             ret = True
             break
 
@@ -491,7 +507,9 @@ def is_aggregation(child: object, parent: object) -> bool:
 
     if parent:
         for field in parent.fields:
-            if field.value.name == child.name and field.aggregation:
+            if field.value.name == child.name and (
+                field.aggregation and field.value._tx_fqn == "entity.Object"
+            ):
                 ret = True
                 break
 

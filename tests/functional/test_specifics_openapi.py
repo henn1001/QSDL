@@ -19,7 +19,9 @@ from tests import wrapper_generate_failure
 class TestSpecificsOpenAPI:
     """Test specific OpenAPI functionality.
 
-    01. When a Object is used as Field value for another Object, a reference by ID is created.
+    01. Referencing a `Object` for a `Field` value requires a `ID` at the referenced `Object`.
+
+    02. Referencing a `Object` for a `Field` value with @composition or @aggregation requires a `ID` at the referenced `Object`.
 
     """
 

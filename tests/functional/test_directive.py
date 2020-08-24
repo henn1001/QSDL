@@ -48,57 +48,74 @@ class TestDirective:
     def test_directive_01_positive(self):
         """Verify usage of @query"""
         test_input = """\
-            base Base {
-                id: ID
+            base Foo {
                 name: String @query
             }
 
-            type Type implements Base {
+            type Bar implements Foo {
                 world: String @query
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        parameter = openapi["paths"]["/bars"]["get"]["parameters"]
+
+        assert parameter[0]["in"] == "query"
+        assert parameter[0]["name"] in ["name", "world"]
+
+        assert parameter[1]["in"] == "query"
+        assert parameter[1]["name"] in ["name", "world"]
 
     def test_directive_02_positive(self):
         """Verify usage of @nested"""
         test_input = """\
-            base Base {
+            base Foo {
                 id: ID
-                field1: Type @nested
+                field1: Bar @nested
             }
 
-            type Type {
+            type Bar {
                 id: ID
                 name: String
             }
 
-            type Test implements Base {
-                field2: [Type] @nested
+            type Fruit implements Foo {
+                field2: [Bar] @nested
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Fruit"]["properties"]
+
+        assert properties["field1"]["$ref"]
+        assert properties["field2"]["items"]["$ref"]
 
     def test_directive_03_positive(self):
         """Verify usage of @nested"""
         test_input = """\
-            base Base {
+            base Foo {
                 id: ID
-                field1: Nested @nested
+                field1: Bar @nested
             }
 
-            base Nested {
+            base Bar {
                 id: ID
                 name: String
             }
 
-            type Test implements Base {
-                field2: [Nested] @nested
+            type Fruit implements Foo {
+                field2: [Bar] @nested
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Fruit"]["properties"]
+
+        assert properties["field1"]["$ref"]
+        assert properties["field2"]["items"]["$ref"]
 
     def test_directive_03_negative(self):
         """Verify usage of @nested"""
@@ -123,84 +140,91 @@ class TestDirective:
     def test_directive_04_positive(self):
         """Verify usage of @readOnly"""
         test_input = """\
-            base Base {
+            base Foo {
                 id: ID
                 name: String @readOnly
             }
 
-            type Type implements Base {
+            type Bar implements Foo {
                 world: String @readOnly
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Foo"]["properties"]
+        assert properties["name"]["readOnly"]
+
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+        assert properties["name"]["readOnly"]
+        assert properties["world"]["readOnly"]
 
     def test_directive_05_positive(self):
         """Verify usage of @writeOnly"""
         test_input = """\
-            base Base {
+            base Foo {
                 id: ID
                 name: String @writeOnly
             }
 
-            type Type implements Base {
+            type Bar implements Foo {
                 world: String @writeOnly
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Foo"]["properties"]
+        assert properties["name"]["writeOnly"]
+
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+        assert properties["name"]["writeOnly"]
+        assert properties["world"]["writeOnly"]
 
     def test_directive_06_positive(self):
         """Verify usage of @composition"""
         test_input = """\
-            type One {
+            type Foo {
                 field: ID 
-                composition: Two @composition
+                composition: Bar @composition
+                ignored: String @composition
             }
 
-            type Two {
+            type Bar {
                 field: ID 
-            }
-        """
-
-        wrapper_generate(test_input)
-
-    def test_directive_06_negative(self):
-        """Verify usage of @composition"""
-        test_input = """\
-            type One {
-                field: ID 
-                composition: String @composition
             }
         """
 
-        wrapper_generate_failure(test_input)
+        openapi = wrapper_generate(test_input)
+
+        assert "composition" not in openapi["components"]["schemas"]["Foo"]["properties"]
+        assert "ignored" in openapi["components"]["schemas"]["Foo"]["properties"]
+
+        assert "/foos/{foo_field}/bars" in openapi["paths"]
+        assert "/foos/{foo_field}/bars/{field}" in openapi["paths"]
 
     def test_directive_07_positive(self):
         """Verify usage of @aggregation"""
         test_input = """\
-            type One {
+            type Foo {
                 field: ID 
-                composition: Two @aggregation
+                aggregation: Bar @aggregation
+                ignored: String @aggregation
             }
 
-            type Two {
+            type Bar {
                 field: ID 
-            }
-        """
-
-        wrapper_generate(test_input)
-
-    def test_directive_07_negative(self):
-        """Verify usage of @aggregation"""
-        test_input = """\
-            type One {
-                field: ID 
-                composition: String @aggregation
             }
         """
 
-        wrapper_generate_failure(test_input)
+        openapi = wrapper_generate(test_input)
+
+        assert "aggregation" not in openapi["components"]["schemas"]["Foo"]["properties"]
+        assert "ignored" in openapi["components"]["schemas"]["Foo"]["properties"]
+
+        assert "/foos/{foo_field}/bars" in openapi["paths"]
+        assert "/foos/{foo_field}/bars/add" in openapi["paths"]
+        assert "/foos/{foo_field}/bars/remove" in openapi["paths"]
 
     def test_directive_08_positive(self):
         """Verify usage of @path"""
@@ -210,7 +234,9 @@ class TestDirective:
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        assert openapi["paths"]["/objects"]["get"]["operationId"] == "getObjects"
 
     def test_directive_08_negative(self):
         """Verify usage of @path"""
@@ -225,18 +251,20 @@ class TestDirective:
     def test_directive_09_positive(self):
         """Verify usage of @path"""
         test_input = """\
-            type Type {
+            type Foo {
                 id : ID
 
                 extend Operation {
+                    getObject: String
                     getObjects: [String] @path(value:"objects")
                 }
             }
-
-
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        assert openapi["paths"]["/foos"]["get"]["operationId"] == "getObject"
+        assert openapi["paths"]["/objects"]["get"]["operationId"] == "getObjects"
 
     def test_directive_10_positive(self):
         """Verify usage of @method"""
@@ -249,17 +277,22 @@ class TestDirective:
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        assert openapi["paths"]["/path"]["get"]["operationId"] == "field1"
+        assert openapi["paths"]["/path"]["post"]["operationId"] == "field2"
+        assert openapi["paths"]["/path"]["put"]["operationId"] == "field3"
+        assert openapi["paths"]["/path"]["delete"]["operationId"] == "field4"
 
     def test_directive_11_positive(self):
         """Verify usage of @namespace"""
         test_input = """\
-            base Base @namespace(value:"Test") {
+            base Foo @namespace(value:"Test") {
                 field : String
             }
 
-            type Type @namespace(value:"Test") {
-                field : String
+            type Bar @namespace(value:"Test") {
+                field : ID
             }
 
             extend Operation @namespace(value:"Test") {
@@ -267,4 +300,12 @@ class TestDirective:
             }
         """
 
-        wrapper_generate(test_input)
+        openapi = wrapper_generate(test_input)
+
+        assert "Test" in openapi["paths"]["/bars"]["get"]["tags"]
+        assert "Test" in openapi["paths"]["/bars"]["post"]["tags"]
+        assert "Test" in openapi["paths"]["/bars/{field}"]["get"]["tags"]
+        assert "Test" in openapi["paths"]["/bars/{field}"]["put"]["tags"]
+        assert "Test" in openapi["paths"]["/bars/{field}"]["delete"]["tags"]
+
+        assert "Test" in openapi["paths"]["/path"]["get"]["tags"]

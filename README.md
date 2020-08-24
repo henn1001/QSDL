@@ -4,9 +4,9 @@ A Schema-Definition-Language Generator inspired by GraphQl.
 
 ## Overview
 
-The QSDL Generator allows a domain model based approach to generate OpenAPI and GraphQL specifications. The Language is mainly inspired by GraphQL with minor modifications to accommodate OpenAPI and sensible QoL features.
+The QSDL Generator allows a domain model based approach to generate OpenAPI and GraphQL specifications. The Language is inspired by GraphQL with minor modifications to accommodate OpenAPI and sensible QoL features.
 
-Internally QSDL leverages mainly [textX](https://github.com/textX/textX) for describing the meta-language and [Jinja2](https://github.com/pallets/jinja) as template generator.
+Internally QSDL leverages [textX](https://github.com/textX/textX) for describing the meta-language and [Jinja2](https://github.com/pallets/jinja) as template generator.
 
 Currently the following generators are available:
 
