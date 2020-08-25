@@ -137,8 +137,6 @@ class TestBaseField:
 
         wrapper_generate_failure(test_input)
 
-        # FIXME: failing
-
     def test_field_base_04_positive(self):
         """Verify object usage"""
         test_input = """\
@@ -211,8 +209,6 @@ class TestBaseField:
 
         wrapper_generate_failure(test_input)
 
-        # FIXME: failing
-
     def test_field_base_07_positive(self):
         """Verify required"""
         test_input = """\
@@ -249,5 +245,3 @@ class TestBaseField:
         """
 
         wrapper_generate_failure(test_input)
-
-        # FIXME: failing

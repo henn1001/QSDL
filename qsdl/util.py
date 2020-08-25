@@ -28,9 +28,6 @@ class Scalar:
         self.parent = parent
         self.name = name
 
-    def __str__(self):
-        return self.name
-
 
 class Operation:
     """Our Operation class"""

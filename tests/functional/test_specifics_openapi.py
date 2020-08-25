@@ -23,6 +23,10 @@ class TestSpecificsOpenAPI:
 
     02. Referencing a `Object` for a `Field` value with @composition or @aggregation requires a `ID`.
 
+    03. `Directive` @namespace must use `PascalCase`.
+
+    04. `Field` of `Operation` value may be one `Object` or `Base` and can only be mixed with a additional `ID`.
+
     """
 
     def test_specifics_01_positive(self):
@@ -72,6 +76,67 @@ class TestSpecificsOpenAPI:
         inputs.append(test_input)
 
         test_input = "type Foo { id: String field: Bar @composition } type Bar { id: ID }"
+        inputs.append(test_input)
+
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
+
+    def test_specifics_03_positive(self):
+        """Verify PascalCase naming convention"""
+        test_input = """\
+            type Foo @namespace(value:"Test") {
+                field: String
+            }
+        """
+
+        wrapper_generate(test_input)
+
+    def test_specifics_03_negative(self):
+        """Verify PascalCase naming convention"""
+        inputs = []
+
+        inputs.append('type Foo @namespace(value:"wrong") { field: String } ')
+        inputs.append('type Foo @namespace(value:"Wro-Ng") { field: String } ')
+        inputs.append('type Foo @namespace(value:"WRO_NG") { field: String } ')
+
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
+
+    def test_specifics_04_positive(self):
+        """Verify object and base usage"""
+        test_input = """\
+            type Foo {
+                field: ID
+            }
+
+            base Fruit {
+                field: ID
+            }
+
+            extend Operation {
+                field1(body: Foo): Void @path(value:"path1")
+                field2(arg: ID, body: Foo): Void @path(value:"path2")
+                field3(arg: Fruit): Void @path(value:"path3")
+                field4(arg: ID, body: Fruit): Void @path(value:"path4")
+            }
+        """
+
+        wrapper_generate(test_input)
+
+    def test_specifics_04_negative(self):
+        """Verify object and base usage"""
+        inputs = []
+
+        test_input = 'base Foo { field: ID } extend Operation { field1(arg: String, body: Foo): Void @path(value:"path1") }'
+        inputs.append(test_input)
+
+        test_input = 'base Foo { field: ID } extend Operation { field1(arg: Foo, body: Foo): Void @path(value:"path1") }'
+        inputs.append(test_input)
+
+        test_input = 'type Foo { field: ID } extend Operation { field1(arg: String, body: Foo): Void @path(value:"path1") }'
+        inputs.append(test_input)
+
+        test_input = 'type Foo { field: ID } extend Operation { field1(arg: Foo, body: Foo): Void @path(value:"path1") }'
         inputs.append(test_input)
 
         for test_input in inputs:

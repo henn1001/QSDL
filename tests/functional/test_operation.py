@@ -140,15 +140,13 @@ class TestOperation:
             }
 
             extend Operation {
-                getObject: String @path(value:"type")
+                getObject: String @path(value:"types")
             }
         """
         inputs.append(test_input)
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
-
-        # FIXME: failing
 
     def test_operation_05_negative(self):
         """Verify unique operation names"""
@@ -176,6 +174,3 @@ class TestOperation:
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
-
-        # FIXME: failing
-
