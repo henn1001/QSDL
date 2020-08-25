@@ -17,6 +17,7 @@
 from copy import copy
 
 from textx import model as mfunc
+from textx.exceptions import TextXSemanticError
 
 from qsdl import config
 from qsdl.util import get_id
@@ -365,6 +366,32 @@ def check_duplicates():
             config.dupl_objects.add(obj.name)
 
 
+def validate_operation_names():
+    """Checks if we have any duplicate operation names"""
+
+    names = []
+
+    for operation in config.operations:
+        names.append(operation.name)
+
+    if len(names) != len(set(names)):
+        msg = "Duplicate operation names found."
+        raise TextXSemanticError(msg, filename=config.model._tx_filename)
+
+
+def validate_operation_paths():
+    """Checks if we have any duplicate operation paths"""
+
+    paths = []
+
+    for operation in config.operations:
+        paths.append(operation.method + operation.path)
+
+    if len(paths) != len(set(paths)):
+        msg = "Duplicate operation names found."
+        raise TextXSemanticError(msg, filename=config.model._tx_filename)
+
+
 def get_endpoints() -> list:
     """Returns all possible endpoints/paths for OpenAPI.
 
@@ -437,3 +464,7 @@ def build_domain_model(model: object):
     operations.sort(key=lambda x: x.path)
 
     config.operations = operations
+
+    # validate uniqueness
+    validate_operation_names()
+    validate_operation_paths()

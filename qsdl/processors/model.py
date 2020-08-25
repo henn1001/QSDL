@@ -39,6 +39,7 @@ def model_processor(model: object, metamodel: TextXMetaModel):
     validate_type_names(model, metamodel)
     validate_field_id(model, metamodel)
     validate_parameter_id(model, metamodel)
+    validate_array_id(model, metamodel)
     validate_reference(model, metamodel)
     validate_custom_operations_path(model, metamodel)
     validate_nested_bases(model, metamodel)
@@ -96,6 +97,7 @@ def validate_field_id(model: object, metamodel: TextXMetaModel):
 
     # loop for objects and their supertypes (bases)
     objects = mfunc.get_children_of_type("Object", model)
+    objects.extend(mfunc.get_children_of_type("Base", model))
 
     for obj in objects:
         count = 0
@@ -106,10 +108,6 @@ def validate_field_id(model: object, metamodel: TextXMetaModel):
             for field in tmp.fields:
                 if field.value.name == "ID":
                     count = count + 1
-
-                    if field.array:
-                        msg = f"Array ID found for Object {obj.name}"
-                        raise TextXSemanticError(msg, filename=model._tx_filename)
 
             if tmp.superType:
                 tmp = tmp.superType
@@ -144,10 +142,6 @@ def validate_parameter_id(model: object, metamodel: TextXMetaModel):
             if argument.value.name == "ID":
                 count = count + 1
 
-                if argument.array:
-                    msg = f"Array ID found for Object {field.name}"
-                    raise TextXSemanticError(msg, filename=model._tx_filename)
-
         if count > 1:
             msg = f"More than one ID found for Operation {field.name}"
             raise TextXSemanticError(msg, filename=model._tx_filename)
@@ -160,7 +154,7 @@ def validate_parameter_id(model: object, metamodel: TextXMetaModel):
             if argument.value.name != "ID":
                 count = count + 1
 
-                if argument.value._tx_fqn == "entity.Object":
+                if argument.value._tx_fqn in ["entity.Object", "entity.Base"]:
                     is_ref = True
 
         if is_ref and count > 1:
@@ -169,6 +163,34 @@ def validate_parameter_id(model: object, metamodel: TextXMetaModel):
                 "or tries to mix them. Currently not supported"
             )
             raise TextXSemanticError(msg, filename=model._tx_filename)
+
+
+def validate_array_id(model: object, metamodel: TextXMetaModel):
+    """Check that Fields only have one normal ID parameter.
+
+    Args:
+        model (object): The python object graph.
+        metamodel (TextXMetaModel): The metamodel.
+
+    Raises:
+        TextXSemanticError: Exception for logical errors.
+    """
+    _ = metamodel
+
+    fields = mfunc.get_children_of_type("Field", model)
+
+    for field in fields:
+        if field.parent._tx_fqn in ["entity.Object", "entity.Base"]:
+
+            if field.value.name == "ID" and field.array:
+                msg = f"Array ID found for the field {field.name}."
+                raise TextXSemanticError(msg, filename=model._tx_filename)
+
+        for argument in field.arguments:
+
+            if argument.value.name == "ID" and argument.array:
+                msg = f"Array ID found for argument {argument.name}"
+                raise TextXSemanticError(msg, filename=model._tx_filename)
 
 
 def validate_reference(model: object, metamodel: TextXMetaModel):
@@ -261,7 +283,7 @@ def validate_nested_bases(model: object, metamodel: TextXMetaModel):
 
     for base in bases:
         for field in mfunc.get_children_of_type("Field", model):
-            if field.parent._tx_fqn == "entity.Object" and field.value == base:
+            if field.parent._tx_fqn in ["entity.Object", "entity.Base"] and field.value == base:
                 if not field.nested:
                     msg = f"The Base {base.name} is used but is not declared as nested."
                     raise TextXSemanticError(msg, filename=model._tx_filename)
