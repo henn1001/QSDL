@@ -183,11 +183,43 @@ def validate_reference(model: object, metamodel: TextXMetaModel):
     """
     _ = metamodel
 
-    objects = mfunc.get_children_of_type("Object", model)
-    for obj in objects:
-        if (has_aggregation(obj) and not get_id(obj)) or (has_composition(obj) and not get_id(obj)):
-            msg = f"The type {obj.name} specifies a composition or aggregation but no ID value."
+    entities = mfunc.get_children_of_type("Object", model)
+    for ent in entities:
+        if (has_aggregation(ent) and not get_id(ent)) or (has_composition(ent) and not get_id(ent)):
+            msg = f"The type {ent.name} specifies a composition or aggregation but no ID value."
             raise TextXSemanticError(msg, filename=model._tx_filename)
+
+        fields = list(
+            filter(
+                lambda x: x.value._tx_fqn == "entity.Object"
+                and (not x.nested and not x.composition and not x.aggregation),
+                ent.fields,
+            )
+        )
+
+        for field in fields:
+            if not get_id(field.value):
+                msg = f"The field {field.name} of type {ent.name} references a type with no ID."
+                raise TextXSemanticError(msg, filename=model._tx_filename)
+
+    entities = mfunc.get_children_of_type("Base", model)
+    for ent in entities:
+        if (has_aggregation(ent) and not get_id(ent)) or (has_composition(ent) and not get_id(ent)):
+            msg = f"The base {ent.name} specifies a composition or aggregation but no ID value."
+            raise TextXSemanticError(msg, filename=model._tx_filename)
+
+        fields = list(
+            filter(
+                lambda x: x.value._tx_fqn == "entity.Object"
+                and (not x.nested and not x.composition and not x.aggregation),
+                ent.fields,
+            )
+        )
+
+        for field in fields:
+            if not get_id(field.value):
+                msg = f"The field {field.name} of base {ent.name} references a type with no ID."
+                raise TextXSemanticError(msg, filename=model._tx_filename)
 
 
 def validate_custom_operations_path(model: object, metamodel: TextXMetaModel):

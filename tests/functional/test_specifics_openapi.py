@@ -19,22 +19,27 @@ from tests import wrapper_generate_failure
 class TestSpecificsOpenAPI:
     """Test specific OpenAPI functionality.
 
-    01. Referencing a `Object` for a `Field` value requires a `ID` at the referenced `Object`.
+    01. Referencing a `Object` for a `Field` value requires a `ID`.
 
-    02. Referencing a `Object` for a `Field` value with @composition or @aggregation requires a `ID` at the referenced `Object`.
+    02. Referencing a `Object` for a `Field` value with @composition or @aggregation requires a `ID`.
 
     """
 
     def test_specifics_01_positive(self):
         """Verify object reference"""
         test_input = """\
-            type One {
+            type Foo {
                 id: ID
             }
 
-            type Two {
+            type Bar {
                 id: ID
-                one: Two
+                field: Foo
+            }
+
+            base Fruit {
+                id: ID
+                field: Foo
             }
         """
 
@@ -42,17 +47,32 @@ class TestSpecificsOpenAPI:
 
     def test_specifics_01_negative(self):
         """Verify object reference"""
-        test_input = """\
-            type One {
-                id: String
-            }
+        inputs = []
 
-            type Two {
-                id: ID
-                one: Two
-            }
-        """
+        test_input = "type Foo { id: String } type Bar { id: ID field: Foo }"
+        inputs.append(test_input)
 
-        wrapper_generate_failure(test_input)
+        test_input = "type Foo { id: String } base Bar { id: ID field: Foo }"
+        inputs.append(test_input)
 
-        # FIXME: failing
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
+
+    def test_specifics_02_negative(self):
+        """Verify object reference"""
+        inputs = []
+
+        test_input = "base Foo { id: String field: Bar @aggregation } type Bar { id: ID }"
+        inputs.append(test_input)
+
+        test_input = "base Foo { id: String field: Bar @composition } type Bar { id: ID }"
+        inputs.append(test_input)
+
+        test_input = "type Foo { id: String field: Bar @aggregation } type Bar { id: ID }"
+        inputs.append(test_input)
+
+        test_input = "type Foo { id: String field: Bar @composition } type Bar { id: ID }"
+        inputs.append(test_input)
+
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
