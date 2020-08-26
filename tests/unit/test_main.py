@@ -29,4 +29,4 @@ class TestMain:
     def test_module_call(self):
         """Verify that we can call the module"""
 
-        assert os.system("python -m qsdl") == 0
+        assert os.system("python -m qsdl util/examples/input.tx -o srcgen/") == 0
