@@ -11,9 +11,7 @@ Internally QSDL leverages [textX](https://github.com/textX/textX) for describing
 Currently the following generators are available:
 
 - OpenAPI
-
 - GraphQL
-
 - PlantUML
 
 ### Requirements

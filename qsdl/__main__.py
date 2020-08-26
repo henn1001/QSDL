@@ -19,9 +19,9 @@ A Schema-Definition-Language Generator inspired by GraphQL.
 
 import sys
 
-import click
-
 from pathlib import Path
+
+import click
 
 from qsdl import __version__
 from qsdl.core import generate
@@ -38,7 +38,7 @@ def entrypoint(input_path: str, output_path: str = None) -> int:
     Args:
         input_path (str):   The path to the schema definition file.
     \b
-        output_path (str):  Path to a output folder. Defaults to a 
+        output_path (str):  Path to a output folder. Defaults to a
                             srcgen folder at the definition location.
 
     \b

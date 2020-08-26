@@ -17,7 +17,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-textx = "^2.1.0"
+textx = "^2.2.0"
 plantuml = "^0.3.0"
 jinja2 = "^2.11.2"
 inflect = "^4.1.0"

@@ -4,10 +4,10 @@ set namespaceSeparator .
 
 
 class entity.EntityModel  {
-  STRING title
-  STRING version
-  Description description
-  list[STRING] servers
+  title : STRING
+  version : STRING
+  description : Description
+  servers : list[STRING]
 }
 
 
@@ -20,124 +20,68 @@ class entity.ValueType <<abstract>> {
 
 
 class entity.Scalar  {
-  ID name
+  name : ID
 }
 
 
 class entity.Enum  {
-  Description description
-  ID name
-  list[STRING] values
+  description : Description
+  name : ID
+  values : list[STRING]
 }
 
 
 class entity.Base  {
-  Description description
-  ID name
-  optional<BOOL> deprecated
-  STRING namespace
+  description : Description
+  name : ID
+  deprecated : optional<BOOL>
+  namespace : STRING
 }
 
 
 class entity.Operation  {
-  Description description
-  optional<BOOL> deprecated
-  STRING namespace
+  description : Description
+  deprecated : optional<BOOL>
+  namespace : STRING
 }
 
 
 class entity.Object  {
-  Description description
-  ID name
-  optional<BOOL> deprecated
-  STRING namespace
+  description : Description
+  name : ID
+  deprecated : optional<BOOL>
+  namespace : STRING
 }
 
 
 class entity.Field  {
-  Description description
-  ID name
-  optional<BOOL> function
-  optional<BOOL> array
-  optional<BOOL> nonNullableArray
-  optional<BOOL> nonNullable
-  optional<BOOL> query
-  optional<BOOL> nested
-  optional<BOOL> readOnly
-  optional<BOOL> writeOnly
-  optional<BOOL> composition
-  optional<BOOL> aggregation
-  STRING path
-  Method method
+  description : Description
+  name : ID
+  function : optional<BOOL>
+  array : optional<BOOL>
+  nonNullableArray : optional<BOOL>
+  nonNullable : optional<BOOL>
+  query : optional<BOOL>
+  nested : optional<BOOL>
+  readOnly : optional<BOOL>
+  writeOnly : optional<BOOL>
+  composition : optional<BOOL>
+  aggregation : optional<BOOL>
+  path : STRING
+  method : Method
 }
 
 
 class entity.Argument  {
-  ID name
-  optional<BOOL> array
-  optional<BOOL> nonNullableArray
-  optional<BOOL> nonNullable
-}
-
-
-class entity.Method <<match>> {
+  name : ID
+  array : optional<BOOL>
+  nonNullableArray : optional<BOOL>
+  nonNullable : optional<BOOL>
 }
 
 
 class entity.Directive  {
-  STRING value
-}
-
-
-class entity.Description <<match>> {
-}
-
-
-class entity.SingleLine <<match>> {
-}
-
-
-class entity.MultiLine <<match>> {
-}
-
-
-class entity.Comment <<match>> {
-}
-
-
-class ID <<match>> {
-}
-
-
-class STRING <<match>> {
-}
-
-
-class BOOL <<match>> {
-}
-
-
-class INT <<match>> {
-}
-
-
-class FLOAT <<match>> {
-}
-
-
-class STRICTFLOAT <<match>> {
-}
-
-
-class NUMBER <<match>> {
-}
-
-
-class BASETYPE <<match>> {
-}
-
-
-class OBJECT <<abstract>> {
+  value : STRING
 }
 
 
@@ -164,13 +108,16 @@ entity.Field *-- "1..*" entity.Argument
 entity.Field o-- entity.ValueType
 entity.Field *-- "0..*" entity.Directive
 entity.Argument o-- entity.ValueType
-NUMBER <|-- STRICTFLOAT
-NUMBER <|-- INT
-BASETYPE <|-- NUMBER
-BASETYPE <|-- FLOAT
-BASETYPE <|-- BOOL
-BASETYPE <|-- ID
-BASETYPE <|-- STRING
-OBJECT <|-- BASETYPE
+
+legend
+  Match rules:
+  |= Name  |= Rule details |
+  | Description |  |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Comment | \\/\\/.*$ |
+  | Method | GET\|POST\|PUT\|DELETE |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+end legend
+
 @enduml
 ```
