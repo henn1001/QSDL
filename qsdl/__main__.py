@@ -23,12 +23,14 @@ import click
 
 from pathlib import Path
 
+from qsdl import __version__
 from qsdl.core import generate
 
 
 @click.command()
 @click.argument("input_path", type=click.Path(exists=True))
 @click.option("-o", "--output_path", help="Path to a output folder.", type=click.Path())
+@click.version_option(__version__, prog_name="QSDL")
 def entrypoint(input_path: str, output_path: str = None) -> int:
     """Runs the QSDL generator with the provided schema definition file.
 
