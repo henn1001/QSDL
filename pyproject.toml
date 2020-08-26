@@ -30,7 +30,8 @@ pyyaml = "^5.3.1"
 qsdl = "qsdl.__main__:entrypoint"
 
 [tool.pytest.ini_options]
-addopts = "--cov=qsdl --cov-report html:dist/coverage"
+junit_family = "xunit2"
+addopts = "--junitxml=dist/tests/report.xml --cov=qsdl --cov-report term --cov-report html:dist/coverage"
 testpaths = [
     "tests",
 ]

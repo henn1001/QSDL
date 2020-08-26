@@ -1,0 +1,43 @@
+image: python:3.6
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - .venv/
+
+before_script:
+  - python -V
+  - pip install poetry
+  - poetry config virtualenvs.in-project true
+  - make setup
+
+stages:
+  - test
+  - deploy
+
+test:
+  script:
+    - make test
+  only:
+    - master
+  artifacts:
+    paths:
+      - dist/
+    reports:
+      junit: dist/tests/report.xml
+
+deploy:
+  stage: deploy
+  script:
+    - make build
+    - poetry config repositories.gitlab $POETRY_REGISTRY
+    - poetry config http-basic.gitlab $POETRY_USER $POETRY_TOKEN
+    - poetry publish -r gitlab
+  only:
+    - tags
+  artifacts:
+    paths:
+      - dist/
