@@ -15,7 +15,7 @@
         "100"
     ],
     "code-runner.executorMap": {
-        "python": "$pythonPath -u -m qsdl",
+        "python": "$pythonPath -u -m qsdl util/examples/input.tx -o srcgen/"
     },
     "code-runner.fileDirectoryAsCwd": false
 }

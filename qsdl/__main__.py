@@ -12,41 +12,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Some description.
+"""QSDL
 
-More description.
+A Schema-Definition-Language Generator inspired by GraphQL.
 """
 
 import sys
+
+import click
 
 from pathlib import Path
 
 from qsdl.core import generate
 
 
-def entrypoint(input_str: str = None, output: str = None) -> int:
-    """This will be our cli interface
+@click.command()
+@click.argument("input_path", type=click.Path(exists=True))
+@click.option("-o", "--output_path", help="Path to a output folder.", type=click.Path())
+def entrypoint(input_path: str, output_path: str = None) -> int:
+    """Runs the QSDL generator with the provided schema definition file.
 
+    \b
     Args:
-        input (str): The path to the schema definition file.
-        output (str, optional): Path to a output folder.
-            Defaults to a srcgen folder at the definition location.
+        input_path (str):   The path to the schema definition file.
+    \b
+        output_path (str):  Path to a output folder. Defaults to a 
+                            srcgen folder at the definition location.
 
+    \b
     Returns:
-        int: 0 on success, 1 on failure
+        int:                0 on success, 1 on failure
     """
-
-    input_path = Path(input_str)
-
-    if not input_path.exists():
-        print(f"No such file or directory: '{input_path}'")
-        sys.exit(1)
+    input_path = Path(input_path)
 
     with open(input_path) as file:
         schema = file.read()
 
-    if output:
-        output_folder = Path(output)
+    if output_path:
+        output_folder = Path(output_path)
     else:
         output_folder = input_path.parent / "srcgen"
 
@@ -54,4 +57,4 @@ def entrypoint(input_str: str = None, output: str = None) -> int:
 
 
 if __name__ == "__main__":
-    entrypoint("tests/input.tx", output="srcgen/")
+    entrypoint(None)

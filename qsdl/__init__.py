@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Some description.
+"""QSDL
 
-More description.
+A Schema-Definition-Language Generator inspired by GraphQL.
 """
 
 from pathlib import Path

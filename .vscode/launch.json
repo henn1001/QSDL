@@ -6,6 +6,11 @@
             "type": "python",
             "request": "launch",
             "module": "qsdl",
+            "args": [
+                "util/examples/input.tx",
+                "-o",
+                "srcgen/"
+            ],
             "justMyCode": false,
             "console": "integratedTerminal"
         }
