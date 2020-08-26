@@ -41,3 +41,15 @@ deploy:
   artifacts:
     paths:
       - dist/
+
+pages:
+  stage: deploy
+  dependencies:
+    - test
+  script:
+    - mv dist/coverage/ public/
+  only:
+    - master
+  artifacts:
+    paths:
+    - public/
