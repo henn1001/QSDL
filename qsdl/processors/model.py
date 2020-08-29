@@ -109,6 +109,11 @@ def validate_field_id(model: object, metamodel: TextXMetaModel):
                 if field.value.name == "ID":
                     count = count + 1
 
+                # should be moved
+                if field.value.name == "Void":
+                    msg = f"Invalid Void Field value for Object {obj.name}"
+                    raise TextXSemanticError(msg, filename=model._tx_filename)
+
             if tmp.superType:
                 tmp = tmp.superType
             else:
