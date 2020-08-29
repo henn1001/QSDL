@@ -3,7 +3,7 @@
 set namespaceSeparator .
 
 
-class entity.EntityModel  {
+class entity.Schema  {
   title : STRING
   version : STRING
   description : Description
@@ -85,7 +85,7 @@ class entity.Directive  {
 }
 
 
-entity.EntityModel *-- "0..*" entity.Type
+entity.Schema *-- "0..*" entity.Type
 entity.Type <|-- entity.Scalar
 entity.Type <|-- entity.Enum
 entity.Type <|-- entity.Base
@@ -112,9 +112,9 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Description |  |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | Comment | \\/\\/.*$ |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Description |  |
   | Method | GET\|POST\|PUT\|DELETE |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
 end legend

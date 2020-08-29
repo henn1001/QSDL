@@ -2,7 +2,7 @@
   DSL grammar.
 */
 
-EntityModel:
+Schema:
     ('title' ':' title=STRING)?
     ('version' ':' version=STRING)?
     ('description' ':' description=Description)?
