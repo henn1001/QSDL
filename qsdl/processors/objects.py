@@ -42,29 +42,11 @@ def base_processor(entity: object):
     _ = entity
 
 
-def input_processor(entity: object):
-    """The input pre-processor.
-
-    Args:
-        entity (object): The input object.
-    """
-    _ = entity
-
-
-def query_processor(entity: object):
+def operation_processor(entity: object):
     """The query pre-processor.
 
     Args:
         entity (object): The query object.
-    """
-    _ = entity
-
-
-def mutation_processor(entity: object):
-    """The mutation pre-processor.
-
-    Args:
-        entity (object): The mutation object.
     """
     _ = entity
 
@@ -87,7 +69,7 @@ def field_processor(entity: object):
     _ = entity
 
 
-def parameter_processor(entity: object):
+def argument_processor(entity: object):
     """The parameter pre-processor.
 
     Args:
@@ -109,11 +91,9 @@ obj_processors = {
     "Scalar": scalar_processor,
     "Enum": enum_processor,
     "Base": base_processor,
-    "Input": input_processor,
-    "Query": query_processor,
-    "Mutation": mutation_processor,
+    "Operation": operation_processor,
     "Object": object_processor,
     "Field": field_processor,
-    "Parameter": parameter_processor,
+    "Argument": argument_processor,
     "Directive": directive_processor,
 }

@@ -30,7 +30,7 @@ tags:
 {% endfor %}
 {% endif %}
 
-paths:
+paths: {%+ if not util.get_operations() %}{}{% endif %} 
 {% for operation in util.get_operations() %}
   {% if util.is_path_unique(operation.path) %}
   '{{ operation.path }}':
