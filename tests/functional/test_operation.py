@@ -21,7 +21,7 @@ class TestOperation:
 
     01. `Operation` must at least contain one `Field`.
 
-    02. `Operations may be used multiple times for a schema to define custom operations.
+    02. `Operation` may be used multiple times for a schema to define custom operations.
 
     03. `Operation` may be used once inside a `Object` to overwrite the default CRUD operations.
 

@@ -21,27 +21,27 @@ class TestDirective:
 
     These directives change the OpenAPI generation.
 
-    01. `Directive` @query may be use on any `Base` or Object` `Field` to create a query parameter for the get all method.
+    01. `Directive` `@query` may be use on any `Base` or `Object` `Field` to create a query parameter for the get all method.
 
-    02. `Directive` @nested may be use on any `Base` or `Object` `Field` when the `Field` value is a `Object`. This creates a nested JSON `Object`.
+    02. `Directive` `@nested` may be use on any `Base` or `Object` `Field` when the `Field` value is a `Object`. This creates a nested JSON `Object`.
 
-    03. `Directive` @nested must be use on any `Base` or `Object` `Field` when the `Field` value is a `Base`. This creates a nested JSON `Object`.
+    03. `Directive` `@nested` must be use on any `Base` or `Object` `Field` when the `Field` value is a `Base`. This creates a nested JSON `Object`.
 
-    04. `Directive` @readOnly may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
+    04. `Directive` `@readOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
 
-    05. `Directive` @writeOnly may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
+    05. `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
 
-    06. `Directive` @composition may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a `Object`.
+    06. `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a `Object`.
 
-    07. `Directive` @aggregation may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a `Object`.
+    07. `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a `Object`.
 
-    08. `Directive` @path must be used on any `Operation` `Field` which are not part of a `Object`. This specifies the API Path.
+    08. `Directive` `@path` must be used on any `Operation` `Field` which are not part of a `Object`. This specifies the API Path.
 
-    09. `Directive` @path may be used on any `Operation` `Field` which is part of a `Object`. This specifies the API Path.
+    09. `Directive` `@path` may be used on any `Operation` `Field` which is part of a `Object`. This specifies the API Path.
 
-    10. `Directive` @method may be used on any `Operation` `Field` to specify the REST Method. Valid values are GET | POST | PUT | DELETE.
+    10. `Directive` `@method` may be used on any `Operation` `Field` to specify the REST Method. Valid values are GET | POST | PUT | DELETE.
 
-    11. `Directive` @namespace may be used on any `Base`, `Operation` or `Object` for grouping.
+    11. `Directive` `@namespace` may be used on any `Base`, `Operation` or `Object` for grouping.
 
     """
 

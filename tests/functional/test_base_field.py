@@ -27,7 +27,6 @@ class TestBaseField:
         * `Boolean`
         * `Date`
         * `Object`
-        * `Void`
 
     02. `Field` of `Base` value may be a `Enum`.
 
