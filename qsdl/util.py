@@ -129,7 +129,7 @@ def get_operations_of_object_of_queries(obj: object) -> list:
     return operations
 
 
-def get_operations__of_object_of_mutations(obj: object) -> list:
+def get_operations_of_object_of_mutations(obj: object) -> list:
     """Return all operations for this Object with method != get
 
     Args:
@@ -143,6 +143,45 @@ def get_operations__of_object_of_mutations(obj: object) -> list:
             lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name) and x.method != "get",
             config.operations,
         )
+    )
+    return operations
+
+
+def get_queries_of_operation(operation: object) -> list:
+    """Return all operations for this Object with method == get
+
+    Args:
+        obj (object): entity.Object
+
+    Returns:
+        list: [Operations]
+    """
+
+    name_list = []
+    for field in operation.fields:
+        name_list.append(field.name)
+
+    operations = list(
+        filter(lambda x: x.name in name_list and x.method == "get", config.operations,)
+    )
+    return operations
+
+
+def get_mutations_of_operation(operation: object) -> list:
+    """Return all operations for this Object with method != get
+
+    Args:
+        obj (object): entity.Object
+
+    Returns:
+        list: [Operations]
+    """
+    name_list = []
+    for field in operation.fields:
+        name_list.append(field.name)
+
+    operations = list(
+        filter(lambda x: x.name in name_list and x.method != "get", config.operations,)
     )
     return operations
 
@@ -513,23 +552,27 @@ def is_aggregation(child: object, parent: object) -> bool:
     return ret
 
 
-def is_nested(entity: object, model: object) -> bool:
+def is_nested(entity: object) -> bool:
     """Checks if the provided object or base is nested.
 
     Args:
         entity (object): entity.Object or entity.Base
-        model (object): The python object graph.
 
     Returns:
         bool: [description]
     """
     ret = False
 
-    for field in mfunc.get_children_of_type("Field", model):
+    for field in mfunc.get_children_of_type("Field", config.model):
         if field.value == entity:
             if field.nested:
                 ret = True
                 break
+
+    for arg in mfunc.get_children_of_type("Argument", config.model):
+        if arg.value == entity:
+            ret = True
+            break
 
     return ret
 

@@ -145,8 +145,10 @@ components:
         - message
       type: object
       properties:
-        error_code:
+        code:
           type: integer
           format: int32
         message:
-          type: string
+            type: string
+        details:
+            type: string
