@@ -5,6 +5,9 @@ scalar {{scalar.name}}
 
 {################################################################}
 {% macro render_enum(enum) %}
+{% if enum.description %}
+{{ enum.description }}
+{% endif %}
 enum {{enum.name}} {
     {% for value in enum.values %}
     {{value}}
@@ -14,6 +17,9 @@ enum {{enum.name}} {
 
 {################################################################}
 {% macro render_base(base) %}
+{% if base.description %}
+{{ base.description }}
+{% endif %}
 interface {{base.name}} {
     {{ render_fields(base) | indent(2) | trim }}
 }
@@ -28,6 +34,9 @@ input {{base.name}}Input {
 {################################################################}
 {% macro render_object(object) %}
 # begin object {{ object.name }} 
+{% if object.description %}
+{{ object.description }}
+{% endif %}
 type {{object.name}} {% if object.superType %}implements {{object.superType.name}} {% endif %}{
     {{ render_fields(object, filter_wo=True) | indent(2) | trim }}
 }
@@ -41,6 +50,9 @@ input {{object.name}}Input {
 
 extend type Query {
     {% for operation in util.get_operations_of_object_of_queries(object) %}
+    {% if operation.description %}
+    {{ operation.description }}
+    {% endif %}
     {{ operation.name -}}
         {{ render_arguments(operation) | trim -}}
       {% if operation.response %}: {{ render_response(operation) | trim }}
@@ -53,6 +65,9 @@ extend type Query {
 
 extend type Mutation {
   {% for operation in util.get_operations_of_object_of_mutations(object) %}
+    {% if operation.description %}
+    {{ operation.description }}
+    {% endif %}
     {{ operation.name -}}
         {{ render_arguments(operation) | trim -}}: {{ operation.name }}Payload
   {% endfor %}
@@ -94,6 +109,9 @@ type {{ operation.name }}Payload implements Response {
 
 extend type Query {
     {% for operation in util.get_queries_of_operation(object) %}
+    {% if operation.description %}
+    {{ operation.description }}
+    {% endif %}
     {{ operation.name -}}
         {{ render_arguments(operation) | trim -}}
       {% if operation.response %}: {{ render_response(operation) | trim }}
@@ -106,6 +124,9 @@ extend type Query {
 
 extend type Mutation {
   {% for operation in util.get_mutations_of_operation(object) %}
+    {% if operation.description %}
+    {{ operation.description }}
+    {% endif %}
     {{ operation.name -}}
         {{ render_arguments(operation) | trim -}}: {{ operation.name }}Payload
   {% endfor %}
@@ -219,6 +240,9 @@ type {{ operation.name }}Payload implements Response {
 {################################################################}
 {% macro render_fields(entity, filter_ro=False, filter_wo=False, filter_objects=False) %}
 {% for field in util.get_fields_as_list(entity) if field.readOnly == (field.readOnly if not filter_ro else False) and field.writeOnly == (field.writeOnly if not filter_wo else False) %}
+  {% if field.description %}
+  {{ field.description }}
+  {% endif %}
   {{field.name}}:{{ " " -}}
   {% if field.array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}

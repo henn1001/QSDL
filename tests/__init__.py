@@ -18,6 +18,7 @@ import uuid
 from pathlib import Path
 
 import yaml
+import graphql
 
 from qsdl.core import generate
 
@@ -39,11 +40,16 @@ def wrapper_generate(test_input: str) -> dict:
     assert generate(test_input, test_output) == 0
 
     openapi_file = Path("srcgen/" + test_seed + "/" + "openapi.yaml")
+    graphql_file = Path("srcgen/" + test_seed + "/" + "schema.graphql")
 
     assert openapi_file.is_file()
+    assert graphql_file.is_file()
 
     with open(openapi_file) as file:
         openapi = yaml.load(file, Loader=yaml.FullLoader)
+
+    with open(graphql_file) as file:
+        gql = graphql.build_schema(file.read())
 
     return openapi
 
