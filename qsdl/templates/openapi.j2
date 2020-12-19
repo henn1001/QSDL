@@ -104,6 +104,19 @@ components:
             $ref: '#/components/schemas/Error'
 
   schemas:
+{% for enum in mfunc.get_children_of_type("Enum", model) %}
+    {{ enum.name|capitalize }}:
+    {% if enum.description %}
+      description: |
+        {{ enum.description | indent | trim("\"") | trim }}
+    {% endif %}
+      type: string
+      enum:
+        {% for value in enum.values %}
+        - {{value}}
+        {% endfor %}
+
+{% endfor %}
 {% for base in mfunc.get_children_of_type("Base", model) %}
     {{ base.name|capitalize }}:
     {% if base.description %}

@@ -243,11 +243,7 @@ class TestArgument:
             if _format:
                 assert parameter["schema"]["format"] == _format
 
-            if _path in ["/path8"]:
-                assert parameter["schema"]["type"] == "string"
-                assert parameter["schema"]["enum"] == ["OPEN", "CLOSED"]
-
-            if _path in ["/path9", "/path10"]:
+            if _path in ["/path8", "/path9", "/path10"]:
                 assert parameter["schema"]["$ref"]
 
     def test_argument_08_positive(self):
@@ -307,8 +303,7 @@ class TestArgument:
                 assert schema["properties"]["arg"]["format"] == _format
 
             if _path in ["/path8"]:
-                assert schema["properties"]["arg"]["type"] == "string"
-                assert schema["properties"]["arg"]["enum"] == ["OPEN", "CLOSED"]
+                assert schema["properties"]["arg"]["$ref"]
 
             if _path in ["/path9", "/path10"]:
                 assert schema["$ref"]

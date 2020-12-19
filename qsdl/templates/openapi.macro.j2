@@ -130,8 +130,7 @@
   type: string
   {% endif %}
 {% elif field.value._tx_fqn == "entity.Enum" %}
-  type: string
-  enum: [{% for value in field.value.values -%}{{value}}{{ ", " if not loop.last }}{%- endfor %}]
+  $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
 {% else %}
   type: {{ field.value|oapi_type }}
 {% endif %}

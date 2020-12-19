@@ -105,8 +105,7 @@ class TestOperationField:
             var = openapi["paths"][path]["get"]["responses"]
             return var["200"]["content"]["application/json"]["schema"]
 
-        assert get_schema(openapi, "/path")["type"] == "string"
-        assert get_schema(openapi, "/path")["enum"] == ["OPEN", "CLOSED"]
+        assert get_schema(openapi, "/path")["$ref"]
 
     def test_field_operation_03_positive(self):
         """Verify base usage"""

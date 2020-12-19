@@ -111,8 +111,7 @@ class TestBaseField:
 
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
 
-        assert properties["field"]["type"] == "string"
-        assert properties["field"]["enum"] == ["OPEN", "CLOSED"]
+        assert properties["field"]["$ref"]
 
     def test_field_base_03_positive(self):
         """Verify base usage"""
