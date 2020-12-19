@@ -50,7 +50,9 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
 
     type_builtins = {
         "Int": Scalar(None, "Int"),
+        "Long": Scalar(None, "Long"),
         "Float": Scalar(None, "Float"),
+        "Double": Scalar(None, "Double"),
         "String": Scalar(None, "String"),
         "Boolean": Scalar(None, "Boolean"),
         "ID": Scalar(None, "ID"),
@@ -134,7 +136,9 @@ def generate_openapi(srcgen_folder: Path, model: object):
         """
         return {
             "Int": "integer",
+            "Long": "integer",
             "Float": "number",
+            "Double": "number",
             "String": "string",
             "Boolean": "boolean",
             "ID": "string",

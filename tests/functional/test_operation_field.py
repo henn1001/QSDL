@@ -22,7 +22,9 @@ class TestOperationField:
     01. `Field` of `Operation` may be a `Scalar` value with one one of the following:
         * `ID`
         * `Int`
+        * `Long`
         * `Float`
+        * `Double`
         * `String`
         * `Boolean`
         * `Date`
@@ -48,11 +50,13 @@ class TestOperationField:
             extend Operation {
                 id: ID @path(value:"path1")
                 int: Int @path(value:"path2")
-                float: Float @path(value:"path3")
-                string: String @path(value:"path4")
-                boolean: Boolean @path(value:"path5")
-                date: Date @path(value:"path6")
-                object: Object @path(value:"path7")
+                long: Long @path(value:"path3")
+                float: Float @path(value:"path4")
+                double: Double @path(value:"path5")
+                string: String @path(value:"path6")
+                boolean: Boolean @path(value:"path7")
+                date: Date @path(value:"path8")
+                object: Object @path(value:"path9")
             }
         """
 
@@ -65,11 +69,13 @@ class TestOperationField:
         ops = [
             ("/path1", "get", "string", None),
             ("/path2", "get", "integer", "int32"),
-            ("/path3", "get", "number", "float"),
-            ("/path4", "get", "string", None),
-            ("/path5", "get", "boolean", None),
-            ("/path6", "get", "string", "date-time"),
-            ("/path7", "get", "object", None),
+            ("/path3", "get", "integer", "int64"),
+            ("/path4", "get", "number", "float"),
+            ("/path5", "get", "number", "double"),
+            ("/path6", "get", "string", None),
+            ("/path7", "get", "boolean", None),
+            ("/path8", "get", "string", "date-time"),
+            ("/path9", "get", "object", None),
         ]
 
         for _path, _method, _type, _format in ops:

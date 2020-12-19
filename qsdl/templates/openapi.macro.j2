@@ -141,8 +141,12 @@
 {% macro get_parameter_format(field) %}
 {% if field.value.name == "Int" %}
   format: int32
+{% elif field.value.name == "Long" %}
+  format: int64
 {% elif field.value.name == "Float" %}
   format: float
+{% elif field.value.name == "Double" %}
+  format: double
 {% elif field.value.name == "Date" %}
   format: date-time
 {% endif %}

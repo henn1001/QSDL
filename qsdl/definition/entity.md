@@ -113,10 +113,10 @@ legend
   Match rules:
   |= Name  |= Rule details |
   | Comment | \\/\\/.*$ |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | Description |  |
   | Method | GET\|POST\|PUT\|DELETE |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend
 
 @enduml

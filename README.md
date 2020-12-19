@@ -142,7 +142,9 @@ There are already several builtin types available.
 
 - `ID`
 - `Int`
+- `Long`
 - `Float`
+- `Double`
 - `String`
 - `Boolean`
 - `Date`
@@ -202,7 +204,9 @@ Field Rules:
 1.  `Field` of `Base` may be a `Scalar` value with one one of the following:
     * `ID`
     * `Int`
+    * `Long`
     * `Float`
+    * `Double`
     * `String`
     * `Boolean`
     * `Date`
@@ -272,7 +276,9 @@ Field Rules:
 1.  `Field` of `Object` may be a `Scalar` value with one one of the following:
     * `ID`
     * `Int`
+    * `Long`
     * `Float`
+    * `Double`
     * `String`
     * `Boolean`
     * `Date`
@@ -346,7 +352,9 @@ Field Rules:
 1.  `Field` of `Operation` may be a `Scalar` value with one one of the following:
     * `ID`
     * `Int`
+    * `Long`
     * `Float`
+    * `Double`
     * `String`
     * `Boolean`
     * `Date`

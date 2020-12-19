@@ -22,7 +22,9 @@ class TestObjectField:
     01. `Field` of `Object` may be a `Scalar` value with one one of the following:
         * `ID`
         * `Int`
+        * `Long`
         * `Float`
+        * `Double`
         * `String`
         * `Boolean`
         * `Date`
@@ -51,7 +53,9 @@ class TestObjectField:
             type Foo {
                 id: ID
                 int: Int
+                long: Long
                 float: Float
+                double: Double
                 string: String
                 boolean: Boolean
                 date: Date
@@ -69,9 +73,15 @@ class TestObjectField:
             elif key == "int":
                 assert value["type"] == "integer"
                 assert value["format"] == "int32"
+            elif key == "long":
+                assert value["type"] == "integer"
+                assert value["format"] == "int64"
             elif key == "float":
                 assert value["type"] == "number"
                 assert value["format"] == "float"
+            elif key == "double":
+                assert value["type"] == "number"
+                assert value["format"] == "double"
             elif key == "string":
                 assert value["type"] == "string"
             elif key == "boolean":
