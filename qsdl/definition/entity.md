@@ -112,11 +112,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Comment | \\/\\/.*$ |
-  | Description |  |
-  | Method | GET\|POST\|PUT\|DELETE |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Method | GET\|POST\|PUT\|DELETE |
+  | Description |  |
+  | Comment | \\/\\/.*$ |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
 end legend
 
 @enduml

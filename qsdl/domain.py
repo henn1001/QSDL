@@ -133,6 +133,7 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
     opr = Operation()
     opr.name = name
     opr.ref = entity
+    opr.order = field._tx_position
     opr.tag = namespace
     opr.summary = summary
     opr.description = field.description
@@ -224,6 +225,7 @@ def get_crud_operation_aggregation(obj: object, method: str) -> Operation:
     opr = Operation()
     opr.name = name
     opr.ref = obj
+    opr.order = obj._tx_position
     opr.tag = namespace
     opr.summary = summary
     opr.description = None
@@ -300,6 +302,7 @@ def get_crud_operation(obj: object, method: str) -> Operation:
     opr = Operation()
     opr.name = name
     opr.ref = obj
+    opr.order = obj._tx_position
     opr.tag = namespace
     opr.summary = summary
     opr.description = None
@@ -392,6 +395,44 @@ def validate_operation_paths():
         raise TextXSemanticError(msg, filename=config.model._tx_filename)
 
 
+def sort_operation_order(operations: list, by_path: bool = False, by_def: bool = False):
+    "Sorts the operations either by path or definition order"
+
+    sorted = []
+
+    if by_path:
+        operations.sort(key=lambda x: x.path)
+
+        sorted = operations
+
+    if by_def:
+        operations.sort(key=lambda x: x.order)
+
+        # this way of sorting works but is far from perfect
+        # would be nice to sort also by get/post/put/delete
+        # additionally needs to be aware of parent objects
+        # in order to not mix different paths
+        # cur = 0
+        # start_idx = 0
+        # stop_idx = 0
+
+        # for idx, operation in enumerate(operations):
+
+        #     if operation.order > cur:
+
+        #         if idx > 1:
+        #             stop_idx = idx - 1
+
+        #             tmp = operations[start_idx:stop_idx]
+
+        #         cur = operation.order
+        #         start_idx = idx
+
+        sorted = operations
+
+    return sorted
+
+
 def get_endpoints() -> list:
     """Returns all possible endpoints/paths for OpenAPI.
 
@@ -461,7 +502,7 @@ def build_domain_model(model: object):
     custom_operations = build_custom_queries(entities)
     operations.extend(custom_operations)
 
-    operations.sort(key=lambda x: x.path)
+    operations = sort_operation_order(operations, by_def=True)
 
     config.operations = operations
 

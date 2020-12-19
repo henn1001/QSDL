@@ -96,9 +96,9 @@ type User @namespace(value:"Management"){
         test: QueryMachine @composition
 
         extend Operation {
-            getBuzzword(id: ID!): Buzzword
             getBuzzwords(name: String): [Buzzword]
             createBuzzword(body: Buzzword): Buzzword @method(value: POST)
+            getBuzzword(id: ID!): Buzzword
             updateBuzzword(id: ID!, body: String, test: [Boolean]): Buzzword @method(value: PUT)
             deleteBuzzword(id: ID!): Void @method(value: DELETE)
         }

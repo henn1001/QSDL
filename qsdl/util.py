@@ -35,6 +35,7 @@ class Operation:
     def __init__(self):
         self.name = None
         self.ref = None
+        self.order = None
         self.tag = None
         self.summary = None
         self.description = None
@@ -66,13 +67,10 @@ def get_namespaces() -> list:
         list[str]: All NameSpaces
     """
     namespaces = []
-    tmp = []
 
     for obj in config.domain_objects:
-        if obj.namespace:
-            tmp.append(obj.namespace)
-
-    namespaces = list(set(tmp))
+        if obj.namespace and obj.namespace not in namespaces:
+            namespaces.append(obj.namespace)
 
     return namespaces
 
