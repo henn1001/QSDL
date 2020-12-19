@@ -48,6 +48,8 @@
     {# handle query and mutation with object input #}
     {% elif parameter.value._tx_fqn in ["entity.Object", "entity.Base"] %}
         $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
+    {% elif parameter.value._tx_fqn == "entity.Scalar" and operation.request|length == 1 and parameter.value.name == "Object" %}
+        type: object
     {% else %}
     {# handle query and mutation with custom input #}
       {% if ns.var %}

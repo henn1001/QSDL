@@ -287,7 +287,7 @@ class TestArgument:
             ("/path4", "post", "string", None),
             ("/path5", "post", "boolean", None),
             ("/path6", "post", "string", "date-time"),
-            ("/path7", "post", "object", None),
+            ("/path7", "post", None, None),
             ("/path8", "post", None, None),
             ("/path9", "post", None, None),
             ("/path10", "post", None, None),
@@ -301,6 +301,10 @@ class TestArgument:
 
             if _format:
                 assert schema["properties"]["arg"]["format"] == _format
+
+            if _path in ["/path7"]:
+                assert schema["type"] == "object"
+                assert "properties" not in schema
 
             if _path in ["/path8"]:
                 assert schema["properties"]["arg"]["$ref"]
