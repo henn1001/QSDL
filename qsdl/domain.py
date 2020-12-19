@@ -398,12 +398,12 @@ def validate_operation_paths():
 def sort_operation_order(operations: list, by_path: bool = False, by_def: bool = False):
     "Sorts the operations either by path or definition order"
 
-    sorted = []
+    sorted_operations = []
 
     if by_path:
         operations.sort(key=lambda x: x.path)
 
-        sorted = operations
+        sorted_operations = operations
 
     if by_def:
         operations.sort(key=lambda x: x.order)
@@ -428,9 +428,9 @@ def sort_operation_order(operations: list, by_path: bool = False, by_def: bool =
         #         cur = operation.order
         #         start_idx = idx
 
-        sorted = operations
+        sorted_operations = operations
 
-    return sorted
+    return sorted_operations
 
 
 def get_endpoints() -> list:

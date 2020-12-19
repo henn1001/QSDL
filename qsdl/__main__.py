@@ -29,17 +29,23 @@ from qsdl.core import generate
 
 @click.command()
 @click.argument("input_path", type=click.Path(exists=True))
-@click.option("-o", "--output_path", help="Path to a output folder.", type=click.Path())
+@click.option("-o", "--output_path", help="Path to a output folder. Default: 'srcgren/'", type=click.Path())
+@click.option("--openapi/--no-openapi", help="Enables the OpenAPI generator. Default: 'true'", default=True)
+@click.option("--graphql/--no-graphql", help="Enables the GraphQL generator. Default: 'true'", default=True)
+@click.option("--plantuml", help="Enables the PlantUML generator. Default: 'false'", is_flag=True)
 @click.version_option(__version__, prog_name="QSDL")
-def entrypoint(input_path: str, output_path: str = None) -> int:
+def entrypoint(
+    input_path: str,
+    output_path: str = None,
+    openapi: bool = True,
+    graphql: bool = True,
+    plantuml: bool = False,
+) -> int:
     """Runs the QSDL generator with the provided schema definition file.
 
     \b
     Args:
         input_path (str):   The path to the schema definition file.
-    \b
-        output_path (str):  Path to a output folder. Defaults to a
-                            srcgen folder at the definition location.
 
     \b
     Returns:
@@ -55,7 +61,10 @@ def entrypoint(input_path: str, output_path: str = None) -> int:
     else:
         output_folder = input_path.parent / "srcgen"
 
-    sys.exit(generate(schema, output_folder))
+    # set generator options
+    options = {"openapi": openapi, "graphql": graphql, "plantuml": plantuml}
+
+    sys.exit(generate(schema, output_folder, options))
 
 
 if __name__ == "__main__":

@@ -177,7 +177,7 @@ def generate_plantuml(srcgen_folder: Path, model: object):
     uml.generate_png(output_file)
 
 
-def generate(schema: str, output_folder: Path) -> int:
+def generate(schema: str, output_folder: Path, options: dict) -> int:
     """The main function of QSDL.
 
     Generates various things from the provided schema definition.
@@ -204,9 +204,12 @@ def generate(schema: str, output_folder: Path) -> int:
         domain.build_domain_model(model)
 
         # call generators
-        generate_openapi(output_folder, model)
-        generate_graphql(output_folder, model)
-        generate_plantuml(output_folder, model)
+        if options["openapi"]:
+            generate_openapi(output_folder, model)
+        if options["graphql"]:
+            generate_graphql(output_folder, model)
+        if options["plantuml"]:
+            generate_plantuml(output_folder, model)
 
     except (TextXSyntaxError, TextXSemanticError) as ex:
         print(ex)
