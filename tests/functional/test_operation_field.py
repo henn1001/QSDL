@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests import wrapper_generate
-from tests import wrapper_generate_failure
+from qsdl import config
+from tests import wrapper_generate, wrapper_generate_failure
 
 
 class TestOperationField:
@@ -67,7 +67,7 @@ class TestOperationField:
             return var["200"]["content"]["application/json"]["schema"]
 
         ops = [
-            ("/path1", "get", "string", None),
+            ("/path1", "get", config.id_type, config.id_type_format),
             ("/path2", "get", "integer", "int32"),
             ("/path3", "get", "integer", "int64"),
             ("/path4", "get", "number", "float"),

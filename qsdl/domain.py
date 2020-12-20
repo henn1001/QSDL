@@ -20,20 +20,11 @@ from textx import model as mfunc
 from textx.exceptions import TextXSemanticError
 
 from qsdl import config
-from qsdl.util import get_id
-from qsdl.util import get_id_field
-from qsdl.util import get_childs
-from qsdl.util import get_path_base
-from qsdl.util import get_path_parameters
-from qsdl.util import get_query_parameters
-from qsdl.util import get_request_parameters
-from qsdl.util import get_operation_id
-from qsdl.util import get_operation_method
-from qsdl.util import is_aggregation
-from qsdl.util import get_aggregation
-from qsdl.util import get_compositions
-from qsdl.util import pluralize
-from qsdl.util import Operation
+from qsdl.util import (Operation, get_aggregation, get_childs,
+                       get_compositions, get_id, get_id_field,
+                       get_operation_id, get_operation_method, get_path_base,
+                       get_path_parameters, get_query_parameters,
+                       get_request_parameters, is_aggregation, pluralize)
 
 
 def operation_helper(entity: object) -> tuple:

@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests import wrapper_generate
-from tests import wrapper_generate_failure
+from tests import wrapper_generate, wrapper_generate_failure
 
 
 class TestOperation:

@@ -17,9 +17,7 @@
 from pathlib import Path
 
 import plantuml
-
-from textx.export import PlantUmlRenderer
-from textx.export import metamodel_export
+from textx.export import PlantUmlRenderer, metamodel_export
 from textx.metamodel import TextXMetaModel
 
 from qsdl import __folder__

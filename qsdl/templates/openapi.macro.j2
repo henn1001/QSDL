@@ -22,7 +22,7 @@
     {% else %}
       {{ get_parameter_type(parameter) | indent(4) | trim }}
       {% if get_parameter_format(parameter) %}
-      {{ get_parameter_format(parameter) | indent(2) | trim }}
+      {{ get_parameter_format(parameter) | indent(4) | trim }}
       {% endif %}
     {% endif %}
   {% endif %}
@@ -148,6 +148,11 @@
   format: float
 {% elif field.value.name == "Double" %}
   format: double
+{% elif field.value.name == "ID"%}
+  {% if config.id_type_format %}
+  format: {{config.id_type_format}}
+  {% endif %}
+  x-qsdl-type: ID
 {% elif field.value.name == "Date" %}
   format: date-time
 {% endif %}

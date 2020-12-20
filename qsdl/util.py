@@ -15,7 +15,6 @@
 """Utility functions"""
 
 import inflect
-
 from textx import model as mfunc
 
 from qsdl import config

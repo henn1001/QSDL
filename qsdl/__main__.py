@@ -18,7 +18,6 @@ A Schema-Definition-Language Generator inspired by GraphQL.
 """
 
 import sys
-
 from pathlib import Path
 
 import click

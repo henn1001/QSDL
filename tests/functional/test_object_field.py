@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests import wrapper_generate
-from tests import wrapper_generate_failure
+from qsdl import config
+from tests import wrapper_generate, wrapper_generate_failure
 
 
 class TestObjectField:
@@ -69,7 +69,9 @@ class TestObjectField:
 
         for key, value in properties.items():
             if key == "id":
-                assert value["type"] == "string"
+                assert value["type"] == config.id_type
+                if config.id_type_format:
+                    assert value["format"] == config.id_type_format
             elif key == "int":
                 assert value["type"] == "integer"
                 assert value["format"] == "int32"

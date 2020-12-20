@@ -14,12 +14,10 @@
 
 import textwrap
 import uuid
-
 from pathlib import Path
 
-import yaml
 import graphql
-
+import yaml
 from qsdl.core import generate
 
 

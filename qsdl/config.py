@@ -32,3 +32,7 @@ dupl_objects = set()
 # used to flag paths as used in order to prevent path duplicates in
 # OpenAPI
 used_paths = []
+
+# used to change the OpenAPI type for ID between "string" and "integer"
+id_type = "string"
+id_type_format = None

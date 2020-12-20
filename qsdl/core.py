@@ -17,21 +17,15 @@
 from pathlib import Path
 
 import jinja2
-from textx import model as mfunc
 from textx import metamodel_from_file
+from textx import model as mfunc
+from textx.exceptions import TextXSemanticError, TextXSyntaxError
 from textx.metamodel import TextXMetaModel
 
-from textx.exceptions import TextXSyntaxError
-from textx.exceptions import TextXSemanticError
-
-from qsdl import __folder__
-from qsdl import domain
-from qsdl import util
-from qsdl import uml
-from qsdl.util import pluralize
-from qsdl.util import Scalar
+from qsdl import __folder__, config, domain, uml, util
 from qsdl.processors.model import model_processor
 from qsdl.processors.objects import obj_processors
+from qsdl.util import Scalar, pluralize
 
 
 def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
@@ -113,7 +107,7 @@ def render(
 
     # generate code
     with open(output_file, "w") as file:
-        tmp = template.render(model=model, mfunc=mfunc, util=util)
+        tmp = template.render(model=model, mfunc=mfunc, util=util, config=config)
         file.write(tmp)
 
 
@@ -141,7 +135,7 @@ def generate_openapi(srcgen_folder: Path, model: object):
             "Double": "number",
             "String": "string",
             "Boolean": "boolean",
-            "ID": "string",
+            "ID": config.id_type,
             "Date": "string",
             "Object": "object",
         }.get(scalar.name, scalar.name)
