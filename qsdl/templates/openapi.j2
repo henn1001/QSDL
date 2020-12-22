@@ -79,29 +79,29 @@ components:
 
   responses:
     BadRequest:
-      description: The specified model was not found
+      description: Bad Request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiError'
     Unauthorized:
       description: Unauthorized
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiError'
     Forbidden:
       description: Forbidden
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiError'
     NotFound:
-      description: The specified model was not found
+      description: Not Found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiError'
 
   schemas:
 {% for enum in mfunc.get_children_of_type("Enum", model) %}
@@ -151,16 +151,31 @@ components:
         {{ macro.get_schema(object) | indent(6) | trim }}
 
 {% endfor %}
-    Error:
+    ApiError:
       required:
         - code
         - message
       type: object
       properties:
         code:
+          description: A identifier that categorizes the error
           type: integer
           format: int32
         message:
-            type: string
+          description: A brief, human-readable message about the error
+          type: string
+        status:
+          description: The HTTP response code
+          type: integer
+          format: int32
+        path:
+          description: A URI that identifies the specific occurrence of the error
+          type: string
+        timestamp:
+          type: string
+          format: date-time
         details:
+          description: Detailed explanations of the error
+          type: array
+          items:
             type: string
