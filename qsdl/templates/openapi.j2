@@ -60,14 +60,8 @@ paths: {%+ if not util.get_operations() %}{}{% endif %}
   {% if operation.response and operation.response.value.name != 'Void' %}
           {{ macro.get_response(operation) | indent(8) | trim }}
   {% endif %}
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
 {% endfor %}
 
 components:
@@ -78,26 +72,8 @@ components:
       in: header
 
   responses:
-    BadRequest:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ApiError'
-    Unauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ApiError'
-    Forbidden:
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ApiError'
-    NotFound:
-      description: Not Found
+    DefaultError:
+      description: Unexpected error
       content:
         application/json:
           schema:
