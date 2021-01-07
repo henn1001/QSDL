@@ -6,7 +6,7 @@ A Schema-Definition-Language Generator inspired by GraphQL.
 
 The QSDL Generator allows a domain model based approach to generate OpenAPI and GraphQL specifications. The Language is inspired by GraphQL with minor modifications to accommodate OpenAPI and sensible QoL features.
 
-The idea is offer a minimal approach to a API definition in order to define CRUD access to a domain model graph where domain objects have parent-child like dependencies. A simple Object definition in QSDL will generate the GET ALL / POST / GET / PUT / DELETE Operations in OpenAPI and GraphQL.
+The idea is offer a minimal approach to a API definition in order to define CRUD access to a domain model graph where domain objects have parent-child like dependencies. A simple Object definition in QSDL will generate the GET ALL / POST / GET / PUT / PATCH / DELETE Operations in OpenAPI and GraphQL.
 
 ![gif](https://s8.gifyu.com/images/ezgif.com-video-to-gif590dea37aa704f90.gif)
 
@@ -399,6 +399,6 @@ There are certain builtin directives that can be used to modify the generation b
 
 9.  `Directive` `@path` may be used on any `Operation` `Field` which is part of a `Object`. This specifies the API Path.
 
-10. `Directive` `@method` may be used on any `Operation` `Field` to specify the REST Method. Valid values are GET | POST | PUT | DELETE.
+10. `Directive` `@method` may be used on any `Operation` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
 11. `Directive` `@namespace` may be used on any `Base`, `Operation` or `Object` for grouping.

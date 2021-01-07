@@ -37,7 +37,7 @@ class TestArgument:
 
     07. `Argument` name/value pairs for get methods are query parameters. [OpenAPI]
 
-    08. `Argument` name/value pairs for post/put methods are requestBody. [OpenAPI]
+    08. `Argument` name/value pairs for post/put/patch methods are requestBody. [OpenAPI]
 
     09. `Argument` value must be a `Scalar` of `ID` for delete method. Other types are ignored. [OpenAPI]
 
@@ -146,6 +146,7 @@ class TestArgument:
                 field1(arg: [String]): Void @path(value:"path1")
                 field2(arg: [String]): Void @path(value:"path2") @method(value: POST)
                 field3(arg: [String]): Void @path(value:"path3") @method(value: PUT)
+                field4(arg: [String]): Void @path(value:"path4") @method(value: PATCH)
             }
         """
 
@@ -168,6 +169,10 @@ class TestArgument:
         assert schema["properties"]["arg"]["items"]["type"] == "string"
 
         schema = get_schema_request(openapi, "/path3", "put")
+        assert schema["properties"]["arg"]["type"] == "array"
+        assert schema["properties"]["arg"]["items"]["type"] == "string"
+
+        schema = get_schema_request(openapi, "/path4", "patch")
         assert schema["properties"]["arg"]["type"] == "array"
         assert schema["properties"]["arg"]["items"]["type"] == "string"
 
@@ -247,7 +252,7 @@ class TestArgument:
                 assert parameter["schema"]["$ref"]
 
     def test_argument_08_positive(self):
-        """Verify argument is requestbody for post/put"""
+        """Verify argument is requestbody for post/put/patch"""
         test_input = """\
             enum Bar {
                 OPEN

@@ -666,6 +666,9 @@ def get_operation_method(field: object) -> str:
     elif field.method == "PUT":
         method = "put"
 
+    elif field.method == "PATCH":
+        method = "patch"
+
     elif field.method == "DELETE":
         method = "delete"
 

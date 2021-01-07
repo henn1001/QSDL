@@ -139,7 +139,7 @@ Argument:
 ;
 
 Method:
-    "GET" | "POST" | "PUT" | "DELETE"
+    "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 ;
 
 Directive:

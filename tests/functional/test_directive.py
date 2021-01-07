@@ -38,7 +38,7 @@ class TestDirective:
 
     09. `Directive` `@path` may be used on any `Operation` `Field` which is part of a `Object`. This specifies the API Path.
 
-    10. `Directive` `@method` may be used on any `Operation` `Field` to specify the REST Method. Valid values are GET | POST | PUT | DELETE.
+    10. `Directive` `@method` may be used on any `Operation` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
     11. `Directive` `@namespace` may be used on any `Base`, `Operation` or `Object` for grouping.
 
@@ -272,7 +272,8 @@ class TestDirective:
                 field1: Void @path(value:"path") @method(value: GET)
                 field2: Void @path(value:"path") @method(value: POST)
                 field3: Void @path(value:"path") @method(value: PUT)
-                field4: Void @path(value:"path") @method(value: DELETE)
+                field4: Void @path(value:"path") @method(value: PATCH)
+                field5: Void @path(value:"path") @method(value: DELETE)
             }
         """
 
@@ -281,7 +282,8 @@ class TestDirective:
         assert openapi["paths"]["/path"]["get"]["operationId"] == "field1"
         assert openapi["paths"]["/path"]["post"]["operationId"] == "field2"
         assert openapi["paths"]["/path"]["put"]["operationId"] == "field3"
-        assert openapi["paths"]["/path"]["delete"]["operationId"] == "field4"
+        assert openapi["paths"]["/path"]["patch"]["operationId"] == "field4"
+        assert openapi["paths"]["/path"]["delete"]["operationId"] == "field5"
 
     def test_directive_11_positive(self):
         """Verify usage of @namespace"""
@@ -305,6 +307,7 @@ class TestDirective:
         assert "Test" in openapi["paths"]["/bars"]["post"]["tags"]
         assert "Test" in openapi["paths"]["/bars/{field}"]["get"]["tags"]
         assert "Test" in openapi["paths"]["/bars/{field}"]["put"]["tags"]
+        assert "Test" in openapi["paths"]["/bars/{field}"]["patch"]["tags"]
         assert "Test" in openapi["paths"]["/bars/{field}"]["delete"]["tags"]
 
         assert "Test" in openapi["paths"]["/path"]["get"]["tags"]

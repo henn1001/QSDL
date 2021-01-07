@@ -99,6 +99,7 @@ class TestOperation:
 
         assert "post" not in openapi["paths"]["/foos"]
         assert "put" not in openapi["paths"]["/foos"]
+        assert "patch" not in openapi["paths"]["/foos"]
         assert "delete" not in openapi["paths"]["/foos"]
 
     def test_operation_03_negative(self):

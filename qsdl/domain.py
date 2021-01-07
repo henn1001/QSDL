@@ -111,6 +111,15 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
         request = get_request_parameters(field)
         response = field
 
+    if method == "patch":
+        name = field.name
+        summary = field.name
+        path = get_path_base(field, d_parent)
+        method = "patch"
+        parameters = get_path_parameters(field, d_parent)
+        request = get_request_parameters(field)
+        response = field
+
     if method == "delete":
         name = field.name
         summary = field.name
@@ -272,10 +281,19 @@ def get_crud_operation(obj: object, method: str) -> Operation:
         response = operation_helper_response(obj)
 
     elif method == "put":
+        name = "replace" + get_operation_id(obj)
+        summary = f"Replace the specified {obj.name}"
+        path = get_path_base(obj, obj.d_parent, True)
+        method = "put"
+        parameters = get_path_parameters(obj, obj.d_parent, True)
+        request = get_request_parameters(obj)
+        response = operation_helper_response(obj)
+
+    elif method == "patch":
         name = "update" + get_operation_id(obj)
         summary = f"Update the specified {obj.name}"
         path = get_path_base(obj, obj.d_parent, True)
-        method = "put"
+        method = "patch"
         parameters = get_path_parameters(obj, obj.d_parent, True)
         request = get_request_parameters(obj)
         response = operation_helper_response(obj)
@@ -327,7 +345,7 @@ def build_crud(objects: list) -> list:
                 operations.append(opr)
 
         elif get_id(obj):
-            for method in ["getA", "post", "get", "put", "delete"]:
+            for method in ["getA", "post", "get", "put", "patch", "delete"]:
                 opr = get_crud_operation(obj, method)
                 operations.append(opr)
 
