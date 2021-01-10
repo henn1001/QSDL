@@ -20,11 +20,12 @@ from textx import model as mfunc
 from textx.exceptions import TextXSemanticError
 
 from qsdl import config
-from qsdl.util import (Operation, get_aggregation, get_childs,
-                       get_compositions, get_id, get_id_field,
-                       get_operation_id, get_operation_method, get_path_base,
-                       get_path_parameters, get_query_parameters,
-                       get_request_parameters, is_aggregation, pluralize)
+from qsdl.model import Operation
+from qsdl.util import (get_aggregation, get_childs, get_compositions, get_id,
+                       get_id_field, get_operation_id, get_operation_method,
+                       get_path_base, get_path_parameters,
+                       get_query_parameters, get_request_parameters,
+                       is_aggregation, pluralize)
 
 
 def operation_helper(entity: object) -> tuple:
@@ -322,6 +323,7 @@ def get_crud_operation(obj: object, method: str) -> Operation:
     opr.response = response
     opr.parent = d_parent
     opr.childs = d_childs
+    opr.is_crud = True
 
     return opr
 

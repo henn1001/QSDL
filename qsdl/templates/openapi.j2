@@ -46,6 +46,9 @@ paths: {%+ if not util.get_operations() %}{}{% endif %}
         {{ operation.description | indent | trim("\"") | trim }}
     {% endif %}
       operationId: {{ operation.name }}
+    {% if operation.is_crud %}
+      x-qsdl-domain-object: true
+    {% endif %}
   {% if operation.parameters %}
       parameters:
         {{ macro.get_parameters(operation) | indent(6) | trim }}

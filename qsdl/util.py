@@ -20,33 +20,6 @@ from textx import model as mfunc
 from qsdl import config
 
 
-class Scalar:
-    """Our Scalar class"""
-
-    def __init__(self, parent, name):
-        self.parent = parent
-        self.name = name
-
-
-class Operation:
-    """Our Operation class"""
-
-    def __init__(self):
-        self.name = None
-        self.ref = None
-        self.order = None
-        self.tag = None
-        self.summary = None
-        self.description = None
-        self.path = None
-        self.method = None
-        self.parameters = []
-        self.request = None
-        self.response = None
-        self.parent = None
-        self.childs = []
-
-
 def pluralize(word: str) -> str:
     """Returns the plural form of a word using inflect.
 

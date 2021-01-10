@@ -23,9 +23,10 @@ from textx.exceptions import TextXSemanticError, TextXSyntaxError
 from textx.metamodel import TextXMetaModel
 
 from qsdl import __folder__, config, domain, uml, util
+from qsdl.model import Scalar
 from qsdl.processors.model import model_processor
 from qsdl.processors.objects import obj_processors
-from qsdl.util import Scalar, pluralize
+from qsdl.util import pluralize
 
 
 def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
