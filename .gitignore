@@ -9,6 +9,6 @@ dist/
 .coverage
 
 # misc
-srcgen/
-output/
+/srcgen/
+/output/
 /tests/functional/test_input.tx

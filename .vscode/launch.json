@@ -9,7 +9,7 @@
             "args": [
                 "util/examples/input.tx",
                 "-o",
-                "srcgen/"
+                "util/examples/srcgen/"
             ],
             "justMyCode": false,
             "console": "integratedTerminal"
