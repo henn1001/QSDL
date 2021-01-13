@@ -1,6 +1,10 @@
 {% macro get_parameters(operation) %}
 {% for parameter in operation.parameters %}
   - name: {{ parameter.name }}
+  {% if parameter.description %}
+    description: |
+      {{ parameter.description | indent | trim("\"") | trim }}
+  {% endif %}
     in: {{ parameter.in }}
     required: {{ parameter.required }}
     schema:
@@ -132,7 +136,12 @@
   type: string
   {% endif %}
 {% elif field.value._tx_fqn == "entity.Enum" %}
+  {% if field.readOnly or field.writeOnly %}
+  allOf:
+    - $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
+  {% else %}
   $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
+  {% endif %}
 {% else %}
   type: {{ field.value|oapi_type }}
 {% endif %}

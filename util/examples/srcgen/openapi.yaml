@@ -22,6 +22,7 @@ paths:
         - Management
       summary: List Projects
       operationId: getProjects
+      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: query
@@ -37,19 +38,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Project'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     post:
       tags:
         - Management
       summary: Create a Project
       operationId: createProject
+      x-qsdl-domain-object: true
       requestBody:
         required: true
         content:
@@ -63,20 +59,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Project'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/projects/{id}':
     get:
       tags:
         - Management
       summary: Read the specified Project
       operationId: getProject
+      x-qsdl-domain-object: true
       parameters:
         - name: id
           in: path
@@ -92,19 +83,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Project'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     put:
       tags:
         - Management
-      summary: Update the specified Project
-      operationId: updateProject
+      summary: Replace the specified Project
+      operationId: replaceProject
+      x-qsdl-domain-object: true
       parameters:
         - name: id
           in: path
@@ -126,19 +112,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Project'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Management
+      summary: Update the specified Project
+      operationId: updateProject
+      x-qsdl-domain-object: true
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+            readOnly: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        default:
+          $ref: '#/components/responses/DefaultError'
     delete:
       tags:
         - Management
       summary: Delete the specified Project
       operationId: deleteProject
+      x-qsdl-domain-object: true
       parameters:
         - name: id
           in: path
@@ -150,20 +160,15 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/projects/{project_id}/roles':
     get:
       tags:
         - Management
       summary: List Roles
       operationId: getRolesForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -181,19 +186,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Role'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     post:
       tags:
         - Management
       summary: Create a Role
       operationId: createRoleForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -215,20 +215,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/projects/{project_id}/roles/{role}':
     get:
       tags:
         - Management
       summary: Read the specified Role
       operationId: getRoleForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -250,19 +245,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     put:
       tags:
         - Management
-      summary: Update the specified Role
-      operationId: updateRoleForProject
+      summary: Replace the specified Role
+      operationId: replaceRoleForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -290,19 +280,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Management
+      summary: Update the specified Role
+      operationId: updateRoleForProject
+      x-qsdl-domain-object: true
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+            readOnly: true
+        - name: role
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        default:
+          $ref: '#/components/responses/DefaultError'
     delete:
       tags:
         - Management
       summary: Delete the specified Role
       operationId: deleteRoleForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -320,20 +340,15 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/sprints/{sprint_name}/roles':
     get:
       tags:
         - Management
       summary: List Roles
       operationId: getRolesForSprint
+      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -350,19 +365,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Role'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     post:
       tags:
         - Management
       summary: Create a Role
       operationId: createRoleForSprint
+      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -383,20 +393,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/sprints/{sprint_name}/roles/{role}':
     get:
       tags:
         - Management
       summary: Read the specified Role
       operationId: getRoleForSprint
+      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -417,19 +422,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     put:
       tags:
         - Management
-      summary: Update the specified Role
-      operationId: updateRoleForSprint
+      summary: Replace the specified Role
+      operationId: replaceRoleForSprint
+      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -456,19 +456,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Role'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Management
+      summary: Update the specified Role
+      operationId: updateRoleForSprint
+      x-qsdl-domain-object: true
+      parameters:
+        - name: sprint_name
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+        - name: role
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        default:
+          $ref: '#/components/responses/DefaultError'
     delete:
       tags:
         - Management
       summary: Delete the specified Role
       operationId: deleteRoleForSprint
+      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -485,14 +514,8 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/roles/{role_role}/users':
     get:
       tags:
@@ -521,14 +544,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/roles/{role_role}/users/add':
     post:
       tags:
@@ -555,14 +572,8 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/roles/{role_role}/users/remove':
     post:
       tags:
@@ -589,20 +600,15 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/users':
     get:
       tags:
         - Management
       summary: List Users
       operationId: getUsers
+      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: query
@@ -619,19 +625,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     post:
       tags:
         - Management
       summary: Create a User
       operationId: createUser
+      x-qsdl-domain-object: true
       requestBody:
         required: true
         content:
@@ -645,20 +646,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/users/{name}':
     get:
       tags:
         - Management
       summary: Read the specified User
       operationId: getUser
+      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: path
@@ -673,19 +669,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     put:
       tags:
         - Management
-      summary: Update the specified User
-      operationId: updateUser
+      summary: Replace the specified User
+      operationId: replaceUser
+      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: path
@@ -706,19 +697,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Management
+      summary: Update the specified User
+      operationId: updateUser
+      x-qsdl-domain-object: true
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/DefaultError'
     delete:
       tags:
         - Management
       summary: Delete the specified User
       operationId: deleteUser
+      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: path
@@ -729,20 +743,15 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/projects/{project_id}/tickets':
     get:
       tags:
         - Incident
       summary: List Tickets
       operationId: getTickets
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -760,19 +769,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Ticket'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     post:
       tags:
         - Incident
       summary: Create a Ticket
       operationId: createTicket
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -794,20 +798,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ticket'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/projects/{project_id}/tickets/{number}':
     get:
       tags:
         - Incident
       summary: Read the specified Ticket
       operationId: getTicket
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -829,19 +828,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ticket'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     put:
       tags:
         - Incident
-      summary: Update the specified Ticket
-      operationId: updateTicket
+      summary: Replace the specified Ticket
+      operationId: replaceTicket
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -869,19 +863,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ticket'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Incident
+      summary: Update the specified Ticket
+      operationId: updateTicket
+      x-qsdl-domain-object: true
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+            readOnly: true
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        default:
+          $ref: '#/components/responses/DefaultError'
     delete:
       tags:
         - Incident
       summary: Delete the specified Ticket
       operationId: deleteTicket
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -899,20 +923,15 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/projects/{project_id}/milestones':
     get:
       tags:
         - Incident
       summary: List Milestones
       operationId: getMilestonesForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -930,19 +949,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Milestone'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     post:
       tags:
         - Incident
       summary: Create a Milestone
       operationId: createMilestoneForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -964,20 +978,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Milestone'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/projects/{project_id}/milestones/{milestone}':
     get:
       tags:
         - Incident
       summary: Read the specified Milestone
       operationId: getMilestoneForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -999,19 +1008,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Milestone'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     put:
       tags:
         - Incident
-      summary: Update the specified Milestone
-      operationId: updateMilestoneForProject
+      summary: Replace the specified Milestone
+      operationId: replaceMilestoneForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -1039,19 +1043,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Milestone'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Incident
+      summary: Update the specified Milestone
+      operationId: updateMilestoneForProject
+      x-qsdl-domain-object: true
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+            readOnly: true
+        - name: milestone
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Milestone'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        default:
+          $ref: '#/components/responses/DefaultError'
     delete:
       tags:
         - Incident
       summary: Delete the specified Milestone
       operationId: deleteMilestoneForProject
+      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -1069,14 +1103,8 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/tickets/{ticket_number}/milestones':
     get:
       tags:
@@ -1099,14 +1127,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Milestone'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/tickets/{ticket_number}/milestones/add':
     post:
       tags:
@@ -1133,14 +1155,8 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/tickets/{ticket_number}/milestones/remove':
     post:
       tags:
@@ -1167,20 +1183,15 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/milestones/{milestone_milestone}/sprints':
     get:
       tags:
         - Incident
       summary: List Sprints
       operationId: getSprints
+      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1197,19 +1208,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Sprint'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     post:
       tags:
         - Incident
       summary: Create a Sprint
       operationId: createSprint
+      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1230,20 +1236,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sprint'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/milestones/{milestone_milestone}/sprints/{name}':
     get:
       tags:
         - Incident
       summary: Read the specified Sprint
       operationId: getSprint
+      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1264,19 +1265,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sprint'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     put:
       tags:
         - Incident
-      summary: Update the specified Sprint
-      operationId: updateSprint
+      summary: Replace the specified Sprint
+      operationId: replaceSprint
+      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1303,19 +1299,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sprint'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Incident
+      summary: Update the specified Sprint
+      operationId: updateSprint
+      x-qsdl-domain-object: true
+      parameters:
+        - name: milestone_milestone
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+            x-qsdl-type: ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sprint'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sprint'
+        default:
+          $ref: '#/components/responses/DefaultError'
     delete:
       tags:
         - Incident
       summary: Delete the specified Sprint
       operationId: deleteSprint
+      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1332,14 +1357,8 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/buzzwords':
     get:
       tags:
@@ -1361,14 +1380,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Buzzword'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     post:
       tags:
         - Incident
@@ -1387,14 +1400,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Buzzword'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/buzzwords/{id}':
     get:
       tags:
@@ -1415,14 +1422,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Buzzword'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     put:
       tags:
         - Incident
@@ -1455,14 +1456,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Buzzword'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
     delete:
       tags:
         - Incident
@@ -1478,14 +1473,8 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/buzzwords/{buzzword_id}/query/submit':
     post:
       tags:
@@ -1514,14 +1503,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Querymachine'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
   '/query/submits':
     post:
       summary: submitQury
@@ -1541,14 +1524,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Querymachine'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/DefaultError'
 
 components:
   securitySchemes:
@@ -1558,30 +1535,12 @@ components:
       in: header
 
   responses:
-    BadRequest:
-      description: The specified model was not found
+    DefaultError:
+      description: Unexpected error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Forbidden:
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The specified model was not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ApiError'
 
   schemas:
     Status:
@@ -1799,16 +1758,31 @@ components:
           type: object
           readOnly: true
 
-    Error:
+    ApiError:
       required:
         - code
         - message
       type: object
       properties:
         code:
+          description: A identifier that categorizes the error
           type: integer
           format: int32
         message:
-            type: string
+          description: A brief, human-readable message about the error
+          type: string
+        status:
+          description: The HTTP response code
+          type: integer
+          format: int32
+        path:
+          description: A URI that identifies the specific occurrence of the error
+          type: string
+        timestamp:
+          type: string
+          format: date-time
         details:
+          description: Detailed explanations of the error
+          type: array
+          items:
             type: string

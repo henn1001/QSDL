@@ -93,11 +93,20 @@ extend type Query {
 
 extend type Mutation {
     createProject(input: createProjectInput!): createProjectPayload
+    replaceProject(id: ID!, input: replaceProjectInput!): replaceProjectPayload
     updateProject(id: ID!, input: updateProjectInput!): updateProjectPayload
     deleteProject(id: ID!): deleteProjectPayload
 }
 
 input createProjectInput {
+    name: String!
+    description: String
+    meta_inf: Object
+    archive: Boolean
+    metrics: [MetricInput]
+}
+
+input replaceProjectInput {
     name: String!
     description: String
     meta_inf: Object
@@ -114,6 +123,14 @@ input updateProjectInput {
 }
 
 type createProjectPayload implements Response {
+    code: String!
+    success: Boolean!
+    message: String!
+    details: String
+    response: Project
+}
+
+type replaceProjectPayload implements Response {
     code: String!
     success: Boolean!
     message: String!
@@ -158,14 +175,21 @@ extend type Query {
 
 extend type Mutation {
     createRoleForProject(project_id: ID!, input: createRoleForProjectInput!): createRoleForProjectPayload
+    replaceRoleForProject(project_id: ID!, role: ID!, input: replaceRoleForProjectInput!): replaceRoleForProjectPayload
     updateRoleForProject(project_id: ID!, role: ID!, input: updateRoleForProjectInput!): updateRoleForProjectPayload
     deleteRoleForProject(project_id: ID!, role: ID!): deleteRoleForProjectPayload
     createRoleForSprint(sprint_name: ID!, input: createRoleForSprintInput!): createRoleForSprintPayload
+    replaceRoleForSprint(sprint_name: ID!, role: ID!, input: replaceRoleForSprintInput!): replaceRoleForSprintPayload
     updateRoleForSprint(sprint_name: ID!, role: ID!, input: updateRoleForSprintInput!): updateRoleForSprintPayload
     deleteRoleForSprint(sprint_name: ID!, role: ID!): deleteRoleForSprintPayload
 }
 
 input createRoleForProjectInput {
+    role: ID!
+    users: [UserInput]
+}
+
+input replaceRoleForProjectInput {
     role: ID!
     users: [UserInput]
 }
@@ -180,12 +204,25 @@ input createRoleForSprintInput {
     users: [UserInput]
 }
 
+input replaceRoleForSprintInput {
+    role: ID!
+    users: [UserInput]
+}
+
 input updateRoleForSprintInput {
     role: ID!
     users: [UserInput]
 }
 
 type createRoleForProjectPayload implements Response {
+    code: String!
+    success: Boolean!
+    message: String!
+    details: String
+    response: Role
+}
+
+type replaceRoleForProjectPayload implements Response {
     code: String!
     success: Boolean!
     message: String!
@@ -209,6 +246,14 @@ type deleteRoleForProjectPayload implements Response {
 }
 
 type createRoleForSprintPayload implements Response {
+    code: String!
+    success: Boolean!
+    message: String!
+    details: String
+    response: Role
+}
+
+type replaceRoleForSprintPayload implements Response {
     code: String!
     success: Boolean!
     message: String!
@@ -257,6 +302,7 @@ extend type Mutation {
     addUserForRole(role_role: ID!, input: addUserForRoleInput!): addUserForRolePayload
     removeUserForRole(role_role: ID!, input: removeUserForRoleInput!): removeUserForRolePayload
     createUser(input: createUserInput!): createUserPayload
+    replaceUser(name: ID!, input: replaceUserInput!): replaceUserPayload
     updateUser(name: ID!, input: updateUserInput!): updateUserPayload
     deleteUser(name: ID!): deleteUserPayload
 }
@@ -270,6 +316,13 @@ input removeUserForRoleInput {
 }
 
 input createUserInput {
+    name: ID!
+    full_name: String
+    emails: [String]
+    password: String
+}
+
+input replaceUserInput {
     name: ID!
     full_name: String
     emails: [String]
@@ -298,6 +351,14 @@ type removeUserForRolePayload implements Response {
 }
 
 type createUserPayload implements Response {
+    code: String!
+    success: Boolean!
+    message: String!
+    details: String
+    response: User
+}
+
+type replaceUserPayload implements Response {
     code: String!
     success: Boolean!
     message: String!
@@ -339,11 +400,20 @@ extend type Query {
 
 extend type Mutation {
     createTicket(project_id: ID!, input: createTicketInput!): createTicketPayload
+    replaceTicket(project_id: ID!, number: ID!, input: replaceTicketInput!): replaceTicketPayload
     updateTicket(project_id: ID!, number: ID!, input: updateTicketInput!): updateTicketPayload
     deleteTicket(project_id: ID!, number: ID!): deleteTicketPayload
 }
 
 input createTicketInput {
+    number: ID!
+    title: String
+    issuer: ID
+    body: String
+    status: Status
+}
+
+input replaceTicketInput {
     number: ID!
     title: String
     issuer: ID
@@ -360,6 +430,14 @@ input updateTicketInput {
 }
 
 type createTicketPayload implements Response {
+    code: String!
+    success: Boolean!
+    message: String!
+    details: String
+    response: Ticket
+}
+
+type replaceTicketPayload implements Response {
     code: String!
     success: Boolean!
     message: String!
@@ -397,6 +475,7 @@ extend type Query {
 
 extend type Mutation {
     createMilestoneForProject(project_id: ID!, input: createMilestoneForProjectInput!): createMilestoneForProjectPayload
+    replaceMilestoneForProject(project_id: ID!, milestone: ID!, input: replaceMilestoneForProjectInput!): replaceMilestoneForProjectPayload
     updateMilestoneForProject(project_id: ID!, milestone: ID!, input: updateMilestoneForProjectInput!): updateMilestoneForProjectPayload
     deleteMilestoneForProject(project_id: ID!, milestone: ID!): deleteMilestoneForProjectPayload
     addMilestoneForTicket(ticket_number: ID!, input: addMilestoneForTicketInput!): addMilestoneForTicketPayload
@@ -404,6 +483,10 @@ extend type Mutation {
 }
 
 input createMilestoneForProjectInput {
+    milestone: ID!
+}
+
+input replaceMilestoneForProjectInput {
     milestone: ID!
 }
 
@@ -420,6 +503,14 @@ input removeMilestoneForTicketInput {
 }
 
 type createMilestoneForProjectPayload implements Response {
+    code: String!
+    success: Boolean!
+    message: String!
+    details: String
+    response: Milestone
+}
+
+type replaceMilestoneForProjectPayload implements Response {
     code: String!
     success: Boolean!
     message: String!
@@ -470,11 +561,17 @@ extend type Query {
 
 extend type Mutation {
     createSprint(milestone_milestone: ID!, input: createSprintInput!): createSprintPayload
+    replaceSprint(milestone_milestone: ID!, name: ID!, input: replaceSprintInput!): replaceSprintPayload
     updateSprint(milestone_milestone: ID!, name: ID!, input: updateSprintInput!): updateSprintPayload
     deleteSprint(milestone_milestone: ID!, name: ID!): deleteSprintPayload
 }
 
 input createSprintInput {
+    name: ID!
+    roles: [RoleInput]
+}
+
+input replaceSprintInput {
     name: ID!
     roles: [RoleInput]
 }
@@ -485,6 +582,14 @@ input updateSprintInput {
 }
 
 type createSprintPayload implements Response {
+    code: String!
+    success: Boolean!
+    message: String!
+    details: String
+    response: Sprint
+}
+
+type replaceSprintPayload implements Response {
     code: String!
     success: Boolean!
     message: String!
