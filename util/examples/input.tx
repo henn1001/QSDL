@@ -4,7 +4,7 @@ description: """
 This example should test every option of this generator.
 """
 
-servers: ["https://localhost:8080/api/v1", "https://localhost:8082/api/v1"]
+servers: ["/api/v1"]
 
 enum Status {
     OPEN
@@ -25,36 +25,25 @@ base Metric {
 base BaseType {
     id: ID! @readOnly
     name: String! @query
-    "Optional description"
     description: String
     creation_by: String @readOnly
     creation_date: Date @readOnly
     last_update_by: String @readOnly
     last_update_date: Date @readOnly
-    """ 
-    Accepts any valid json object.
-    """
     meta_inf: Object
 }
 
 
 // NameSpace Management
-""" 
-Test multiline description for objects
-"""
 type Project implements BaseType @namespace(value:"Management") {
     "Archive this Project"
     archive: Boolean @writeOnly
-    """ 
-    A nested metrics object.
-    """
     metrics: [Metric] @nested
     tickets: [Ticket] @composition
     roles: [Role] @composition
     milestones: [Milestone] @composition
 }
 
-"Test singleline description for objects"
 type Role @namespace(value:"Management"){
     role: ID!
     users: [User] @aggregation @nested
@@ -89,7 +78,6 @@ type User @namespace(value:"Management"){
         roles: [Role] @composition @nested
     }
 
-    "To test object without a ID"
     type Buzzword @namespace(value:"Incident"){
         id: ID!
         name: String!
@@ -104,18 +92,15 @@ type User @namespace(value:"Management"){
         }
     }
 
-    "To test custom paths"
     type QueryMachine @namespace(value:"Incident"){
         request: String! @writeOnly
         response: Object @readOnly
 
          extend Operation {
-            "something"
             submitQuery(body: QueryMachine): QueryMachine @path(value:"query/submit") @method(value: POST)
         }
     }
 
 extend Operation {
-    "something else"
     submitQury(body: QueryMachine): QueryMachine @path(value:"query/submits") @method(value: POST)
 }

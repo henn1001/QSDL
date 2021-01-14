@@ -139,6 +139,11 @@ class TestDirective:
     def test_directive_04_positive(self):
         """Verify usage of @readOnly"""
         test_input = """\
+            enum Fruit {
+                APPLE
+                MELON
+            }
+
             base Foo {
                 id: ID
                 name: String @readOnly
@@ -146,6 +151,8 @@ class TestDirective:
 
             type Bar implements Foo {
                 world: String @readOnly
+                enum: Fruit @readOnly
+                base: Foo @readOnly @nested
             }
         """
 
@@ -157,10 +164,19 @@ class TestDirective:
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
         assert properties["name"]["readOnly"]
         assert properties["world"]["readOnly"]
+        assert properties["enum"]["readOnly"]
+        assert properties["enum"]["allOf"]
+        assert properties["base"]["readOnly"]
+        assert properties["base"]["allOf"]
 
     def test_directive_05_positive(self):
         """Verify usage of @writeOnly"""
         test_input = """\
+            enum Fruit {
+                APPLE
+                MELON
+            }
+
             base Foo {
                 id: ID
                 name: String @writeOnly
@@ -168,6 +184,8 @@ class TestDirective:
 
             type Bar implements Foo {
                 world: String @writeOnly
+                enum: Fruit @writeOnly
+                base: Foo @writeOnly @nested
             }
         """
 
@@ -179,6 +197,10 @@ class TestDirective:
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
         assert properties["name"]["writeOnly"]
         assert properties["world"]["writeOnly"]
+        assert properties["enum"]["writeOnly"]
+        assert properties["enum"]["allOf"]
+        assert properties["base"]["writeOnly"]
+        assert properties["base"]["allOf"]
 
     def test_directive_06_positive(self):
         """Verify usage of @composition"""
