@@ -29,15 +29,35 @@ paths:
           required: false
           schema:
             type: string
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Project'
+                $ref: '#/components/schemas/ProjectList'
         default:
           $ref: '#/components/responses/DefaultError'
     post:
@@ -177,15 +197,35 @@ paths:
             type: string
             x-qsdl-type: ID
             readOnly: true
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Role'
+                $ref: '#/components/schemas/RoleList'
         default:
           $ref: '#/components/responses/DefaultError'
     post:
@@ -356,15 +396,35 @@ paths:
           schema:
             type: string
             x-qsdl-type: ID
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Role'
+                $ref: '#/components/schemas/RoleList'
         default:
           $ref: '#/components/responses/DefaultError'
     post:
@@ -535,15 +595,35 @@ paths:
           schema:
             type: string
             x-qsdl-type: ID
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserList'
         default:
           $ref: '#/components/responses/DefaultError'
   '/roles/{role_role}/users/add':
@@ -616,15 +696,35 @@ paths:
           schema:
             type: string
             x-qsdl-type: ID
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserList'
         default:
           $ref: '#/components/responses/DefaultError'
     post:
@@ -760,15 +860,35 @@ paths:
             type: string
             x-qsdl-type: ID
             readOnly: true
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Ticket'
+                $ref: '#/components/schemas/TicketList'
         default:
           $ref: '#/components/responses/DefaultError'
     post:
@@ -940,15 +1060,35 @@ paths:
             type: string
             x-qsdl-type: ID
             readOnly: true
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Milestone'
+                $ref: '#/components/schemas/MilestoneList'
         default:
           $ref: '#/components/responses/DefaultError'
     post:
@@ -1118,15 +1258,35 @@ paths:
           schema:
             type: string
             x-qsdl-type: ID
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Milestone'
+                $ref: '#/components/schemas/MilestoneList'
         default:
           $ref: '#/components/responses/DefaultError'
   '/tickets/{ticket_number}/milestones/add':
@@ -1199,15 +1359,35 @@ paths:
           schema:
             type: string
             x-qsdl-type: ID
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Sprint'
+                $ref: '#/components/schemas/SprintList'
         default:
           $ref: '#/components/responses/DefaultError'
     post:
@@ -1607,6 +1787,21 @@ components:
             Accepts any valid json object.
           type: object
 
+    ProjectList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
+
     Project:
       description: |
         Test multiline description for objects
@@ -1655,6 +1850,21 @@ components:
           items:
             $ref: '#/components/schemas/Metric'
 
+    RoleList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
+
     Role:
       description: |
         Test singleline description for objects
@@ -1669,6 +1879,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
+
+    UserList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
 
     User:
       required:
@@ -1686,6 +1911,21 @@ components:
             type: string
         password:
           type: string
+
+    TicketList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Ticket"
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
 
     Ticket:
       required:
@@ -1708,6 +1948,21 @@ components:
         status:
           $ref: '#/components/schemas/Status'
 
+    MilestoneList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Milestone"
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
+
     Milestone:
       required:
         - milestone
@@ -1716,6 +1971,21 @@ components:
         milestone:
           type: string
           x-qsdl-type: ID
+
+    SprintList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Sprint"
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
 
     Sprint:
       required:
@@ -1730,6 +2000,21 @@ components:
           items:
             $ref: '#/components/schemas/Role'
 
+    BuzzwordList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Buzzword"
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
+
     Buzzword:
       description: |
         To test object without a ID
@@ -1743,6 +2028,21 @@ components:
           x-qsdl-type: ID
         name:
           type: string
+
+    QuerymachineList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Querymachine"
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
 
     Querymachine:
       description: |

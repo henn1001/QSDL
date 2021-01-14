@@ -40,6 +40,12 @@ input {{base.name}}Input {
 type {{object.name}} {% if object.superType %}implements {{object.superType.name}} {% endif %}{
     {{ render_fields(object, filter_wo=True) | indent(2) | trim }}
 }
+
+type {{object.name}}List {
+    items: [{{object.name}}]!
+    next_cursor: String
+    total_count: Int
+}
 {% if util.is_nested(object) %}
 
 input {{object.name}}Input {
@@ -207,7 +213,7 @@ type {{ operation.name }}Payload implements Response {
 {% macro render_response(operation) %}
 {% set field = operation.response  %}
   {% if field.array %}{{ "[" }}{% endif -%}
-  {{ field.value.name -}}
+  {{ field.value.name -}}{% if field.paging %}List{% endif -%}
   {% if field.array %}{{ "]" }}{% endif -%}
 {% endmacro %}
 

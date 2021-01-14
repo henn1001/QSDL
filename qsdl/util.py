@@ -14,6 +14,7 @@
 
 """Utility functions"""
 
+from qsdl.model.scalar import Scalar
 import inflect
 from textx import model as mfunc
 
@@ -754,6 +755,43 @@ def get_query_parameters(entity: object) -> list:
                     "required": "false",
                 }
                 parameters.append(param)
+
+    return parameters
+
+
+def get_query_parameters_paging(entity: object) -> list:
+    """Returns a list of parameters for paging.
+
+    Args:
+        entity (object): Either entity.Object or entity.Field.
+
+    Returns:
+        list: [{name, type, in, required}]
+    """
+
+    parameters = [
+        {
+            "name": "cursor",
+            "description": "Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.",
+            "type": {"value": Scalar(None, "String"), "array": False},
+            "in": "query",
+            "required": "false",
+        },
+        {
+            "name": "limit",
+            "description": "The maximum number of items to return.",
+            "type": {"value": Scalar(None, "Long"), "array": False},
+            "in": "query",
+            "required": "false",
+        },
+        {
+            "name": "count",
+            "description": "Returns the total number of items in the collection.",
+            "type": {"value": Scalar(None, "Boolean"), "array": False},
+            "in": "query",
+            "required": "false",
+        },
+    ]
 
     return parameters
 

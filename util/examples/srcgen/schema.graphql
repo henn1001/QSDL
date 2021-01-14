@@ -86,8 +86,14 @@ type Project implements BaseType {
     milestones: [Milestone]
 }
 
+type ProjectList {
+    items: [Project]!
+    next_cursor: String
+    total_count: Int
+}
+
 extend type Query {
-    getProjects(name: String): [Project]
+    getProjects(name: String, cursor: String, limit: Long, count: Boolean): ProjectList
     getProject(id: ID!): Project
 }
 
@@ -161,15 +167,21 @@ type Role {
     users: [User]
 }
 
+type RoleList {
+    items: [Role]!
+    next_cursor: String
+    total_count: Int
+}
+
 input RoleInput {
     role: ID!
     users: [UserInput]
 }
 
 extend type Query {
-    getRolesForProject(project_id: ID!): [Role]
+    getRolesForProject(project_id: ID!, cursor: String, limit: Long, count: Boolean): RoleList
     getRoleForProject(project_id: ID!, role: ID!): Role
-    getRolesForSprint(sprint_name: ID!): [Role]
+    getRolesForSprint(sprint_name: ID!, cursor: String, limit: Long, count: Boolean): RoleList
     getRoleForSprint(sprint_name: ID!, role: ID!): Role
 }
 
@@ -285,6 +297,12 @@ type User {
     password: String
 }
 
+type UserList {
+    items: [User]!
+    next_cursor: String
+    total_count: Int
+}
+
 input UserInput {
     name: ID!
     full_name: String
@@ -293,8 +311,8 @@ input UserInput {
 }
 
 extend type Query {
-    getUsersForRole(role_role: ID!, name: ID): [User]
-    getUsers(name: ID): [User]
+    getUsersForRole(role_role: ID!, name: ID, cursor: String, limit: Long, count: Boolean): UserList
+    getUsers(name: ID, cursor: String, limit: Long, count: Boolean): UserList
     getUser(name: ID!): User
 }
 
@@ -393,8 +411,14 @@ type Ticket {
     milestones: [Milestone]
 }
 
+type TicketList {
+    items: [Ticket]!
+    next_cursor: String
+    total_count: Int
+}
+
 extend type Query {
-    getTickets(project_id: ID!): [Ticket]
+    getTickets(project_id: ID!, cursor: String, limit: Long, count: Boolean): TicketList
     getTicket(project_id: ID!, number: ID!): Ticket
 }
 
@@ -467,10 +491,16 @@ type Milestone {
     sprints: [Sprint]
 }
 
+type MilestoneList {
+    items: [Milestone]!
+    next_cursor: String
+    total_count: Int
+}
+
 extend type Query {
-    getMilestonesForProject(project_id: ID!): [Milestone]
+    getMilestonesForProject(project_id: ID!, cursor: String, limit: Long, count: Boolean): MilestoneList
     getMilestoneForProject(project_id: ID!, milestone: ID!): Milestone
-    getMilestonesForTicket(ticket_number: ID!): [Milestone]
+    getMilestonesForTicket(ticket_number: ID!, cursor: String, limit: Long, count: Boolean): MilestoneList
 }
 
 extend type Mutation {
@@ -554,8 +584,14 @@ type Sprint {
     roles: [Role]
 }
 
+type SprintList {
+    items: [Sprint]!
+    next_cursor: String
+    total_count: Int
+}
+
 extend type Query {
-    getSprints(milestone_milestone: ID!): [Sprint]
+    getSprints(milestone_milestone: ID!, cursor: String, limit: Long, count: Boolean): SprintList
     getSprint(milestone_milestone: ID!, name: ID!): Sprint
 }
 
@@ -621,6 +657,12 @@ type Buzzword {
     test: QueryMachine
 }
 
+type BuzzwordList {
+    items: [Buzzword]!
+    next_cursor: String
+    total_count: Int
+}
+
 input BuzzwordInput {
     id: ID!
     name: String!
@@ -676,6 +718,12 @@ type deleteBuzzwordPayload implements Response {
 "To test custom paths"
 type QueryMachine {
     response: Object
+}
+
+type QueryMachineList {
+    items: [QueryMachine]!
+    next_cursor: String
+    total_count: Int
 }
 
 input QueryMachineInput {

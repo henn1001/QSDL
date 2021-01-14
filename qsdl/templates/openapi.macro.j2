@@ -131,7 +131,7 @@
   allOf:
     - $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
   {% elif field.nested or response %}
-  $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
+  $ref: '#/components/schemas/{{ field.value.name|capitalize }}{% if field.paging %}List{% endif %}'
   {% else %}
   type: string
   {% endif %}

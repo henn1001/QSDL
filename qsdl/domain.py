@@ -24,7 +24,7 @@ from qsdl.model import Operation
 from qsdl.util import (get_aggregation, get_childs, get_compositions, get_id,
                        get_id_field, get_operation_id, get_operation_method,
                        get_path_base, get_path_parameters,
-                       get_query_parameters, get_request_parameters,
+                       get_query_parameters, get_query_parameters_paging, get_request_parameters,
                        is_aggregation, pluralize)
 
 
@@ -53,7 +53,7 @@ def operation_helper(entity: object) -> tuple:
     return namespace, d_parent, d_childs
 
 
-def operation_helper_response(obj: object, array: bool = False) -> dict:
+def operation_helper_response(obj: object, array: bool = False, paging: bool = False) -> dict:
     """Returns the response field for CRUD operations.
 
     Args:
@@ -68,6 +68,7 @@ def operation_helper_response(obj: object, array: bool = False) -> dict:
         "writeOnly": False,
         "array": array,
         "value": obj,
+        "paging": paging,
     }
 
 
@@ -201,8 +202,9 @@ def get_crud_operation_aggregation(obj: object, method: str) -> Operation:
         method = "get"
         parameters = get_path_parameters(obj, obj.d_parent)
         parameters.extend(get_query_parameters(obj))
+        parameters.extend(get_query_parameters_paging(obj))
         request = None
-        response = operation_helper_response(obj, True)
+        response = operation_helper_response(obj, False, True)
 
     elif method == "post":
         name = "add" + get_operation_id(obj)
@@ -260,8 +262,9 @@ def get_crud_operation(obj: object, method: str) -> Operation:
         method = "get"
         parameters = get_path_parameters(obj, obj.d_parent)
         parameters.extend(get_query_parameters(obj))
+        parameters.extend(get_query_parameters_paging(obj))
         request = None
-        response = operation_helper_response(obj, True)
+        response = operation_helper_response(obj, False, True)
 
     elif method == "post":
         name = "create" + get_operation_id(obj)

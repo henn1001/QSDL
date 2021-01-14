@@ -114,6 +114,21 @@ components:
 
 {% endfor %}
 {% for object in mfunc.get_children_of_type("Object", model) %}
+    {{ object.name|capitalize }}List:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/{{ object.name|capitalize }}"
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
+
     {{ object.name|capitalize }}:
     {% if object.description %}
       description: |
