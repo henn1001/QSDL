@@ -48,38 +48,24 @@ input MetricInput {
 interface BaseType {
     id: ID!
     name: String!
-    "Optional description"
     description: String
     creation_by: String
     creation_date: Date
     last_update_by: String
     last_update_date: Date
-    """ 
-      Accepts any valid json object.
-      """
     meta_inf: Object
 }
 
 # begin object Project 
-""" 
-Test multiline description for objects
-"""
 type Project implements BaseType {
     id: ID!
     name: String!
-    "Optional description"
     description: String
     creation_by: String
     creation_date: Date
     last_update_by: String
     last_update_date: Date
-    """ 
-      Accepts any valid json object.
-      """
     meta_inf: Object
-    """ 
-      A nested metrics object.
-      """
     metrics: [Metric]
     tickets: [Ticket]
     roles: [Role]
@@ -161,7 +147,6 @@ type deleteProjectPayload implements Response {
 # end object Project
 
 # begin object Role 
-"Test singleline description for objects"
 type Role {
     role: ID!
     users: [User]
@@ -650,7 +635,6 @@ type deleteSprintPayload implements Response {
 # end object Sprint
 
 # begin object Buzzword 
-"To test object without a ID"
 type Buzzword {
     id: ID!
     name: String!
@@ -715,7 +699,6 @@ type deleteBuzzwordPayload implements Response {
 # end object Buzzword
 
 # begin object QueryMachine 
-"To test custom paths"
 type QueryMachine {
     response: Object
 }
@@ -731,7 +714,6 @@ input QueryMachineInput {
 }
 
 extend type Mutation {
-    "something"
     submitQuery(buzzword_id: ID!, input: submitQueryInput!): submitQueryPayload
 }
 
@@ -749,7 +731,6 @@ type submitQueryPayload implements Response {
 # end object QueryMachine
 
 extend type Mutation {
-    "something else"
     submitQury(input: submitQuryInput!): submitQuryPayload
 }
 

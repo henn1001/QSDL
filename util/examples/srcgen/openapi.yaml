@@ -7,8 +7,7 @@ info:
     
   version: '1.0'
 servers:
-  - url: 'https://localhost:8080/api/v1'
-  - url: 'https://localhost:8082/api/v1'
+  - url: '/api/v1'
 security:
   - ApiKeyAuth: []
 tags:
@@ -1660,8 +1659,6 @@ paths:
       tags:
         - Incident
       summary: submitQuery
-      description: |
-        something
       operationId: submitQuery
       parameters:
         - name: buzzword_id
@@ -1688,8 +1685,6 @@ paths:
   '/query/submits':
     post:
       summary: submitQury
-      description: |
-        something else
       operationId: submitQury
       requestBody:
         required: true
@@ -1765,8 +1760,6 @@ components:
         name:
           type: string
         description:
-          description: |
-            Optional description
           type: string
         creation_by:
           type: string
@@ -1783,8 +1776,6 @@ components:
           format: date-time
           readOnly: true
         meta_inf:
-          description: |
-            Accepts any valid json object.
           type: object
 
     ProjectList:
@@ -1803,8 +1794,6 @@ components:
           format: int64
 
     Project:
-      description: |
-        Test multiline description for objects
       required:
         - id
         - name
@@ -1817,8 +1806,6 @@ components:
         name:
           type: string
         description:
-          description: |
-            Optional description
           type: string
         creation_by:
           type: string
@@ -1835,8 +1822,6 @@ components:
           format: date-time
           readOnly: true
         meta_inf:
-          description: |
-            Accepts any valid json object.
           type: object
         archive:
           description: |
@@ -1844,8 +1829,6 @@ components:
           type: boolean
           writeOnly: true
         metrics:
-          description: |
-            A nested metrics object.
           type: array
           items:
             $ref: '#/components/schemas/Metric'
@@ -1866,8 +1849,6 @@ components:
           format: int64
 
     Role:
-      description: |
-        Test singleline description for objects
       required:
         - role
       type: object
@@ -2016,8 +1997,6 @@ components:
           format: int64
 
     Buzzword:
-      description: |
-        To test object without a ID
       required:
         - id
         - name
@@ -2045,8 +2024,6 @@ components:
           format: int64
 
     Querymachine:
-      description: |
-        To test custom paths
       required:
         - request
       type: object
