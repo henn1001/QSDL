@@ -23,24 +23,13 @@ from textx.metamodel import TextXMetaModel
 
 from qsdl import __folder__, config, uml
 from qsdl.model import Operation, Scalar
-from qsdl.processors.model import model_processor
-from qsdl.processors.objects import obj_processors
-from qsdl.util import (
-    get_aggregation,
-    get_childs,
-    get_compositions,
-    get_id,
-    get_id_field,
-    get_operation_id,
-    get_operation_method,
-    get_path_base,
-    get_path_parameters,
-    get_query_parameters,
-    get_query_parameters_paging,
-    get_request_parameters,
-    is_aggregation,
-    pluralize,
-)
+from qsdl.dsl.processors.model import model_processor
+from qsdl.dsl.processors.objects import obj_processors
+from qsdl.util import (get_aggregation, get_childs, get_compositions, get_id,
+                       get_id_field, get_operation_id, get_operation_method,
+                       get_path_base, get_path_parameters,
+                       get_query_parameters, get_query_parameters_paging,
+                       get_request_parameters, is_aggregation, pluralize)
 
 
 def operation_helper(entity: object) -> tuple:

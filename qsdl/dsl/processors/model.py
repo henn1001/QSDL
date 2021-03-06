@@ -16,10 +16,11 @@
 
 import re
 
-from qsdl.util import get_id, has_aggregation, has_composition
 from textx import model as mfunc
 from textx.exceptions import TextXSemanticError
 from textx.metamodel import TextXMetaModel
+
+from qsdl.util import get_id, has_aggregation, has_composition
 
 
 def model_processor(model: object, metamodel: TextXMetaModel):

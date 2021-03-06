@@ -14,11 +14,11 @@
 
 """Utility functions"""
 
-from qsdl.model.scalar import Scalar
 import inflect
 from textx import model as mfunc
 
 from qsdl import config
+from qsdl.model.scalar import Scalar
 
 
 def pluralize(word: str) -> str:
