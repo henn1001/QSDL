@@ -34,5 +34,5 @@ dupl_objects = set()
 used_paths = []
 
 # used to change the OpenAPI type for ID between "string" and "integer"
-id_type = "string"
-id_type_format = None
+id_type = "integer"
+id_type_format = "int64"
