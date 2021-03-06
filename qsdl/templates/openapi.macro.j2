@@ -72,7 +72,7 @@
         {% else %}
             {{ get_parameter_type(parameter) | indent(10) | trim }}
             {% if get_parameter_format(parameter) %}
-            {{ get_parameter_format(parameter) | indent(2) | trim }}
+            {{ get_parameter_format(parameter) | indent(10) | trim }}
             {% endif %}
         {% endif %}
     {% endif %}
@@ -127,21 +127,16 @@
 
 {% macro get_parameter_type(field, response=false) %}
 {% if field.value._tx_fqn == "entity.Object" or field.value._tx_fqn == "entity.Base" %}
-  {% if field.nested and (field.readOnly or field.writeOnly) %}
-  allOf:
-    - $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
-  {% elif field.nested or response %}
+  {% if field.nested %}
+  $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
+  {% elif  response %}
   $ref: '#/components/schemas/{{ field.value.name|capitalize }}{% if field.paging %}List{% endif %}'
   {% else %}
+{# TODO: Is this for IDs ?#}
   type: string
   {% endif %}
 {% elif field.value._tx_fqn == "entity.Enum" %}
-  {% if field.readOnly or field.writeOnly %}
-  allOf:
-    - $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
-  {% else %}
   $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
-  {% endif %}
 {% else %}
   type: {{ field.value|oapi_type }}
 {% endif %}
