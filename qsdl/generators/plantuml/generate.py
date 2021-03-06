@@ -12,21 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
-from tests import wrapper_generate
-from tests import wrapper_generate_failure
-
-from qsdl import parse
+"""PlantUML Generator"""
+from qsdl import config, uml, util
+from qsdl.render import render
+from textx import model as mfunc
 
 
-class TestCore:
-    """Test core functions.
+def generate():
+    """Generator func for PlantUML"""
 
+    output_file = config.output_path / "plantuml.md"
 
-    """
+    # build the render arguments
+    args = {
+        "model": config.model,
+        "mfunc": mfunc,
+        "util": util,
+        "config": config,
+    }
 
-    def test_get_metamodel_plantuml(self):
-        """Verify that we can print the plantuml model"""
+    render(output_file, args, "uml.j2")
 
-        assert parse.parse_schema("base Foo { field: ID }", print_uml=True)
+    uml.generate_png(output_file)

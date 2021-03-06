@@ -19,6 +19,9 @@
 # the python object graph.
 model = None
 
+# Path to a output folder
+output_path = None
+
 # all possible endpoints/paths for OpenAPI.
 domain_objects = []
 
@@ -36,3 +39,13 @@ used_paths = []
 # used to change the OpenAPI type for ID between "string" and "integer"
 id_type = "integer"
 id_type_format = "int64"
+
+# Generator configuration
+gen_config = None
+
+# All registered generators
+generators = [
+    "openapi",
+    "graphql",
+    "plantuml",
+]

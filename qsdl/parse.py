@@ -16,16 +16,31 @@
 
 from copy import copy
 
+from textx import metamodel_from_file
 from textx import model as mfunc
-from textx.exceptions import TextXSemanticError
+from textx.exceptions import TextXSemanticError, TextXSyntaxError
+from textx.metamodel import TextXMetaModel
 
-from qsdl import config
-from qsdl.model import Operation
-from qsdl.util import (get_aggregation, get_childs, get_compositions, get_id,
-                       get_id_field, get_operation_id, get_operation_method,
-                       get_path_base, get_path_parameters,
-                       get_query_parameters, get_query_parameters_paging, get_request_parameters,
-                       is_aggregation, pluralize)
+from qsdl import __folder__, config, uml
+from qsdl.model import Operation, Scalar
+from qsdl.processors.model import model_processor
+from qsdl.processors.objects import obj_processors
+from qsdl.util import (
+    get_aggregation,
+    get_childs,
+    get_compositions,
+    get_id,
+    get_id_field,
+    get_operation_id,
+    get_operation_method,
+    get_path_base,
+    get_path_parameters,
+    get_query_parameters,
+    get_query_parameters_paging,
+    get_request_parameters,
+    is_aggregation,
+    pluralize,
+)
 
 
 def operation_helper(entity: object) -> tuple:
@@ -488,7 +503,94 @@ def get_endpoints() -> list:
     return endpoints
 
 
-def build_domain_model(model: object):
+def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
+    """Builds and returns a meta-model for our meta language.
+
+    Args:
+        print_uml (bool, optional): Draw a PlantUml diagram of the model.
+            Defaults to False.
+
+    Returns:
+        TextXMetaModel: The metamodel.
+    """
+
+    metamodel = None
+    grammar_path = __folder__ / "definition" / "entity.tx"
+
+    type_builtins = {
+        "Int": Scalar(None, "Int"),
+        "Long": Scalar(None, "Long"),
+        "Float": Scalar(None, "Float"),
+        "Double": Scalar(None, "Double"),
+        "String": Scalar(None, "String"),
+        "Boolean": Scalar(None, "Boolean"),
+        "ID": Scalar(None, "ID"),
+        "Date": Scalar(None, "Date"),
+        "Object": Scalar(None, "Object"),
+        "Void": Scalar(None, "Void"),
+    }
+
+    # parse the grammar file
+    metamodel = metamodel_from_file(grammar_path, classes=[Scalar], builtins=type_builtins)
+
+    # register pre-processors
+    # these allow us to hook into the model and object creation
+    metamodel.register_model_processor(model_processor)
+    metamodel.register_obj_processors(obj_processors)
+
+    # export model with plantuml
+    if print_uml:
+        uml.draw_metamodel(metamodel)
+
+    return metamodel
+
+
+def parse_schema(schema, print_uml=False):
+    """Builds and returns a meta-model for our meta language.
+
+    Args:
+        print_uml (bool, optional): Draw a PlantUml diagram of the model.
+            Defaults to False.
+
+    Returns:
+        TextXMetaModel: The metamodel.
+    """
+
+    metamodel = None
+    grammar_path = __folder__ / "definition" / "entity.tx"
+
+    type_builtins = {
+        "Int": Scalar(None, "Int"),
+        "Long": Scalar(None, "Long"),
+        "Float": Scalar(None, "Float"),
+        "Double": Scalar(None, "Double"),
+        "String": Scalar(None, "String"),
+        "Boolean": Scalar(None, "Boolean"),
+        "ID": Scalar(None, "ID"),
+        "Date": Scalar(None, "Date"),
+        "Object": Scalar(None, "Object"),
+        "Void": Scalar(None, "Void"),
+    }
+
+    # parse the grammar file
+    metamodel = metamodel_from_file(grammar_path, classes=[Scalar], builtins=type_builtins)
+
+    # register pre-processors
+    # these allow us to hook into the model and object creation
+    metamodel.register_model_processor(model_processor)
+    metamodel.register_obj_processors(obj_processors)
+
+    # export model with plantuml
+    if print_uml:
+        uml.draw_metamodel(metamodel)
+
+    # build a model from schema definition file
+    model = metamodel.model_from_str(schema)
+
+    return model
+
+
+def parse_domain_model(model: object):
     """Convert the model into a OpenAPI path/operation graph.
 
     Args:
@@ -523,3 +625,5 @@ def build_domain_model(model: object):
     # validate uniqueness
     validate_operation_names()
     validate_operation_paths()
+
+    return config.domain_objects, operations

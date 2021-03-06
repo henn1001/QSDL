@@ -23,23 +23,19 @@ from pathlib import Path
 import click
 
 from qsdl import __version__
+from qsdl import config as cfg
 from qsdl.core import generate
 
 
 @click.command()
+# fmt: off
 @click.argument("input_path", type=click.Path(exists=True))
+@click.option("-g", "--generator", help="The requested generator.", type=click.Choice(cfg.generators))
+@click.option("-c", "--config_path", help="Path to a config json file.", type=click.Path(exists=True))
 @click.option("-o", "--output_path", help="Path to a output folder. Default: 'srcgren/'", type=click.Path())
-@click.option("--openapi/--no-openapi", help="Enables the OpenAPI generator. Default: 'true'", default=True)
-@click.option("--graphql/--no-graphql", help="Enables the GraphQL generator. Default: 'true'", default=True)
-@click.option("--plantuml", help="Enables the PlantUML generator. Default: 'false'", is_flag=True)
 @click.version_option(__version__, prog_name="QSDL")
-def entrypoint(
-    input_path: str,
-    output_path: str = None,
-    openapi: bool = True,
-    graphql: bool = True,
-    plantuml: bool = False,
-) -> int:
+# fmt: on
+def entrypoint(input_path: str, generator: str = None, config_path: str = None, output_path: str = None) -> int:
     """Runs the QSDL generator with the provided schema definition file.
 
     \b
@@ -50,20 +46,15 @@ def entrypoint(
     Returns:
         int:                0 on success, 1 on failure
     """
+    # convert to pathlib
     input_path = Path(input_path)
+    config_path = Path(config_path) if config_path else None
+    output_path = Path(output_path) if output_path else input_path.parent / "srcgen"
 
     with open(input_path) as file:
         schema = file.read()
 
-    if output_path:
-        output_folder = Path(output_path)
-    else:
-        output_folder = input_path.parent / "srcgen"
-
-    # set generator options
-    options = {"openapi": openapi, "graphql": graphql, "plantuml": plantuml}
-
-    sys.exit(generate(schema, output_folder, options))
+    sys.exit(generate(schema, output_path, generator, config_path))
 
 
 if __name__ == "__main__":

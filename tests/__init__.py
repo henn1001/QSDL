@@ -35,10 +35,9 @@ def wrapper_generate(test_input: str) -> dict:
     test_input = textwrap.dedent(test_input)
     test_output = Path("srcgen/" + test_seed + "/")
 
-    # set generator options
-    options = {"openapi": True, "graphql": True, "plantuml": False}
-
-    assert generate(test_input, test_output, options) == 0
+    # generate
+    assert generate(test_input, test_output, "openapi") == 0
+    assert generate(test_input, test_output, "graphql") == 0
 
     openapi_file = Path("srcgen/" + test_seed + "/" + "openapi.yaml")
     graphql_file = Path("srcgen/" + test_seed + "/" + "schema.graphql")
@@ -66,7 +65,6 @@ def wrapper_generate_failure(test_input: str):
     test_input = textwrap.dedent(test_input)
     test_output = Path("srcgen/" + test_seed + "/")
 
-    # set generator options
-    options = {"openapi": True, "graphql": True, "plantuml": False}
-
-    assert generate(test_input, test_output, options) != 0
+    # generate
+    assert generate(test_input, test_output, "openapi") != 0
+    assert generate(test_input, test_output, "graphql") != 0

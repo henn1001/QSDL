@@ -12,21 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
+"""Generator specific variables"""
 
-from tests import wrapper_generate
-from tests import wrapper_generate_failure
-
-from qsdl import parse
+from dataclasses import dataclass
 
 
-class TestCore:
-    """Test core functions.
-
-
-    """
-
-    def test_get_metamodel_plantuml(self):
-        """Verify that we can print the plantuml model"""
-
-        assert parse.parse_schema("base Foo { field: ID }", print_uml=True)
+@dataclass
+class Config:
+    """A configuration class that holds relevant data for the generator"""

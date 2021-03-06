@@ -14,197 +14,146 @@
 
 """Core generation"""
 
+import json
 from pathlib import Path
+from typing import Tuple
 
-import jinja2
-from textx import metamodel_from_file
-from textx import model as mfunc
+from dacite import from_dict
+from pyfiglet import Figlet
+from PyInquirer import prompt
 from textx.exceptions import TextXSemanticError, TextXSyntaxError
-from textx.metamodel import TextXMetaModel
 
-from qsdl import __folder__, config, domain, uml, util
-from qsdl.model import Scalar
-from qsdl.processors.model import model_processor
-from qsdl.processors.objects import obj_processors
-from qsdl.util import pluralize
+from qsdl import __folder__, config
+from qsdl.generators import get_config, get_generator
+from qsdl.model import Color
+from qsdl.parse import parse_domain_model, parse_schema
 
 
-def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
-    """Builds and returns a meta-model for our meta language.
+def prompt_user() -> Tuple:
+    """Greets and prompts the user with a interactive interface.
 
-    Args:
-        print_uml (bool, optional): Draw a PlantUml diagram of the model.
-            Defaults to False.
+    Provides a selectable list of generators and their respective
+    configuration.
 
     Returns:
-        TextXMetaModel: The metamodel.
+        Tuple[generator, config]: Callable generator func and
+                                  config dataclass.
     """
+    # provide greeting message
+    figlet = Figlet(font="speed")
 
-    metamodel = None
-    grammar_path = __folder__ / "definition" / "entity.tx"
+    print(Color.BOLD)
+    print(figlet.renderText("QSDL"))
+    print("! Would you like a cup of tea with that?")
+    print(Color.END)
 
-    type_builtins = {
-        "Int": Scalar(None, "Int"),
-        "Long": Scalar(None, "Long"),
-        "Float": Scalar(None, "Float"),
-        "Double": Scalar(None, "Double"),
-        "String": Scalar(None, "String"),
-        "Boolean": Scalar(None, "Boolean"),
-        "ID": Scalar(None, "ID"),
-        "Date": Scalar(None, "Date"),
-        "Object": Scalar(None, "Object"),
-        "Void": Scalar(None, "Void"),
-    }
+    # prompt user with available generators
+    questions = [
+        {
+            "type": "list",
+            "name": "generator",
+            "message": "Which generator do you want to use?",
+            "choices": config.generators,
+        }
+    ]
 
-    # parse the grammar file
-    metamodel = metamodel_from_file(grammar_path, classes=[Scalar], builtins=type_builtins)
+    answers = prompt(questions)
+    generator_name = answers["generator"]
 
-    # register pre-processors
-    # these allow us to hook into the model and object creation
-    metamodel.register_model_processor(model_processor)
-    metamodel.register_obj_processors(obj_processors)
+    # get config and callable generator for provided generator
+    generator = get_generator(generator_name)
+    gen_config = get_config(generator_name)
 
-    # export model with plantuml
-    if print_uml:
-        uml.draw_metamodel(metamodel)
+    # prompt user with available configuration and defaults
+    questions = []
 
-    return metamodel
+    for key, value in gen_config.__dict__.items():
+        question = {
+            "type": "input",
+            "name": key,
+            "message": "Please enter: " + key,
+            "default": value,
+        }
+        questions.append(question)
+
+    answers = prompt(questions)
+
+    # loop over provided answers and update configuration
+    for key, value in answers.items():
+        gen_config.__setattr__(key, value)
+
+    return generator, gen_config
 
 
-def render(
-    output_file: Path,
-    model: object,
-    template_name: str,
-    type_name: str = None,
-    type_def: object = None,
-):
-    """Pass the python object graph to jinja for template rendering.
+def init(generator_name: str, config_path: Path = None) -> Tuple:
+    """Initialise QSDL.
+
+    A user can either utilize a interactive prompt for selecting and
+    configuring a generator, or provide this information via flags.
 
     Args:
-        output_file (Path): The output path.
-        model (object): The python object graph.
-        template_name (str): Our internally know template name.
-        type_name (str, optional): The name of a callable type conversion function.
-            Defaults to None.
-        type_def (object, optional): A callable function which accepts the Scalar object.
-            Defaults to None.
+        generator_name (str): The requested generator.
+        config_path (str, optional): Path to the config.json. Defaults to None.
+
+    Returns:
+        Tuple[generator, config]: Callable generator func and
+                                  config dataclass.
     """
+    if generator_name:
+        # flag mode
+        # fetch default config and generator
+        gen_config = get_config(generator_name)
+        generator = get_generator(generator_name)
 
-    # initialize the template engine.
-    template_folder = Path(__folder__) / "templates"
+        # optionally overwrite the default config with user provided data
+        if config_path:
+            with open(config_path) as json_file:
+                data = json.load(json_file)
+                gen_config = from_dict(data_class=gen_config.__class__, data=data)
+    else:
+        # prompt mode
+        generator, gen_config = prompt_user()
 
-    loader = jinja2.FileSystemLoader(template_folder)
-    jinja_env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-
-    # register the filter for mapping Entity type names to type names.
-    if type_name and type_def:
-        jinja_env.filters[type_name] = type_def
-    jinja_env.filters["pluralize"] = pluralize
-
-    # load the template
-    template = jinja_env.get_template(template_name)
-
-    # testing Area
-
-    # generate code
-    with open(output_file, "w") as file:
-        tmp = template.render(model=model, mfunc=mfunc, util=util, config=config)
-        file.write(tmp)
+    return generator, gen_config
 
 
-def generate_openapi(srcgen_folder: Path, model: object):
-    """Generate a OpenAPI spec of the provided schema definition.
-
-    Args:
-        srcgen_folder (Path): Path to the output folder.
-        model (object): The python object graph.
-    """
-
-    def oapi_type(scalar):
-        """Maps Scalars to OpenApi types.
-
-        Args:
-            scalar (entity.Scalar): The entity Scalar object.
-
-        Returns:
-            str: The mapped OpenApi type name or the Scalar name.
-        """
-        return {
-            "Int": "integer",
-            "Long": "integer",
-            "Float": "number",
-            "Double": "number",
-            "String": "string",
-            "Boolean": "boolean",
-            "ID": config.id_type,
-            "Date": "string",
-            "Object": "object",
-        }.get(scalar.name, scalar.name)
-
-    output_file = srcgen_folder / "openapi.yaml"
-
-    render(output_file, model, "openapi.j2", "oapi_type", oapi_type)
-
-
-def generate_graphql(srcgen_folder: Path, model: object):
-    """Generate a GraphQL schema from the provided schema definition.
-
-    Args:
-        srcgen_folder (Path): Path to the output folder.
-        model (object): The python object graph.
-    """
-    output_file = srcgen_folder / "schema.graphql"
-
-    render(output_file, model, "graphql.j2")
-
-
-def generate_plantuml(srcgen_folder: Path, model: object):
-    """Generate a PlantUml overview of the provided schema definition.
-
-    Args:
-        srcgen_folder (Path): Path to the output folder.
-        model (object): The python object graph.
-    """
-    output_file = srcgen_folder / "plantuml.md"
-
-    render(output_file, model, "uml.j2")
-
-    uml.generate_png(output_file)
-
-
-def generate(schema: str, output_folder: Path, options: dict) -> int:
+def generate(
+    schema: str, output_path: Path, generator_name: str, config_path: Path = None
+) -> int:
     """The main function of QSDL.
 
     Generates various things from the provided schema definition.
 
     Args:
         schema (str): The schema definition.
-        output_folder (str, optional): Path to a output folder.
+        output_path (Path): Path to a output folder.
+        generator_name (str, optional): The requested generator.
+        config_path (Path, optional): Path to the config.json.
 
     Returns:
         int: 0 on success, 1 on failure
     """
     try:
 
-        # create the output folder
-        output_folder.mkdir(exist_ok=True, parents=True)
-
-        # instantiate the Entity meta-model
-        metamodel = get_metamodel()
+        # initialise
+        # fetch the generator and configuration
+        generator, gen_config = init(generator_name, config_path)
 
         # build a model from schema definition file
-        model = metamodel.model_from_str(schema)
+        model = parse_schema(schema)
 
         # init domain model
-        domain.build_domain_model(model)
+        domain_objects, operations = parse_domain_model(model)
 
-        # call generators
-        if options["openapi"]:
-            generate_openapi(output_folder, model)
-        if options["graphql"]:
-            generate_graphql(output_folder, model)
-        if options["plantuml"]:
-            generate_plantuml(output_folder, model)
+        # set global config
+        config.output_path = output_path
+        config.gen_config = gen_config
+
+        # create the output folder
+        output_path.mkdir(exist_ok=True, parents=True)
+
+        # call generator
+        generator()
 
     except (TextXSyntaxError, TextXSemanticError) as ex:
         print(ex)
