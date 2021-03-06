@@ -42,14 +42,13 @@ build:
 	@echo "building..."
 	@poetry build
 
+changelog: 
+	@echo "creating changelog..."
+	@conventional-changelog -p angular -i CHANGELOG.md -s -r 0
+
 release: 
 	@echo "releasing..."
-	@poetry version ${BUMP}
-	@export VERSION=$$(poetry version | grep -Po "(\d*\.\d*\.\d*)$$")
-	@perl -pi -e 's/(__version__\s=\s"\d*\.\d*\.\d*")/__version__ = "$$ENV{VERSION}"/' qsdl/__init__.py
-	@auto-changelog -v v$$VERSION
-	@git add -A && git commit -m "bump version to $$VERSION"
-	@git tag v$$VERSION
+	@standard-version
 
 install:
 	@echo "installing..."

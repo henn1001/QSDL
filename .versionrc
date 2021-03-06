@@ -1,0 +1,12 @@
+{
+  "bumpFiles": [
+    {
+      "filename": "pyproject.toml",
+      "updater": "scripts/release/standard-version-pyproject.js"
+    },
+    {
+      "filename": "qsdl/__init__.py",
+      "updater": "scripts/release/standard-version-init.js"
+    }
+  ]
+}
