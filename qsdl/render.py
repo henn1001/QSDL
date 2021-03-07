@@ -18,14 +18,13 @@ from pathlib import Path
 
 import jinja2
 
-from qsdl import __folder__
 from qsdl.util import pluralize
 
 
 def render(
     output_file: Path,
     args: dict,
-    template_name: str,
+    template_path: Path,
     type_name: str = None,
     type_def: object = None,
 ):
@@ -34,13 +33,13 @@ def render(
     Args:
         output_file (Path): The output path.
         args (dict): The python object graph.
-        template_name (str): Our internally know template name.
+        template_path (Path): The path to the j2 template.
         type_name (str, optional): [description]. Defaults to None.
         type_def (object, optional): [description]. Defaults to None.
     """
 
     # initialize the template engine.
-    template_folder = Path(__folder__) / "templates"
+    template_folder = template_path.parent
 
     loader = jinja2.FileSystemLoader(template_folder)
     jinja_env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
@@ -52,7 +51,7 @@ def render(
     jinja_env.filters["pluralize"] = pluralize
 
     # load the template
-    template = jinja_env.get_template(template_name)
+    template = jinja_env.get_template(template_path.name)
 
     # testing Area
 

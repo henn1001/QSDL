@@ -14,6 +14,8 @@
 
 """GraphQL Generator"""
 
+from pathlib import Path
+
 from qsdl import config
 from qsdl.generators.generic import get_args
 from qsdl.render import render
@@ -23,8 +25,9 @@ def generate():
     """Generator func for GraphQL"""
 
     output_file = config.output_path / "schema.graphql"
+    template_path = Path(__file__).parent / "template" / "graphql.j2"
 
     # build the render arguments
     args = get_args()
 
-    render(output_file, args, "graphql.j2")
+    render(output_file, args, template_path)

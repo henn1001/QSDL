@@ -14,6 +14,8 @@
 
 """PlantUML Generator"""
 
+from pathlib import Path
+
 from qsdl import config, uml
 from qsdl.generators.generic import get_args
 from qsdl.render import render
@@ -23,10 +25,11 @@ def generate():
     """Generator func for PlantUML"""
 
     output_file = config.output_path / "plantuml.md"
+    template_path = Path(__file__).parent / "template" / "uml.j2"
 
     # build the render arguments
     args = get_args()
 
-    render(output_file, args, "uml.j2")
+    render(output_file, args, template_path)
 
     uml.generate_png(output_file)

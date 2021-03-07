@@ -20,11 +20,10 @@ Currently the following generators are available:
 
 ### Requirements
 
-The QSDL package works on Python versions:
+The QSDL package has been developed and tested on Python versions:
 
-* 3.6.x and greater
-* 3.7.x and greater
-* 3.8.x and greater
+* 3.6.x
+* 3.7.x
 
 ### Installation
 
@@ -55,15 +54,10 @@ The QSDL CLI command has the following structure:
 For example, to run the generator on a minimal schema definition file:
 
     $ echo "type Project { id: ID name: String }" > project.tx
-    $ qsdl project.tx
+    $ qsdl project.tx -g openapi
     $ tree srcgen/
       srcgen/
-      ├── openapi.yaml
-      ├── plantuml.bases.png
-      ├── plantuml.enums.png
-      ├── plantuml.md
-      ├── plantuml.overview.png
-      └── schema.graphql
+      └── openapi.yaml
 
       0 directories, 6 files
 
