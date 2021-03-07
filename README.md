@@ -83,7 +83,7 @@ Examples can be found in `util/examples/`.
 
 # Language
 
-The language definition can be found [here](qsdl/definition/entity.tx) and as PlantUML representation [here](qsdl/definition/entity.md). Let's try to go over it from the top.
+The language definition can be found [here](qsdl/dsl/definition/entity.tx) and as PlantUML representation [here](qsdl/dsl/definition/entity.md). Let's try to go over it from the top.
 
 ## Schema
 

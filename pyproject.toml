@@ -9,7 +9,7 @@ homepage = "https://gitlab.com/henn1001/qsdl"
 repository = "https://gitlab.com/henn1001/qsdl"
 include = [
     "README.md",
-    "qsdl/definition/entity.tx",
+    "qsdl/dsl/definition/entity.tx",
     "qsdl/templates/openapi.j2",
     "qsdl/templates/openapi.macro.j2",
     "qsdl/templates/graphql.j2",

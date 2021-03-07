@@ -18,13 +18,13 @@ from copy import copy
 
 from textx import metamodel_from_file
 from textx import model as mfunc
-from textx.exceptions import TextXSemanticError, TextXSyntaxError
+from textx.exceptions import TextXSemanticError
 from textx.metamodel import TextXMetaModel
 
 from qsdl import __folder__, config, uml
-from qsdl.model import Operation, Scalar
 from qsdl.dsl.processors.model import model_processor
 from qsdl.dsl.processors.objects import obj_processors
+from qsdl.model import Operation, Scalar
 from qsdl.util import (get_aggregation, get_childs, get_compositions, get_id,
                        get_id_field, get_operation_id, get_operation_method,
                        get_path_base, get_path_parameters,
@@ -206,7 +206,7 @@ def get_crud_operation_aggregation(obj: object, method: str) -> Operation:
         method = "get"
         parameters = get_path_parameters(obj, obj.d_parent)
         parameters.extend(get_query_parameters(obj))
-        parameters.extend(get_query_parameters_paging(obj))
+        parameters.extend(get_query_parameters_paging())
         request = None
         response = operation_helper_response(obj, False, True)
 
@@ -266,7 +266,7 @@ def get_crud_operation(obj: object, method: str) -> Operation:
         method = "get"
         parameters = get_path_parameters(obj, obj.d_parent)
         parameters.extend(get_query_parameters(obj))
-        parameters.extend(get_query_parameters_paging(obj))
+        parameters.extend(get_query_parameters_paging())
         request = None
         response = operation_helper_response(obj, False, True)
 
@@ -366,7 +366,7 @@ def build_crud(objects: list) -> list:
     return operations
 
 
-def check_duplicates():
+def check_duplicates(domain_objects: list):
     """Adds operation names to the global list and flags duplicates.
 
     This is needed in order to identify if we need to derive operation names
@@ -376,41 +376,37 @@ def check_duplicates():
     """
     seen = set()
 
-    # reset global config
-    config.dupl_objects = set()
-    config.used_paths = []
-
-    for obj in config.domain_objects:
+    for obj in domain_objects:
         if obj.name not in seen:
             seen.add(obj.name)
         else:
             config.dupl_objects.add(obj.name)
 
 
-def validate_operation_names():
+def validate_operation_names(operations: list, model: object):
     """Checks if we have any duplicate operation names"""
 
     names = []
 
-    for operation in config.operations:
+    for operation in operations:
         names.append(operation.name)
 
     if len(names) != len(set(names)):
         msg = "Duplicate operation names found."
-        raise TextXSemanticError(msg, filename=config.model._tx_filename)
+        raise TextXSemanticError(msg, filename=model._tx_filename)
 
 
-def validate_operation_paths():
+def validate_operation_paths(operations: list, model: object):
     """Checks if we have any duplicate operation paths"""
 
     paths = []
 
-    for operation in config.operations:
+    for operation in operations:
         paths.append(operation.method + operation.path)
 
     if len(paths) != len(set(paths)):
         msg = "Duplicate operation names found."
-        raise TextXSemanticError(msg, filename=config.model._tx_filename)
+        raise TextXSemanticError(msg, filename=model._tx_filename)
 
 
 def sort_operation_order(operations: list, by_path: bool = False, by_def: bool = False):
@@ -451,7 +447,7 @@ def sort_operation_order(operations: list, by_path: bool = False, by_def: bool =
     return sorted_operations
 
 
-def get_endpoints() -> list:
+def get_endpoints(model: object) -> list:
     """Returns all possible endpoints/paths for OpenAPI.
 
     Returns:
@@ -459,7 +455,7 @@ def get_endpoints() -> list:
     """
     endpoints = []
 
-    objects = mfunc.get_children_of_type("Object", config.model)
+    objects = mfunc.get_children_of_type("Object", model)
 
     for obj in objects:
 
@@ -504,7 +500,7 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     """
 
     metamodel = None
-    grammar_path = __folder__ / "definition" / "entity.tx"
+    grammar_path = __folder__ / "dsl" / "definition" / "entity.tx"
 
     type_builtins = {
         "Int": Scalar(None, "Int"),
@@ -534,44 +530,17 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     return metamodel
 
 
-def parse_schema(schema, print_uml=False):
-    """Builds and returns a meta-model for our meta language.
+def parse_schema(schema: str) -> object:
+    """Builds and returns the DSL model as python object graph.
 
     Args:
-        print_uml (bool, optional): Draw a PlantUml diagram of the model.
-            Defaults to False.
+        schema (str): The schema definition.
 
     Returns:
-        TextXMetaModel: The metamodel.
+        model (object): The python object graph.
     """
-
-    metamodel = None
-    grammar_path = __folder__ / "definition" / "entity.tx"
-
-    type_builtins = {
-        "Int": Scalar(None, "Int"),
-        "Long": Scalar(None, "Long"),
-        "Float": Scalar(None, "Float"),
-        "Double": Scalar(None, "Double"),
-        "String": Scalar(None, "String"),
-        "Boolean": Scalar(None, "Boolean"),
-        "ID": Scalar(None, "ID"),
-        "Date": Scalar(None, "Date"),
-        "Object": Scalar(None, "Object"),
-        "Void": Scalar(None, "Void"),
-    }
-
-    # parse the grammar file
-    metamodel = metamodel_from_file(grammar_path, classes=[Scalar], builtins=type_builtins)
-
-    # register pre-processors
-    # these allow us to hook into the model and object creation
-    metamodel.register_model_processor(model_processor)
-    metamodel.register_obj_processors(obj_processors)
-
     # export model with plantuml
-    if print_uml:
-        uml.draw_metamodel(metamodel)
+    metamodel = get_metamodel()
 
     # build a model from schema definition file
     model = metamodel.model_from_str(schema)
@@ -587,32 +556,29 @@ def parse_domain_model(model: object):
     """
     operations = []
 
-    config.model = model
+    domain_objects = get_endpoints(model)
 
-    config.domain_objects = get_endpoints()
-    check_duplicates()
+    check_duplicates(domain_objects)
 
-    tmp = mfunc.get_children_of_type("Operation", config.model)
+    tmp = mfunc.get_children_of_type("Operation", model)
 
     # crud objects
     objects = []
-    objects.extend(list(filter(lambda x: not x.operation, config.domain_objects)))
+    objects.extend(list(filter(lambda x: not x.operation, domain_objects)))
     crud_operations = build_crud(objects)
     operations.extend(crud_operations)
 
     # custom queries/mutations
     entities = []
     entities.extend(list(filter(lambda x: x.parent._tx_fqn != "entity.Object", tmp)))
-    entities.extend(list(filter(lambda x: x.operation, config.domain_objects)))
+    entities.extend(list(filter(lambda x: x.operation, domain_objects)))
     custom_operations = build_custom_queries(entities)
     operations.extend(custom_operations)
 
     operations = sort_operation_order(operations, by_def=True)
 
-    config.operations = operations
-
     # validate uniqueness
-    validate_operation_names()
-    validate_operation_paths()
+    validate_operation_names(operations, model)
+    validate_operation_paths(operations, model)
 
-    return config.domain_objects, operations
+    return domain_objects, operations

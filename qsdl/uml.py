@@ -29,7 +29,7 @@ def draw_metamodel(metamodel: TextXMetaModel):
     Args:
         metamodel (TextXMetaModel): The metamodel to draw.
     """
-    out_path = Path(__folder__) / "definition" / "entity.md"
+    out_path = Path(__folder__) / "dsl" / "definition" / "entity.md"
 
     metamodel_export(metamodel, out_path, renderer=PlantUmlRenderer())
 

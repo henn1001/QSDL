@@ -29,4 +29,4 @@ class TestCore:
     def test_get_metamodel_plantuml(self):
         """Verify that we can print the plantuml model"""
 
-        assert parse.parse_schema("base Foo { field: ID }", print_uml=True)
+        assert parse.get_metamodel(print_uml=True)

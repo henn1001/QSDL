@@ -12,11 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generator specific variables"""
+"""QGEN - Generic generator"""
 
-from dataclasses import dataclass
+from textx import model as mfunc
+
+from qsdl import config, util
 
 
-@dataclass
-class Config:
-    """A configuration class that holds relevant data for the generator"""
+def get_args() -> dict:
+    """Returns the default args for rendering.
+
+    Returns:
+        dict: rendering args.
+    """
+    return {
+        "model": config.model,
+        "mfunc": mfunc,
+        "util": util,
+        "config": config,
+    }

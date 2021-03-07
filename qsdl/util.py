@@ -759,7 +759,7 @@ def get_query_parameters(entity: object) -> list:
     return parameters
 
 
-def get_query_parameters_paging(entity: object) -> list:
+def get_query_parameters_paging() -> list:
     """Returns a list of parameters for paging.
 
     Args:

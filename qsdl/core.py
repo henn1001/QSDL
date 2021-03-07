@@ -117,9 +117,7 @@ def init(generator_name: str, config_path: Path = None) -> Tuple:
     return generator, gen_config
 
 
-def generate(
-    schema: str, output_path: Path, generator_name: str, config_path: Path = None
-) -> int:
+def generate(schema: str, output_path: Path, generator_name: str, config_path: Path = None) -> int:
     """The main function of QSDL.
 
     Generates various things from the provided schema definition.
@@ -134,20 +132,22 @@ def generate(
         int: 0 on success, 1 on failure
     """
     try:
-
         # initialise
+        config.model = None
+        config.output_path = output_path
+        config.domain_objects = []
+        config.operations = []
+        config.dupl_objects = set()
+        config.used_paths = []
+
         # fetch the generator and configuration
-        generator, gen_config = init(generator_name, config_path)
+        generator, config.gen_config = init(generator_name, config_path)
 
         # build a model from schema definition file
-        model = parse_schema(schema)
+        config.model = parse_schema(schema)
 
         # init domain model
-        domain_objects, operations = parse_domain_model(model)
-
-        # set global config
-        config.output_path = output_path
-        config.gen_config = gen_config
+        config.domain_objects, config.operations = parse_domain_model(config.model)
 
         # create the output folder
         output_path.mkdir(exist_ok=True, parents=True)

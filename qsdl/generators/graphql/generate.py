@@ -14,9 +14,9 @@
 
 """GraphQL Generator"""
 
-from qsdl import config, util
+from qsdl import config
+from qsdl.generators.generic import get_args
 from qsdl.render import render
-from textx import model as mfunc
 
 
 def generate():
@@ -25,11 +25,6 @@ def generate():
     output_file = config.output_path / "schema.graphql"
 
     # build the render arguments
-    args = {
-        "model": config.model,
-        "mfunc": mfunc,
-        "util": util,
-        "config": config,
-    }
+    args = get_args()
 
     render(output_file, args, "graphql.j2")
