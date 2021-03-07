@@ -83,7 +83,7 @@ components:
             $ref: '#/components/schemas/ApiError'
 
   schemas:
-{% for enum in mfunc.get_children_of_type("Enum", model) %}
+{% for enum in xtx.get_children_of_type("Enum", model) %}
     {{ enum.name|capitalize }}:
     {% if enum.description %}
       description: |
@@ -96,7 +96,7 @@ components:
         {% endfor %}
 
 {% endfor %}
-{% for base in mfunc.get_children_of_type("Base", model) %}
+{% for base in xtx.get_children_of_type("Base", model) %}
     {{ base.name|capitalize }}:
     {% if base.description %}
       description: |
@@ -113,7 +113,7 @@ components:
         {{ macro.get_schema(base) | indent(6) | trim }}
 
 {% endfor %}
-{% for object in mfunc.get_children_of_type("Object", model) %}
+{% for object in xtx.get_children_of_type("Object", model) %}
     {{ object.name|capitalize }}List:
       required:
         - items

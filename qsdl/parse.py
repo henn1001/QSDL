@@ -17,7 +17,7 @@
 from copy import copy
 
 from textx import metamodel_from_file
-from textx import model as mfunc
+from textx import model as xtx
 from textx.exceptions import TextXSemanticError
 from textx.metamodel import TextXMetaModel
 
@@ -455,7 +455,7 @@ def get_endpoints(model: object) -> list:
     """
     endpoints = []
 
-    objects = mfunc.get_children_of_type("Object", model)
+    objects = xtx.get_children_of_type("Object", model)
 
     for obj in objects:
 
@@ -560,7 +560,7 @@ def parse_domain_model(model: object):
 
     check_duplicates(domain_objects)
 
-    tmp = mfunc.get_children_of_type("Operation", model)
+    tmp = xtx.get_children_of_type("Operation", model)
 
     # crud objects
     objects = []

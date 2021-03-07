@@ -15,7 +15,7 @@
 """Utility functions"""
 
 import inflect
-from textx import model as mfunc
+from textx import model as xtx
 
 from qsdl import config
 from qsdl.model.scalar import Scalar
@@ -226,7 +226,7 @@ def get_parents(obj: object) -> list:
     """
     parents = []
 
-    fields = mfunc.get_children_of_type("Field", config.model)
+    fields = xtx.get_children_of_type("Field", config.model)
 
     parents = list(filter(lambda x: x.value == obj, fields))
 
@@ -534,13 +534,13 @@ def is_nested(entity: object) -> bool:
     """
     ret = False
 
-    for field in mfunc.get_children_of_type("Field", config.model):
+    for field in xtx.get_children_of_type("Field", config.model):
         if field.value == entity:
             if field.nested:
                 ret = True
                 break
 
-    for arg in mfunc.get_children_of_type("Argument", config.model):
+    for arg in xtx.get_children_of_type("Argument", config.model):
         if arg.value == entity:
             ret = True
             break

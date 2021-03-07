@@ -16,7 +16,7 @@
 
 from pathlib import Path
 
-from textx import model as mfunc
+from textx import model as xtx
 
 from qsdl import util
 from qsdl.render import render
@@ -61,7 +61,7 @@ def generate(model, output_path, parameters):
     # build the render arguments
     context = {
         "model": model,
-        "mfunc": mfunc,
+        "xtx": xtx,
         "util": util,
         "parameters": parameters,
     }

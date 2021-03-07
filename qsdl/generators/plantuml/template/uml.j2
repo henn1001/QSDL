@@ -2,7 +2,7 @@
 ```plantuml
 @startuml
 
-{% for enum in mfunc.get_children_of_type("Enum", model) %}
+{% for enum in xtx.get_children_of_type("Enum", model) %}
 enum {{enum.name}} {
     {% for value in enum.values %}
     {{value}}
@@ -19,7 +19,7 @@ enum {{enum.name}} {
 ```plantuml
 @startuml
 
-{% for base in mfunc.get_children_of_type("Base", model) %}
+{% for base in xtx.get_children_of_type("Base", model) %}
 abstract class {{base.name}} {% if base.superType %}<extends {{base.superType.name}}> {% endif %}{
     {% for field in util.get_fields_as_list(base) %}
     {{field.name}}: {{field.value.name}}
@@ -36,7 +36,7 @@ abstract class {{base.name}} {% if base.superType %}<extends {{base.superType.na
 ```plantuml
 @startuml
 
-{% for object in mfunc.get_children_of_type("Object", model) %}
+{% for object in xtx.get_children_of_type("Object", model) %}
 {% if object.namespace %}
 namespace {{object.namespace}} #DDDDDD {
 {% endif %}
