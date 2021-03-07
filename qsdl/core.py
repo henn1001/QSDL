@@ -26,7 +26,7 @@ from textx.exceptions import TextXSemanticError, TextXSyntaxError
 
 from qsdl import __folder__, config
 from qsdl.generators import get_config, get_generator
-from qsdl.model import Color
+from qsdl.models import Color
 from qsdl.parse import parse_domain_model, parse_schema
 
 
@@ -163,7 +163,7 @@ def generate(schema: str, output_path: Path, generator_name: str, config_path: P
         # call generator
         config.generator(config.model, config.output_path, config.parameters)
 
-    except (TextXSyntaxError, TextXSemanticError, Exception) as ex: # pylint: disable=W0703
+    except (TextXSyntaxError, TextXSemanticError, Exception): # pylint: disable=W0703
         traceback.print_exc()
         return 1
 

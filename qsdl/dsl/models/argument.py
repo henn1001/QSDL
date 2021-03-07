@@ -12,14 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Scalar class"""
+"""Argument class"""
 
 from dataclasses import dataclass
 
 
 @dataclass
-class Scalar:
-    """Our Scalar class"""
+class Argument:
+    """Our Argument class"""
 
+    # required by textX
     parent: object
+
+    # defined in entity.tx
+    # LHS
     name: str
+    # RHS
+    array: bool
+    value: object
+    non_nullable_array: bool
+    non_nullable: bool

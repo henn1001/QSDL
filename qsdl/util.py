@@ -18,7 +18,7 @@ import inflect
 from textx import model as xtx
 
 from qsdl import config
-from qsdl.model.scalar import Scalar
+from qsdl.dsl.models import Scalar
 
 
 def pluralize(word: str) -> str:
@@ -276,10 +276,10 @@ def get_fields_as_list(entity: object) -> list:
             tmp_list.append(field)
 
         fields = tmp_list + fields
-        if not tmp.superType:
+        if not tmp.supertype:
             break
 
-        tmp = tmp.superType
+        tmp = tmp.supertype
 
     return fields
 
@@ -343,8 +343,8 @@ def has_query(entity: object) -> bool:
     """
     ret = False
 
-    if entity.superType:
-        ret = has_query(entity.superType)
+    if entity.supertype:
+        ret = has_query(entity.supertype)
 
     for field in entity.fields:
         if field.query:
@@ -355,7 +355,7 @@ def has_query(entity: object) -> bool:
 
 
 def get_required(entity: object) -> list:
-    """Returns all nonNullable fields of a Object.
+    """Returns all non_nullable fields of a Object.
 
     Args:
         entity (object): entity.Object
@@ -369,14 +369,14 @@ def get_required(entity: object) -> list:
     while True:
         tmp_list = []
         for field in tmp.fields:
-            if field.nonNullable:
+            if field.non_nullable:
                 tmp_list.append(field)
 
         fields = tmp_list + fields
-        if not tmp.superType:
+        if not tmp.supertype:
             break
 
-        tmp = tmp.superType
+        tmp = tmp.supertype
 
     return fields
 
@@ -394,8 +394,8 @@ def get_id(entity: object) -> str:
 
     if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Base":
 
-        if entity.superType:
-            field_entity_name = get_id(entity.superType)
+        if entity.supertype:
+            field_entity_name = get_id(entity.supertype)
 
         for field in entity.fields:
             if field.value.name == "ID":
@@ -423,8 +423,8 @@ def get_id_field(entity: object) -> object:
 
     if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Base":
 
-        if entity.superType:
-            field_entity = get_id_field(entity.superType)
+        if entity.supertype:
+            field_entity = get_id_field(entity.supertype)
 
         for field in entity.fields:
             if field.value.name == "ID":
@@ -739,8 +739,8 @@ def get_query_parameters(entity: object) -> list:
                     param = {"name": field.name, "type": field, "in": "query", "required": "false"}
                     parameters.append(param)
 
-            if tmp.superType:
-                tmp = tmp.superType
+            if tmp.supertype:
+                tmp = tmp.supertype
             else:
                 break
 

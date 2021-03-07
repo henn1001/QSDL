@@ -111,8 +111,8 @@ def validate_field_id(model: object, metamodel: TextXMetaModel):
                     msg = f"Invalid Void Field value for Object {obj.name}"
                     raise TextXSemanticError(msg, filename=model._tx_filename)
 
-            if tmp.superType:
-                tmp = tmp.superType
+            if tmp.supertype:
+                tmp = tmp.supertype
             else:
                 break
 

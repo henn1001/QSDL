@@ -160,9 +160,9 @@
 {% elif field.value.name == "Date" %}
   format: date-time
 {% endif %}
-{% if field.readOnly %}
+{% if field.readonly %}
   readOnly: true
-{% elif field.writeOnly %}
+{% elif field.writeonly %}
   writeOnly: true
 {% endif %}
 {% endmacro %}

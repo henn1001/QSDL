@@ -22,9 +22,10 @@ from textx.exceptions import TextXSemanticError
 from textx.metamodel import TextXMetaModel
 
 from qsdl import __folder__, config, uml
+from qsdl.dsl.models import Scalar, all_dsl_models
 from qsdl.dsl.processors.model import model_processor
 from qsdl.dsl.processors.objects import obj_processors
-from qsdl.model import Operation, Scalar
+from qsdl.models import Operation
 from qsdl.util import (get_aggregation, get_childs, get_compositions, get_id,
                        get_id_field, get_operation_id, get_operation_method,
                        get_path_base, get_path_parameters,
@@ -68,8 +69,8 @@ def operation_helper_response(obj: object, array: bool = False, paging: bool = F
         dict: The simplified response Field.
     """
     return {
-        "readOnly": False,
-        "writeOnly": False,
+        "readonly": False,
+        "writeonly": False,
         "array": array,
         "value": obj,
         "paging": paging,
@@ -516,7 +517,7 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     }
 
     # parse the grammar file
-    metamodel = metamodel_from_file(grammar_path, classes=[Scalar], builtins=type_builtins)
+    metamodel = metamodel_from_file(grammar_path, classes=all_dsl_models(), builtins=type_builtins)
 
     # register pre-processors
     # these allow us to hook into the model and object creation

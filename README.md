@@ -20,9 +20,8 @@ Currently the following generators are available:
 
 ### Requirements
 
-The QSDL package has been developed and tested on Python versions:
+The QSDL package has been developed and tested on Python version:
 
-* 3.6.x
 * 3.7.x
 
 ### Installation
@@ -177,7 +176,7 @@ Example:
 $`          Base:                                                           `$\
 $`~~~~          description=Description?                                    `$\
 $`~~~~          name=ID                                                     `$\
-$`~~~~          superType=Base?                                             `$\
+$`~~~~          supertype=Base?                                             `$\
 $`~~~~          directives*=Directive                                       `$\
 $`~~~~          fields+=Field                                               `$
 
@@ -248,7 +247,7 @@ Example:
 $`          Object:                                                         `$\
 $`~~~~          description=Description?                                    `$\
 $`~~~~          name=ID                                                     `$\
-$`~~~~          superType=Base?                                             `$\
+$`~~~~          supertype=Base?                                             `$\
 $`~~~~          directives*=Directive                                       `$\
 $`~~~~          fields+=Field                                               `$\
 $`~~~~          operation=Operation?                                        `$

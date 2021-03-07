@@ -35,7 +35,7 @@ Base:
 
     'base' name=ID
 
-    ('implements' superType=[Base])? 
+    ('implements' supertype=[Base])? 
     
     // Special directives
     ( deprecated?='@deprecated'
@@ -73,7 +73,7 @@ Object:
 
     'type' name=ID
 
-    ('implements' superType=[Base])?
+    ('implements' supertype=[Base])?
 
     // Special directives
     ( deprecated?='@deprecated'
@@ -104,15 +104,15 @@ Field:
     // RHS
     (array?='[' &/.*\]/)?
     value=[ValueType]
-    (nonNullableArray?='!' & ']')?
+    (non_nullable_array?='!' & ']')?
     (']')?
-    (nonNullable?='!')?
+    (non_nullable?='!')?
 
     // Special directives
     ( query?='@query'
         nested?='@nested'
-        readOnly?='@readOnly'
-        writeOnly?='@writeOnly'
+        readonly?='@readOnly'
+        writeonly?='@writeOnly'
         composition?='@composition'
         aggregation?='@aggregation'
         ('@path(value:' path=STRING ')')?
@@ -133,9 +133,9 @@ Argument:
     // RHS
     (array?='[' &/.*\]/)?
     value=[ValueType]
-    (nonNullableArray?='!' & ']')?
+    (non_nullable_array?='!' & ']')?
     (']')?
-    (nonNullable?='!')?
+    (non_nullable?='!')?
 ;
 
 Method:

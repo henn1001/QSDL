@@ -47,6 +47,9 @@ testpaths = [
     "tests",
 ]
 
+[tool.pylint.SIMILARITIES]
+min-similarity-lines = 10
+
 [tool.pylint.messages_control]
 disable = [
     "protected-access",

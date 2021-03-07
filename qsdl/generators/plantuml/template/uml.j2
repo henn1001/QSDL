@@ -20,7 +20,7 @@ enum {{enum.name}} {
 @startuml
 
 {% for base in xtx.get_children_of_type("Base", model) %}
-abstract class {{base.name}} {% if base.superType %}<extends {{base.superType.name}}> {% endif %}{
+abstract class {{base.name}} {% if base.supertype %}<extends {{base.supertype.name}}> {% endif %}{
     {% for field in util.get_fields_as_list(base) %}
     {{field.name}}: {{field.value.name}}
     {% endfor %}
@@ -40,7 +40,7 @@ abstract class {{base.name}} {% if base.superType %}<extends {{base.superType.na
 {% if object.namespace %}
 namespace {{object.namespace}} #DDDDDD {
 {% endif %}
-class {{object.name}} {% if object.superType %}<implements {{object.superType.name}}> {% endif %}{
+class {{object.name}} {% if object.supertype %}<implements {{object.supertype.name}}> {% endif %}{
     {% for field in util.get_fields_as_list(object) if util.get_filtered_fields(field) %}
     {{field.name}}: {% if field.array %}[{% endif %}{{field.value.name}}{% if field.array %}]{% endif %}
 

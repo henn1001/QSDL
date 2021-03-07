@@ -59,12 +59,12 @@ class entity.Field  {
   name : ID
   function : optional<BOOL>
   array : optional<BOOL>
-  nonNullableArray : optional<BOOL>
-  nonNullable : optional<BOOL>
+  non_nullable_array : optional<BOOL>
+  non_nullable : optional<BOOL>
   query : optional<BOOL>
   nested : optional<BOOL>
-  readOnly : optional<BOOL>
-  writeOnly : optional<BOOL>
+  readonly : optional<BOOL>
+  writeonly : optional<BOOL>
   composition : optional<BOOL>
   aggregation : optional<BOOL>
   path : STRING
@@ -75,8 +75,8 @@ class entity.Field  {
 class entity.Argument  {
   name : ID
   array : optional<BOOL>
-  nonNullableArray : optional<BOOL>
-  nonNullable : optional<BOOL>
+  non_nullable_array : optional<BOOL>
+  non_nullable : optional<BOOL>
 }
 
 
@@ -114,9 +114,9 @@ legend
   |= Name  |= Rule details |
   | Description |  |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
 end legend
 
 @enduml
