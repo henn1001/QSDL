@@ -15,6 +15,7 @@
 """Core generation"""
 
 import json
+import traceback
 from pathlib import Path
 from typing import Tuple
 
@@ -36,8 +37,8 @@ def prompt_user() -> Tuple:
     configuration.
 
     Returns:
-        Tuple[generator, config]: Callable generator func and
-                                  config dataclass.
+        Tuple[generator, parameters]: Callable generator func and
+                                  parameter dataclass.
     """
     # provide greeting message
     figlet = Figlet(font="speed")
@@ -53,7 +54,7 @@ def prompt_user() -> Tuple:
             "type": "list",
             "name": "generator",
             "message": "Which generator do you want to use?",
-            "choices": config.generators,
+            "choices": config.available_generators,
         }
     ]
 
@@ -61,13 +62,13 @@ def prompt_user() -> Tuple:
     generator_name = answers["generator"]
 
     # get config and callable generator for provided generator
+    parameters = get_config(generator_name)
     generator = get_generator(generator_name)
-    gen_config = get_config(generator_name)
 
     # prompt user with available configuration and defaults
     questions = []
 
-    for key, value in gen_config.__dict__.items():
+    for key, value in parameters.__dict__.items():
         question = {
             "type": "input",
             "name": key,
@@ -78,11 +79,11 @@ def prompt_user() -> Tuple:
 
     answers = prompt(questions)
 
-    # loop over provided answers and update configuration
+    # loop over provided answers and update generator paramaters
     for key, value in answers.items():
-        gen_config.__setattr__(key, value)
+        parameters.__setattr__(key, value)
 
-    return generator, gen_config
+    return generator, parameters
 
 
 def init(generator_name: str, config_path: Path = None) -> Tuple:
@@ -96,25 +97,37 @@ def init(generator_name: str, config_path: Path = None) -> Tuple:
         config_path (str, optional): Path to the config.json. Defaults to None.
 
     Returns:
-        Tuple[generator, config]: Callable generator func and
-                                  config dataclass.
+        Tuple[generator, parameters]: Callable generator func and
+                                  parameter dataclass.
     """
+
+    # initialise global config
+    # important when core.generate is called directly multiple times
+    config.model = None
+    config.output_path = None
+    config.domain_objects = []
+    config.operations = []
+    config.dupl_objects = set()
+    config.used_paths = []
+    config.generator = None
+    config.parameters = None
+
     if generator_name:
         # flag mode
         # fetch default config and generator
-        gen_config = get_config(generator_name)
+        parameters = get_config(generator_name)
         generator = get_generator(generator_name)
 
-        # optionally overwrite the default config with user provided data
+        # optionally overwrite the default parameters with user provided data
         if config_path:
             with open(config_path) as json_file:
                 data = json.load(json_file)
-                gen_config = from_dict(data_class=gen_config.__class__, data=data)
+                parameters = from_dict(data_class=parameters.__class__, data=data)
     else:
         # prompt mode
-        generator, gen_config = prompt_user()
+        generator, parameters = prompt_user()
 
-    return generator, gen_config
+    return generator, parameters
 
 
 def generate(schema: str, output_path: Path, generator_name: str, config_path: Path = None) -> int:
@@ -132,16 +145,8 @@ def generate(schema: str, output_path: Path, generator_name: str, config_path: P
         int: 0 on success, 1 on failure
     """
     try:
-        # initialise
-        config.model = None
-        config.output_path = output_path
-        config.domain_objects = []
-        config.operations = []
-        config.dupl_objects = set()
-        config.used_paths = []
-
-        # fetch the generator and configuration
-        generator, config.gen_config = init(generator_name, config_path)
+        # initiliase the global config and fetch the generator and its parameters
+        config.generator, config.parameters = init(generator_name, config_path)
 
         # build a model from schema definition file
         config.model = parse_schema(schema)
@@ -149,14 +154,17 @@ def generate(schema: str, output_path: Path, generator_name: str, config_path: P
         # init domain model
         config.domain_objects, config.operations = parse_domain_model(config.model)
 
+        # set global config
+        config.output_path = output_path
+
         # create the output folder
         output_path.mkdir(exist_ok=True, parents=True)
 
         # call generator
-        generator()
+        config.generator(config.model, config.output_path, config.parameters)
 
-    except (TextXSyntaxError, TextXSemanticError) as ex:
-        print(ex)
+    except (TextXSyntaxError, TextXSemanticError, Exception) as ex: # pylint: disable=W0703
+        traceback.print_exc()
         return 1
 
     return 0

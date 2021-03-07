@@ -67,7 +67,7 @@ class TestOperationField:
             return var["200"]["content"]["application/json"]["schema"]
 
         ops = [
-            ("/path1", "get", config.id_type, config.id_type_format),
+            ("/path1", "get", "integer", "int64"),
             ("/path2", "get", "integer", "int32"),
             ("/path3", "get", "integer", "int64"),
             ("/path4", "get", "number", "float"),

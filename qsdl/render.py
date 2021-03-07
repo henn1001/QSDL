@@ -23,7 +23,7 @@ from qsdl.util import pluralize
 
 def render(
     output_file: Path,
-    args: dict,
+    context: dict,
     template_path: Path,
     type_name: str = None,
     type_def: object = None,
@@ -32,8 +32,8 @@ def render(
 
     Args:
         output_file (Path): The output path.
-        args (dict): The python object graph.
-        template_path (Path): The path to the j2 template.
+        context (dict): The context for jinja template.
+        template_path (Path): The path to the jinja template.
         type_name (str, optional): [description]. Defaults to None.
         type_def (object, optional): [description]. Defaults to None.
     """
@@ -60,5 +60,5 @@ def render(
 
     # generate code
     with open(output_file, "w") as file:
-        tmp = template.render(args)
+        tmp = template.render(context)
         file.write(tmp)

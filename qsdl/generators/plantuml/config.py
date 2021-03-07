@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generator specific variables"""
+"""Generator specific parameters"""
 
 from dataclasses import dataclass
 

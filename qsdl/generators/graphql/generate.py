@@ -16,18 +16,24 @@
 
 from pathlib import Path
 
-from qsdl import config
-from qsdl.generators.generic import get_args
+from textx import model as mfunc
+
+from qsdl import util
 from qsdl.render import render
 
 
-def generate():
+def generate(model, output_path, parameters):
     """Generator func for GraphQL"""
 
-    output_file = config.output_path / "schema.graphql"
+    output_file = output_path / "schema.graphql"
     template_path = Path(__file__).parent / "template" / "graphql.j2"
 
     # build the render arguments
-    args = get_args()
+    context = {
+        "model": model,
+        "mfunc": mfunc,
+        "util": util,
+        "parameters": parameters,
+    }
 
-    render(output_file, args, template_path)
+    render(output_file, context, template_path)

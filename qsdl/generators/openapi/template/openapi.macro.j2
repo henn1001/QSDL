@@ -153,8 +153,8 @@
 {% elif field.value.name == "Double" %}
   format: double
 {% elif field.value.name == "ID"%}
-  {% if config.id_type_format %}
-  format: {{config.id_type_format}}
+  {% if parameters.id_type_format %}
+  format: {{parameters.id_type_format}}
   {% endif %}
   x-qsdl-type: ID
 {% elif field.value.name == "Date" %}

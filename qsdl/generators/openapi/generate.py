@@ -16,9 +16,22 @@
 
 from pathlib import Path
 
-from qsdl import config
-from qsdl.generators.generic import get_args
+from textx import model as mfunc
+
+from qsdl import util
 from qsdl.render import render
+
+custom_types = {
+    "Int": "integer",
+    "Long": "integer",
+    "Float": "number",
+    "Double": "number",
+    "String": "string",
+    "Boolean": "boolean",
+    "ID": "integer",
+    "Date": "string",
+    "Object": "object",
+}
 
 
 def oapi_type(scalar) -> str:
@@ -30,26 +43,27 @@ def oapi_type(scalar) -> str:
     Returns:
         str: The mapped OpenApi type name or the Scalar name.
     """
-    return {
-        "Int": "integer",
-        "Long": "integer",
-        "Float": "number",
-        "Double": "number",
-        "String": "string",
-        "Boolean": "boolean",
-        "ID": config.id_type,
-        "Date": "string",
-        "Object": "object",
-    }.get(scalar.name, scalar.name)
+    return custom_types.get(scalar.name, scalar.name)
 
 
-def generate():
+def generate(model, output_path, parameters):
     """Generator func for OpenAPI"""
 
-    output_file = config.output_path / "openapi.yaml"
+    if parameters.id_type not in ["integer", "string"]:
+        raise ValueError("id_type must be `integer` or `string`")
+
+    # sets the id type
+    custom_types["ID"] = parameters.id_type
+
+    output_file = output_path / "openapi.yaml"
     template_path = Path(__file__).parent / "template" / "openapi.j2"
 
     # build the render arguments
-    args = get_args()
+    context = {
+        "model": model,
+        "mfunc": mfunc,
+        "util": util,
+        "parameters": parameters,
+    }
 
-    render(output_file, args, template_path, "oapi_type", oapi_type)
+    render(output_file, context, template_path, "oapi_type", oapi_type)

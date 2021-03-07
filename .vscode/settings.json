@@ -17,5 +17,8 @@
     "code-runner.executorMap": {
         "python": "$pythonPath -u -m qsdl util/examples/input.tx -g openapi -o util/examples/srcgen/"
     },
-    "code-runner.fileDirectoryAsCwd": false
+    "code-runner.fileDirectoryAsCwd": false,
+    "files.exclude": {
+        "**/__pycache__": true
+      },
 }

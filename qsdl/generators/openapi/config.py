@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generator specific variables"""
+"""Generator specific parameters"""
 
 from dataclasses import dataclass
 
@@ -20,3 +20,7 @@ from dataclasses import dataclass
 @dataclass
 class Config:
     """A configuration class that holds relevant data for the generator"""
+
+    # used to change the OpenAPI type for ID between "string" and "integer"
+    id_type: str = "integer"
+    id_type_format: str = "int64"

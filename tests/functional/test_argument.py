@@ -225,7 +225,7 @@ class TestArgument:
             return var[0]
 
         ops = [
-            ("/path1/{arg}", "get", config.id_type, config.id_type_format, "path"),
+            ("/path1/{arg}", "get", "integer", "int64", "path"),
             ("/path2", "get", "integer", "int32", "query"),
             ("/path3", "get", "number", "float", "query"),
             ("/path4", "get", "string", None, "query"),

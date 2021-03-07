@@ -69,9 +69,9 @@ class TestBaseField:
 
         for key, value in properties.items():
             if key == "id":
-                assert value["type"] == config.id_type
-                if config.id_type_format:
-                    assert value["format"] == config.id_type_format
+                assert value["type"] == "integer"
+                if "int64":
+                    assert value["format"] == "int64"
             elif key == "int":
                 assert value["type"] == "integer"
                 assert value["format"] == "int32"

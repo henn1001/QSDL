@@ -16,20 +16,26 @@
 
 from pathlib import Path
 
-from qsdl import config, uml
-from qsdl.generators.generic import get_args
+from textx import model as mfunc
+
+from qsdl import uml, util
 from qsdl.render import render
 
 
-def generate():
+def generate(model, output_path, parameters):
     """Generator func for PlantUML"""
 
-    output_file = config.output_path / "plantuml.md"
+    output_file = output_path / "plantuml.md"
     template_path = Path(__file__).parent / "template" / "uml.j2"
 
     # build the render arguments
-    args = get_args()
+    context = {
+        "model": model,
+        "mfunc": mfunc,
+        "util": util,
+        "parameters": parameters,
+    }
 
-    render(output_file, args, template_path)
+    render(output_file, context, template_path)
 
     uml.generate_png(output_file)
