@@ -132,8 +132,11 @@
   {% elif  response %}
   $ref: '#/components/schemas/{{ field.value.name|capitalize }}{% if field.paging %}List{% endif %}'
   {% else %}
-{# TODO: Is this for IDs ?#}
-  type: string
+{# assign the objects ID type#}
+  type: {{ parameters.id_type }}
+    {% if parameters.id_type_format %}
+  format: {{parameters.id_type_format}}
+    {% endif %}
   {% endif %}
 {% elif field.value._tx_fqn == "entity.Enum" %}
   $ref: '#/components/schemas/{{ field.value.name|capitalize }}'

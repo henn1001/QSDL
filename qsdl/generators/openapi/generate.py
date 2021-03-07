@@ -51,6 +51,10 @@ def generate(model, output_path, parameters):
 
     if parameters.id_type not in ["integer", "string"]:
         raise ValueError("id_type must be `integer` or `string`")
+    elif parameters.id_type == "integer":
+        parameters.id_type_format = "int64"
+    else:
+        parameters.id_type_format = None
 
     # sets the id type
     custom_types["ID"] = parameters.id_type

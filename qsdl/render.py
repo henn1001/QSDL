@@ -44,7 +44,7 @@ def render(
     loader = jinja2.FileSystemLoader(template_folder)
     jinja_env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-    # register the filter for mapping Entity type names to type names.
+    # register the filter for mapping Entity type names to type defs.
     if type_name and type_def:
         jinja_env.filters[type_name] = type_def
 

@@ -127,7 +127,7 @@ class TestOperationField:
 
         assert get_schema(openapi, "/path")["$ref"] == "#/components/schemas/Foo"
 
-    def test_field_object_04_positive(self):
+    def test_field_operation_04_positive(self):
         """Verify object usage"""
         test_input = """\
             type Foo {

@@ -23,4 +23,3 @@ class Config:
 
     # used to change the OpenAPI type for ID between "string" and "integer"
     id_type: str = "integer"
-    id_type_format: str = "int64"

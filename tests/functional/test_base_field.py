@@ -163,7 +163,7 @@ class TestBaseField:
 
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
 
-        assert properties["field"]["type"] == "string"
+        assert properties["field"]["type"] == "integer"
 
     def test_field_base_05_positive(self):
         """Verify that we can use array types"""

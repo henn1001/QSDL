@@ -1803,7 +1803,8 @@ components:
       type: object
       properties:
         user:
-          type: string
+          type: integer
+          format: int64
         scores:
           type: array
           items:
@@ -1998,7 +1999,8 @@ components:
         title:
           type: string
         issuer:
-          type: string
+          type: integer
+          format: int64
         issuer_body:
           $ref: '#/components/schemas/User'
           readOnly: true
