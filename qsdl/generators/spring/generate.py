@@ -31,7 +31,7 @@ from .parse import parse_apis, parse_ignored_files, parse_models
 def generate(schema: object, output_path: Path, parameters: object):
     """Generator func for spring.
     """
-    base_package = parameters.groupId.replace(".", "/")
+    base_package = parameters.group_id.replace(".", "/")
 
     api_files = []
 
@@ -39,7 +39,7 @@ def generate(schema: object, output_path: Path, parameters: object):
     for api in parse_apis(schema):
 
         # fmt: off
-        if parameters.interfacePattern:
+        if parameters.interface_pattern:
             api_files.append(("src/main/java/api/Api.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}Api.java", api))
             api_files.append(("src/main/java/api/ApiController.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}ApiController.java", api))
         else:
@@ -102,9 +102,9 @@ def generate(schema: object, output_path: Path, parameters: object):
     # build the render arguments
     context = {
         "title": parameters.title,
-        "groupId": parameters.groupId,
-        "artifactId": parameters.artifactId,
-        "basePackage": parameters.groupId,
+        "group_id": parameters.group_id,
+        "artifact_id": parameters.artifact_id,
+        "base_package": parameters.group_id,
         "basePath": "/v1",
     }
 

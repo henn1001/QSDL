@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: QSDL",
+            "name": "QSDL - OpenApi",
             "type": "python",
             "request": "launch",
             "module": "qsdl",
@@ -17,7 +17,22 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: QSDL - Spring",
+            "name": "QSDL - GraphQL",
+            "type": "python",
+            "request": "launch",
+            "module": "qsdl",
+            "args": [
+                "util/examples/input.tx",
+                "-g",
+                "graphql",
+                "-o",
+                "util/examples/srcgen/"
+            ],
+            "justMyCode": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "QSDL - Spring",
             "type": "python",
             "request": "launch",
             "module": "qsdl",

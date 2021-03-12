@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Spring Generator Configuration"""
+
 from dataclasses import dataclass
 
 
@@ -20,6 +22,6 @@ class Config:
     """A configuration class that holds relevant data for the generator"""
 
     title: str = "SpringBootApp"
-    groupId: str = "com.test"
-    artifactId: str = "app"
-    interfacePattern: bool = False
+    group_id: str = "com.test"
+    artifact_id: str = "app"
+    interface_pattern: bool = False

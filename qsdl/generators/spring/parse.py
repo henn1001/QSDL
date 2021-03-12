@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Spring Generator"""
+"""Spring Generator parser"""
+
 from pathlib import Path
 
 import pathspec
@@ -23,7 +24,7 @@ from qsdl.dsl.models import Field, Object, Scalar
 from qsdl.util import get_operations
 
 from . import util
-from .models import Model, Api
+from .models import Api, Model
 
 
 def add_paging_list(entity, model):
