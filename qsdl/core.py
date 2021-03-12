@@ -69,8 +69,13 @@ def prompt_user() -> Tuple:
     questions = []
 
     for key, value in parameters.__dict__.items():
+        if (isinstance(value, bool)):
+            prompt_type = "confirm"
+        else:
+            prompt_type = "input"
+
         question = {
-            "type": "input",
+            "type": prompt_type,
             "name": key,
             "message": "Please enter: " + key,
             "default": value,
@@ -103,6 +108,7 @@ def init(generator_name: str, config_path: Path = None) -> Tuple:
 
     # initialise global config
     # important when core.generate is called directly multiple times
+    config.schema = None
     config.model = None
     config.output_path = None
     config.domain_objects = []
@@ -155,6 +161,7 @@ def generate(schema: str, output_path: Path, generator_name: str, config_path: P
         config.domain_objects, config.operations = parse_domain_model(config.model)
 
         # set global config
+        config.schema = schema
         config.output_path = output_path
 
         # create the output folder

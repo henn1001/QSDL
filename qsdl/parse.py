@@ -97,7 +97,7 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
         method = "get"
         parameters = get_path_parameters(field, d_parent)
         parameters.extend(get_query_parameters(field))
-        request = None
+        request = []
         response = field
 
     if method == "post":
@@ -133,7 +133,7 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
         path = get_path_base(field, d_parent)
         method = "delete"
         parameters = get_path_parameters(field, d_parent)
-        request = None
+        request = []
         response = field
 
     # build operation
@@ -208,7 +208,7 @@ def get_crud_operation_aggregation(obj: object, method: str) -> Operation:
         parameters = get_path_parameters(obj, obj.d_parent)
         parameters.extend(get_query_parameters(obj))
         parameters.extend(get_query_parameters_paging())
-        request = None
+        request = []
         response = operation_helper_response(obj, False, True)
 
     elif method == "post":
@@ -268,7 +268,7 @@ def get_crud_operation(obj: object, method: str) -> Operation:
         parameters = get_path_parameters(obj, obj.d_parent)
         parameters.extend(get_query_parameters(obj))
         parameters.extend(get_query_parameters_paging())
-        request = None
+        request = []
         response = operation_helper_response(obj, False, True)
 
     elif method == "post":
@@ -286,7 +286,7 @@ def get_crud_operation(obj: object, method: str) -> Operation:
         path = get_path_base(obj, obj.d_parent, True)
         method = "get"
         parameters = get_path_parameters(obj, obj.d_parent, True)
-        request = None
+        request = []
         response = operation_helper_response(obj)
 
     elif method == "put":
@@ -313,7 +313,7 @@ def get_crud_operation(obj: object, method: str) -> Operation:
         path = get_path_base(obj, obj.d_parent, True)
         method = "delete"
         parameters = get_path_parameters(obj, obj.d_parent, True)
-        request = None
+        request = []
         response = None
 
     # build operation
@@ -501,7 +501,7 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     """
 
     metamodel = None
-    grammar_path = __folder__ / "dsl" / "definition" / "entity.tx"
+    grammar_path = __folder__ / "dsl/definition/entity.tx"
 
     type_builtins = {
         "Int": Scalar(None, "Int"),

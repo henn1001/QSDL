@@ -15,6 +15,21 @@
             ],
             "justMyCode": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: QSDL - Spring",
+            "type": "python",
+            "request": "launch",
+            "module": "qsdl",
+            "args": [
+                "util/examples/input.tx",
+                "-g",
+                "spring",
+                "-o",
+                "util/examples/srcgen/spring/"
+            ],
+            "justMyCode": false,
+            "console": "integratedTerminal"
         }
     ]
 }

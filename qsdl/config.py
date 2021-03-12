@@ -16,6 +16,9 @@
 
 # pylint: disable=C0103
 
+# the input schema
+schema = None
+
 # the python object graph.
 model = None
 
@@ -47,4 +50,5 @@ available_generators = [
     "openapi",
     "graphql",
     "plantuml",
+    "spring"
 ]

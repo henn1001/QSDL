@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""QGEN - Generator interface"""
+"""QSDL - Generator interface"""
 
 from pathlib import Path
 from typing import Any, Callable
@@ -23,6 +23,8 @@ from .openapi import Config as openapi_config
 from .openapi import generate as openapi_generator
 from .plantuml import Config as plantuml_config
 from .plantuml import generate as plantuml_generator
+from .spring import Config as spring_config
+from .spring import generate as spring_generator
 
 
 def get_config(generator: str) -> Any:
@@ -35,6 +37,8 @@ def get_config(generator: str) -> Any:
         ret = graphql_config()
     elif generator == "plantuml":
         ret = plantuml_config()
+    elif generator == "spring":
+        ret = spring_config()
     else:
         raise Exception("unknown generator")
 
@@ -51,6 +55,8 @@ def get_generator(generator: str) -> Callable[[None], None]:
         ret = graphql_generator
     elif generator == "plantuml":
         ret = plantuml_generator
+    elif generator == "spring":
+        ret = spring_generator
     else:
         raise Exception("unknown generator")
 
