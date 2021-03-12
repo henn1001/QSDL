@@ -19,6 +19,12 @@ interface Response {
   details: String
 }
 
+input Pageable {
+  cursor: String
+  limit: Int
+  count: Boolean
+}
+
 enum Status {
     OPEN
     TO_DO
@@ -79,7 +85,7 @@ type ProjectList {
 }
 
 extend type Query {
-    getProjects(name: String, cursor: String, limit: Long, count: Boolean): ProjectList
+    getProjects(name: String, pageable: Pageable): ProjectList
     getProject(id: ID!): Project
 }
 
@@ -164,9 +170,9 @@ input RoleInput {
 }
 
 extend type Query {
-    getRolesForProject(project_id: ID!, cursor: String, limit: Long, count: Boolean): RoleList
+    getRolesForProject(project_id: ID!, pageable: Pageable): RoleList
     getRoleForProject(project_id: ID!, role: ID!): Role
-    getRolesForSprint(sprint_name: ID!, cursor: String, limit: Long, count: Boolean): RoleList
+    getRolesForSprint(sprint_name: ID!, pageable: Pageable): RoleList
     getRoleForSprint(sprint_name: ID!, role: ID!): Role
 }
 
@@ -296,8 +302,8 @@ input UserInput {
 }
 
 extend type Query {
-    getUsersForRole(role_role: ID!, name: ID, cursor: String, limit: Long, count: Boolean): UserList
-    getUsers(name: ID, cursor: String, limit: Long, count: Boolean): UserList
+    getUsersForRole(role_role: ID!, name: ID, pageable: Pageable): UserList
+    getUsers(name: ID, pageable: Pageable): UserList
     getUser(name: ID!): User
 }
 
@@ -403,7 +409,7 @@ type TicketList {
 }
 
 extend type Query {
-    getTickets(project_id: ID!, cursor: String, limit: Long, count: Boolean): TicketList
+    getTickets(project_id: ID!, pageable: Pageable): TicketList
     getTicket(project_id: ID!, number: ID!): Ticket
 }
 
@@ -483,9 +489,9 @@ type MilestoneList {
 }
 
 extend type Query {
-    getMilestonesForProject(project_id: ID!, cursor: String, limit: Long, count: Boolean): MilestoneList
+    getMilestonesForProject(project_id: ID!, pageable: Pageable): MilestoneList
     getMilestoneForProject(project_id: ID!, milestone: ID!): Milestone
-    getMilestonesForTicket(ticket_number: ID!, cursor: String, limit: Long, count: Boolean): MilestoneList
+    getMilestonesForTicket(ticket_number: ID!, pageable: Pageable): MilestoneList
 }
 
 extend type Mutation {
@@ -576,7 +582,7 @@ type SprintList {
 }
 
 extend type Query {
-    getSprints(milestone_milestone: ID!, cursor: String, limit: Long, count: Boolean): SprintList
+    getSprints(milestone_milestone: ID!, pageable: Pageable): SprintList
     getSprint(milestone_milestone: ID!, name: ID!): Sprint
 }
 

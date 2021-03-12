@@ -24,7 +24,7 @@ public class UsersService {
 
   }
 
-  public UserList getUsersForRole(Long roleRole, Long name, String cursor, Long limit, Boolean count) throws Exception {
+  public UserList getUsersForRole(Long roleRole, Long name, ApiPageable pageable) throws Exception {
 
     // TODO: implement me
 
@@ -48,7 +48,7 @@ public class UsersService {
     return null;
   }
 
-  public UserList getUsers(Long name, String cursor, Long limit, Boolean count) throws Exception {
+  public UserList getUsers(Long name, ApiPageable pageable) throws Exception {
 
     // TODO: implement me
 

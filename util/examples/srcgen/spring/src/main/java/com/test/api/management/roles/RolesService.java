@@ -24,7 +24,7 @@ public class RolesService {
 
   }
 
-  public RoleList getRolesForProject(Long projectId, String cursor, Long limit, Boolean count) throws Exception {
+  public RoleList getRolesForProject(Long projectId, ApiPageable pageable) throws Exception {
 
     // TODO: implement me
 
@@ -81,7 +81,7 @@ public class RolesService {
     return null;
   }
 
-  public RoleList getRolesForSprint(Long sprintName, String cursor, Long limit, Boolean count) throws Exception {
+  public RoleList getRolesForSprint(Long sprintName, ApiPageable pageable) throws Exception {
 
     // TODO: implement me
 

@@ -24,7 +24,7 @@ public class ProjectsService {
 
   }
 
-  public ProjectList getProjects(String name, String cursor, Long limit, Boolean count) throws Exception {
+  public ProjectList getProjects(String name, ApiPageable pageable) throws Exception {
 
     // TODO: implement me
 

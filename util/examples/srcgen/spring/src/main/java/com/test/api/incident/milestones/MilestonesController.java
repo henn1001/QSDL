@@ -43,9 +43,6 @@ public class MilestonesController {
    * GET /projects/{project_id}/milestones : List Milestones
    *
    * @param projectId (required)
-   * @param cursor
-   * @param limit
-   * @param count
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
@@ -53,8 +50,8 @@ public class MilestonesController {
     value = "/projects/{project_id}/milestones",
     produces = { "application/json" }
   )
-  public ResponseEntity<MilestoneList> getMilestonesForProject(@PathVariable("project_id") Long projectId, @Valid @RequestParam(value = "cursor", required = false) String cursor, @Valid @RequestParam(value = "limit", required = false) Long limit, @Valid @RequestParam(value = "count", required = false) Boolean count) throws Exception {
-    MilestoneList response = milestonesService.getMilestonesForProject(projectId, cursor, limit, count);
+  public ResponseEntity<MilestoneList> getMilestonesForProject(@PathVariable("project_id") Long projectId, ApiPageable pageable) throws Exception {
+    MilestoneList response = milestonesService.getMilestonesForProject(projectId, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -151,9 +148,6 @@ public class MilestonesController {
    * GET /tickets/{ticket_number}/milestones : List Milestones
    *
    * @param ticketNumber (required)
-   * @param cursor
-   * @param limit
-   * @param count
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
@@ -161,8 +155,8 @@ public class MilestonesController {
     value = "/tickets/{ticket_number}/milestones",
     produces = { "application/json" }
   )
-  public ResponseEntity<MilestoneList> getMilestonesForTicket(@PathVariable("ticket_number") Long ticketNumber, @Valid @RequestParam(value = "cursor", required = false) String cursor, @Valid @RequestParam(value = "limit", required = false) Long limit, @Valid @RequestParam(value = "count", required = false) Boolean count) throws Exception {
-    MilestoneList response = milestonesService.getMilestonesForTicket(ticketNumber, cursor, limit, count);
+  public ResponseEntity<MilestoneList> getMilestonesForTicket(@PathVariable("ticket_number") Long ticketNumber, ApiPageable pageable) throws Exception {
+    MilestoneList response = milestonesService.getMilestonesForTicket(ticketNumber, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

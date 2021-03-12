@@ -44,9 +44,6 @@ public class UsersController {
    *
    * @param roleRole (required)
    * @param name
-   * @param cursor
-   * @param limit
-   * @param count
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
@@ -54,8 +51,8 @@ public class UsersController {
     value = "/roles/{role_role}/users",
     produces = { "application/json" }
   )
-  public ResponseEntity<UserList> getUsersForRole(@PathVariable("role_role") Long roleRole, @Valid @RequestParam(value = "name", required = false) Long name, @Valid @RequestParam(value = "cursor", required = false) String cursor, @Valid @RequestParam(value = "limit", required = false) Long limit, @Valid @RequestParam(value = "count", required = false) Boolean count) throws Exception {
-    UserList response = usersService.getUsersForRole(roleRole, name, cursor, limit, count);
+  public ResponseEntity<UserList> getUsersForRole(@PathVariable("role_role") Long roleRole, @Valid @RequestParam(value = "name", required = false) Long name, ApiPageable pageable) throws Exception {
+    UserList response = usersService.getUsersForRole(roleRole, name, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -97,9 +94,6 @@ public class UsersController {
    * GET /users : List Users
    *
    * @param name
-   * @param cursor
-   * @param limit
-   * @param count
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
@@ -107,8 +101,8 @@ public class UsersController {
     value = "/users",
     produces = { "application/json" }
   )
-  public ResponseEntity<UserList> getUsers(@Valid @RequestParam(value = "name", required = false) Long name, @Valid @RequestParam(value = "cursor", required = false) String cursor, @Valid @RequestParam(value = "limit", required = false) Long limit, @Valid @RequestParam(value = "count", required = false) Boolean count) throws Exception {
-    UserList response = usersService.getUsers(name, cursor, limit, count);
+  public ResponseEntity<UserList> getUsers(@Valid @RequestParam(value = "name", required = false) Long name, ApiPageable pageable) throws Exception {
+    UserList response = usersService.getUsers(name, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

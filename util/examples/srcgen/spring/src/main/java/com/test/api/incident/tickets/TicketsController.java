@@ -43,9 +43,6 @@ public class TicketsController {
    * GET /projects/{project_id}/tickets : List Tickets
    *
    * @param projectId (required)
-   * @param cursor
-   * @param limit
-   * @param count
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
@@ -53,8 +50,8 @@ public class TicketsController {
     value = "/projects/{project_id}/tickets",
     produces = { "application/json" }
   )
-  public ResponseEntity<TicketList> getTickets(@PathVariable("project_id") Long projectId, @Valid @RequestParam(value = "cursor", required = false) String cursor, @Valid @RequestParam(value = "limit", required = false) Long limit, @Valid @RequestParam(value = "count", required = false) Boolean count) throws Exception {
-    TicketList response = ticketsService.getTickets(projectId, cursor, limit, count);
+  public ResponseEntity<TicketList> getTickets(@PathVariable("project_id") Long projectId, ApiPageable pageable) throws Exception {
+    TicketList response = ticketsService.getTickets(projectId, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

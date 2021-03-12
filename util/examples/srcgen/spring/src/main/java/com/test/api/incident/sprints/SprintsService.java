@@ -24,7 +24,7 @@ public class SprintsService {
 
   }
 
-  public SprintList getSprints(Long milestoneMilestone, String cursor, Long limit, Boolean count) throws Exception {
+  public SprintList getSprints(Long milestoneMilestone, ApiPageable pageable) throws Exception {
 
     // TODO: implement me
 

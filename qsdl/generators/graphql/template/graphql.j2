@@ -20,6 +20,12 @@ interface Response {
   details: String
 }
 
+input Pageable {
+  cursor: String
+  limit: Int
+  count: Boolean
+}
+
 {# Start drawing loop#}
 {% for type in model.types %}
 {{ macro.render_loop(type) }}

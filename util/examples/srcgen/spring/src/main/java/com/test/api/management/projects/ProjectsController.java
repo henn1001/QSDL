@@ -43,9 +43,6 @@ public class ProjectsController {
    * GET /projects : List Projects
    *
    * @param name
-   * @param cursor
-   * @param limit
-   * @param count
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
@@ -53,8 +50,8 @@ public class ProjectsController {
     value = "/projects",
     produces = { "application/json" }
   )
-  public ResponseEntity<ProjectList> getProjects(@Valid @RequestParam(value = "name", required = false) String name, @Valid @RequestParam(value = "cursor", required = false) String cursor, @Valid @RequestParam(value = "limit", required = false) Long limit, @Valid @RequestParam(value = "count", required = false) Boolean count) throws Exception {
-    ProjectList response = projectsService.getProjects(name, cursor, limit, count);
+  public ResponseEntity<ProjectList> getProjects(@Valid @RequestParam(value = "name", required = false) String name, ApiPageable pageable) throws Exception {
+    ProjectList response = projectsService.getProjects(name, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

@@ -24,7 +24,7 @@ public class TicketsService {
 
   }
 
-  public TicketList getTickets(Long projectId, String cursor, Long limit, Boolean count) throws Exception {
+  public TicketList getTickets(Long projectId, ApiPageable pageable) throws Exception {
 
     // TODO: implement me
 

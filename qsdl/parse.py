@@ -26,11 +26,21 @@ from qsdl.dsl.models import Scalar, all_dsl_models
 from qsdl.dsl.processors.model import model_processor
 from qsdl.dsl.processors.objects import obj_processors
 from qsdl.models import Operation
-from qsdl.util import (get_aggregation, get_childs, get_compositions, get_id,
-                       get_id_field, get_operation_id, get_operation_method,
-                       get_path_base, get_path_parameters,
-                       get_query_parameters, get_query_parameters_paging,
-                       get_request_parameters, is_aggregation, pluralize)
+from qsdl.util import (
+    get_aggregation,
+    get_childs,
+    get_compositions,
+    get_id,
+    get_id_field,
+    get_operation_id,
+    get_operation_method,
+    get_path_base,
+    get_path_parameters,
+    get_query_parameters,
+    get_request_parameters,
+    is_aggregation,
+    pluralize,
+)
 
 
 def operation_helper(entity: object) -> tuple:
@@ -90,67 +100,60 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
     """
     namespace, d_parent, d_childs = operation_helper(entity)
 
-    if method == "get":
-        name = field.name
-        summary = field.name
-        path = get_path_base(field, d_parent)
-        method = "get"
-        parameters = get_path_parameters(field, d_parent)
-        parameters.extend(get_query_parameters(field))
-        request = []
-        response = field
-
-    if method == "post":
-        name = field.name
-        summary = field.name
-        path = get_path_base(field, d_parent)
-        method = "post"
-        parameters = get_path_parameters(field, d_parent)
-        request = get_request_parameters(field)
-        response = field
-
-    if method == "put":
-        name = field.name
-        summary = field.name
-        path = get_path_base(field, d_parent)
-        method = "put"
-        parameters = get_path_parameters(field, d_parent)
-        request = get_request_parameters(field)
-        response = field
-
-    if method == "patch":
-        name = field.name
-        summary = field.name
-        path = get_path_base(field, d_parent)
-        method = "patch"
-        parameters = get_path_parameters(field, d_parent)
-        request = get_request_parameters(field)
-        response = field
-
-    if method == "delete":
-        name = field.name
-        summary = field.name
-        path = get_path_base(field, d_parent)
-        method = "delete"
-        parameters = get_path_parameters(field, d_parent)
-        request = []
-        response = field
-
     # build operation
     opr = Operation()
-    opr.name = name
     opr.ref = entity
     opr.order = field._tx_position
     opr.tag = namespace
-    opr.summary = summary
     opr.description = field.description
-    opr.path = path
-    opr.method = method
-    opr.parameters = parameters
-    opr.request = request
-    opr.response = response
     opr.parent = d_parent
     opr.childs = d_childs
+
+    if method == "get":
+        opr.name = field.name
+        opr.summary = field.name
+        opr.path = get_path_base(field, d_parent)
+        opr.method = "get"
+        opr.parameters = get_path_parameters(field, d_parent)
+        opr.parameters.extend(get_query_parameters(field))
+        opr.request  = []
+        opr.response = field
+
+    if method == "post":
+        opr.name = field.name
+        opr.summary = field.name
+        opr.path = get_path_base(field, d_parent)
+        opr.method = "post"
+        opr.parameters = get_path_parameters(field, d_parent)
+        opr.request  = get_request_parameters(field)
+        opr.response = field
+
+    if method == "put":
+        opr.name = field.name
+        opr.summary = field.name
+        opr.path = get_path_base(field, d_parent)
+        opr.method = "put"
+        opr.parameters = get_path_parameters(field, d_parent)
+        opr.request  = get_request_parameters(field)
+        opr.response = field
+
+    if method == "patch":
+        opr.name = field.name
+        opr.summary = field.name
+        opr.path = get_path_base(field, d_parent)
+        opr.method = "patch"
+        opr.parameters = get_path_parameters(field, d_parent)
+        opr.request  = get_request_parameters(field)
+        opr.response = field
+
+    if method == "delete":
+        opr.name = field.name
+        opr.summary = field.name
+        opr.path = get_path_base(field, d_parent)
+        opr.method = "delete"
+        opr.parameters = get_path_parameters(field, d_parent)
+        opr.request  = []
+        opr.response = field
 
     return opr
 
@@ -200,50 +203,43 @@ def get_crud_operation_aggregation(obj: object, method: str) -> Operation:
     """
     namespace, d_parent, d_childs = operation_helper(obj)
 
-    if method == "getA":
-        name = "get" + get_operation_id(obj, "s")
-        summary = f"List {pluralize(obj.name)}"
-        path = get_path_base(obj, obj.d_parent)
-        method = "get"
-        parameters = get_path_parameters(obj, obj.d_parent)
-        parameters.extend(get_query_parameters(obj))
-        parameters.extend(get_query_parameters_paging())
-        request = []
-        response = operation_helper_response(obj, False, True)
-
-    elif method == "post":
-        name = "add" + get_operation_id(obj)
-        summary = f"Add {obj.name}"
-        path = get_path_base(obj, obj.d_parent) + "/add"
-        method = "post"
-        parameters = get_path_parameters(obj, obj.d_parent)
-        request = [get_id_field(obj)]
-        response = None
-
-    elif method == "delete":
-        name = "remove" + get_operation_id(obj)
-        summary = f"Remove {obj.name}"
-        path = get_path_base(obj, obj.d_parent) + "/remove"
-        method = "post"
-        parameters = get_path_parameters(obj, obj.d_parent)
-        request = [get_id_field(obj)]
-        response = None
-
     # build operation
     opr = Operation()
-    opr.name = name
     opr.ref = obj
     opr.order = obj._tx_position
     opr.tag = namespace
-    opr.summary = summary
     opr.description = None
-    opr.path = path
-    opr.method = method
-    opr.parameters = parameters
-    opr.request = request
-    opr.response = response
     opr.parent = d_parent
     opr.childs = d_childs
+
+    if method == "getA":
+        opr.name ="get" + get_operation_id(obj, "s")
+        opr.summary = f"List {pluralize(obj.name)}"
+        opr.path = get_path_base(obj, obj.d_parent)
+        opr.method = "get"
+        opr.parameters = get_path_parameters(obj, obj.d_parent)
+        opr.parameters.extend(get_query_parameters(obj))
+        opr.request  = []
+        opr.response = operation_helper_response(obj, False, True)
+        opr.is_pageable = True
+
+    elif method == "post":
+        opr.name ="add" + get_operation_id(obj)
+        opr.summary = f"Add {obj.name}"
+        opr.path = get_path_base(obj, obj.d_parent) + "/add"
+        opr.method = "post"
+        opr.parameters = get_path_parameters(obj, obj.d_parent)
+        opr.request  = [get_id_field(obj)]
+        opr.response = None
+
+    elif method == "delete":
+        opr.name ="remove" + get_operation_id(obj)
+        opr.summary = f"Remove {obj.name}"
+        opr.path = get_path_base(obj, obj.d_parent) + "/remove"
+        opr.method = "post"
+        opr.parameters = get_path_parameters(obj, obj.d_parent)
+        opr.request  = [get_id_field(obj)]
+        opr.response = None
 
     return opr
 
@@ -260,78 +256,71 @@ def get_crud_operation(obj: object, method: str) -> Operation:
     """
     namespace, d_parent, d_childs = operation_helper(obj)
 
-    if method == "getA":
-        name = "get" + get_operation_id(obj, "s")
-        summary = f"List {pluralize(obj.name)}"
-        path = get_path_base(obj, obj.d_parent)
-        method = "get"
-        parameters = get_path_parameters(obj, obj.d_parent)
-        parameters.extend(get_query_parameters(obj))
-        parameters.extend(get_query_parameters_paging())
-        request = []
-        response = operation_helper_response(obj, False, True)
-
-    elif method == "post":
-        name = "create" + get_operation_id(obj)
-        summary = f"Create a {obj.name}"
-        path = get_path_base(obj, obj.d_parent)
-        method = "post"
-        parameters = get_path_parameters(obj, obj.d_parent)
-        request = get_request_parameters(obj)
-        response = operation_helper_response(obj)
-
-    elif method == "get":
-        name = "get" + get_operation_id(obj)
-        summary = f"Read the specified {obj.name}"
-        path = get_path_base(obj, obj.d_parent, True)
-        method = "get"
-        parameters = get_path_parameters(obj, obj.d_parent, True)
-        request = []
-        response = operation_helper_response(obj)
-
-    elif method == "put":
-        name = "replace" + get_operation_id(obj)
-        summary = f"Replace the specified {obj.name}"
-        path = get_path_base(obj, obj.d_parent, True)
-        method = "put"
-        parameters = get_path_parameters(obj, obj.d_parent, True)
-        request = get_request_parameters(obj)
-        response = operation_helper_response(obj)
-
-    elif method == "patch":
-        name = "update" + get_operation_id(obj)
-        summary = f"Update the specified {obj.name}"
-        path = get_path_base(obj, obj.d_parent, True)
-        method = "patch"
-        parameters = get_path_parameters(obj, obj.d_parent, True)
-        request = get_request_parameters(obj)
-        response = operation_helper_response(obj)
-
-    elif method == "delete":
-        name = "delete" + get_operation_id(obj)
-        summary = f"Delete the specified {obj.name}"
-        path = get_path_base(obj, obj.d_parent, True)
-        method = "delete"
-        parameters = get_path_parameters(obj, obj.d_parent, True)
-        request = []
-        response = None
-
     # build operation
     opr = Operation()
-    opr.name = name
     opr.ref = obj
     opr.order = obj._tx_position
     opr.tag = namespace
-    opr.summary = summary
     opr.description = None
-    opr.path = path
-    opr.method = method
-    opr.parameters = parameters
-    opr.request = request
-    opr.response = response
     opr.parent = d_parent
     opr.childs = d_childs
     opr.is_crud = True
+
+    if method == "getA":
+        opr.name ="get" + get_operation_id(obj, "s")
+        opr.summary = f"List {pluralize(obj.name)}"
+        opr.path = get_path_base(obj, obj.d_parent)
+        opr.method = "get"
+        opr.parameters = get_path_parameters(obj, obj.d_parent)
+        opr.parameters.extend(get_query_parameters(obj))
+        opr.request  = []
+        opr.response = operation_helper_response(obj, False, True)
+        opr.is_pageable = True
+
+    elif method == "post":
+        opr.name ="create" + get_operation_id(obj)
+        opr.summary = f"Create a {obj.name}"
+        opr.path = get_path_base(obj, obj.d_parent)
+        opr.method = "post"
+        opr.parameters = get_path_parameters(obj, obj.d_parent)
+        opr.request  = get_request_parameters(obj)
+        opr.response = operation_helper_response(obj)
+
+    elif method == "get":
+        opr.name ="get" + get_operation_id(obj)
+        opr.summary = f"Read the specified {obj.name}"
+        opr.path = get_path_base(obj, obj.d_parent, True)
+        opr.method = "get"
+        opr.parameters = get_path_parameters(obj, obj.d_parent, True)
+        opr.request  = []
+        opr.response = operation_helper_response(obj)
+
+    elif method == "put":
+        opr.name ="replace" + get_operation_id(obj)
+        opr.summary = f"Replace the specified {obj.name}"
+        opr.path = get_path_base(obj, obj.d_parent, True)
+        opr.method = "put"
+        opr.parameters = get_path_parameters(obj, obj.d_parent, True)
+        opr.request  = get_request_parameters(obj)
+        opr.response = operation_helper_response(obj)
+
+    elif method == "patch":
+        opr.name ="update" + get_operation_id(obj)
+        opr.summary = f"Update the specified {obj.name}"
+        opr.path = get_path_base(obj, obj.d_parent, True)
+        opr.method = "patch"
+        opr.parameters = get_path_parameters(obj, obj.d_parent, True)
+        opr.request  = get_request_parameters(obj)
+        opr.response = operation_helper_response(obj)
+
+    elif method == "delete":
+        opr.name ="delete" + get_operation_id(obj)
+        opr.summary = f"Delete the specified {obj.name}"
+        opr.path = get_path_base(obj, obj.d_parent, True)
+        opr.method = "delete"
+        opr.parameters = get_path_parameters(obj, obj.d_parent, True)
+        opr.request  = []
+        opr.response = None
 
     return opr
 

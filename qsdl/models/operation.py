@@ -36,3 +36,4 @@ class Operation:
     parent: object = None
     childs: List[dict] = field(default_factory=list)
     is_crud: bool = False
+    is_pageable: bool = False

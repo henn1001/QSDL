@@ -43,9 +43,6 @@ public class RolesController {
    * GET /projects/{project_id}/roles : List Roles
    *
    * @param projectId (required)
-   * @param cursor
-   * @param limit
-   * @param count
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
@@ -53,8 +50,8 @@ public class RolesController {
     value = "/projects/{project_id}/roles",
     produces = { "application/json" }
   )
-  public ResponseEntity<RoleList> getRolesForProject(@PathVariable("project_id") Long projectId, @Valid @RequestParam(value = "cursor", required = false) String cursor, @Valid @RequestParam(value = "limit", required = false) Long limit, @Valid @RequestParam(value = "count", required = false) Boolean count) throws Exception {
-    RoleList response = rolesService.getRolesForProject(projectId, cursor, limit, count);
+  public ResponseEntity<RoleList> getRolesForProject(@PathVariable("project_id") Long projectId, ApiPageable pageable) throws Exception {
+    RoleList response = rolesService.getRolesForProject(projectId, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -151,9 +148,6 @@ public class RolesController {
    * GET /sprints/{sprint_name}/roles : List Roles
    *
    * @param sprintName (required)
-   * @param cursor
-   * @param limit
-   * @param count
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
@@ -161,8 +155,8 @@ public class RolesController {
     value = "/sprints/{sprint_name}/roles",
     produces = { "application/json" }
   )
-  public ResponseEntity<RoleList> getRolesForSprint(@PathVariable("sprint_name") Long sprintName, @Valid @RequestParam(value = "cursor", required = false) String cursor, @Valid @RequestParam(value = "limit", required = false) Long limit, @Valid @RequestParam(value = "count", required = false) Boolean count) throws Exception {
-    RoleList response = rolesService.getRolesForSprint(sprintName, cursor, limit, count);
+  public ResponseEntity<RoleList> getRolesForSprint(@PathVariable("sprint_name") Long sprintName, ApiPageable pageable) throws Exception {
+    RoleList response = rolesService.getRolesForSprint(sprintName, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

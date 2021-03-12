@@ -24,7 +24,7 @@ public class MilestonesService {
 
   }
 
-  public MilestoneList getMilestonesForProject(Long projectId, String cursor, Long limit, Boolean count) throws Exception {
+  public MilestoneList getMilestonesForProject(Long projectId, ApiPageable pageable) throws Exception {
 
     // TODO: implement me
 
@@ -81,7 +81,7 @@ public class MilestonesService {
     return null;
   }
 
-  public MilestoneList getMilestonesForTicket(Long ticketNumber, String cursor, Long limit, Boolean count) throws Exception {
+  public MilestoneList getMilestonesForTicket(Long ticketNumber, ApiPageable pageable) throws Exception {
 
     // TODO: implement me
 

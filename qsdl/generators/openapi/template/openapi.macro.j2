@@ -31,6 +31,30 @@
     {% endif %}
   {% endif %}
 {% endfor %}
+{% if operation.is_pageable %}
+  - name: cursor
+    description: |
+      Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+    in: query
+    required: false
+    schema:
+      type: string
+  - name: limit
+    description: |
+      The maximum number of items to return.
+    in: query
+    required: false
+    schema:
+      type: integer
+      format: int64
+  - name: count
+    description: |
+      Returns the total number of items in the collection.
+    in: query
+    required: false
+    schema:
+      type: boolean
+{% endif %}
 {% endmacro %}
 
 

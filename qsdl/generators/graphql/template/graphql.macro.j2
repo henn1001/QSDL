@@ -180,7 +180,7 @@ type {{ operation.name }}Payload implements Response {
 
 {################################################################}
 {% macro render_arguments(operation) %}
-{% if operation.parameters or operation.request %}
+{% if operation.parameters or operation.request or operation.is_pageable %}
 (
   {%- for parameter in operation.parameters -%}
       {% if parameter.type.value._tx_fqn in ["entity.Object", "entity.Base"] -%}
@@ -204,6 +204,9 @@ type {{ operation.name }}Payload implements Response {
     {{ operation.name }}Input{{ "" -}}
     {% if operation.request[0].array %}{{ "]" }}{% endif -%}
     {{ "!" -}}
+  {% endif %}
+  {% if operation.is_pageable -%}
+   {% if operation.parameters %}{{", "}}{% endif %}pageable: Pageable{{ "" -}}
   {% endif %}
 )
 {% endif %}

@@ -43,9 +43,6 @@ public class SprintsController {
    * GET /milestones/{milestone_milestone}/sprints : List Sprints
    *
    * @param milestoneMilestone (required)
-   * @param cursor
-   * @param limit
-   * @param count
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
@@ -53,8 +50,8 @@ public class SprintsController {
     value = "/milestones/{milestone_milestone}/sprints",
     produces = { "application/json" }
   )
-  public ResponseEntity<SprintList> getSprints(@PathVariable("milestone_milestone") Long milestoneMilestone, @Valid @RequestParam(value = "cursor", required = false) String cursor, @Valid @RequestParam(value = "limit", required = false) Long limit, @Valid @RequestParam(value = "count", required = false) Boolean count) throws Exception {
-    SprintList response = sprintsService.getSprints(milestoneMilestone, cursor, limit, count);
+  public ResponseEntity<SprintList> getSprints(@PathVariable("milestone_milestone") Long milestoneMilestone, ApiPageable pageable) throws Exception {
+    SprintList response = sprintsService.getSprints(milestoneMilestone, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
