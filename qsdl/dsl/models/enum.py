@@ -14,7 +14,8 @@
 
 """Enum class"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 
 @dataclass
@@ -22,9 +23,9 @@ class Enum:
     """Our Enum class"""
 
     # required by textX
-    parent: object
+    parent: object = None
 
     # defined in entity.tx
-    description: str
-    name: str
-    values: list
+    description: str = None
+    name: str = None
+    values: List[str] = field(default_factory=list)

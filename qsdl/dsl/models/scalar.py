@@ -22,7 +22,7 @@ class Scalar:
     """Our Scalar class"""
 
     # required by textX
-    parent: object
+    parent: object = None
 
     # defined in entity.tx
-    name: str
+    name: str = None

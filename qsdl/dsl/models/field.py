@@ -14,7 +14,11 @@
 
 """Field class"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
+
+from .directive import Directive
+from .argument import Argument
 
 
 @dataclass
@@ -22,27 +26,27 @@ class Field:
     """Our Field class"""
 
     # required by textX
-    parent: object
+    parent: object = None
 
     # defined in entity.tx
-    description: str
+    description: str = None
     # LHS
-    name: str
-    function: bool
-    arguments: list
+    name: str = None
+    function: bool = False
+    arguments: List[Argument] = field(default_factory=list)
     # RHS
-    array: bool
-    value: object
-    non_nullable_array: bool
-    non_nullable: bool
+    array: bool = False
+    value: object = None
+    non_nullable_array: bool = False
+    non_nullable: bool = False
     # Special directives
-    query: bool
-    nested: bool
-    readonly: bool
-    writeonly: bool
-    composition: bool
-    aggregation: bool
-    path: str
-    method: str
+    query: bool = False
+    nested: bool = False
+    readonly: bool = False
+    writeonly: bool = False
+    composition: bool = False
+    aggregation: bool = False
+    path: str = None
+    method: str = None
     # Custom directives
-    directives: list
+    directives: List[Directive] = field(default_factory=list)

@@ -14,7 +14,13 @@
 
 """Object class"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
+
+from .directive import Directive
+from .field import Field
+from .operation import Operation
+from .base import Base
 
 
 @dataclass
@@ -22,16 +28,16 @@ class Object:
     """Our Object class"""
 
     # required by textX
-    parent: object
+    parent: object = None
 
     # defined in entity.tx
-    description: str
-    name: str
-    supertype: object
+    description: str = None
+    name: str = None
+    supertype: Base = None
     # Special directives
-    deprecated: bool
-    namespace: str
+    deprecated: bool = False
+    namespace: str = None
     # Custom directives
-    directives: list
-    fields: list
-    operation= object
+    directives: List[Directive] = field(default_factory=list)
+    fields: List[Field] = field(default_factory=list)
+    operation: Operation = None

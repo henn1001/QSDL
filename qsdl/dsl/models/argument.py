@@ -22,13 +22,13 @@ class Argument:
     """Our Argument class"""
 
     # required by textX
-    parent: object
+    parent: object = None
 
     # defined in entity.tx
     # LHS
-    name: str
+    name: str = None
     # RHS
-    array: bool
-    value: object
-    non_nullable_array: bool
-    non_nullable: bool
+    array: bool = False
+    value: object = None
+    non_nullable_array: bool = False
+    non_nullable: bool = False

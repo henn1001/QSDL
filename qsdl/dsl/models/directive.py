@@ -22,7 +22,7 @@ class Directive:
     """Our Directive class"""
 
     # required by textX
-    parent: object
+    parent: object = None
 
     # defined in entity.tx
-    value: str
+    value: str = None
