@@ -1,0 +1,56 @@
+{# 
+  Returns the class annotation
+#}
+{% macro class_annotation() %}
+  {{- "@Entity" if model.is_object and model.is_crud }}
+  {{- "@Entity" if model.is_nested }}
+  {{- "@MappedSuperclass" if model.is_supertype }}
+{% endmacro %}
+
+{# 
+  Returns a class identifier.
+#}
+{% macro class_identifier() %}
+  {% if (model.is_base and model.is_nested) or (model.is_crud and not model.has_id) %}
+  @Id
+  @GeneratedValue(generator="optimized-sequence")
+  @JsonIgnore
+  private Long id;
+
+  {% endif %}
+{% endmacro %}
+
+{# 
+  Returns a class identifier.
+#}
+{% macro attribute_annotation(attr) -%}
+  {#
+    ID
+  #}
+  {% if attr.is_id %}
+  @Id
+  @GeneratedValue(generator="optimized-sequence")
+  {% endif %}
+  {#
+    Serialization for objects
+  #}
+  {% if attr.type == "Object" %}
+  @Column(columnDefinition = "BINARY(1048576)")
+  @org.hibernate.annotations.Type(type = "serializable")
+  {% endif %}
+  {#
+    Relations
+  #}
+  {% if attr.is_relation or (attr.is_base and attr.is_nested) %}
+    {% if attr.is_array %}
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name="{{model.name|lower}}_{{attr.json_key}}_id")
+    {% else %}
+  @OneToOne({% if attr.is_relation %}mappedBy = "{{model.name|lower}}", {% endif %}cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name="{{attr.json_key}}_id")
+    {% endif %}
+  {% elif attr.is_array and ( model.is_object and model.is_crud or model.is_nested) %}
+  @ElementCollection
+  {% endif %}
+{% endmacro %}
+

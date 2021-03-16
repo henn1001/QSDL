@@ -14,7 +14,8 @@
 
 """Spring Generator Configuration"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 
 @dataclass
@@ -25,3 +26,4 @@ class Config:
     group_id: str = "com.test"
     artifact_id: str = "app"
     interface_pattern: bool = False
+    database: List[str] = field(default_factory=lambda: ["no", "hibernate"])

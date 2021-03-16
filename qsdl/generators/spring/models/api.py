@@ -54,6 +54,7 @@ class _Operation:
     path: str = None
     method: str = None
     is_deprecated: bool = False
+    is_crud: bool = False
     is_pageable: bool = False
 
     parameters: List[_Parameter] = field(default_factory=list)
@@ -70,6 +71,7 @@ class _Operation:
         self.description = self._ref.description
         self.path = self._ref.path
         self.method = self._ref.method
+        self.is_crud = self._ref.is_crud
         self.is_pageable = self._ref.is_pageable
 
         self._add_parameters()
@@ -167,6 +169,10 @@ class Api:
     operations: List = field(default_factory=list)
     imports: List = field(default_factory=list)
 
+    # addons
+    has_crud: bool = False
+
+
     def __post_init__(self):
 
         tag_and_name = self._ref[0]
@@ -178,6 +184,11 @@ class Api:
         self.description = None
 
         self._add_operations(operations)
+
+        for opr in self.operations:
+            if opr.is_crud:
+                self.has_crud = True
+                break
 
     def _add_operations(self, operations):
 

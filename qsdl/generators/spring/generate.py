@@ -21,19 +21,23 @@ import stringcase
 from textx import model as xtx
 
 import qsdl.core as core
-from qsdl import config
+from qsdl import config as cfg
 from qsdl.render import render
 
-from . import util
+from . import config, util
 from .parse import parse_apis, parse_ignored_files, parse_models
 
 
-def generate(schema: object, output_path: Path, parameters: object):
+def generate(schema: object, output_path: Path, parameters: config):
     """Generator func for spring.
     """
     base_package = parameters.group_id.replace(".", "/")
 
     api_files = []
+
+    ## for development
+    if isinstance(parameters.database, list):
+        parameters.database = "hibernate"
 
     # loop and generate api files
     for api in parse_apis(schema):
@@ -53,6 +57,9 @@ def generate(schema: object, output_path: Path, parameters: object):
     # loop and generate model_files
     for model in parse_models(schema):
         # fmt: off
+        if parameters.database == "hibernate" and model.is_crud :
+            model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{model.name}Repository.java", model))
+
         model_files.append(("src/main/java/model/Pojo.j2", f"src/main/java/{base_package}/model/{model.name}.java", model))
         # fmt: on
 
@@ -106,6 +113,7 @@ def generate(schema: object, output_path: Path, parameters: object):
         "artifact_id": parameters.artifact_id,
         "base_package": parameters.group_id,
         "basePath": "/v1",
+        "database": parameters.database,
     }
 
     # generate supporting files
@@ -131,4 +139,4 @@ def generate(schema: object, output_path: Path, parameters: object):
     # copy spec
     gen_schema_file = output_path / "src/main/resources/openapi.yaml"
     gen_schema_file.parent.mkdir(exist_ok=True, parents=True)
-    core.generate(config.schema, gen_schema_file.parent, "openapi")
+    core.generate(cfg.schema, gen_schema_file.parent, "openapi")

@@ -15,6 +15,7 @@
 """Spring Generator parser"""
 
 from pathlib import Path
+from typing import List
 
 import pathspec
 import stringcase
@@ -96,7 +97,7 @@ def parse_apis(schema: dict):
     return apis
 
 
-def parse_models(schema: dict):
+def parse_models(schema: dict) -> List[Model]:
     """Parse OpenAPI Data Models.
 
     A Data Model is converted into a class with a flat representation of its attributes.
@@ -139,6 +140,7 @@ def parse_models(schema: dict):
         # add paging response for all objects with default CRUD endpoints
         if not entity.operation:
             model = add_paging_list(entity, model)
+            model.is_crud = False
             models.append(model)
 
     return models

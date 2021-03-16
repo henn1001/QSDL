@@ -1,0 +1,82 @@
+{% macro logic(operation) -%}
+  {% if operation.method == "get" and operation.is_pageable and operation.is_crud %}
+    {# 
+      Get all entities.
+    #}
+    List<{{api.capital_name|singularize}}> items = {{api.name|singularize}}Repository.findAll();
+
+    Long totalCount = pageable.totalCount({{api.name|singularize}}Repository.count());
+    String nextCursor = pageable.nextCursor(items);
+
+    {{api.capital_name|singularize}}List ret = new {{api.capital_name|singularize}}List()
+        .setTotalCount(totalCount)
+        .setNextCursor(nextCursor)
+        .setItems(items);
+
+    return ret;
+
+  {% elif operation.method == "post"  %}
+    {# 
+      Create a entity.
+    #}
+    {{api.capital_name|singularize}} ret = {{api.name|singularize}}Repository.save(body);
+
+    return ret;
+  {% elif operation.method == "get"  %}
+    {# 
+      Get a entity.
+    #}
+    {{api.capital_name|singularize}} ret = {{api.name|singularize}}Repository.findById(id).orElse(null);
+
+    if (ret == null) {
+      throw new ApiException(AppError.NOT_FOUND, "{{api.capital_name|singularize}} " + id.toString() + " does not exist");
+    }
+
+    return ret;
+  {% elif operation.method == "put"  %}
+    {# 
+      Replace entities.
+    #}
+    {{api.capital_name|singularize}} dbEntity = {{api.name|singularize}}Repository.findById(id).orElse(null);
+
+    if (dbEntity == null) {
+      throw new ApiException(AppError.NOT_FOUND, "{{api.capital_name|singularize}} " + id.toString() + " does not exist");
+    }
+
+    // copy readOnly fields
+    body.setId(dbEntity.getId());
+
+    {{api.capital_name|singularize}} ret = {{api.name|singularize}}Repository.save(body);
+
+    return ret;
+  {% elif operation.method == "patch"  %}
+    {# 
+      Patch entities.
+    #}
+    {{api.capital_name|singularize}} dbEntity = {{api.name|singularize}}Repository.findById(id).orElse(null);
+
+    if (dbEntity == null) {
+      throw new ApiException(AppError.NOT_FOUND, "{{api.capital_name|singularize}} " + id.toString() + " does not exist");
+    }
+
+    // all writeable fields
+    if (body.getName() != null) {
+      dbEntity.setName(body.getName());
+    }
+
+    {{api.capital_name|singularize}} ret = {{api.name|singularize}}Repository.save(dbEntity);
+
+    return ret;
+  {% elif operation.method == "delete"  %}
+    {# 
+      Delete entities.
+    #}
+    if (!{{api.name|singularize}}Repository.existsById(id)) {
+      throw new ApiException(AppError.NOT_FOUND, "{{api.capital_name|singularize}} " + id.toString() + " does not exist");
+    }
+
+    {{api.name|singularize}}Repository.deleteById(id);
+
+    return null;
+  {% endif %}
+{% endmacro %}

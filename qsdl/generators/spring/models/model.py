@@ -34,7 +34,10 @@ class _Attribute:
     description: str = None
     type: str = None
     is_array: bool = False
-    is_model: bool = False
+    is_enum: bool = False
+    is_base: bool = False
+    is_object: bool = False
+    is_id: bool = False
     is_date: bool = False
     is_required: bool = False
     is_read_only: bool = False
@@ -56,8 +59,10 @@ class _Attribute:
         self.type = util.custom_type(self._field.value.name)
 
         self.is_array = self._field.array
-        self.is_model = self._field.value._tx_fqn in ["entity.Base", "entity.Object"]
         self.is_enum = self._field.value._tx_fqn in ["entity.Enum"]
+        self.is_base = self._field.value._tx_fqn in ["entity.Base"]
+        self.is_model = self._field.value._tx_fqn in ["entity.Object"]
+        self.is_id = self._field.value.name == "ID"
         self.is_date = self._field.value.name == "Date"
 
         self.is_required = self._field.non_nullable
@@ -101,6 +106,12 @@ class Model:
     constants: List[str] = field(default_factory=list)
     imports: List[str] = field(default_factory=list)
 
+    # addons
+    is_crud: bool = False
+    is_supertype: bool = False
+    is_nested: bool = False
+    has_id: bool = False
+
     def __post_init__(self):
 
         # rename to naming convention
@@ -124,6 +135,12 @@ class Model:
 
         # collect imports
         self.imports = util.get_model_imports(self._entity)
+
+        # addons
+        self.is_crud = not self._entity.operation if self.is_object else False
+        self.is_supertype = util.is_supertype(self._entity) if self.is_base else False
+        self.is_nested = util.is_nested(self._entity)
+        self.has_id = util.has_id(self._entity)
 
     def _add_attributes(self):
 

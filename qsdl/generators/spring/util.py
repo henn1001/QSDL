@@ -16,6 +16,10 @@
 
 import stringcase
 
+from textx import model as xtx
+
+from qsdl import config
+
 
 def custom_type(input_type: str) -> str:
     """Maps Scalars to Java types.
@@ -38,6 +42,25 @@ def custom_type(input_type: str) -> str:
         "Object": "Object",
         "Void": "Void",
     }.get(input_type, input_type)
+
+
+def has_id(entity):
+    ret = False
+
+    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
+
+        if entity.supertype:
+            ret = has_id(entity.supertype)
+
+            if ret:
+                return True
+
+        for field in entity.fields:
+
+            if field.value.name == "ID":
+                return True
+
+    return ret
 
 
 def has_list(entity):
@@ -152,6 +175,37 @@ def has_relation_not_nested(entity):
     return ret
 
 
+def is_supertype(entity):
+    base_list = xtx.get_children_of_type("Base", config.model)
+    object_list = xtx.get_children_of_type("Object", config.model)
+
+    for it in base_list + object_list:
+        if entity == it.supertype:
+            return True
+
+    return False
+
+
+def is_nested(entity: object) -> bool:
+    """Checks if the provided object or base is nested.
+
+    Args:
+        entity (object): entity.Object or entity.Base
+
+    Returns:
+        bool: [description]
+    """
+    ret = False
+
+    for field in xtx.get_children_of_type("Field", config.model):
+        if field.value == entity:
+            if field.nested:
+                ret = True
+                break
+
+    return ret
+
+
 def get_class_name(old_name):
     new_name = stringcase.pascalcase(old_name)
 
@@ -189,37 +243,24 @@ def get_model_imports(entity):
         _import = ["java.time.OffsetDateTime"]
         imports.extend(_import)
 
-    if has_list(entity):
-        _import = ["java.util.ArrayList", "java.util.List"]
+    if has_list(entity) or entity._tx_fqn != "entity.Enum":
+        _import = ["java.util.*"]
         imports.extend(_import)
 
-    if entity._tx_fqn != "entity.Enum":
-        _import = ["java.util.Objects"]
-        imports.extend(_import)
+    # TODO: if use db
+    _import = ["javax.persistence.*"]
+    imports.extend(_import)
 
     if has_list(entity) or has_model(entity):
-        _import = ["javax.validation.Valid"]
+        _import = ["javax.validation.*"]
         imports.extend(_import)
 
     if has_required(entity):
         _import = ["javax.validation.constraints.*"]
         imports.extend(_import)
 
-    if has_enum(entity) or entity._tx_fqn == "entity.Enum":
-        _import = ["com.fasterxml.jackson.annotation.JsonCreator"]
-        imports.extend(_import)
-
-    if has_relation_not_nested(entity):
-        _import = ["com.fasterxml.jackson.annotation.JsonIgnore"]
-        imports.extend(_import)
-
-    if entity._tx_fqn != "entity.Enum":
-        _import = ["com.fasterxml.jackson.annotation.JsonProperty"]
-        imports.extend(_import)
-
-    if has_enum(entity) or entity._tx_fqn == "entity.Enum":
-        _import = ["com.fasterxml.jackson.annotation.JsonValue"]
-        imports.extend(_import)
+    _import = ["com.fasterxml.jackson.annotation.*"]
+    imports.extend(_import)
 
     if has_date(entity):
         _import = ["org.springframework.format.annotation.DateTimeFormat"]
