@@ -32,6 +32,17 @@ def pluralize(word: str) -> str:
     """
     return inflect.engine().plural(word)
 
+def singularize(word: str) -> str:
+    """Returns the singular form of a word using inflect.
+
+    Args:
+        word (str): A word.
+
+    Returns:
+        str: Plural form of the word.
+    """
+    return inflect.engine().singular_noun(word)
+
 
 def get_namespaces() -> list:
     """Return all NameSpaces.

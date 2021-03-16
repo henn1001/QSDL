@@ -69,17 +69,24 @@ def prompt_user() -> Tuple:
     questions = []
 
     for key, value in parameters.__dict__.items():
-        if (isinstance(value, bool)):
-            prompt_type = "confirm"
-        else:
-            prompt_type = "input"
-
         question = {
-            "type": prompt_type,
             "name": key,
-            "message": "Please enter: " + key,
-            "default": value,
         }
+
+        if isinstance(value, bool):
+            question["type"] = "confirm"
+            question["message"] = "Please select: " + key
+            question["default"] = value
+        elif isinstance(value, list):
+            question["type"] = "list"
+            question["message"] = "Please select: " + key
+            question["choices"] = value
+            question["default"] = value[0]
+        else:
+            question["type"] = "input"
+            question["message"] = "Please enter: " + key
+            question["default"] = value
+
         questions.append(question)
 
     answers = prompt(questions)
@@ -170,7 +177,7 @@ def generate(schema: str, output_path: Path, generator_name: str, config_path: P
         # call generator
         config.generator(config.model, config.output_path, config.parameters)
 
-    except (TextXSyntaxError, TextXSemanticError, Exception): # pylint: disable=W0703
+    except (TextXSyntaxError, TextXSemanticError, Exception): #pylint: disable=W0703
         traceback.print_exc()
         return 1
 

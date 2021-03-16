@@ -18,7 +18,7 @@ from pathlib import Path
 
 import jinja2
 
-from qsdl.util import pluralize
+from qsdl.util import pluralize, singularize
 
 
 def render(
@@ -49,6 +49,7 @@ def render(
         jinja_env.filters[type_name] = type_def
 
     jinja_env.filters["pluralize"] = pluralize
+    jinja_env.filters["singularize"] = singularize
 
     # load the template
     template = jinja_env.get_template(template_path.name)
