@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from qsdl import config
 from tests import wrapper_generate, wrapper_generate_failure
 
 

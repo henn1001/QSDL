@@ -21,29 +21,30 @@ import stringcase
 from textx import model as xtx
 
 import qsdl.core as core
-from qsdl import config as cfg
+from  qsdl.config import Config as core_config
 from qsdl.render import render
 
-from . import config, util
+from . import util
+from .config import Config
 from .parse import parse_apis, parse_ignored_files, parse_models
 
 
-def generate(schema: object, output_path: Path, parameters: config):
+def generate(schema: object, output_path: Path, config: Config):
     """Generator func for spring.
     """
-    base_package = parameters.group_id.replace(".", "/")
+    base_package = config.group_id.replace(".", "/")
 
     api_files = []
 
     ## for development
-    if isinstance(parameters.database, list):
-        parameters.database = "hibernate"
+    if isinstance(config.database, list):
+        config.database = "hibernate"
 
     # loop and generate api files
     for api in parse_apis(schema):
 
         # fmt: off
-        if parameters.interface_pattern:
+        if config.interface_pattern:
             api_files.append(("src/main/java/api/Api.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}Api.java", api))
             api_files.append(("src/main/java/api/ApiController.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}ApiController.java", api))
         else:
@@ -57,7 +58,7 @@ def generate(schema: object, output_path: Path, parameters: config):
     # loop and generate model_files
     for model in parse_models(schema):
         # fmt: off
-        if parameters.database == "hibernate" and model.is_crud :
+        if config.database == "hibernate" and model.is_crud :
             model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{model.name}Repository.java", model))
 
         model_files.append(("src/main/java/model/Pojo.j2", f"src/main/java/{base_package}/model/{model.name}.java", model))
@@ -108,12 +109,12 @@ def generate(schema: object, output_path: Path, parameters: config):
 
     # build the render arguments
     context = {
-        "title": parameters.title,
-        "group_id": parameters.group_id,
-        "artifact_id": parameters.artifact_id,
-        "base_package": parameters.group_id,
+        "title": config.title,
+        "group_id": config.group_id,
+        "artifact_id": config.artifact_id,
+        "base_package": config.group_id,
         "basePath": "/v1",
-        "database": parameters.database,
+        "database": config.database,
     }
 
     # generate supporting files
@@ -139,4 +140,4 @@ def generate(schema: object, output_path: Path, parameters: config):
     # copy spec
     gen_schema_file = output_path / "src/main/resources/openapi.yaml"
     gen_schema_file.parent.mkdir(exist_ok=True, parents=True)
-    core.generate(cfg.schema, gen_schema_file.parent, "openapi")
+    core.generate(core_config.schema, gen_schema_file.parent, "openapi")

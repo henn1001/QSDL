@@ -12,43 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Domain specific variables"""
+"""Global QSDL Configuration"""
 
-# pylint: disable=C0103
+from pathlib import Path
+from typing import List, Set
 
-# the input schema
-schema = None
+class Config:
+    """A configuration class that holds relevant data for QSDL"""
 
-# the python object graph.
-model = None
+    # the input schema
+    schema: str = None
 
-# path to a output folder
-output_path = None
+    # the python object graph.
+    model: object = None
 
-# all possible endpoints/paths for OpenAPI.
-domain_objects = []
+    # path to a output folder
+    output_path: Path = None
 
-# all global operations for OpenAPI.
-operations = []
+    # all possible endpoints/paths for OpenAPI.
+    domain_objects: List[object] = []
 
-# used to identify if we need to derive operation names from
-# their parents.
-dupl_objects = set()
+    # all global operations for OpenAPI.
+    operations: List[object] = []
 
-# used to flag paths as used in order to prevent path duplicates in
-# OpenAPI
-used_paths = []
+    # used to identify if we need to derive operation names from
+    # their parents.
+    dupl_objects: Set = set()
 
-# the used generator
-generator = None
+    # used to flag paths as used in order to prevent path duplicates in
+    # OpenAPI
+    used_paths: List[str] = []
 
-# Generator specific parameters
-parameters = None
+    # the used generator
+    generator: str = None
 
-# All registered generators
-available_generators = [
-    "openapi",
-    "graphql",
-    "plantuml",
-    "spring"
-]
+    # Generator specific parameters
+    config: object = None
+
+    # All registered generators
+    available_generators: str = ["openapi", "graphql", "plantuml", "spring"]

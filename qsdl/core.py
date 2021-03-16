@@ -24,7 +24,8 @@ from pyfiglet import Figlet
 from PyInquirer import prompt
 from textx.exceptions import TextXSemanticError, TextXSyntaxError
 
-from qsdl import __folder__, config
+from qsdl import __folder__
+from qsdl.config import  Config
 from qsdl.generators import get_config, get_generator
 from qsdl.models import Color
 from qsdl.parse import parse_domain_model, parse_schema
@@ -54,7 +55,7 @@ def prompt_user() -> Tuple:
             "type": "list",
             "name": "generator",
             "message": "Which generator do you want to use?",
-            "choices": config.available_generators,
+            "choices": Config.available_generators,
         }
     ]
 
@@ -115,15 +116,15 @@ def init(generator_name: str, config_path: Path = None) -> Tuple:
 
     # initialise global config
     # important when core.generate is called directly multiple times
-    config.schema = None
-    config.model = None
-    config.output_path = None
-    config.domain_objects = []
-    config.operations = []
-    config.dupl_objects = set()
-    config.used_paths = []
-    config.generator = None
-    config.parameters = None
+    Config.schema = None
+    Config.model = None
+    Config.output_path = None
+    Config.domain_objects = []
+    Config.operations = []
+    Config.dupl_objects = set()
+    Config.used_paths = []
+    Config.generator = None
+    Config.config = None
 
     if generator_name:
         # flag mode
@@ -159,23 +160,23 @@ def generate(schema: str, output_path: Path, generator_name: str, config_path: P
     """
     try:
         # initiliase the global config and fetch the generator and its parameters
-        config.generator, config.parameters = init(generator_name, config_path)
+        Config.generator, Config.config = init(generator_name, config_path)
 
         # build a model from schema definition file
-        config.model = parse_schema(schema)
+        Config.model = parse_schema(schema)
 
         # init domain model
-        config.domain_objects, config.operations = parse_domain_model(config.model)
+        Config.domain_objects, Config.operations = parse_domain_model(Config.model)
 
         # set global config
-        config.schema = schema
-        config.output_path = output_path
+        Config.schema = schema
+        Config.output_path = output_path
 
         # create the output folder
         output_path.mkdir(exist_ok=True, parents=True)
 
         # call generator
-        config.generator(config.model, config.output_path, config.parameters)
+        Config.generator(Config.model, Config.output_path, Config.config)
 
     except (TextXSyntaxError, TextXSemanticError, Exception): #pylint: disable=W0703
         traceback.print_exc()

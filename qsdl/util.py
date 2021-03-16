@@ -17,8 +17,7 @@
 import inflect
 from textx import model as xtx
 
-from qsdl import config
-from qsdl.dsl.models import Scalar
+from qsdl.config import Config
 
 
 def pluralize(word: str) -> str:
@@ -52,7 +51,7 @@ def get_namespaces() -> list:
     """
     namespaces = []
 
-    for obj in config.domain_objects:
+    for obj in Config.domain_objects:
         if obj.namespace and obj.namespace not in namespaces:
             namespaces.append(obj.namespace)
 
@@ -65,7 +64,7 @@ def get_domain_objects() -> list:
     Returns:
         list: [entity.Object]
     """
-    return config.domain_objects
+    return Config.domain_objects
 
 
 def get_operations() -> list:
@@ -74,7 +73,7 @@ def get_operations() -> list:
     Returns:
         list: [Operations]
     """
-    return config.operations
+    return Config.operations
 
 
 def get_operations_of_object(obj: object) -> list:
@@ -88,7 +87,7 @@ def get_operations_of_object(obj: object) -> list:
     """
     # hasattr will filter out custom queries and mutations without any object relations
     operations = list(
-        filter(lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name), config.operations)
+        filter(lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name), Config.operations)
     )
     return operations
 
@@ -105,7 +104,7 @@ def get_operations_of_object_of_queries(obj: object) -> list:
     operations = list(
         filter(
             lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name) and x.method == "get",
-            config.operations,
+            Config.operations,
         )
     )
     return operations
@@ -123,7 +122,7 @@ def get_operations_of_object_of_mutations(obj: object) -> list:
     operations = list(
         filter(
             lambda x: (hasattr(x.ref, "name") and x.ref.name == obj.name) and x.method != "get",
-            config.operations,
+            Config.operations,
         )
     )
     return operations
@@ -144,7 +143,7 @@ def get_queries_of_operation(operation: object) -> list:
         name_list.append(field.name)
 
     operations = list(
-        filter(lambda x: x.name in name_list and x.method == "get", config.operations,)
+        filter(lambda x: x.name in name_list and x.method == "get", Config.operations,)
     )
     return operations
 
@@ -163,7 +162,7 @@ def get_mutations_of_operation(operation: object) -> list:
         name_list.append(field.name)
 
     operations = list(
-        filter(lambda x: x.name in name_list and x.method != "get", config.operations,)
+        filter(lambda x: x.name in name_list and x.method != "get", Config.operations,)
     )
     return operations
 
@@ -174,7 +173,7 @@ def get_operations_of_queries() -> list:
     Returns:
         list: [Operations]
     """
-    operations = list(filter(lambda x: x.method == "get", config.operations))
+    operations = list(filter(lambda x: x.method == "get", Config.operations))
     return operations
 
 
@@ -184,7 +183,7 @@ def get_operations_of_mutations() -> list:
     Returns:
         list: [Operations]
     """
-    operations = list(filter(lambda x: x.method != "get", config.operations))
+    operations = list(filter(lambda x: x.method != "get", Config.operations))
     return operations
 
 
@@ -237,7 +236,7 @@ def get_parents(obj: object) -> list:
     """
     parents = []
 
-    fields = xtx.get_children_of_type("Field", config.model)
+    fields = xtx.get_children_of_type("Field", Config.model)
 
     parents = list(filter(lambda x: x.value == obj, fields))
 
@@ -332,7 +331,7 @@ def get_operation_id(obj: object, append: str = "") -> str:
     """
     operation_id = None
 
-    if obj.name not in config.dupl_objects:
+    if obj.name not in Config.dupl_objects:
         operation_id = obj.name.capitalize() + append
 
     elif obj.d_parent:
@@ -545,13 +544,13 @@ def is_nested(entity: object) -> bool:
     """
     ret = False
 
-    for field in xtx.get_children_of_type("Field", config.model):
+    for field in xtx.get_children_of_type("Field", Config.model):
         if field.value == entity:
             if field.nested:
                 ret = True
                 break
 
-    for arg in xtx.get_children_of_type("Argument", config.model):
+    for arg in xtx.get_children_of_type("Argument", Config.model):
         if arg.value == entity:
             ret = True
             break
@@ -626,8 +625,8 @@ def is_path_unique(operation_path: str) -> bool:
     """
     ret = False
 
-    if operation_path not in config.used_paths:
-        config.used_paths.append(operation_path)
+    if operation_path not in Config.used_paths:
+        Config.used_paths.append(operation_path)
         ret = True
 
     return ret

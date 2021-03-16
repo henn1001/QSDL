@@ -21,26 +21,17 @@ from textx import model as xtx
 from textx.exceptions import TextXSemanticError
 from textx.metamodel import TextXMetaModel
 
-from qsdl import __folder__, config, uml
+from qsdl import __folder__, uml
+from qsdl.config import Config
 from qsdl.dsl.models import Scalar, all_dsl_models
 from qsdl.dsl.processors.model import model_processor
 from qsdl.dsl.processors.objects import obj_processors
 from qsdl.models import Operation
-from qsdl.util import (
-    get_aggregation,
-    get_childs,
-    get_compositions,
-    get_id,
-    get_id_field,
-    get_operation_id,
-    get_operation_method,
-    get_path_base,
-    get_path_parameters,
-    get_query_parameters,
-    get_request_parameters,
-    is_aggregation,
-    pluralize,
-)
+from qsdl.util import (get_aggregation, get_childs, get_compositions, get_id,
+                       get_id_field, get_operation_id, get_operation_method,
+                       get_path_base, get_path_parameters,
+                       get_query_parameters, get_request_parameters,
+                       is_aggregation, pluralize)
 
 
 def operation_helper(entity: object) -> tuple:
@@ -370,7 +361,7 @@ def check_duplicates(domain_objects: list):
         if obj.name not in seen:
             seen.add(obj.name)
         else:
-            config.dupl_objects.add(obj.name)
+            Config.dupl_objects.add(obj.name)
 
 
 def validate_operation_names(operations: list, model: object):

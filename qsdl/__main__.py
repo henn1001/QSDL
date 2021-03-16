@@ -23,14 +23,14 @@ from pathlib import Path
 import click
 
 from qsdl import __version__
-from qsdl import config
+from qsdl.config import Config
 from qsdl.core import generate
 
 
 @click.command()
 # fmt: off
 @click.argument("input_path", type=click.Path(exists=True))
-@click.option("-g", "--generator", help="The requested generator.", type=click.Choice(config.available_generators))
+@click.option("-g", "--generator", help="The requested generator.", type=click.Choice(Config.available_generators))
 @click.option("-c", "--config_path", help="Path to a config json file.", type=click.Path(exists=True))
 @click.option("-o", "--output_path", help="Path to a output folder. Default: 'srcgren/'", type=click.Path())
 @click.version_option(__version__, prog_name="QSDL")
