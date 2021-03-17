@@ -7,6 +7,7 @@ from .field import Field
 from .object import Object
 from .operation import Operation
 from .scalar import Scalar
+from .schema import Schema
 
 
 def all_dsl_models():
@@ -15,4 +16,4 @@ def all_dsl_models():
     Returns:
         list: List of DSL classes.
     """
-    return [Argument, Base, Directive, Enum, Field, Object, Operation, Scalar]
+    return [Argument, Base, Directive, Enum, Field, Object, Operation, Scalar, Schema]

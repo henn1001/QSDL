@@ -25,9 +25,6 @@ from .field import Field
 class Base:
     """Our Base class"""
 
-    # required by textX
-    parent: object = None
-
     # defined in entity.tx
     description: str = None
     name: str = None
@@ -38,3 +35,6 @@ class Base:
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
     fields: List[Field] = field(default_factory=list)
+
+    # required by textX
+    parent: object = None

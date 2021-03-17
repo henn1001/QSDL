@@ -21,7 +21,8 @@ import stringcase
 from textx import model as xtx
 
 import qsdl.core as core
-from  qsdl.config import Config as core_config
+from qsdl.config import Config as core_config
+from qsdl.dsl.models import Schema
 from qsdl.render import render
 
 from . import util
@@ -29,7 +30,7 @@ from .config import Config
 from .parse import parse_apis, parse_ignored_files, parse_models
 
 
-def generate(schema: object, output_path: Path, config: Config):
+def generate(schema: Schema, output_path: Path, config: Config):
     """Generator func for spring.
     """
     base_package = config.group_id.replace(".", "/")
@@ -140,4 +141,4 @@ def generate(schema: object, output_path: Path, config: Config):
     # copy spec
     gen_schema_file = output_path / "src/main/resources/openapi.yaml"
     gen_schema_file.parent.mkdir(exist_ok=True, parents=True)
-    core.generate(core_config.schema, gen_schema_file.parent, "openapi")
+    core.generate(core_config.raw_schema, gen_schema_file.parent, "openapi")

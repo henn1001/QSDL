@@ -25,21 +25,21 @@ from PyInquirer import prompt
 from textx.exceptions import TextXSemanticError, TextXSyntaxError
 
 from qsdl import __folder__
-from qsdl.config import  Config
-from qsdl.generators import get_config, get_generator
+from qsdl.config import Config
+from qsdl.generators import ConfigType, GeneratorType, get_config, get_generator
 from qsdl.models import Color
 from qsdl.parse import parse_domain_model, parse_schema
 
 
-def prompt_user() -> Tuple:
+def prompt_user() -> Tuple[GeneratorType, ConfigType]:
     """Greets and prompts the user with a interactive interface.
 
     Provides a selectable list of generators and their respective
     configuration.
 
     Returns:
-        Tuple[generator, parameters]: Callable generator func and
-                                  parameter dataclass.
+        Tuple[GeneratorType, ConfigType]: Callable generator func and
+                                  config dataclass.
     """
     # provide greeting message
     figlet = Figlet(font="speed")
@@ -63,13 +63,13 @@ def prompt_user() -> Tuple:
     generator_name = answers["generator"]
 
     # get config and callable generator for provided generator
-    parameters = get_config(generator_name)
+    config = get_config(generator_name)
     generator = get_generator(generator_name)
 
     # prompt user with available configuration and defaults
     questions = []
 
-    for key, value in parameters.__dict__.items():
+    for key, value in config.__dict__.items():
         question = {
             "name": key,
         }
@@ -94,12 +94,12 @@ def prompt_user() -> Tuple:
 
     # loop over provided answers and update generator paramaters
     for key, value in answers.items():
-        parameters.__setattr__(key, value)
+        config.__setattr__(key, value)
 
-    return generator, parameters
+    return generator, config
 
 
-def init(generator_name: str, config_path: Path = None) -> Tuple:
+def init(generator_name: str, config_path: Path = None) -> Tuple[GeneratorType, ConfigType]:
     """Initialise QSDL.
 
     A user can either utilize a interactive prompt for selecting and
@@ -107,17 +107,17 @@ def init(generator_name: str, config_path: Path = None) -> Tuple:
 
     Args:
         generator_name (str): The requested generator.
-        config_path (str, optional): Path to the config.json. Defaults to None.
+        config_path (Path, optional): Path to the config.json. Defaults to None.
 
     Returns:
-        Tuple[generator, parameters]: Callable generator func and
-                                  parameter dataclass.
+        Tuple[GeneratorType, ConfigType]: Callable generator func and
+                                  config dataclass.
     """
 
     # initialise global config
     # important when core.generate is called directly multiple times
+    Config.raw_schema = None
     Config.schema = None
-    Config.model = None
     Config.output_path = None
     Config.domain_objects = []
     Config.operations = []
@@ -129,28 +129,29 @@ def init(generator_name: str, config_path: Path = None) -> Tuple:
     if generator_name:
         # flag mode
         # fetch default config and generator
-        parameters = get_config(generator_name)
+        config = get_config(generator_name)
         generator = get_generator(generator_name)
 
-        # optionally overwrite the default parameters with user provided data
+        # optionally overwrite the default configuration with user provided data
         if config_path:
             with open(config_path) as json_file:
                 data = json.load(json_file)
-                parameters = from_dict(data_class=parameters.__class__, data=data)
+                config = from_dict(data_class=config.__class__, data=data)
     else:
         # prompt mode
-        generator, parameters = prompt_user()
+        generator, config = prompt_user()
 
-    return generator, parameters
+    return generator, config
 
 
-def generate(schema: str, output_path: Path, generator_name: str, config_path: Path = None) -> int:
+def generate(
+    raw_schema: str, output_path: Path, generator_name: str, config_path: Path = None) -> int:
     """The main function of QSDL.
 
     Generates various things from the provided schema definition.
 
     Args:
-        schema (str): The schema definition.
+        raw_schema (str): The schema definition.
         output_path (Path): Path to a output folder.
         generator_name (str, optional): The requested generator.
         config_path (Path, optional): Path to the config.json.
@@ -163,22 +164,22 @@ def generate(schema: str, output_path: Path, generator_name: str, config_path: P
         Config.generator, Config.config = init(generator_name, config_path)
 
         # build a model from schema definition file
-        Config.model = parse_schema(schema)
+        Config.schema = parse_schema(raw_schema)
 
         # init domain model
-        Config.domain_objects, Config.operations = parse_domain_model(Config.model)
+        Config.domain_objects, Config.operations = parse_domain_model(Config.schema)
 
         # set global config
-        Config.schema = schema
+        Config.raw_schema = raw_schema
         Config.output_path = output_path
 
         # create the output folder
         output_path.mkdir(exist_ok=True, parents=True)
 
         # call generator
-        Config.generator(Config.model, Config.output_path, Config.config)
+        Config.generator(Config.schema, Config.output_path, Config.config) # pylint: disable=not-callable # fmt: skip
 
-    except (TextXSyntaxError, TextXSemanticError, Exception): #pylint: disable=W0703
+    except (TextXSyntaxError, TextXSemanticError, Exception):  # pylint: disable=W0703
         traceback.print_exc()
         return 1
 

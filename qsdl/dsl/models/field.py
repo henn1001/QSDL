@@ -25,9 +25,6 @@ from .argument import Argument
 class Field:
     """Our Field class"""
 
-    # required by textX
-    parent: object = None
-
     # defined in entity.tx
     description: str = None
     # LHS
@@ -50,3 +47,6 @@ class Field:
     method: str = None
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
+
+    # required by textX
+    parent: object = None

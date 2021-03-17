@@ -12,14 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Scalar class"""
+"""Schema class"""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List, Union
+
+from .base import Base
+from .enum import Enum
+from .object import Object
+from .operation import Operation
+from .scalar import Scalar
 
 
 @dataclass
-class Scalar:
-    """Our Scalar class"""
+class Schema:
+    """Our Schema class"""
 
     # defined in entity.tx
-    name: str = None
+    title: str = None
+    version: str = None
+    description: str = None
+    servers: List[str] = field(default_factory=list)
+    types: List[Union[Scalar, Enum, Base, Operation, Object]] = field(default_factory=list)

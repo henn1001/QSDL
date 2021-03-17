@@ -15,16 +15,19 @@
 """Global QSDL Configuration"""
 
 from pathlib import Path
-from typing import List, Set
+from typing import Callable, List, Set
+
+from qsdl.dsl.models import Schema
+
 
 class Config:
     """A configuration class that holds relevant data for QSDL"""
 
-    # the input schema
-    schema: str = None
+    # the unparsed schema definition
+    raw_schema: str = None
 
-    # the python object graph.
-    model: object = None
+    # the parsed schema definition.
+    schema: Schema = None
 
     # path to a output folder
     output_path: Path = None
@@ -44,7 +47,7 @@ class Config:
     used_paths: List[str] = []
 
     # the used generator
-    generator: str = None
+    generator: Callable = None
 
     # Generator specific parameters
     config: object = None

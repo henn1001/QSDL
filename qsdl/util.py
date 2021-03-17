@@ -236,7 +236,7 @@ def get_parents(obj: object) -> list:
     """
     parents = []
 
-    fields = xtx.get_children_of_type("Field", Config.model)
+    fields = xtx.get_children_of_type("Field", Config.schema)
 
     parents = list(filter(lambda x: x.value == obj, fields))
 
@@ -544,13 +544,13 @@ def is_nested(entity: object) -> bool:
     """
     ret = False
 
-    for field in xtx.get_children_of_type("Field", Config.model):
+    for field in xtx.get_children_of_type("Field", Config.schema):
         if field.value == entity:
             if field.nested:
                 ret = True
                 break
 
-    for arg in xtx.get_children_of_type("Argument", Config.model):
+    for arg in xtx.get_children_of_type("Argument", Config.schema):
         if arg.value == entity:
             ret = True
             break

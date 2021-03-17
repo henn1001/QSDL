@@ -15,47 +15,72 @@
 """QSDL - Generator interface"""
 
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Union
 
-from .graphql import Config as graphql_config
+from qsdl.dsl.models import Schema
+
+from .graphql import Config as GraphqlConfig
 from .graphql import generate as graphql_generator
-from .openapi import Config as openapi_config
+from .openapi import Config as OpenapiConfig
 from .openapi import generate as openapi_generator
-from .plantuml import Config as plantuml_config
+from .plantuml import Config as PlantumlConfig
 from .plantuml import generate as plantuml_generator
-from .spring import Config as spring_config
+from .spring import Config as SpringConfig
 from .spring import generate as spring_generator
 
+ConfigType = Union[GraphqlConfig, OpenapiConfig, PlantumlConfig, SpringConfig]
+GeneratorType = Callable[[Schema, Path, ConfigType], None]
 
-def get_config(generator: str) -> Any:
-    """Returns the config for a specific generator"""
+
+def get_config(generator_name: str) -> ConfigType:
+    """Returns the config for a specific generator
+
+    Args:
+        generator_name (str): The requested generator.
+
+    Raises:
+        Exception: For unknown generators.
+
+    Returns:
+        ConfigType: The generator config class.
+    """
     ret = None
 
-    if generator == "openapi":
-        ret = openapi_config()
-    elif generator == "graphql":
-        ret = graphql_config()
-    elif generator == "plantuml":
-        ret = plantuml_config()
-    elif generator == "spring":
-        ret = spring_config()
+    if generator_name == "openapi":
+        ret = OpenapiConfig()
+    elif generator_name == "graphql":
+        ret = GraphqlConfig()
+    elif generator_name == "plantuml":
+        ret = PlantumlConfig()
+    elif generator_name == "spring":
+        ret = SpringConfig()
     else:
         raise Exception("unknown generator")
 
     return ret
 
 
-def get_generator(generator: str) -> Callable[[None], None]:
-    """Returns a callable generator for a specific generator"""
+def get_generator(generator_name: str) -> GeneratorType:
+    """Returns a callable generator for a specific generator
+
+    Args:
+        generator_name (str): The requested generator.
+
+    Raises:
+        Exception: For unknown generators.
+
+    Returns:
+        GeneratorType: The generator config class.
+    """
     ret = None
 
-    if generator == "openapi":
+    if generator_name == "openapi":
         ret = openapi_generator
-    elif generator == "graphql":
+    elif generator_name == "graphql":
         ret = graphql_generator
-    elif generator == "plantuml":
+    elif generator_name == "plantuml":
         ret = plantuml_generator
-    elif generator == "spring":
+    elif generator_name == "spring":
         ret = spring_generator
     else:
         raise Exception("unknown generator")

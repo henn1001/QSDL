@@ -52,9 +52,9 @@ def entrypoint(input_path: str, generator: str = None, config_path: str = None, 
     output_path = Path(output_path) if output_path else input_path.parent / "srcgen"
 
     with open(input_path) as file:
-        schema = file.read()
+        raw_schema = file.read()
 
-    sys.exit(generate(schema, output_path, generator, config_path))
+    sys.exit(generate(raw_schema, output_path, generator, config_path))
 
 
 if __name__ == "__main__":

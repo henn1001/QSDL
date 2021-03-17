@@ -21,9 +21,6 @@ from dataclasses import dataclass
 class Argument:
     """Our Argument class"""
 
-    # required by textX
-    parent: object = None
-
     # defined in entity.tx
     # LHS
     name: str = None
@@ -32,3 +29,6 @@ class Argument:
     value: object = None
     non_nullable_array: bool = False
     non_nullable: bool = False
+
+    # required by textX
+    parent: object = None

@@ -21,8 +21,8 @@ from dataclasses import dataclass
 class Directive:
     """Our Directive class"""
 
-    # required by textX
-    parent: object = None
-
     # defined in entity.tx
     value: str = None
+
+    # required by textX
+    parent: object = None

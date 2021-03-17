@@ -22,10 +22,10 @@ from typing import List
 class Enum:
     """Our Enum class"""
 
-    # required by textX
-    parent: object = None
-
     # defined in entity.tx
     description: str = None
     name: str = None
     values: List[str] = field(default_factory=list)
+
+    # required by textX
+    parent: object = None

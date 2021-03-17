@@ -23,9 +23,9 @@ from textx.metamodel import TextXMetaModel
 
 from qsdl import __folder__, uml
 from qsdl.config import Config
-from qsdl.dsl.models import Scalar, all_dsl_models
-from qsdl.dsl.processors.model import model_processor
-from qsdl.dsl.processors.objects import obj_processors
+from qsdl.dsl.models import Scalar, Schema, all_dsl_models
+from qsdl.dsl.processors.schema import schema_processor
+from qsdl.dsl.processors.entity import entity_processors
 from qsdl.models import Operation
 from qsdl.util import (get_aggregation, get_childs, get_compositions, get_id,
                        get_id_field, get_operation_id, get_operation_method,
@@ -107,7 +107,7 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
         opr.method = "get"
         opr.parameters = get_path_parameters(field, d_parent)
         opr.parameters.extend(get_query_parameters(field))
-        opr.request  = []
+        opr.request = []
         opr.response = field
 
     if method == "post":
@@ -116,7 +116,7 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
         opr.path = get_path_base(field, d_parent)
         opr.method = "post"
         opr.parameters = get_path_parameters(field, d_parent)
-        opr.request  = get_request_parameters(field)
+        opr.request = get_request_parameters(field)
         opr.response = field
 
     if method == "put":
@@ -125,7 +125,7 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
         opr.path = get_path_base(field, d_parent)
         opr.method = "put"
         opr.parameters = get_path_parameters(field, d_parent)
-        opr.request  = get_request_parameters(field)
+        opr.request = get_request_parameters(field)
         opr.response = field
 
     if method == "patch":
@@ -134,7 +134,7 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
         opr.path = get_path_base(field, d_parent)
         opr.method = "patch"
         opr.parameters = get_path_parameters(field, d_parent)
-        opr.request  = get_request_parameters(field)
+        opr.request = get_request_parameters(field)
         opr.response = field
 
     if method == "delete":
@@ -143,7 +143,7 @@ def get_custom_operation(entity: object, field: object, method: str) -> Operatio
         opr.path = get_path_base(field, d_parent)
         opr.method = "delete"
         opr.parameters = get_path_parameters(field, d_parent)
-        opr.request  = []
+        opr.request = []
         opr.response = field
 
     return opr
@@ -204,32 +204,32 @@ def get_crud_operation_aggregation(obj: object, method: str) -> Operation:
     opr.childs = d_childs
 
     if method == "getA":
-        opr.name ="get" + get_operation_id(obj, "s")
+        opr.name = "get" + get_operation_id(obj, "s")
         opr.summary = f"List {pluralize(obj.name)}"
         opr.path = get_path_base(obj, obj.d_parent)
         opr.method = "get"
         opr.parameters = get_path_parameters(obj, obj.d_parent)
         opr.parameters.extend(get_query_parameters(obj))
-        opr.request  = []
+        opr.request = []
         opr.response = operation_helper_response(obj, False, True)
         opr.is_pageable = True
 
     elif method == "post":
-        opr.name ="add" + get_operation_id(obj)
+        opr.name = "add" + get_operation_id(obj)
         opr.summary = f"Add {obj.name}"
         opr.path = get_path_base(obj, obj.d_parent) + "/add"
         opr.method = "post"
         opr.parameters = get_path_parameters(obj, obj.d_parent)
-        opr.request  = [get_id_field(obj)]
+        opr.request = [get_id_field(obj)]
         opr.response = None
 
     elif method == "delete":
-        opr.name ="remove" + get_operation_id(obj)
+        opr.name = "remove" + get_operation_id(obj)
         opr.summary = f"Remove {obj.name}"
         opr.path = get_path_base(obj, obj.d_parent) + "/remove"
         opr.method = "post"
         opr.parameters = get_path_parameters(obj, obj.d_parent)
-        opr.request  = [get_id_field(obj)]
+        opr.request = [get_id_field(obj)]
         opr.response = None
 
     return opr
@@ -258,59 +258,59 @@ def get_crud_operation(obj: object, method: str) -> Operation:
     opr.is_crud = True
 
     if method == "getA":
-        opr.name ="get" + get_operation_id(obj, "s")
+        opr.name = "get" + get_operation_id(obj, "s")
         opr.summary = f"List {pluralize(obj.name)}"
         opr.path = get_path_base(obj, obj.d_parent)
         opr.method = "get"
         opr.parameters = get_path_parameters(obj, obj.d_parent)
         opr.parameters.extend(get_query_parameters(obj))
-        opr.request  = []
+        opr.request = []
         opr.response = operation_helper_response(obj, False, True)
         opr.is_pageable = True
 
     elif method == "post":
-        opr.name ="create" + get_operation_id(obj)
+        opr.name = "create" + get_operation_id(obj)
         opr.summary = f"Create a {obj.name}"
         opr.path = get_path_base(obj, obj.d_parent)
         opr.method = "post"
         opr.parameters = get_path_parameters(obj, obj.d_parent)
-        opr.request  = get_request_parameters(obj)
+        opr.request = get_request_parameters(obj)
         opr.response = operation_helper_response(obj)
 
     elif method == "get":
-        opr.name ="get" + get_operation_id(obj)
+        opr.name = "get" + get_operation_id(obj)
         opr.summary = f"Read the specified {obj.name}"
         opr.path = get_path_base(obj, obj.d_parent, True)
         opr.method = "get"
         opr.parameters = get_path_parameters(obj, obj.d_parent, True)
-        opr.request  = []
+        opr.request = []
         opr.response = operation_helper_response(obj)
 
     elif method == "put":
-        opr.name ="replace" + get_operation_id(obj)
+        opr.name = "replace" + get_operation_id(obj)
         opr.summary = f"Replace the specified {obj.name}"
         opr.path = get_path_base(obj, obj.d_parent, True)
         opr.method = "put"
         opr.parameters = get_path_parameters(obj, obj.d_parent, True)
-        opr.request  = get_request_parameters(obj)
+        opr.request = get_request_parameters(obj)
         opr.response = operation_helper_response(obj)
 
     elif method == "patch":
-        opr.name ="update" + get_operation_id(obj)
+        opr.name = "update" + get_operation_id(obj)
         opr.summary = f"Update the specified {obj.name}"
         opr.path = get_path_base(obj, obj.d_parent, True)
         opr.method = "patch"
         opr.parameters = get_path_parameters(obj, obj.d_parent, True)
-        opr.request  = get_request_parameters(obj)
+        opr.request = get_request_parameters(obj)
         opr.response = operation_helper_response(obj)
 
     elif method == "delete":
-        opr.name ="delete" + get_operation_id(obj)
+        opr.name = "delete" + get_operation_id(obj)
         opr.summary = f"Delete the specified {obj.name}"
         opr.path = get_path_base(obj, obj.d_parent, True)
         opr.method = "delete"
         opr.parameters = get_path_parameters(obj, obj.d_parent, True)
-        opr.request  = []
+        opr.request = []
         opr.response = None
 
     return opr
@@ -364,7 +364,7 @@ def check_duplicates(domain_objects: list):
             Config.dupl_objects.add(obj.name)
 
 
-def validate_operation_names(operations: list, model: object):
+def validate_operation_names(operations: list, schema: Schema):
     """Checks if we have any duplicate operation names"""
 
     names = []
@@ -374,10 +374,10 @@ def validate_operation_names(operations: list, model: object):
 
     if len(names) != len(set(names)):
         msg = "Duplicate operation names found."
-        raise TextXSemanticError(msg, filename=model._tx_filename)
+        raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_operation_paths(operations: list, model: object):
+def validate_operation_paths(operations: list, schema: Schema):
     """Checks if we have any duplicate operation paths"""
 
     paths = []
@@ -387,7 +387,7 @@ def validate_operation_paths(operations: list, model: object):
 
     if len(paths) != len(set(paths)):
         msg = "Duplicate operation names found."
-        raise TextXSemanticError(msg, filename=model._tx_filename)
+        raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
 def sort_operation_order(operations: list, by_path: bool = False, by_def: bool = False):
@@ -428,7 +428,7 @@ def sort_operation_order(operations: list, by_path: bool = False, by_def: bool =
     return sorted_operations
 
 
-def get_endpoints(model: object) -> list:
+def get_endpoints(schema: Schema) -> list:
     """Returns all possible endpoints/paths for OpenAPI.
 
     Returns:
@@ -436,7 +436,7 @@ def get_endpoints(model: object) -> list:
     """
     endpoints = []
 
-    objects = xtx.get_children_of_type("Object", model)
+    objects = xtx.get_children_of_type("Object", schema)
 
     for obj in objects:
 
@@ -484,16 +484,16 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     grammar_path = __folder__ / "dsl/definition/entity.tx"
 
     type_builtins = {
-        "Int": Scalar(None, "Int"),
-        "Long": Scalar(None, "Long"),
-        "Float": Scalar(None, "Float"),
-        "Double": Scalar(None, "Double"),
-        "String": Scalar(None, "String"),
-        "Boolean": Scalar(None, "Boolean"),
-        "ID": Scalar(None, "ID"),
-        "Date": Scalar(None, "Date"),
-        "Object": Scalar(None, "Object"),
-        "Void": Scalar(None, "Void"),
+        "Int": Scalar(name="Int"),
+        "Long": Scalar(name="Long"),
+        "Float": Scalar(name="Float"),
+        "Double": Scalar(name="Double"),
+        "String": Scalar(name="String"),
+        "Boolean": Scalar(name="Boolean"),
+        "ID": Scalar(name="ID"),
+        "Date": Scalar(name="Date"),
+        "Object": Scalar(name="Object"),
+        "Void": Scalar(name="Void"),
     }
 
     # parse the grammar file
@@ -501,8 +501,8 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
 
     # register pre-processors
     # these allow us to hook into the model and object creation
-    metamodel.register_model_processor(model_processor)
-    metamodel.register_obj_processors(obj_processors)
+    metamodel.register_model_processor(schema_processor)
+    metamodel.register_obj_processors(entity_processors)
 
     # export model with plantuml
     if print_uml:
@@ -511,14 +511,14 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     return metamodel
 
 
-def parse_schema(schema: str) -> object:
+def parse_schema(schema: str) -> Schema:
     """Builds and returns the DSL model as python object graph.
 
     Args:
         schema (str): The schema definition.
 
     Returns:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
     """
     # export model with plantuml
     metamodel = get_metamodel()
@@ -529,19 +529,19 @@ def parse_schema(schema: str) -> object:
     return model
 
 
-def parse_domain_model(model: object):
+def parse_domain_model(schema: Schema):
     """Convert the model into a OpenAPI path/operation graph.
 
     Args:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
     """
     operations = []
 
-    domain_objects = get_endpoints(model)
+    domain_objects = get_endpoints(schema)
 
     check_duplicates(domain_objects)
 
-    tmp = xtx.get_children_of_type("Operation", model)
+    tmp = xtx.get_children_of_type("Operation", schema)
 
     # crud objects
     objects = []
@@ -559,7 +559,7 @@ def parse_domain_model(model: object):
     operations = sort_operation_order(operations, by_def=True)
 
     # validate uniqueness
-    validate_operation_names(operations, model)
-    validate_operation_paths(operations, model)
+    validate_operation_names(operations, schema)
+    validate_operation_paths(operations, schema)
 
     return domain_objects, operations

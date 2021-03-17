@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Model pre-processor"""
+"""Schema validation"""
 
 import re
 
@@ -21,28 +21,29 @@ from textx.exceptions import TextXSemanticError
 from textx.metamodel import TextXMetaModel
 
 from qsdl.util import get_id, has_aggregation, has_composition
+from qsdl.dsl.models import Schema
 
 
-def model_processor(model: object, metamodel: TextXMetaModel):
+def validate(schema: Schema, metamodel: TextXMetaModel):
     """Check for logical input errors and provide better error messages.
 
     Args:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
         TextXSemanticError: Exception for logical errors.
     """
-    validate_type_names(model, metamodel)
-    validate_field_id(model, metamodel)
-    validate_parameter_id(model, metamodel)
-    validate_array_id(model, metamodel)
-    validate_reference(model, metamodel)
-    validate_custom_operations_path(model, metamodel)
-    validate_nested_bases(model, metamodel)
+    validate_type_names(schema, metamodel)
+    validate_field_id(schema, metamodel)
+    validate_parameter_id(schema, metamodel)
+    validate_array_id(schema, metamodel)
+    validate_reference(schema, metamodel)
+    validate_custom_operations_path(schema, metamodel)
+    validate_nested_bases(schema, metamodel)
 
 
-def validate_type_names(model: object, metamodel: TextXMetaModel):
+def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
     """Validate the naming convention.
 
     Expect that NameSpaces, Scalars, Enums, Bases and Objects
@@ -51,7 +52,7 @@ def validate_type_names(model: object, metamodel: TextXMetaModel):
     The used regex is ^[A-Z][a-zA-Z]*$"
 
     Args:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
@@ -61,15 +62,15 @@ def validate_type_names(model: object, metamodel: TextXMetaModel):
 
     entities = []
 
-    entities.extend(xtx.get_children_of_type("Scalar", model))
-    entities.extend(xtx.get_children_of_type("Enum", model))
-    entities.extend(xtx.get_children_of_type("Base", model))
-    entities.extend(xtx.get_children_of_type("Object", model))
+    entities.extend(xtx.get_children_of_type("Scalar", schema))
+    entities.extend(xtx.get_children_of_type("Enum", schema))
+    entities.extend(xtx.get_children_of_type("Base", schema))
+    entities.extend(xtx.get_children_of_type("Object", schema))
 
     for entity in entities:
         if not re.match(r"^[A-Z][a-zA-Z]*$", entity.name):
             msg = f"The type {entity.name} does not conform to the naming convention."
-            raise TextXSemanticError(msg, filename=model._tx_filename)
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
         if (
             entity._tx_fqn == "entity.Object"
@@ -77,14 +78,14 @@ def validate_type_names(model: object, metamodel: TextXMetaModel):
             and not re.match(r"^[A-Z][a-zA-Z]*$", entity.namespace)
         ):
             msg = f"The namespace of type {entity.name} does not conform to the naming convention."
-            raise TextXSemanticError(msg, filename=model._tx_filename)
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_field_id(model: object, metamodel: TextXMetaModel):
+def validate_field_id(schema: Schema, metamodel: TextXMetaModel):
     """Check that Objects only have one normal ID field.
 
     Args:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
@@ -93,8 +94,8 @@ def validate_field_id(model: object, metamodel: TextXMetaModel):
     _ = metamodel
 
     # loop for objects and their supertypes (bases)
-    objects = xtx.get_children_of_type("Object", model)
-    objects.extend(xtx.get_children_of_type("Base", model))
+    objects = xtx.get_children_of_type("Object", schema)
+    objects.extend(xtx.get_children_of_type("Base", schema))
 
     for obj in objects:
         count = 0
@@ -109,7 +110,7 @@ def validate_field_id(model: object, metamodel: TextXMetaModel):
                 # should be moved
                 if field.value.name == "Void":
                     msg = f"Invalid Void Field value for Object {obj.name}"
-                    raise TextXSemanticError(msg, filename=model._tx_filename)
+                    raise TextXSemanticError(msg, filename=schema._tx_filename)
 
             if tmp.supertype:
                 tmp = tmp.supertype
@@ -118,14 +119,14 @@ def validate_field_id(model: object, metamodel: TextXMetaModel):
 
         if count > 1:
             msg = f"More than one ID found for Object {obj.name}"
-            raise TextXSemanticError(msg, filename=model._tx_filename)
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_parameter_id(model: object, metamodel: TextXMetaModel):
+def validate_parameter_id(schema: Schema, metamodel: TextXMetaModel):
     """Check that Fields only have one normal ID parameter.
 
     Args:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
@@ -134,7 +135,7 @@ def validate_parameter_id(model: object, metamodel: TextXMetaModel):
     _ = metamodel
 
     # loop for custom queries and mutations
-    fields = xtx.get_children_of_type("Field", model)
+    fields = xtx.get_children_of_type("Field", schema)
 
     for field in fields:
         count = 0
@@ -146,7 +147,7 @@ def validate_parameter_id(model: object, metamodel: TextXMetaModel):
 
         if count > 1:
             msg = f"More than one ID found for Operation {field.name}"
-            raise TextXSemanticError(msg, filename=model._tx_filename)
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
         # check for multiple refs or mix
         count = 0
@@ -164,14 +165,14 @@ def validate_parameter_id(model: object, metamodel: TextXMetaModel):
                 f"The Operation {field.name} references more than one Object "
                 "or tries to mix them. Currently not supported"
             )
-            raise TextXSemanticError(msg, filename=model._tx_filename)
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_array_id(model: object, metamodel: TextXMetaModel):
+def validate_array_id(schema: Schema, metamodel: TextXMetaModel):
     """Check that Fields only have one normal ID parameter.
 
     Args:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
@@ -179,27 +180,27 @@ def validate_array_id(model: object, metamodel: TextXMetaModel):
     """
     _ = metamodel
 
-    fields = xtx.get_children_of_type("Field", model)
+    fields = xtx.get_children_of_type("Field", schema)
 
     for field in fields:
         if field.parent._tx_fqn in ["entity.Object", "entity.Base"]:
 
             if field.value.name == "ID" and field.array:
                 msg = f"Array ID found for the field {field.name}."
-                raise TextXSemanticError(msg, filename=model._tx_filename)
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
 
         for argument in field.arguments:
 
             if argument.value.name == "ID" and argument.array:
                 msg = f"Array ID found for argument {argument.name}"
-                raise TextXSemanticError(msg, filename=model._tx_filename)
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_reference(model: object, metamodel: TextXMetaModel):
+def validate_reference(schema: Schema, metamodel: TextXMetaModel):
     """Check that referenced objects use a ID.
 
     Args:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
@@ -207,11 +208,11 @@ def validate_reference(model: object, metamodel: TextXMetaModel):
     """
     _ = metamodel
 
-    entities = xtx.get_children_of_type("Object", model)
+    entities = xtx.get_children_of_type("Object", schema)
     for ent in entities:
         if (has_aggregation(ent) and not get_id(ent)) or (has_composition(ent) and not get_id(ent)):
             msg = f"The type {ent.name} specifies a composition or aggregation but no ID value."
-            raise TextXSemanticError(msg, filename=model._tx_filename)
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
         fields = list(
             filter(
@@ -224,13 +225,13 @@ def validate_reference(model: object, metamodel: TextXMetaModel):
         for field in fields:
             if not get_id(field.value):
                 msg = f"The field {field.name} of type {ent.name} references a type with no ID."
-                raise TextXSemanticError(msg, filename=model._tx_filename)
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-    entities = xtx.get_children_of_type("Base", model)
+    entities = xtx.get_children_of_type("Base", schema)
     for ent in entities:
         if (has_aggregation(ent) and not get_id(ent)) or (has_composition(ent) and not get_id(ent)):
             msg = f"The base {ent.name} specifies a composition or aggregation but no ID value."
-            raise TextXSemanticError(msg, filename=model._tx_filename)
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
         fields = list(
             filter(
@@ -243,14 +244,14 @@ def validate_reference(model: object, metamodel: TextXMetaModel):
         for field in fields:
             if not get_id(field.value):
                 msg = f"The field {field.name} of base {ent.name} references a type with no ID."
-                raise TextXSemanticError(msg, filename=model._tx_filename)
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_custom_operations_path(model: object, metamodel: TextXMetaModel):
+def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
     """Check that custom operations specify a path.
 
     Args:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
@@ -259,21 +260,21 @@ def validate_custom_operations_path(model: object, metamodel: TextXMetaModel):
     _ = metamodel
 
     # get all queries who do not belong to objects
-    operations = xtx.get_children_of_type("Operation", model)
+    operations = xtx.get_children_of_type("Operation", schema)
     operations = list(filter(lambda x: x.parent._tx_fqn != "entity.Object", operations))
 
     for operation in operations:
         for field in operation.fields:
             if not field.path:
                 msg = f"The custom Operation {field.name} needs to specify a path."
-                raise TextXSemanticError(msg, filename=model._tx_filename)
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_nested_bases(model: object, metamodel: TextXMetaModel):
+def validate_nested_bases(schema: Schema, metamodel: TextXMetaModel):
     """Check that used bases are declared as nested.
 
     Args:
-        model (object): The python object graph.
+        schema (Schema): The parsed schema definition.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
@@ -281,11 +282,11 @@ def validate_nested_bases(model: object, metamodel: TextXMetaModel):
     """
     _ = metamodel
 
-    bases = xtx.get_children_of_type("Base", model)
+    bases = xtx.get_children_of_type("Base", schema)
 
     for base in bases:
-        for field in xtx.get_children_of_type("Field", model):
+        for field in xtx.get_children_of_type("Field", schema):
             if field.parent._tx_fqn in ["entity.Object", "entity.Base"] and field.value == base:
                 if not field.nested:
                     msg = f"The Base {base.name} is used but is not declared as nested."
-                    raise TextXSemanticError(msg, filename=model._tx_filename)
+                    raise TextXSemanticError(msg, filename=schema._tx_filename)

@@ -25,9 +25,6 @@ from .field import Field
 class Operation:
     """Our Operation class"""
 
-    # required by textX
-    parent: object = None
-
     # defined in entity.tx
     description: str = None
     # Special directives
@@ -36,3 +33,6 @@ class Operation:
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
     fields: List[Field] = field(default_factory=list)
+
+    # required by textX
+    parent: object = None

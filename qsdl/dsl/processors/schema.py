@@ -12,33 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""PlantUML Generator"""
-
-from pathlib import Path
+"""Schema post-processor"""
 
 from textx import model as xtx
+from textx.metamodel import TextXMetaModel
 
-from qsdl import uml, util
 from qsdl.dsl.models import Schema
-from qsdl.render import render
 
-from .config import Config
+from .validate import validate
 
 
-def generate(schema: Schema, output_path: Path, config: Config):
-    """Generator func for PlantUML"""
+def schema_processor(schema: Schema, metamodel: TextXMetaModel):
+    """Callable that will be called after each successful model parse.
 
-    output_file = output_path / "plantuml.md"
-    template_path = Path(__file__).parent / "template" / "uml.j2"
+    We use this to validate and enrich the schema.
 
-    # build the render arguments
-    context = {
-        "model": schema,
-        "xtx": xtx,
-        "util": util,
-        "parameters": config,
-    }
+    Args:
+        schema (Schema): The parsed schema definition.
+        metamodel (TextXMetaModel): The metamodel.
 
-    render(output_file, context, template_path)
+    Raises:
+        TextXSemanticError: Exception for logical errors.
+    """
 
-    uml.generate_png(output_file)
+    validate(schema, metamodel)

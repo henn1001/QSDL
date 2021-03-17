@@ -27,9 +27,6 @@ from .base import Base
 class Object:
     """Our Object class"""
 
-    # required by textX
-    parent: object = None
-
     # defined in entity.tx
     description: str = None
     name: str = None
@@ -41,3 +38,6 @@ class Object:
     directives: List[Directive] = field(default_factory=list)
     fields: List[Field] = field(default_factory=list)
     operation: Operation = None
+
+    # required by textX
+    parent: object = None

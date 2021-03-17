@@ -176,8 +176,8 @@ def has_relation_not_nested(entity):
 
 
 def is_supertype(entity):
-    base_list = xtx.get_children_of_type("Base", Config.model)
-    object_list = xtx.get_children_of_type("Object", Config.model)
+    base_list = xtx.get_children_of_type("Base", Config.schema)
+    object_list = xtx.get_children_of_type("Object", Config.schema)
 
     for it in base_list + object_list:
         if entity == it.supertype:
@@ -197,7 +197,7 @@ def is_nested(entity: object) -> bool:
     """
     ret = False
 
-    for field in xtx.get_children_of_type("Field", Config.model):
+    for field in xtx.get_children_of_type("Field", Config.schema):
         if field.value == entity:
             if field.nested:
                 ret = True

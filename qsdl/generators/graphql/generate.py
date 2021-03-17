@@ -19,10 +19,13 @@ from pathlib import Path
 from textx import model as xtx
 
 from qsdl import util
+from qsdl.dsl.models import Schema
 from qsdl.render import render
 
+from .config import Config
 
-def generate(model, output_path, parameters):
+
+def generate(schema: Schema, output_path: Path, config: Config):
     """Generator func for GraphQL"""
 
     output_file = output_path / "schema.graphql"
@@ -30,10 +33,10 @@ def generate(model, output_path, parameters):
 
     # build the render arguments
     context = {
-        "model": model,
+        "model": schema,
         "xtx": xtx,
         "util": util,
-        "parameters": parameters,
+        "parameters": config,
     }
 
     render(output_file, context, template_path)
