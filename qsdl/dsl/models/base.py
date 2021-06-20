@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Base:
-    """Our Base class"""
+    """textX Base class"""
 
     # defined in entity.tx
     description: str = None

@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, List, Union
 from textx import model as xtx
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Object, Schema
+    from qsdl.dsl.models import Base, Enum, Object, Schema, Field
 
 
 # the parsed schema definition.
@@ -84,7 +84,7 @@ def has_id(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has an ID.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -111,7 +111,7 @@ def has_list(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has an array.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -133,7 +133,7 @@ def has_float(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a float.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -155,7 +155,7 @@ def has_date(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a date.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -177,7 +177,7 @@ def has_enum(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has an enum.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -199,7 +199,7 @@ def has_model(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a base or object.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -221,7 +221,7 @@ def has_required(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has an required attribute.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -243,7 +243,7 @@ def has_relation(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a relation.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -265,7 +265,7 @@ def has_relation_not_nested(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a relation that is not nested.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -287,7 +287,7 @@ def is_supertype(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object is used somewhere as a supertype.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -341,13 +341,13 @@ def get_enum_values(entity: Enum) -> List[Enum]:
     return values
 
 
-def get_filtered_fields(field: object) -> bool:
+def get_filtered_fields(field: Field) -> bool:
     """A filter for fields.
 
     We only want to include composition or aggregations when they are nested.
 
     Args:
-        field (object): entity.Field
+        field (Field): entity.Field
 
     Returns:
         bool: Returns True for usable fields.

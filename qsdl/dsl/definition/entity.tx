@@ -50,24 +50,6 @@ Base:
     '}'
 ;
 
-Api :
-    description=Description?
-
-    'extend' 'Api' 
-
-    // Special directives
-    ( is_deprecated?='@deprecated'
-        ('@namespace(value:' namespace=STRING ')')?
-        )#
-
-    // Custom directives
-    directives*=Directive
-
-    '{'
-        fields+=Field
-    '}'
-;
-
 Object:
     description=Description?
 
@@ -94,9 +76,6 @@ Field:
 
     // LHS
     name=ID
-    (function?='(' &/.*\)/)?
-    (arguments+=Argument[','])?
-    ')'?
 
     // Delimiter
     ':'
@@ -114,7 +93,50 @@ Field:
         is_write_only?='@writeOnly'
         is_composition?='@composition'
         is_aggregation?='@aggregation'
-        ('@path(value:' path=STRING ')')?
+        )#
+
+    // Custom directives
+    directives*=Directive
+;
+
+Api :
+    description=Description?
+
+    'extend' 'Api' 
+
+    // Special directives
+    ( is_deprecated?='@deprecated'
+        ('@namespace(value:' namespace=STRING ')')?
+        )#
+
+    // Custom directives
+    directives*=Directive
+
+    '{'
+        operations+=Operation
+    '}'
+;
+
+Operation:
+    description=Description?
+
+    // LHS
+    name=ID
+    ('(' &/.*\)/)?
+    (arguments+=Argument[','])?
+    ')'?
+
+    // Delimiter
+    ':'
+
+    // RHS
+    (array?='[' &/.*\]/)?
+    value=[ValueType]
+    (']')?
+    (is_required?='!')?
+
+    // Special directives
+    ( ('@path(value:' path=STRING ')')?
         ('@method(value:' method=Method ')')?
         )#
 

@@ -18,7 +18,7 @@ from tests import wrapper_generate, wrapper_generate_failure
 class TestApi:
     """Test Operations.
 
-    01. `Api` must at least contain one `Field`.
+    01. `Api` must at least contain one `Operation`.
 
     02. `Api` may be used multiple times for a schema to define custom operations.
 
@@ -31,7 +31,7 @@ class TestApi:
     """
 
     def test_api_01_positive(self):
-        """Verify empty fields"""
+        """Verify empty Operation"""
         test_input = """\
             extend Api {
                 getFoo: Object @path(value:"foo")
@@ -44,7 +44,7 @@ class TestApi:
         assert "getFoo" in openapi["paths"]["/foo"]["get"]["operationId"]
 
     def test_api_01_negative(self):
-        """Verify empty fields"""
+        """Verify empty Operation"""
         test_input = """\
             extend Api {
             }

@@ -24,7 +24,7 @@ from textx.exceptions import TextXSemanticError
 from textx.metamodel import TextXMetaModel
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Field, Object, Schema
+    from qsdl.dsl.models import Base, Field, Object, Operation, Schema
 
 
 def validate(schema: Schema, metamodel: TextXMetaModel):
@@ -38,8 +38,8 @@ def validate(schema: Schema, metamodel: TextXMetaModel):
         TextXSemanticError: Exception for logical errors.
     """
     validate_type_names(schema, metamodel)
-    validate_field_id(schema, metamodel)
-    validate_parameter_id(schema, metamodel)
+    validate_field_id_count(schema, metamodel)
+    validate_argument_id_count(schema, metamodel)
     validate_array_id(schema, metamodel)
     validate_reference(schema, metamodel)
     validate_custom_operations_path(schema, metamodel)
@@ -72,7 +72,7 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
 
     for entity in entities:
         if not re.match(r"^[A-Z][a-zA-Z]*$", entity.name):
-            msg = f"The type {entity.name} does not conform to the naming convention."
+            msg = f"The {entity._tx_fqn} {entity.name} does not conform to the naming convention."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
         if (
@@ -80,11 +80,11 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
             and entity.namespace
             and not re.match(r"^[A-Z][a-zA-Z]*$", entity.namespace)
         ):
-            msg = f"The namespace of type {entity.name} does not conform to the naming convention."
+            msg = f"The namespace of {entity._tx_fqn} {entity.name} does not conform to the naming convention."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_field_id(schema: Schema, metamodel: TextXMetaModel):
+def validate_field_id_count(schema: Schema, metamodel: TextXMetaModel):
     """Check that Objects only have one normal ID field.
 
     Args:
@@ -98,11 +98,11 @@ def validate_field_id(schema: Schema, metamodel: TextXMetaModel):
 
     # loop for objects and their supertypes (bases)
     objects = xtx.get_children_of_type("Object", schema)
-    objects.extend(xtx.get_children_of_type("Base", schema))
+    bases = xtx.get_children_of_type("Base", schema)
 
-    for obj in objects:
+    for entity in objects + bases:
         count = 0
-        tmp = obj
+        tmp = entity
 
         while True:
             # check for multiple IDs
@@ -110,22 +110,17 @@ def validate_field_id(schema: Schema, metamodel: TextXMetaModel):
                 if field.value.name == "ID":
                     count = count + 1
 
-                # should be moved
-                if field.value.name == "Void":
-                    msg = f"Invalid Void Field value for Object {obj.name}"
-                    raise TextXSemanticError(msg, filename=schema._tx_filename)
-
             if tmp.supertype:
                 tmp = tmp.supertype
             else:
                 break
 
         if count > 1:
-            msg = f"More than one ID found for Object {obj.name}"
+            msg = f"More than one ID found for {entity._tx_fqn} {entity.name}"
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_parameter_id(schema: Schema, metamodel: TextXMetaModel):
+def validate_argument_id_count(schema: Schema, metamodel: TextXMetaModel):
     """Check that Fields only have one normal ID parameter.
 
     Args:
@@ -138,25 +133,25 @@ def validate_parameter_id(schema: Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
     # loop for custom queries and mutations
-    fields = xtx.get_children_of_type("Field", schema)
+    operations = xtx.get_children_of_type("Operation", schema)
 
-    for field in fields:
+    for entity in operations:
         count = 0
 
         # check for multiple IDs
-        for argument in field.arguments:
+        for argument in entity.arguments:
             if argument.value.name == "ID":
                 count = count + 1
 
         if count > 1:
-            msg = f"More than one ID found for Operation {field.name}"
+            msg = f"More than one ID found for {entity._tx_fqn} {entity.name}"
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
         # check for multiple refs or mix
         count = 0
         is_ref = False
 
-        for argument in field.arguments:
+        for argument in entity.arguments:
             if argument.value.name != "ID":
                 count = count + 1
 
@@ -165,7 +160,7 @@ def validate_parameter_id(schema: Schema, metamodel: TextXMetaModel):
 
         if is_ref and count > 1:
             msg = (
-                f"The Operation {field.name} references more than one Object "
+                f"The Operation {entity.name} references more than one Object "
                 "or tries to mix them. Currently not supported"
             )
             raise TextXSemanticError(msg, filename=schema._tx_filename)
@@ -184,19 +179,17 @@ def validate_array_id(schema: Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
     fields = xtx.get_children_of_type("Field", schema)
+    arguments = xtx.get_children_of_type("Argument", schema)
 
     for field in fields:
-        if field.parent._tx_fqn in ["entity.Object", "entity.Base"]:
+        if field.value.name == "ID" and field.array:
+            msg = f"Array ID found for the field {field.name}."
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-            if field.value.name == "ID" and field.array:
-                msg = f"Array ID found for the field {field.name}."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-        for argument in field.arguments:
-
-            if argument.value.name == "ID" and argument.array:
-                msg = f"Array ID found for argument {argument.name}"
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+    for argument in arguments:
+        if argument.value.name == "ID" and argument.array:
+            msg = f"Array ID found for argument {argument.name}"
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
 def validate_reference(schema: Schema, metamodel: TextXMetaModel):
@@ -267,9 +260,9 @@ def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
     apis = list(filter(lambda x: x.parent._tx_fqn != "entity.Object", apis))
 
     for api in apis:
-        for field in api.fields:
-            if not field.path:
-                msg = f"The custom Operation {field.name} needs to specify a path."
+        for operation in api.operations:
+            if not operation.path:
+                msg = f"The custom Operation {operation.name} needs to specify a path."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
@@ -289,10 +282,9 @@ def validate_nested_bases(schema: Schema, metamodel: TextXMetaModel):
 
     for base in bases:
         for field in xtx.get_children_of_type("Field", schema):
-            if field.parent._tx_fqn in ["entity.Object", "entity.Base"] and field.value == base:
-                if not field.is_nested:
-                    msg = f"The Base {base.name} is used but is not declared as nested."
-                    raise TextXSemanticError(msg, filename=schema._tx_filename)
+            if field.value == base and not field.is_nested:
+                msg = f"The Base {base.name} is used but is not declared as nested."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
 def validate_operations(schema: Schema):
@@ -310,9 +302,9 @@ def validate_operations(schema: Schema):
     apis = xtx.get_children_of_type("Api", schema)
 
     for api in apis:
-        for field in api.fields:
-            names.append(field.name)
-            paths.append(field.method + field.path)
+        for operation in api.operations:
+            names.append(operation.name)
+            paths.append(operation.method + operation.path)
 
     if len(names) != len(set(names)):
         msg = "Duplicate operation names found."
@@ -324,10 +316,10 @@ def validate_operations(schema: Schema):
 
 
 def get_id(entity: Union[Base, Object, Field]) -> str:
-    """Returns the name of the ID of a Objects, Queries or Mutations.
+    """Returns the name of the ID of a Object or Base.
 
     Args:
-        entity (object): Either entity.Object or entity.Field.
+        entity (object): Either entity.Base or entity.Object.
 
     Returns:
         str: The name of the ID. None if no ID is found.
@@ -342,12 +334,6 @@ def get_id(entity: Union[Base, Object, Field]) -> str:
         for field in entity.fields:
             if field.value.name == "ID":
                 return field.name
-
-    if entity._tx_fqn == "entity.Field":
-
-        for argument in entity.arguments:
-            if argument.value.name == "ID":
-                return argument.name
 
     return field_entity_name
 

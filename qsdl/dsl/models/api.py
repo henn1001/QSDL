@@ -20,12 +20,12 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Directive, Field, Object, Schema
+    from qsdl.dsl.models import Directive, Object, Schema, Operation
 
 
 @dataclass
 class Api:
-    """Our Api class"""
+    """textX Api class"""
 
     # defined in entity.tx
     description: str = None
@@ -34,7 +34,7 @@ class Api:
     namespace: str = None
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
-    fields: List[Field] = field(default_factory=list)
+    operations: List[Operation] = field(default_factory=list)
 
     # required by textX
     parent: Union[Schema, Object]  = None

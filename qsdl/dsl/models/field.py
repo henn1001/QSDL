@@ -25,14 +25,12 @@ if TYPE_CHECKING:
 
 @dataclass
 class Field:
-    """Our Field class"""
+    """textX Field class"""
 
     # defined in entity.tx
     description: str = None
     # LHS
     name: str = None
-    function: bool = False
-    arguments: List[Argument] = field(default_factory=list)
     # RHS
     array: bool = False
     value: object = None
@@ -44,17 +42,8 @@ class Field:
     is_write_only: bool = False
     is_composition: bool = False
     is_aggregation: bool = False
-    path: str = None
-    method: str = None
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
-
-    # custom
-    summary: str = None
-    is_pageable: bool = False
-    path_parameters: List[Argument] = field(default_factory=list)
-    query_parameters: List[Argument] = field(default_factory=list)
-    body_parameters: List[Argument] = field(default_factory=list)
 
     # required by textX
     parent: Union[Base, Object, Api] = None

@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Argument:
-    """Our Argument class"""
+    """textX Argument class"""
 
     # defined in entity.tx
     # LHS

@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Schema:
-    """Our Schema class"""
+    """textX Schema class"""
 
     # defined in entity.tx
     title: str = None

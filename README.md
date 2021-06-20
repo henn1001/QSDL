@@ -324,13 +324,13 @@ $`          Api:                                                      `$\
 $`~~~~          description=Description?                                    `$\
 $`~~~~          name=ID                                                     `$\
 $`~~~~          directives*=Directive                                       `$\
-$`~~~~          fields+=Field                                               `$
+$`~~~~          operations+=Operation                                       `$
 
 Api types can be used to create API Endpoints and Query/Mutation.
 
 Api Rules:
 
-1.  `Api` must at least contain one `Field`.
+1.  `Api` must at least contain one `Operation`.
 
 2.  `Api` may be used multiple times for a schema to define custom operations.
 
@@ -340,9 +340,9 @@ Api Rules:
 
 5.  `Api` names must be globally unique. This overlaps with auto generated CRUD operations for `Object`s.
 
-Field Rules:
+Operation Rules:
 
-1.  `Field` of `Api` may be a `Scalar` value with one one of the following:
+1.  `Operation` of `Api` may be a `Scalar` value with one one of the following:
     * `ID`
     * `Int`
     * `Long`
@@ -354,15 +354,15 @@ Field Rules:
     * `Object`
     * `Void`
 
-2.  `Field` of `Api` value may be a `Enum`.
+2.  `Operation` of `Api` value may be a `Enum`.
 
-3.  `Field` of `Api` value may be a `Base`.
+3.  `Operation` of `Api` value may be a `Base`.
 
-4.  `Field` of `Api` value may be a `Object`.
+4.  `Operation` of `Api` value may be a `Object`.
 
-5.  `Field` of `Api` value may be a list when enclosed with brackets.
+5.  `Operation` of `Api` value may be a list when enclosed with brackets.
 
-6.  `Field` of `Api` value may be marked as required.
+6.  `Operation` of `Api` value may be marked as required.
 
 Example:
 

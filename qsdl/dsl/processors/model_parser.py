@@ -18,11 +18,12 @@ from typing import List, Union
 
 from textx import model as xtx
 
-from qsdl.dsl.models import Argument, Base, Field, Object, Api, Scalar, Schema
+from qsdl.dsl.models import Api, Argument, Base, Field, Object, Scalar, Schema
+from qsdl.dsl.models.operation import Operation
 from qsdl.filter import pluralize
 
 
-def get_id(entity: Union[Field, Object, Base]) -> str:
+def get_id(entity: Union[Operation, Object, Base]) -> str:
     """Returns the name of the ID of a Objects or Api or None if no ID exists.
 
     The supertype of Base|Objects is searched as well.
@@ -44,7 +45,7 @@ def get_id(entity: Union[Field, Object, Base]) -> str:
             if field.value.name == "ID":
                 return field.name
 
-    elif entity._tx_fqn == "entity.Field":
+    elif entity._tx_fqn == "entity.Operation":
 
         for argument in entity.arguments:
             if argument.value.name == "ID":
@@ -199,18 +200,9 @@ def path_builder(
             path = path + "/{" + get_id(entity) + "}"
 
         if parent_obj:
-            path = (
-                "/"
-                + pluralize(parent_obj.name)
-                + "/{"
-                + parent_obj.name
-                + "_"
-                + get_id(parent_obj)
-                + "}"
-                + path
-            )
+            path = "/" + pluralize(parent_obj.name) + "/{" + parent_obj.name + "_" + get_id(parent_obj) + "}" + path
 
-    elif entity._tx_fqn == "entity.Field":
+    elif entity._tx_fqn == "entity.Operation":
 
         if entity.path:
             path = entity.path
@@ -224,22 +216,13 @@ def path_builder(
             path = path + "/{" + get_id(entity) + "}"
 
         if parent_obj:
-            path = (
-                "/"
-                + pluralize(parent_obj.name)
-                + "/{"
-                + parent_obj.name
-                + "_"
-                + get_id(parent_obj)
-                + "}"
-                + path
-            )
+            path = "/" + pluralize(parent_obj.name) + "/{" + parent_obj.name + "_" + get_id(parent_obj) + "}" + path
 
     return path.lower()
 
 
 def path_argument_builder(
-    field: Field,
+    operation: Operation,
     obj: Object,
     parent_obj: Object = None,
     include_id: bool = False,
@@ -247,7 +230,7 @@ def path_argument_builder(
     """Creates and returns the path arguments for a operation.
 
     Args:
-        field (Field): The entity.Operation.
+        operation (Operation): The entity.Operation.
         obj (Object): The entity.Object the entity.Operation belongs to.
         parent_obj (Object, optional): The parent, entity.Object.
             Defaults to None.
@@ -261,7 +244,7 @@ def path_argument_builder(
 
     if parent_obj:
         argument = Argument()
-        argument.parent = field
+        argument.parent = operation
 
         argument.name = parent_obj.name.lower() + "_" + get_id(parent_obj)
         argument.value = Scalar(name="ID")
@@ -272,7 +255,7 @@ def path_argument_builder(
 
     if include_id:
         argument = Argument()
-        argument.parent = field
+        argument.parent = operation
 
         argument.name = get_id(obj)
         argument.value = Scalar(name="ID")
@@ -285,13 +268,13 @@ def path_argument_builder(
 
 
 def query_argument_builder(
-    field: Field,
+    operation: Operation,
     obj: Object,
 ) -> List[Argument]:
     """Creates and returns the query arguments for a operation.
 
     Args:
-        field (Field): The entity.Operation.
+        operation (Operation): The entity.Operation.
         obj (Object): The entity.Object the entity.Operation belongs to.
 
     Returns:
@@ -301,12 +284,12 @@ def query_argument_builder(
 
     query_fields = get_query_fields(obj)
 
-    for field in query_fields:
+    for operation in query_fields:
         argument = Argument()
-        argument.parent = field
+        argument.parent = operation
 
-        argument.name = field.name
-        argument.value = field.value
+        argument.name = operation.name
+        argument.value = operation.value
         argument.is_query = True
 
         arguments.append(argument)
@@ -315,14 +298,14 @@ def query_argument_builder(
 
 
 def body_argument_builder(
-    field: Field,
+    operation: Operation,
     obj: Object,
     aggregation: bool = False,
 ) -> List[Argument]:
     """Creates and returns the query arguments for a operation.
 
     Args:
-        field (Field): The entity.Operation.
+        operation (Operation): The entity.Operation.
         obj (Object): The entity.Object the entity.Operation belongs to.
         aggregation (bool, optional): For aggregations, the body containts the aggregated Objects ID.
             Defaults to False.
@@ -333,7 +316,7 @@ def body_argument_builder(
     arguments = []
 
     argument = Argument()
-    argument.parent = field
+    argument.parent = operation
 
     if aggregation:
         argument.name = get_id(obj)
@@ -350,12 +333,12 @@ def body_argument_builder(
     return arguments
 
 
-def field_builder(
+def operation_builder(
     obj: Object,
     parent_obj: Object = None,
     duplicate: bool = False,
     method: str = None,
-) -> Field:
+) -> Operation:
     """Creates and returns the Operation for an Object.
 
     Args:
@@ -375,143 +358,143 @@ def field_builder(
 
     obj = api.parent
 
-    field = Field()
-    field.parent = api
+    operation = Operation()
+    operation.parent = api
 
     if method == "getA":
         name = "get" + name_builder(obj, parent_obj if duplicate else None, "For", "s")
         path = path_builder(obj, parent_obj, False)
 
-        field.name = name
-        field.value = obj
-        field.path = path
-        field.method = "GET"
+        operation.name = name
+        operation.value = obj
+        operation.path = path
+        operation.method = "GET"
         # field.array = True # disabled if we use pagination
-        field.is_pageable = True
+        operation.is_pageable = True
 
-        field.summary = f"List {pluralize(obj.name)}"
+        operation.summary = f"List {pluralize(obj.name)}"
 
-        field.path_parameters = path_argument_builder(field, obj, parent_obj, False)
-        field.query_parameters = query_argument_builder(field, obj)
-        field.body_parameters = []
-        field.arguments = field.path_parameters + field.query_parameters + field.body_parameters
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, False)
+        operation.query_parameters = query_argument_builder(operation, obj)
+        operation.body_parameters = []
+        operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     elif method == "post":
         name = "create" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, False)
 
-        field.name = name
-        field.value = obj
-        field.path = path
-        field.method = "POST"
+        operation.name = name
+        operation.value = obj
+        operation.path = path
+        operation.method = "POST"
 
-        field.summary = f"Create a {obj.name}"
+        operation.summary = f"Create a {obj.name}"
 
-        field.path_parameters = path_argument_builder(field, obj, parent_obj, False)
-        field.query_parameters = []
-        field.body_parameters = body_argument_builder(field, obj)
-        field.arguments = field.path_parameters + field.query_parameters + field.body_parameters
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, False)
+        operation.query_parameters = []
+        operation.body_parameters = body_argument_builder(operation, obj)
+        operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     elif method == "get":
         name = "get" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, True)
 
-        field.name = name
-        field.value = obj
-        field.path = path
-        field.method = "GET"
+        operation.name = name
+        operation.value = obj
+        operation.path = path
+        operation.method = "GET"
 
-        field.summary = f"Read the specified {obj.name}"
+        operation.summary = f"Read the specified {obj.name}"
 
-        field.path_parameters = path_argument_builder(field, obj, parent_obj, True)
-        field.query_parameters = []
-        field.body_parameters = []
-        field.arguments = field.path_parameters + field.query_parameters + field.body_parameters
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.query_parameters = []
+        operation.body_parameters = []
+        operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     elif method == "put":
         name = "replace" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, True)
 
-        field.name = name
-        field.value = obj
-        field.path = path
-        field.method = "PUT"
+        operation.name = name
+        operation.value = obj
+        operation.path = path
+        operation.method = "PUT"
 
-        field.summary = f"Replace the specified {obj.name}"
+        operation.summary = f"Replace the specified {obj.name}"
 
-        field.path_parameters = path_argument_builder(field, obj, parent_obj, True)
-        field.query_parameters = []
-        field.body_parameters = body_argument_builder(field, obj)
-        field.arguments = field.path_parameters + field.query_parameters + field.body_parameters
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.query_parameters = []
+        operation.body_parameters = body_argument_builder(operation, obj)
+        operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     elif method == "patch":
         name = "update" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, True)
 
-        field.name = name
-        field.value = obj
-        field.path = path
-        field.method = "PATCH"
+        operation.name = name
+        operation.value = obj
+        operation.path = path
+        operation.method = "PATCH"
 
-        field.summary = f"Update the specified {obj.name}"
+        operation.summary = f"Update the specified {obj.name}"
 
-        field.path_parameters = path_argument_builder(field, obj, parent_obj, True)
-        field.query_parameters = []
-        field.body_parameters = body_argument_builder(field, obj)
-        field.arguments = field.path_parameters + field.query_parameters + field.body_parameters
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.query_parameters = []
+        operation.body_parameters = body_argument_builder(operation, obj)
+        operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     elif method == "delete":
         name = "delete" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, True)
 
-        field.name = name
-        field.value = None
-        field.path = path
-        field.method = "DELETE"
+        operation.name = name
+        operation.value = None
+        operation.path = path
+        operation.method = "DELETE"
 
-        field.summary = f"Delete the specified {obj.name}"
+        operation.summary = f"Delete the specified {obj.name}"
 
-        field.path_parameters = path_argument_builder(field, obj, parent_obj, True)
-        field.query_parameters = []
-        field.body_parameters = []
-        field.arguments = field.path_parameters + field.query_parameters + field.body_parameters
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.query_parameters = []
+        operation.body_parameters = []
+        operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     elif method == "add":
         name = "add" + name_builder(obj, parent_obj if duplicate else None, "To")
         path = path_builder(obj, parent_obj, False) + "/add"
 
-        field.name = name
-        field.value = None
-        field.path = path
-        field.method = "POST"
+        operation.name = name
+        operation.value = None
+        operation.path = path
+        operation.method = "POST"
 
-        field.summary = f"Add {obj.name}"
+        operation.summary = f"Add {obj.name}"
 
-        field.path_parameters = path_argument_builder(field, obj, parent_obj, False)
-        field.query_parameters = []
-        field.body_parameters = body_argument_builder(field, obj, True)
-        field.arguments = field.path_parameters + field.query_parameters + field.body_parameters
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, False)
+        operation.query_parameters = []
+        operation.body_parameters = body_argument_builder(operation, obj, True)
+        operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     elif method == "remove":
         name = "remove" + name_builder(obj, parent_obj if duplicate else None, "From")
         path = path_builder(obj, parent_obj, False) + "/remove"
 
-        field.name = name
-        field.value = None
-        field.path = path
-        field.method = "POST"
+        operation.name = name
+        operation.value = None
+        operation.path = path
+        operation.method = "POST"
 
-        field.summary = f"Remove {obj.name}"
+        operation.summary = f"Remove {obj.name}"
 
-        field.path_parameters = path_argument_builder(field, obj, parent_obj, False)
-        field.query_parameters = []
-        field.body_parameters = body_argument_builder(field, obj, True)
-        field.arguments = field.path_parameters + field.query_parameters + field.body_parameters
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, False)
+        operation.query_parameters = []
+        operation.body_parameters = body_argument_builder(operation, obj, True)
+        operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    return field
+    return operation
 
 
-def operation_builder(
+def api_builder(
     obj: Object,
     parent_obj: Object = None,
     aggregation: bool = False,
@@ -550,8 +533,8 @@ def operation_builder(
         obj.api.parent = obj
 
     for method in methods:
-        field = field_builder(obj, parent_obj, duplicate, method)
-        obj.api.fields.append(field)
+        operation = operation_builder(obj, parent_obj, duplicate, method)
+        obj.api.operations.append(operation)
 
     # pass down namespace of object to api
     obj.api.namespace = obj.namespace
@@ -582,7 +565,7 @@ def parse_objects(schema: Schema):
 
         # build aggregations
         for field in agg_fields:
-            obj = operation_builder(obj, field.parent, True, True)
+            obj = api_builder(obj, field.parent, True, True)
 
         # compositions
         comp_fields = get_compositions(schema, obj)
@@ -590,11 +573,11 @@ def parse_objects(schema: Schema):
 
         # build compositions
         for field in get_compositions(schema, obj):
-            obj = operation_builder(obj, field.parent, False, duplicate)
+            obj = api_builder(obj, field.parent, False, duplicate)
 
         # build root objects
         if not comp_fields:
-            obj = operation_builder(obj)
+            obj = api_builder(obj)
 
 
 def parse_operations(schema: Schema):
@@ -615,28 +598,28 @@ def parse_operations(schema: Schema):
             api.namespace = api.parent.namespace
 
         # loop over operation per API
-        for field in api.fields:
+        for operation in api.operations:
 
             # assign get if no other method is specified
-            if not field.method:
-                field.method = "GET"
+            if not operation.method:
+                operation.method = "GET"
 
             # remove void return values
-            if field.value.name == "Void":
-                field.value = None
+            if operation.value.name == "Void":
+                operation.value = None
 
-            append_id = bool(get_id(field))
-            field.path = path_builder(field, None, append_id)
+            append_id = bool(get_id(operation))
+            operation.path = path_builder(operation, None, append_id)
 
             # loop over operation arguments
-            for argument in field.arguments:
+            for argument in operation.arguments:
 
                 # set the argument type
                 if argument.value.name == "ID":
                     argument.path = True
-                elif field.method == "GET":
+                elif operation.method == "GET":
                     argument.is_query = True
                 else:
                     argument.body = True
 
-            field.summary = field.name
+            operation.summary = operation.name

@@ -146,7 +146,7 @@ class Api:
         self.tag = stringcase.lowercase(self._ref.namespace)
         self.description = self._ref.description
 
-        self._add_operations(self._ref.fields)
+        self._add_operations(self._ref.operations)
 
     def _add_operations(self, operations):
 

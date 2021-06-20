@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Directive:
-    """Our Directive class"""
+    """textX Directive class"""
 
     # defined in entity.tx
     value: str = None

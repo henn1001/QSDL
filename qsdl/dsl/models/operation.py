@@ -12,35 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Object class"""
+"""Field class"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Directive, Field, Api, Schema
+    from qsdl.dsl.models import Argument, Base, Directive, Object, Api
 
 
 @dataclass
-class Object:
-    """textX Object class"""
+class Operation:
+    """textX Field class"""
 
     # defined in entity.tx
     description: str = None
+    # LHS
     name: str = None
-    supertype: Base = None
+    arguments: List[Argument] = field(default_factory=list)
+    # RHS
+    array: bool = False
+    value: object = None
+    is_required: bool = False
     # Special directives
-    is_deprecated: bool = False
-    namespace: str = None
+    path: str = None
+    method: str = None
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
-    fields: List[Field] = field(default_factory=list)
-    api: Api = None
+
+    # custom
+    summary: str = None
+    is_pageable: bool = False
+    path_parameters: List[Argument] = field(default_factory=list)
+    query_parameters: List[Argument] = field(default_factory=list)
+    body_parameters: List[Argument] = field(default_factory=list)
 
     # required by textX
-    parent: Schema = None
-
-    # addons
-    is_crud: bool = False
+    parent: Union[Base, Object, Api] = None

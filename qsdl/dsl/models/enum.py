@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Enum:
-    """Our Enum class"""
+    """textX Enum class"""
 
     # defined in entity.tx
     description: str = None

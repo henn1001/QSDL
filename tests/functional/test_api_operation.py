@@ -15,10 +15,10 @@
 from tests import wrapper_generate, wrapper_generate_failure
 
 
-class TestApiField:
+class TestApiOperation:
     """Test Fields for Operations.
 
-    01. `Field` of `Api` may be a `Scalar` value with one one of the following:
+    01. `Operation` of `Api` may be a `Scalar` value with one one of the following:
         * `ID`
         * `Int`
         * `Long`
@@ -30,19 +30,19 @@ class TestApiField:
         * `Object`
         * `Void`
 
-    02. `Field` of `Api` value may be a `Enum`.
+    02. `Operation` of `Api` value may be a `Enum`.
 
-    03. `Field` of `Api` value may be a `Base`.
+    03. `Operation` of `Api` value may be a `Base`.
 
-    04. `Field` of `Api` value may be a `Object`.
+    04. `Operation` of `Api` value may be a `Object`.
 
-    05. `Field` of `Api` value may be a list when enclosed with brackets.
+    05. `Operation` of `Api` value may be a list when enclosed with brackets.
 
-    07. `Field` of `Api` value may be marked as required.
+    07. `Operation` of `Api` value may be marked as required.
 
     """
 
-    def test_api_field_01_positive(self):
+    def test_api_operation_01_positive(self):
         """Verify that we can use basic types"""
 
         test_input = """\
@@ -85,7 +85,7 @@ class TestApiField:
             if _format:
                 assert schema["format"] == _format
 
-    def test_api_field_02_positive(self):
+    def test_api_operation_02_positive(self):
         """Verify enum usage."""
         test_input = """\
             enum Foo {
@@ -106,7 +106,7 @@ class TestApiField:
 
         assert get_schema(openapi, "/path")["$ref"]
 
-    def test_field_operation_03_positive(self):
+    def test_api_operation_03_positive(self):
         """Verify base usage"""
         test_input = """\
             base Foo {
@@ -126,7 +126,7 @@ class TestApiField:
 
         assert get_schema(openapi, "/path")["$ref"] == "#/components/schemas/Foo"
 
-    def test_field_operation_04_positive(self):
+    def test_api_operation_04_positive(self):
         """Verify object usage"""
         test_input = """\
             type Foo {
@@ -146,7 +146,7 @@ class TestApiField:
 
         assert get_schema(openapi, "/path")["$ref"] == "#/components/schemas/Foo"
 
-    def test_api_field_05_positive(self):
+    def test_api_operation_05_positive(self):
         """Verify that we can use array types"""
 
         test_input = """\
@@ -184,7 +184,7 @@ class TestApiField:
             if _format:
                 assert schema["items"]["format"] == _format
 
-    def test_api_field_07_positive(self):
+    def test_api_operation_07_positive(self):
         """Verify required"""
         test_input = """\
             extend Api {

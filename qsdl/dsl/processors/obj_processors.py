@@ -19,8 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import (Argument, Base, Directive, Enum, Field,
-                                 Object, Api, Scalar, Schema)
+    from qsdl.dsl.models import Argument, Base, Directive, Enum, Field, Object, Api, Scalar, Schema, Operation
 
 
 def schema_processor(entity: Schema):
@@ -59,15 +58,6 @@ def base_processor(entity: Base):
     _ = entity
 
 
-def api_processor(entity: Api):
-    """The query post-processor.
-
-    Args:
-        entity (Api): The query object.
-    """
-    _ = entity
-
-
 def object_processor(entity: Object):
     """The object post-processor.
 
@@ -82,6 +72,24 @@ def field_processor(entity: Field):
 
     Args:
         entity (Field): The field object.
+    """
+    _ = entity
+
+
+def api_processor(entity: Api):
+    """The api post-processor.
+
+    Args:
+        entity (Api): The query object.
+    """
+    _ = entity
+
+
+def operation_processor(entity: Operation):
+    """The operation post-processor.
+
+    Args:
+        entity (Api): The query object.
     """
     _ = entity
 
@@ -110,6 +118,7 @@ obj_processors = {
     "Enum": enum_processor,
     "Base": base_processor,
     "Api": api_processor,
+    "Operation": operation_processor,
     "Object": object_processor,
     "Field": field_processor,
     "Argument": argument_processor,

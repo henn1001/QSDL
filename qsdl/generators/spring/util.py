@@ -58,7 +58,7 @@ def has_id(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has an ID.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -85,7 +85,7 @@ def has_list(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has an array.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -107,7 +107,7 @@ def has_float(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a float.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -129,7 +129,7 @@ def has_date(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a date.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -151,7 +151,7 @@ def has_enum(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has an enum.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -173,7 +173,7 @@ def has_model(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a base or object.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -195,7 +195,7 @@ def has_required(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has an required attribute.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -217,7 +217,7 @@ def has_relation(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a relation.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -239,7 +239,7 @@ def has_relation_not_nested(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has a relation that is not nested.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -261,7 +261,7 @@ def is_supertype(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object is used somewhere as a supertype.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.

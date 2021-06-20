@@ -40,7 +40,7 @@ class TestArgument:
 
     09. `Argument` value must be a `Scalar` of `ID` for delete method. Other types are ignored. [OpenAPI]
 
-    10. `Argument` must be used by `Field` of `Api` only. Other usages are ignored. [OpenAPI]
+    10. `Argument` can only be used by `Operation` of `Api` only.
 
     11. `Argument` value may not be a list for `Scalar` `ID`.
 
@@ -380,7 +380,7 @@ class TestArgument:
             }
         """
 
-        wrapper_generate(test_input)
+        wrapper_generate_failure(test_input)
 
     def test_argument_11_negative(self):
         """Verify that we can not use array IDs"""

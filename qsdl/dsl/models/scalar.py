@@ -21,7 +21,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Scalar:
-    """Our Scalar class"""
+    """textX Scalar class"""
 
     # defined in entity.tx
     name: str = None

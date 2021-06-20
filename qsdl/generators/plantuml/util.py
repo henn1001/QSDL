@@ -16,7 +16,7 @@
 
 from textx import model as xtx
 
-from qsdl.dsl.models import Schema
+from qsdl.dsl.models import Field, Schema
 
 # the parsed schema definition.
 schema: Schema = None
@@ -90,13 +90,13 @@ def get_fields_as_list(entity: object) -> list:
     return fields
 
 
-def get_filtered_fields(field: object) -> bool:
+def get_filtered_fields(field: Field) -> bool:
     """A filter for fields.
 
     We only want to include composition or aggregations when they are nested.
 
     Args:
-        field (object): entity.Field
+        field (Field): entity.Field
 
     Returns:
         bool: Returns True for usable fields.
