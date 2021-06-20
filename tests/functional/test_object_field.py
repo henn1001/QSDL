@@ -242,11 +242,11 @@ class TestObjectField:
                 id: ID
             }
 
-            base Two implements One{
+            base Two extends One{
                 name: String
             }
 
-            type Three implements Two {
+            type Three extends Two {
                 field: ID
             }
         """

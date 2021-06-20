@@ -35,7 +35,7 @@ Base:
 
     'base' name=ID
 
-    ('implements' supertype=[Base])? 
+    ('extends' supertype=[Base])? 
     
     // Special directives
     ( is_deprecated?='@deprecated'
@@ -73,7 +73,7 @@ Object:
 
     'type' name=ID
 
-    ('implements' supertype=[Base])?
+    ('extends' supertype=[Base])?
 
     // Special directives
     ( is_deprecated?='@deprecated'

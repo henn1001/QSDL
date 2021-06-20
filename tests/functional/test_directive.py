@@ -51,7 +51,7 @@ class TestDirective:
                 name: String @query
             }
 
-            type Bar implements Foo {
+            type Bar extends Foo {
                 world: String @query
             }
         """
@@ -79,7 +79,7 @@ class TestDirective:
                 name: String
             }
 
-            type Fruit implements Foo {
+            type Fruit extends Foo {
                 field2: [Bar] @nested
             }
         """
@@ -105,7 +105,7 @@ class TestDirective:
                 name: String
             }
 
-            type Fruit implements Foo {
+            type Fruit extends Foo {
                 field2: [Bar] @nested
             }
         """
@@ -131,7 +131,7 @@ class TestDirective:
                 name: String
             }
 
-            type Test implements Base {
+            type Test extends Base {
                 field2: [Nested]
             }
         """
@@ -151,7 +151,7 @@ class TestDirective:
                 name: String @readOnly
             }
 
-            type Bar implements Foo {
+            type Bar extends Foo {
                 world: String @readOnly
                 enum: Fruit @readOnly
                 base: Foo @readOnly @nested
@@ -185,7 +185,7 @@ class TestDirective:
                 name: String @writeOnly
             }
 
-            type Bar implements Foo {
+            type Bar extends Foo {
                 world: String @writeOnly
                 enum: Fruit @writeOnly
                 base: Foo @writeOnly @nested

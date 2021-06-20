@@ -69,13 +69,13 @@ class TestBase:
         wrapper_generate_failure(test_input)
 
     def test_base_03_positive(self):
-        """Verify base implements base"""
+        """Verify base extends base"""
         test_input = """\
             base Foo {
                 id: ID
             }
 
-            base Bar implements Foo {
+            base Bar extends Foo {
                 name: String
             }
         """

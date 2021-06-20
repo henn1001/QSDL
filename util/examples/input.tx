@@ -35,7 +35,7 @@ base BaseType {
 
 
 // NameSpace Management
-type Project implements BaseType @namespace(value:"Management") {
+type Project extends BaseType @namespace(value:"Management") {
     "Archive this Project"
     archive: Boolean @writeOnly
     metrics: [Metric] @nested

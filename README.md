@@ -237,7 +237,7 @@ Example:
     }
 
     "Maybe some Domain Objects need date information."
-    base BaseTypeDated implements BaseType {
+    base BaseTypeDated extends BaseType {
         creation_date: Date @readOnly
         last_update_date: Date @readOnly
     }
@@ -304,7 +304,7 @@ Example:
         meta_inf: Object
     }
 
-    type Project implements BaseType {
+    type Project extends BaseType {
         archive: Boolean @writeOnly
         archived: Boolean @readOnly
     }
