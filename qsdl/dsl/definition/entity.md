@@ -59,7 +59,6 @@ class entity.Field  {
   name : ID
   function : optional<BOOL>
   array : optional<BOOL>
-  non_nullable_array : optional<BOOL>
   non_nullable : optional<BOOL>
   query : optional<BOOL>
   nested : optional<BOOL>
@@ -75,7 +74,6 @@ class entity.Field  {
 class entity.Argument  {
   name : ID
   array : optional<BOOL>
-  non_nullable_array : optional<BOOL>
   non_nullable : optional<BOOL>
 }
 
@@ -112,11 +110,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | Description |  |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Comment | \\/\\/.*$ |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Comment | \\/\\/.*$ |
 end legend
 
 @enduml

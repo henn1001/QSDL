@@ -39,7 +39,7 @@ class TestObjectField:
 
     06. `Field` of `Object` value may not be a list for `Scalar` `ID`.
 
-    07. `Field` of `Object` value and list value may be marked as mandatory.
+    07. `Field` of `Object` value may be marked as required.
 
     08. `Field` of `Object` values may only have one `ID`. This includes inherited values.
 
@@ -224,7 +224,6 @@ class TestObjectField:
             type Foo {
                 field1: String!
                 field2: [String]!
-                field3: [String!]!
             }
         """
 
@@ -234,7 +233,6 @@ class TestObjectField:
 
         assert "field1" in required
         assert "field2" in required
-        assert "field3" in required
 
     def test_field_object_08_negative(self):
         """Verify multiple IDs"""

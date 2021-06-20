@@ -215,7 +215,7 @@ Field Rules:
 
 6.  `Field` of `Base` value may not be a list for `Scalar` `ID`.
 
-7.  `Field` of `Base` value and list value may be marked as mandatory.
+7.  `Field` of `Base` value may be marked as required.
 
 8.  `Field` of `Base` values may only have one `ID`. This includes inherited values.
 
@@ -287,7 +287,7 @@ Field Rules:
 
 6.  `Field` of `Object` value may not be a list for `Scalar` `ID`.
 
-7.  `Field` of `Object` value and list value may be marked as mandatory.
+7.  `Field` of `Object` value may be marked as required.
 
 8.  `Field` of `Object` values may only have one `ID`. This includes inherited values.
 
@@ -362,7 +362,7 @@ Field Rules:
 
 5.  `Field` of `Operation` value may be a list when enclosed with brackets.
 
-6.  `Field` of `Operation` value and list value may be marked as mandatory.
+6.  `Field` of `Operation` value may be marked as required.
 
 Example:
 

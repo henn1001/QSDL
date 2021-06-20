@@ -39,7 +39,7 @@ class TestBaseField:
 
     06. `Field` of `Base` value may not be a list for `Scalar` `ID`.
 
-    07. `Field` of `Base` value and list value may be marked as mandatory.
+    07. `Field` of `Base` value may be marked as required.
 
     08. `Field` of `Base` values may only have one `ID`. This includes inherited values.
 
@@ -224,7 +224,6 @@ class TestBaseField:
             base Foo {
                 field1: String!
                 field2: [String]!
-                field3: [String!]!
             }
         """
 
@@ -234,7 +233,6 @@ class TestBaseField:
 
         assert "field1" in required
         assert "field2" in required
-        assert "field3" in required
 
     def test_field_base_08_negative(self):
         """Verify multiple IDs"""

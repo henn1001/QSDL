@@ -33,7 +33,6 @@ class Argument:
     # RHS
     array: bool = False
     value: object = None
-    non_nullable_array: bool = False
     non_nullable: bool = False
 
     # custom

@@ -44,14 +44,12 @@
   {% else -%}
   {{ field.value.name }}Input{{ "" -}}
   {% endif %}
-  {% if field.non_nullable_array %}{{ "!" }}{% endif -%}
   {% if field.array %}{{ "]" }}{% endif -%}
   {% if field.non_nullable %}{{ "!" }}{% endif %}
  {% else %}
   {{ field.name }}:{{ " " -}}
   {% if field.array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}
-  {% if field.non_nullable_array %}{{ "!" }}{% endif -%}
   {% if field.array %}{{ "]" }}{% endif -%}
   {% if field.non_nullable %}{{ "!" }}{% endif %}
  {% endif %}
@@ -68,7 +66,6 @@
   {{field.name}}:{{ " " -}}
   {% if field.array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}
-  {% if field.non_nullable_array %}{{ "!" }}{% endif -%}
   {% if field.array %}{{ "]" }}{% endif -%}
   {% if field.non_nullable %}{{ "!" }}{% endif %}
 
@@ -81,7 +78,6 @@
   {{field.name}}:{{ " " -}}
   {% if field.array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}
-  {% if field.non_nullable_array %}{{ "!" }}{% endif -%}
   {% if field.array %}{{ "]" }}{% endif -%}
   {% if field.non_nullable %}{{ "!" }}{% endif %}
 

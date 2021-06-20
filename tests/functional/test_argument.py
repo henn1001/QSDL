@@ -32,7 +32,7 @@ class TestArgument:
 
     05. `Argument` value may be a list when enclosed with brackets.
 
-    06. `Argument` value and list value may be marked as mandatory.
+    06. `Argument` value may be marked as required.
 
     07. `Argument` name/value pairs for get methods are query parameters. [OpenAPI]
 
@@ -181,7 +181,6 @@ class TestArgument:
             extend Operation {
                 field1(arg: String!): Void @path(value:"path1")
                 field2(arg: [String]!): Void @path(value:"path2")
-                field3(arg: [String!]!): Void @path(value:"path3")
             }
         """
 

@@ -104,7 +104,6 @@ Field:
     // RHS
     (array?='[' &/.*\]/)?
     value=[ValueType]
-    (non_nullable_array?='!' & ']')?
     (']')?
     (non_nullable?='!')?
 
@@ -133,7 +132,6 @@ Argument:
     // RHS
     (array?='[' &/.*\]/)?
     value=[ValueType]
-    (non_nullable_array?='!' & ']')?
     (']')?
     (non_nullable?='!')?
 ;

@@ -38,7 +38,7 @@ class TestOperationField:
 
     05. `Field` of `Operation` value may be a list when enclosed with brackets.
 
-    07. `Field` of `Operation` value and list value may be marked as mandatory.
+    07. `Field` of `Operation` value may be marked as required.
 
     """
 
@@ -190,7 +190,6 @@ class TestOperationField:
             extend Operation {
                 field1: String! @path(value:"path1")
                 field2: [String]! @path(value:"path2")
-                field3: [String!]! @path(value:"path3")
             }
         """
 
