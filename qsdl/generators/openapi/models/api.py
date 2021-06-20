@@ -22,7 +22,8 @@ from typing import TYPE_CHECKING, List
 from .. import util
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Field, Operation
+    from qsdl.dsl.models import Api as QAPI
+    from qsdl.dsl.models import Field
 
 
 @dataclass
@@ -141,7 +142,7 @@ class _Operation:
 class Api:
     """Custom dataclass"""
 
-    _ref: Operation
+    _ref: QAPI
 
     # computed attributes
     name: str = None

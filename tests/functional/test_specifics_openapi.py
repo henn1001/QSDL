@@ -24,7 +24,7 @@ class TestSpecificsOpenAPI:
 
     03. `Directive` @namespace must use `PascalCase`.
 
-    04. `Field` of `Operation` value may be one `Object` or `Base` and can only be mixed with a additional `ID`.
+    04. `Field` of `Api` value may be one `Object` or `Base` and can only be mixed with a additional `ID`.
 
     """
 
@@ -112,7 +112,7 @@ class TestSpecificsOpenAPI:
                 field: ID
             }
 
-            extend Operation {
+            extend Api {
                 field1(body: Foo): Void @path(value:"path1")
                 field2(arg: ID, body: Foo): Void @path(value:"path2")
                 field3(arg: Fruit): Void @path(value:"path3")
@@ -126,16 +126,16 @@ class TestSpecificsOpenAPI:
         """Verify object and base usage"""
         inputs = []
 
-        test_input = 'base Foo { field: ID } extend Operation { field1(arg: String, body: Foo): Void @path(value:"path1") }'
+        test_input = 'base Foo { field: ID } extend Api { field1(arg: String, body: Foo): Void @path(value:"path1") }'
         inputs.append(test_input)
 
-        test_input = 'base Foo { field: ID } extend Operation { field1(arg: Foo, body: Foo): Void @path(value:"path1") }'
+        test_input = 'base Foo { field: ID } extend Api { field1(arg: Foo, body: Foo): Void @path(value:"path1") }'
         inputs.append(test_input)
 
-        test_input = 'type Foo { field: ID } extend Operation { field1(arg: String, body: Foo): Void @path(value:"path1") }'
+        test_input = 'type Foo { field: ID } extend Api { field1(arg: String, body: Foo): Void @path(value:"path1") }'
         inputs.append(test_input)
 
-        test_input = 'type Foo { field: ID } extend Operation { field1(arg: Foo, body: Foo): Void @path(value:"path1") }'
+        test_input = 'type Foo { field: ID } extend Api { field1(arg: Foo, body: Foo): Void @path(value:"path1") }'
         inputs.append(test_input)
 
         for test_input in inputs:

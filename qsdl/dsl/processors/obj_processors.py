@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from qsdl.dsl.models import (Argument, Base, Directive, Enum, Field,
-                                 Object, Operation, Scalar, Schema)
+                                 Object, Api, Scalar, Schema)
 
 
 def schema_processor(entity: Schema):
@@ -59,11 +59,11 @@ def base_processor(entity: Base):
     _ = entity
 
 
-def operation_processor(entity: Operation):
+def api_processor(entity: Api):
     """The query post-processor.
 
     Args:
-        entity (Operation): The query object.
+        entity (Api): The query object.
     """
     _ = entity
 
@@ -109,7 +109,7 @@ obj_processors = {
     "Scalar": scalar_processor,
     "Enum": enum_processor,
     "Base": base_processor,
-    "Operation": operation_processor,
+    "Api": api_processor,
     "Object": object_processor,
     "Field": field_processor,
     "Argument": argument_processor,

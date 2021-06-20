@@ -34,13 +34,13 @@ class TestDirective:
 
     07. `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a `Object`.
 
-    08. `Directive` `@path` must be used on any `Operation` `Field` which are not part of a `Object`. This specifies the API Path.
+    08. `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
 
-    09. `Directive` `@path` may be used on any `Operation` `Field` which is part of a `Object`. This specifies the API Path.
+    09. `Directive` `@path` may be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
 
-    10. `Directive` `@method` may be used on any `Operation` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
+    10. `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
-    11. `Directive` `@namespace` may be used on any `Base`, `Operation` or `Object` for grouping.
+    11. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
 
     """
 
@@ -254,7 +254,7 @@ class TestDirective:
     def test_directive_08_positive(self):
         """Verify usage of @path"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 getObjects: [String] @path(value:"objects")
             }
         """
@@ -266,7 +266,7 @@ class TestDirective:
     def test_directive_08_negative(self):
         """Verify usage of @path"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 getObjects: [String]
             }
         """
@@ -279,7 +279,7 @@ class TestDirective:
             type Foo {
                 id : ID
 
-                extend Operation {
+                extend Api {
                     getObject: String
                     getObjects: [String] @path(value:"objects")
                 }
@@ -294,7 +294,7 @@ class TestDirective:
     def test_directive_10_positive(self):
         """Verify usage of @method"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 field1: Void @path(value:"path") @method(value: GET)
                 field2: Void @path(value:"path") @method(value: POST)
                 field3: Void @path(value:"path") @method(value: PUT)
@@ -322,7 +322,7 @@ class TestDirective:
                 field : ID
             }
 
-            extend Operation @namespace(value:"Test") {
+            extend Api @namespace(value:"Test") {
                 field : String @path(value:"path")
             }
         """

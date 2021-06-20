@@ -113,7 +113,7 @@ The servers field is a List and needs to be put in between brackets.
 ## Type
 
 $`          Type:                                                           `$\
-$`~~~~          Scalar | Enum | Base | Object | Operation                   `$
+$`~~~~          Scalar | Enum | Base | Object | Api                   `$
 
 We can then go ahead and define multiple types. These are the five main types of the language.
 
@@ -250,9 +250,9 @@ $`~~~~          name=ID                                                     `$\
 $`~~~~          supertype=Base?                                             `$\
 $`~~~~          directives*=Directive                                       `$\
 $`~~~~          fields+=Field                                               `$\
-$`~~~~          operation=Operation?                                        `$
+$`~~~~          api=Api?                                                    `$
 
-Object types represent the core of our schema. A Object definition will result into the generation of several CRUD path definitions for OpenAPI and Query/Mutations for GraphQL. The auto-generated CRUD operations can be overwritten by providing a Operation type.
+Object types represent the core of our schema. A Object definition will result into the generation of several CRUD path definitions for OpenAPI and Query/Mutations for GraphQL. The auto-generated CRUD operations can be overwritten by providing a Api type.
 
 Object Rules:
 
@@ -313,36 +313,36 @@ Example:
         request: String! @writeOnly
         response: Object @readOnly
 
-         extend Operation {
+         extend Api {
             submitQuery(body: QueryMachine): QueryMachine @path(value:"query/submit") @method(value: POST)
         }
     }
 
-## Operation
+## Api
 
-$`          Operation:                                                      `$\
+$`          Api:                                                      `$\
 $`~~~~          description=Description?                                    `$\
 $`~~~~          name=ID                                                     `$\
 $`~~~~          directives*=Directive                                       `$\
 $`~~~~          fields+=Field                                               `$
 
-Operation types can be used to create API Endpoints and Query/Mutation.
+Api types can be used to create API Endpoints and Query/Mutation.
 
-Operation Rules:
+Api Rules:
 
-1.  `Operation` must at least contain one `Field`.
+1.  `Api` must at least contain one `Field`.
 
-2.  `Operation` may be used multiple times for a schema to define custom operations.
+2.  `Api` may be used multiple times for a schema to define custom operations.
 
-3.  `Operation` may be used once inside a `Object` to overwrite the default CRUD operations.
+3.  `Api` may be used once inside a `Object` to overwrite the default CRUD operations.
 
-4.  `Operation` must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
+4.  `Api` must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
 
-5.  `Operation` names must be globally unique. This overlaps with auto generated CRUD operations for `Object`s.
+5.  `Api` names must be globally unique. This overlaps with auto generated CRUD operations for `Object`s.
 
 Field Rules:
 
-1.  `Field` of `Operation` may be a `Scalar` value with one one of the following:
+1.  `Field` of `Api` may be a `Scalar` value with one one of the following:
     * `ID`
     * `Int`
     * `Long`
@@ -354,19 +354,19 @@ Field Rules:
     * `Object`
     * `Void`
 
-2.  `Field` of `Operation` value may be a `Enum`.
+2.  `Field` of `Api` value may be a `Enum`.
 
-3.  `Field` of `Operation` value may be a `Base`.
+3.  `Field` of `Api` value may be a `Base`.
 
-4.  `Field` of `Operation` value may be a `Object`.
+4.  `Field` of `Api` value may be a `Object`.
 
-5.  `Field` of `Operation` value may be a list when enclosed with brackets.
+5.  `Field` of `Api` value may be a list when enclosed with brackets.
 
-6.  `Field` of `Operation` value may be marked as required.
+6.  `Field` of `Api` value may be marked as required.
 
 Example:
 
-    extend Operation {
+    extend Api {
         submitObject(body: Object): Void @path(value:"(object)") @method(value: POST)
     }
 
@@ -388,10 +388,10 @@ There are certain builtin directives that can be used to modify the generation b
 
 7.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a `Object`.
 
-8.  `Directive` `@path` must be used on any `Operation` `Field` which are not part of a `Object`. This specifies the API Path.
+8.  `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
 
-9.  `Directive` `@path` may be used on any `Operation` `Field` which is part of a `Object`. This specifies the API Path.
+9.  `Directive` `@path` may be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
 
-10. `Directive` `@method` may be used on any `Operation` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
+10. `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
-11. `Directive` `@namespace` may be used on any `Base`, `Operation` or `Object` for grouping.
+11. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.

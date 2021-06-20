@@ -39,7 +39,7 @@ def parse_apis(schema: Schema) -> List[Api]:
     """
     apis = []
 
-    entities = xtx.get_children_of_type("Operation", schema)
+    entities = xtx.get_children_of_type("Api", schema)
 
     for entity in entities:
         new_api = Api(entity)

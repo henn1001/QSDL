@@ -40,7 +40,7 @@ class TestArgument:
 
     09. `Argument` value must be a `Scalar` of `ID` for delete method. Other types are ignored. [OpenAPI]
 
-    10. `Argument` must be used by `Field` of `Operation` only. Other usages are ignored. [OpenAPI]
+    10. `Argument` must be used by `Field` of `Api` only. Other usages are ignored. [OpenAPI]
 
     11. `Argument` value may not be a list for `Scalar` `ID`.
 
@@ -49,7 +49,7 @@ class TestArgument:
     def test_argument_01_positive(self):
         """Verify TBD naming convention"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 field(arg: String): Void @path(value:"path")
             }
         """
@@ -60,7 +60,7 @@ class TestArgument:
         """Verify TBD naming convention"""
         inputs = []
 
-        inputs.append('extend Operation { field(a-a: String): Void @path(value:"path") } ')
+        inputs.append('extend Api { field(a-a: String): Void @path(value:"path") } ')
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
@@ -68,7 +68,7 @@ class TestArgument:
     def test_argument_02_positive(self):
         """Verify empty arguments"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 field(arg: String): Void @path(value:"path")
             }
         """
@@ -78,7 +78,7 @@ class TestArgument:
     def test_argument_02_negative(self):
         """Verify empty arguments"""
         test_input = """\
-            extend Operation {
+            extend Api {
             }
         """
 
@@ -100,7 +100,7 @@ class TestArgument:
                 field: String
             }
 
-            extend Operation {
+            extend Api {
                 field1(arg: ID): Void @path(value:"path1")
                 field2(arg: Int): Void @path(value:"path2")
                 field3(arg: Float): Void @path(value:"path3")
@@ -120,7 +120,7 @@ class TestArgument:
         """Verify  argument value types"""
         test_input = """\
 
-            extend Operation {
+            extend Api {
                 field1(arg: String): Void @path(value:"path1")
                 field2(arg: field1): Void @path(value:"path2")
             }
@@ -131,7 +131,7 @@ class TestArgument:
     def test_argument_04_negative(self):
         """Verify multiple IDs"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 field(arg1: ID, arg2: ID): Void @path(value:"path")
             }
         """
@@ -141,7 +141,7 @@ class TestArgument:
     def test_argument_05_positive(self):
         """Verify value list"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 field1(arg: [String]): Void @path(value:"path1")
                 field2(arg: [String]): Void @path(value:"path2") @method(value: POST)
                 field3(arg: [String]): Void @path(value:"path3") @method(value: PUT)
@@ -178,7 +178,7 @@ class TestArgument:
     def test_argument_06_positive(self):
         """Verify required"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 field1(arg: String!): Void @path(value:"path1")
                 field2(arg: [String]!): Void @path(value:"path2")
             }
@@ -202,7 +202,7 @@ class TestArgument:
                 field: String
             }
 
-            extend Operation {
+            extend Api {
                 field1(arg: ID): Void @path(value:"path1")
                 field2(arg: Int): Void @path(value:"path2")
                 field3(arg: Float): Void @path(value:"path3")
@@ -265,7 +265,7 @@ class TestArgument:
                 field: String
             }
 
-            extend Operation {
+            extend Api {
                 field2(arg: Int): Void @path(value:"path2") @method(value: POST)
                 field3(arg: Float): Void @path(value:"path3") @method(value: POST)
                 field4(arg: String): Void @path(value:"path4") @method(value: POST)
@@ -331,7 +331,7 @@ class TestArgument:
                 field: String
             }
 
-            extend Operation {
+            extend Api {
                 field1(arg: ID): Void @path(value:"path1") @method(value: DELETE)
                 field2(arg: Int): Void @path(value:"path2") @method(value: DELETE)
                 field3(arg: Float): Void @path(value:"path3") @method(value: DELETE)
@@ -385,7 +385,7 @@ class TestArgument:
     def test_argument_11_negative(self):
         """Verify that we can not use array IDs"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 field(arg: [ID]): Void @path(value:"path")
             }
         """

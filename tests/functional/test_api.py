@@ -15,25 +15,25 @@
 from tests import wrapper_generate, wrapper_generate_failure
 
 
-class TestOperation:
+class TestApi:
     """Test Operations.
 
-    01. `Operation` must at least contain one `Field`.
+    01. `Api` must at least contain one `Field`.
 
-    02. `Operation` may be used multiple times for a schema to define custom operations.
+    02. `Api` may be used multiple times for a schema to define custom operations.
 
-    03. `Operation` may be used once inside a `Object` to overwrite the default CRUD operations.
+    03. `Api` may be used once inside a `Object` to overwrite the default CRUD operations.
 
-    04. `Operation` must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
+    04. `Api` must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
 
-    05. `Operation` names must be globally unique. This overlaps with auto generated CRUD operations for `Object`s.
+    05. `Api` names must be globally unique. This overlaps with auto generated CRUD operations for `Object`s.
 
     """
 
-    def test_operation_01_positive(self):
+    def test_api_01_positive(self):
         """Verify empty fields"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 getFoo: Object @path(value:"foo")
             }
         """
@@ -43,27 +43,27 @@ class TestOperation:
         assert "get" in openapi["paths"]["/foo"]
         assert "getFoo" in openapi["paths"]["/foo"]["get"]["operationId"]
 
-    def test_operation_01_negative(self):
+    def test_api_01_negative(self):
         """Verify empty fields"""
         test_input = """\
-            extend Operation {
+            extend Api {
             }
         """
 
         wrapper_generate_failure(test_input)
 
-    def test_operation_02_positive(self):
-        """Verify operation multiple usage in schema"""
+    def test_api_02_positive(self):
+        """Verify Api multiple usage in schema"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 getFoo: Object @path(value:"foo")
             }
 
-            extend Operation {
+            extend Api {
                 getBar: Object @path(value:"bar")
             }
 
-            extend Operation {
+            extend Api {
                 getFruit: Object @path(value:"fruit")
             }
         """
@@ -79,14 +79,14 @@ class TestOperation:
         assert "get" in openapi["paths"]["/fruit"]
         assert "getFruit" in openapi["paths"]["/fruit"]["get"]["operationId"]
 
-    def test_operation_03_positive(self):
-        """Verify operation CRUD overwrite"""
+    def test_api_03_positive(self):
+        """Verify Api CRUD overwrite"""
         test_input = """\
             type Foo {
                 id: ID
                 name: String
 
-                extend Operation {
+                extend Api {
                     getFoo: Foo
                 }
             }
@@ -102,18 +102,18 @@ class TestOperation:
         assert "patch" not in openapi["paths"]["/foos"]
         assert "delete" not in openapi["paths"]["/foos"]
 
-    def test_operation_03_negative(self):
-        """Verify operation CRUD overwrite"""
+    def test_api_03_negative(self):
+        """Verify Api CRUD overwrite"""
         test_input = """\
             type Type {
                 id: ID
                 name: String
 
-                extend Operation {
+                extend Api {
                     getType: Type
                 }
 
-                extend Operation {
+                extend Api {
                     getTypes: [Type]
                 }
             }
@@ -121,12 +121,12 @@ class TestOperation:
 
         wrapper_generate_failure(test_input)
 
-    def test_operation_04_negative(self):
+    def test_api_04_negative(self):
         """Verify unique paths"""
         inputs = []
 
         test_input = """\
-            extend Operation {
+            extend Api {
                 getObject1: String @path(value:"object")
                 getObject2: String @path(value:"object")
             }
@@ -139,7 +139,7 @@ class TestOperation:
                 name: String
             }
 
-            extend Operation {
+            extend Api {
                 getObject: String @path(value:"types")
             }
         """
@@ -148,12 +148,12 @@ class TestOperation:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_operation_05_negative(self):
-        """Verify unique operation names"""
+    def test_api_05_negative(self):
+        """Verify unique Api names"""
         inputs = []
 
         test_input = """\
-            extend Operation {
+            extend Api {
                 getObject: String @path(value:"object1")
                 getObject: String @path(value:"object2")
             }
@@ -166,7 +166,7 @@ class TestOperation:
                 name: String
             }
 
-            extend Operation {
+            extend Api {
                 getType: String @path(value:"test")
             }
         """

@@ -18,12 +18,12 @@ from typing import List, Union
 
 from textx import model as xtx
 
-from qsdl.dsl.models import Argument, Base, Field, Object, Operation, Scalar, Schema
+from qsdl.dsl.models import Argument, Base, Field, Object, Api, Scalar, Schema
 from qsdl.filter import pluralize
 
 
 def get_id(entity: Union[Field, Object, Base]) -> str:
-    """Returns the name of the ID of a Objects or Operation or None if no ID exists.
+    """Returns the name of the ID of a Objects or Api or None if no ID exists.
 
     The supertype of Base|Objects is searched as well.
 
@@ -371,12 +371,12 @@ def field_builder(
         Field: The created Operation
     """
     # parse parameters
-    operation = obj.operation
+    api = obj.api
 
-    obj = operation.parent
+    obj = api.parent
 
     field = Field()
-    field.parent = operation
+    field.parent = api
 
     if method == "getA":
         name = "get" + name_builder(obj, parent_obj if duplicate else None, "For", "s")
@@ -544,17 +544,17 @@ def operation_builder(
     else:
         methods = ["getA", "post"]
 
-    if not obj.operation:
-        obj.operation = Operation()
-        obj.operation.namespace = obj.namespace
-        obj.operation.parent = obj
+    if not obj.api:
+        obj.api = Api()
+        obj.api.namespace = obj.namespace
+        obj.api.parent = obj
 
     for method in methods:
         field = field_builder(obj, parent_obj, duplicate, method)
-        obj.operation.fields.append(field)
+        obj.api.fields.append(field)
 
-    # pass down namespace of object to operation
-    obj.operation.namespace = obj.namespace
+    # pass down namespace of object to api
+    obj.api.namespace = obj.namespace
 
     return obj
 
@@ -568,7 +568,7 @@ def parse_objects(schema: Schema):
         schema (Schema): The QSDL schema model.
     """
     objects = xtx.get_children_of_type("Object", schema)
-    objects = list(filter(lambda x: not x.operation, objects))
+    objects = list(filter(lambda x: not x.api, objects))
 
     # loop over user defined Objects
     for obj in objects:
@@ -598,24 +598,24 @@ def parse_objects(schema: Schema):
 
 
 def parse_operations(schema: Schema):
-    """Completes the parsed QSDL schema by adding default and missing information to Operations.
+    """Completes the parsed QSDL schema by adding default and missing information to Apis.
 
     Needs to be called before parse_objects.
 
     Args:
         schema (Schema): The QSDL schema model.
     """
-    operations = xtx.get_children_of_type("Operation", schema)
+    apis = xtx.get_children_of_type("Api", schema)
 
     # loop over user defined APIs
-    for operation in operations:
+    for api in apis:
 
-        # pass down namespace of object to operation
-        if operation.parent._tx_fqn == "entity.Object" and not operation.namespace:
-            operation.namespace = operation.parent.namespace
+        # pass down namespace of object to api
+        if api.parent._tx_fqn == "entity.Object" and not api.namespace:
+            api.namespace = api.parent.namespace
 
         # loop over operation per API
-        for field in operation.fields:
+        for field in api.fields:
 
             # assign get if no other method is specified
             if not field.method:

@@ -18,7 +18,7 @@ from tests import wrapper_generate, wrapper_generate_failure
 class TestDescription:
     """Test descriptions.
 
-    01. A description may be added after version, for `Enum`, `Base`, `Operation`, `Object` or `Field`.
+    01. A description may be added after version, for `Enum`, `Base`, `Api`, `Object` or `Field`.
 
     02. A description may be `SingleLine` or `MultiLine`.
 
@@ -46,7 +46,7 @@ class TestDescription:
             }
 
             "single line description"
-            extend Operation {
+            extend Api {
                 "single line description"
                 field: Void @path(value:"path")
             }
@@ -102,7 +102,7 @@ class TestDescription:
             \"""
             Multi line description
             \"""
-            extend Operation {
+            extend Api {
                 \"""
                 Multi line description
                 \"""

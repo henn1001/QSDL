@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Operation class"""
+"""Api class"""
 
 from __future__ import annotations
 
@@ -24,8 +24,8 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Operation:
-    """Our Operation class"""
+class Api:
+    """Our Api class"""
 
     # defined in entity.tx
     description: str = None

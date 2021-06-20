@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Object, Operation, Scalar
+    from qsdl.dsl.models import Base, Enum, Object, Api, Scalar
 
 
 @dataclass
@@ -32,4 +32,4 @@ class Schema:
     version: str = None
     description: str = None
     servers: List[str] = field(default_factory=list)
-    types: List[Union[Scalar, Enum, Base, Operation, Object]] = field(default_factory=list)
+    types: List[Union[Scalar, Enum, Base, Api, Object]] = field(default_factory=list)

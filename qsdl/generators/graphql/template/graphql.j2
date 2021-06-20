@@ -39,7 +39,7 @@ input Pageable {
 {% elif type._tx_fqn == "entity.Object" %}
 {% include "types/object.j2" with context %}
 
-{% elif type._tx_fqn == "entity.Operation" %}
+{% elif type._tx_fqn == "entity.Api" %}
 {% include "types/operation.j2" with context %}
 
 {% endif %}

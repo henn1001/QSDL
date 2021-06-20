@@ -263,11 +263,11 @@ def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
     # get all queries who do not belong to objects
-    operations = xtx.get_children_of_type("Operation", schema)
-    operations = list(filter(lambda x: x.parent._tx_fqn != "entity.Object", operations))
+    apis = xtx.get_children_of_type("Api", schema)
+    apis = list(filter(lambda x: x.parent._tx_fqn != "entity.Object", apis))
 
-    for operation in operations:
-        for field in operation.fields:
+    for api in apis:
+        for field in api.fields:
             if not field.path:
                 msg = f"The custom Operation {field.name} needs to specify a path."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
@@ -307,10 +307,10 @@ def validate_operations(schema: Schema):
     names = []
     paths = []
 
-    operations = xtx.get_children_of_type("Operation", schema)
+    apis = xtx.get_children_of_type("Api", schema)
 
-    for operation in operations:
-        for field in operation.fields:
+    for api in apis:
+        for field in api.fields:
             names.append(field.name)
             paths.append(field.method + field.path)
 

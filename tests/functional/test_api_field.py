@@ -15,10 +15,10 @@
 from tests import wrapper_generate, wrapper_generate_failure
 
 
-class TestOperationField:
+class TestApiField:
     """Test Fields for Operations.
 
-    01. `Field` of `Operation` may be a `Scalar` value with one one of the following:
+    01. `Field` of `Api` may be a `Scalar` value with one one of the following:
         * `ID`
         * `Int`
         * `Long`
@@ -30,23 +30,23 @@ class TestOperationField:
         * `Object`
         * `Void`
 
-    02. `Field` of `Operation` value may be a `Enum`.
+    02. `Field` of `Api` value may be a `Enum`.
 
-    03. `Field` of `Operation` value may be a `Base`.
+    03. `Field` of `Api` value may be a `Base`.
 
-    04. `Field` of `Operation` value may be a `Object`.
+    04. `Field` of `Api` value may be a `Object`.
 
-    05. `Field` of `Operation` value may be a list when enclosed with brackets.
+    05. `Field` of `Api` value may be a list when enclosed with brackets.
 
-    07. `Field` of `Operation` value may be marked as required.
+    07. `Field` of `Api` value may be marked as required.
 
     """
 
-    def test_field_object_01_positive(self):
+    def test_api_field_01_positive(self):
         """Verify that we can use basic types"""
 
         test_input = """\
-            extend Operation {
+            extend Api {
                 id: ID @path(value:"path1")
                 int: Int @path(value:"path2")
                 long: Long @path(value:"path3")
@@ -85,7 +85,7 @@ class TestOperationField:
             if _format:
                 assert schema["format"] == _format
 
-    def test_field_object_02_positive(self):
+    def test_api_field_02_positive(self):
         """Verify enum usage."""
         test_input = """\
             enum Foo {
@@ -93,7 +93,7 @@ class TestOperationField:
                 CLOSED
             }
 
-            extend Operation {
+            extend Api {
                 field: Foo @path(value:"path")
             }
         """
@@ -113,7 +113,7 @@ class TestOperationField:
                 field: ID
             }
 
-            extend Operation {
+            extend Api {
                 field: Foo @path(value:"path")
             }
         """
@@ -133,7 +133,7 @@ class TestOperationField:
                 field: ID
             }
 
-            extend Operation {
+            extend Api {
                 field: Foo @path(value:"path")
             }
         """
@@ -146,11 +146,11 @@ class TestOperationField:
 
         assert get_schema(openapi, "/path")["$ref"] == "#/components/schemas/Foo"
 
-    def test_field_object_05_positive(self):
+    def test_api_field_05_positive(self):
         """Verify that we can use array types"""
 
         test_input = """\
-            extend Operation {
+            extend Api {
                 int: [Int] @path(value:"path2")
                 float: [Float] @path(value:"path3")
                 string: [String] @path(value:"path4")
@@ -184,10 +184,10 @@ class TestOperationField:
             if _format:
                 assert schema["items"]["format"] == _format
 
-    def test_field_object_07_positive(self):
+    def test_api_field_07_positive(self):
         """Verify required"""
         test_input = """\
-            extend Operation {
+            extend Api {
                 field1: String! @path(value:"path1")
                 field2: [String]! @path(value:"path2")
             }

@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Directive, Field, Operation, Schema
+    from qsdl.dsl.models import Base, Directive, Field, Api, Schema
 
 
 @dataclass
@@ -37,7 +37,7 @@ class Object:
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
     fields: List[Field] = field(default_factory=list)
-    operation: Operation = None
+    api: Api = None
 
     # required by textX
     parent: Schema = None

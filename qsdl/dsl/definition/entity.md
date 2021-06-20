@@ -39,7 +39,7 @@ class entity.Base  {
 }
 
 
-class entity.Operation  {
+class entity.Api  {
   description : Description
   is_deprecated : optional<BOOL>
   namespace : STRING
@@ -87,7 +87,7 @@ entity.Schema *-- "0..*" entity.Type
 entity.Type <|-- entity.Scalar
 entity.Type <|-- entity.Enum
 entity.Type <|-- entity.Base
-entity.Type <|-- entity.Operation
+entity.Type <|-- entity.Api
 entity.Type <|-- entity.Object
 entity.ValueType <|-- entity.Scalar
 entity.ValueType <|-- entity.Enum
@@ -96,12 +96,12 @@ entity.ValueType <|-- entity.Object
 entity.Base o-- entity.Base
 entity.Base *-- "0..*" entity.Directive
 entity.Base *-- "1..*" entity.Field
-entity.Operation *-- "0..*" entity.Directive
-entity.Operation *-- "1..*" entity.Field
+entity.Api *-- "0..*" entity.Directive
+entity.Api *-- "1..*" entity.Field
 entity.Object o-- entity.Base
 entity.Object *-- "0..*" entity.Directive
 entity.Object *-- "1..*" entity.Field
-entity.Object *-- entity.Operation
+entity.Object *-- entity.Api
 entity.Field *-- "1..*" entity.Argument
 entity.Field o-- entity.ValueType
 entity.Field *-- "0..*" entity.Directive
@@ -110,11 +110,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | Comment | \\/\\/.*$ |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Description |  |
+  | Comment | \\/\\/.*$ |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend
 
 @enduml

@@ -31,7 +31,7 @@ def get_operations_of_object_of_queries(obj: object) -> list:
     Returns:
         list: [Operations]
     """
-    operations = list(filter(lambda x: x.method == "GET", obj.operation.fields))
+    operations = list(filter(lambda x: x.method == "GET", obj.api.fields))
 
     return operations
 
@@ -45,12 +45,12 @@ def get_operations_of_object_of_mutations(obj: object) -> list:
     Returns:
         list: [Operations]
     """
-    operations = list(filter(lambda x: x.method != "GET", obj.operation.fields))
+    operations = list(filter(lambda x: x.method != "GET", obj.api.fields))
 
     return operations
 
 
-def get_queries_of_operation(operation: object) -> list:
+def get_queries_of_operation(api: object) -> list:
     """Return all operations for this Object with method == get
 
     Args:
@@ -59,12 +59,12 @@ def get_queries_of_operation(operation: object) -> list:
     Returns:
         list: [Operations]
     """
-    operations = list(filter(lambda x: x.method == "GET", operation.fields))
+    operations = list(filter(lambda x: x.method == "GET", api.fields))
 
     return operations
 
 
-def get_mutations_of_operation(operation: object) -> list:
+def get_mutations_of_operation(api: object) -> list:
     """Return all operations for this Object with method != get
 
     Args:
@@ -73,7 +73,7 @@ def get_mutations_of_operation(operation: object) -> list:
     Returns:
         list: [Operations]
     """
-    operations = list(filter(lambda x: x.method != "GET", operation.fields))
+    operations = list(filter(lambda x: x.method != "GET", api.fields))
 
     return operations
 

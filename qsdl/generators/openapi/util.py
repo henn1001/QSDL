@@ -392,8 +392,8 @@ def get_namespaces() -> list:
     """
     namespaces = []
 
-    for operation in xtx.get_children_of_type("Operation", schema):
-        if operation.namespace and operation.namespace not in namespaces:
-            namespaces.append(operation.namespace)
+    for api in xtx.get_children_of_type("Api", schema):
+        if api.namespace and api.namespace not in namespaces:
+            namespaces.append(api.namespace)
 
     return namespaces

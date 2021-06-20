@@ -11,7 +11,7 @@ Schema:
 ;
 
 Type:
-    Scalar | Enum | Base | Operation | Object
+    Scalar | Enum | Base | Api | Object
 ;
 
 ValueType:
@@ -50,10 +50,10 @@ Base:
     '}'
 ;
 
-Operation :
+Api :
     description=Description?
 
-    'extend' 'Operation' 
+    'extend' 'Api' 
 
     // Special directives
     ( is_deprecated?='@deprecated'
@@ -85,7 +85,7 @@ Object:
 
     '{'
         fields+=Field
-        operation=Operation?
+        api=Api?
     '}'
 ;
 

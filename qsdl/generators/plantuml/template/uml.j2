@@ -45,7 +45,7 @@ class {{object.name}} {% if object.supertype %}<implements {{object.supertype.na
     {{field.name}}: {{"[" if field.array}}{{field.value.name}}{{"]" if field.array}}
     {% endfor %}
 
-    {% for field in object.operation.fields %}
+    {% for field in object.api.fields %}
     {method} {{field.method | upper}} {{field.name}}()
     {% endfor %}
 }

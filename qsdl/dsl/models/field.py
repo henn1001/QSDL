@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Argument, Base, Directive, Object, Operation
+    from qsdl.dsl.models import Argument, Base, Directive, Object, Api
 
 
 @dataclass
@@ -57,4 +57,4 @@ class Field:
     body_parameters: List[Argument] = field(default_factory=list)
 
     # required by textX
-    parent: Union[Base, Object, Operation] = None
+    parent: Union[Base, Object, Api] = None
