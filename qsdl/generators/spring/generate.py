@@ -20,8 +20,6 @@ from typing import List
 import pathspec
 from textx import model as xtx
 
-import qsdl.core as core
-from qsdl.config import Config as core_config
 from qsdl.dsl.models import Field, Object, Scalar, Schema
 from qsdl.render import render
 
@@ -281,4 +279,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
     # copy spec
     gen_schema_file = output_path / "src/main/resources/openapi.yaml"
     gen_schema_file.parent.mkdir(exist_ok=True, parents=True)
+
+    import qsdl.core as core # pylint: disable=import-outside-toplevel
+    from qsdl.config import Config as core_config # pylint: disable=import-outside-toplevel
     core.generate(core_config.raw_schema, gen_schema_file.parent, "openapi")

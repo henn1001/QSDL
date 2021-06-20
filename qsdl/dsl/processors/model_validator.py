@@ -14,15 +14,17 @@
 
 """Model validation"""
 
-import re
+from __future__ import annotations
 
-from typing import Union
+import re
+from typing import TYPE_CHECKING, Union
 
 from textx import model as xtx
 from textx.exceptions import TextXSemanticError
 from textx.metamodel import TextXMetaModel
 
-from qsdl.dsl.models import Base, Field, Object, Schema
+if TYPE_CHECKING:
+    from qsdl.dsl.models import Base, Field, Object, Schema
 
 
 def validate(schema: Schema, metamodel: TextXMetaModel):

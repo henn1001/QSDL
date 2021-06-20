@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from . import Base, Field, Object, Operation
+    from qsdl.dsl.models import Base, Field, Object, Operation
 
 
 @dataclass

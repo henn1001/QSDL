@@ -14,11 +14,17 @@
 
 """Model post-processor"""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from textx.metamodel import TextXMetaModel
 
-from qsdl.dsl.models import Schema
 from qsdl.dsl.processors.model_parser import parse_objects, parse_operations
 from qsdl.dsl.processors.model_validator import validate, validate_operations
+
+if TYPE_CHECKING:
+    from qsdl.dsl.models import Schema
 
 
 def model_processor(schema: Schema, metamodel: TextXMetaModel):

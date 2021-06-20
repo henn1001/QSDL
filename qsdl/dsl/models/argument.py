@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from . import Field
+    from qsdl.dsl.models import Field
 
 
 @dataclass

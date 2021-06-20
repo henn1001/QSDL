@@ -15,7 +15,7 @@
 """QSDL - Generator interface"""
 
 from pathlib import Path
-from typing import Any, Callable, Union
+from typing import Callable, Union
 
 from qsdl.dsl.models import Schema
 
@@ -32,32 +32,12 @@ ConfigType = Union[GraphqlConfig, OpenapiConfig, PlantumlConfig, SpringConfig]
 GeneratorType = Callable[[Schema, Path, ConfigType], None]
 
 
-def get_config(generator_name: str) -> ConfigType:
-    """Returns the config for a specific generator
-
-    Args:
-        generator_name (str): The requested generator.
-
-    Raises:
-        Exception: For unknown generators.
-
-    Returns:
-        ConfigType: The generator config class.
-    """
-    ret = None
-
-    if generator_name == "openapi":
-        ret = OpenapiConfig()
-    elif generator_name == "graphql":
-        ret = GraphqlConfig()
-    elif generator_name == "plantuml":
-        ret = PlantumlConfig()
-    elif generator_name == "spring":
-        ret = SpringConfig()
-    else:
-        raise Exception("unknown generator")
-
-    return ret
+GENERATORS = {
+    "openapi": (openapi_generator, OpenapiConfig()),
+    "graphql": (graphql_generator, GraphqlConfig()),
+    "plantuml": (plantuml_generator, PlantumlConfig()),
+    "spring": (spring_generator, SpringConfig()),
+}
 
 
 def get_generator(generator_name: str) -> GeneratorType:
@@ -72,17 +52,25 @@ def get_generator(generator_name: str) -> GeneratorType:
     Returns:
         GeneratorType: The generator config class.
     """
-    ret = None
-
-    if generator_name == "openapi":
-        ret = openapi_generator
-    elif generator_name == "graphql":
-        ret = graphql_generator
-    elif generator_name == "plantuml":
-        ret = plantuml_generator
-    elif generator_name == "spring":
-        ret = spring_generator
-    else:
+    if generator_name not in GENERATORS:
         raise Exception("unknown generator")
 
-    return ret
+    return GENERATORS.get(generator_name)[0]
+
+
+def get_config(generator_name: str) -> ConfigType:
+    """Returns the config for a specific generator
+
+    Args:
+        generator_name (str): The requested generator.
+
+    Raises:
+        Exception: For unknown generators.
+
+    Returns:
+        ConfigType: The generator config class.
+    """
+    if generator_name not in GENERATORS:
+        raise Exception("unknown generator")
+
+    return GENERATORS.get(generator_name)[1]

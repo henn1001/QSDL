@@ -14,17 +14,13 @@
 
 """Entity post-processor"""
 
-from qsdl.dsl.models import (
-    Argument,
-    Base,
-    Directive,
-    Enum,
-    Field,
-    Object,
-    Operation,
-    Scalar,
-    Schema,
-)
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from qsdl.dsl.models import (Argument, Base, Directive, Enum, Field,
+                                 Object, Operation, Scalar, Schema)
 
 
 def schema_processor(entity: Schema):
