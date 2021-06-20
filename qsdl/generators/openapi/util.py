@@ -232,7 +232,7 @@ def has_required(entity: Union[Base, Object]) -> bool:
 
         for field in entity.fields:
 
-            if field.non_nullable:
+            if field.is_required:
                 ret = True
                 break
 
@@ -254,7 +254,7 @@ def has_relation(entity: Union[Base, Object]) -> bool:
 
         for field in entity.fields:
 
-            if field.composition or field.aggregation:
+            if field.is_composition or field.is_aggregation:
                 ret = True
                 break
 
@@ -276,7 +276,7 @@ def has_relation_not_nested(entity: Union[Base, Object]) -> bool:
 
         for field in entity.fields:
 
-            if (field.composition or field.aggregation) and not field.nested:
+            if (field.is_composition or field.is_aggregation) and not field.is_nested:
                 ret = True
                 break
 
@@ -316,7 +316,7 @@ def is_nested(entity: object) -> bool:
 
     for itr in base_list + object_list:
         for field in itr.fields:
-            if field.value == entity and field.nested:
+            if field.value == entity and field.is_nested:
                 return True
 
     return False
@@ -356,10 +356,10 @@ def get_filtered_fields(field: object) -> bool:
 
     if not (
         (
-            (field.composition and field.value._tx_fqn == "entity.Object")
-            or (field.aggregation and field.value._tx_fqn == "entity.Object")
+            (field.is_composition and field.value._tx_fqn == "entity.Object")
+            or (field.is_aggregation and field.value._tx_fqn == "entity.Object")
         )
-        and not field.nested
+        and not field.is_nested
     ):
         ret = True
 

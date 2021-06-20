@@ -119,10 +119,10 @@ def get_filtered_fields(field: object) -> bool:
 
     if not (
         (
-            (field.composition and field.value._tx_fqn == "entity.Object")
-            or (field.aggregation and field.value._tx_fqn == "entity.Object")
+            (field.is_composition and field.value._tx_fqn == "entity.Object")
+            or (field.is_aggregation and field.value._tx_fqn == "entity.Object")
         )
-        and not field.nested
+        and not field.is_nested
     ):
         ret = True
 
@@ -142,7 +142,7 @@ def is_nested(entity: object) -> bool:
 
     for field in xtx.get_children_of_type("Field", schema):
         if field.value == entity:
-            if field.nested:
+            if field.is_nested:
                 ret = True
                 break
 

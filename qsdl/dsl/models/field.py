@@ -36,14 +36,14 @@ class Field:
     # RHS
     array: bool = False
     value: object = None
-    non_nullable: bool = False
+    is_required: bool = False
     # Special directives
-    query: bool = False
-    nested: bool = False
-    readonly: bool = False
-    writeonly: bool = False
-    composition: bool = False
-    aggregation: bool = False
+    is_query: bool = False
+    is_nested: bool = False
+    is_read_only: bool = False
+    is_write_only: bool = False
+    is_composition: bool = False
+    is_aggregation: bool = False
     path: str = None
     method: str = None
     # Custom directives

@@ -33,11 +33,11 @@ class Argument:
     # RHS
     array: bool = False
     value: object = None
-    non_nullable: bool = False
+    is_required: bool = False
 
     # custom
     path: bool = False
-    query: bool = False
+    is_query: bool = False
     body: bool = False
 
     # required by textX

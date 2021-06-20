@@ -73,16 +73,16 @@ class _Attribute:
         self.is_id = self._ref.value.name == "ID"
         self.is_date = self._ref.value.name == "Date"
 
-        self.is_required = self._ref.non_nullable
+        self.is_required = self._ref.is_required
 
-        self.is_read_only = self._ref.readonly
-        self.is_write_only = self._ref.writeonly
+        self.is_read_only = self._ref.is_read_only
+        self.is_write_only = self._ref.is_write_only
 
         # relation model
-        self.is_nested = self._ref.nested
-        self.is_composition = self._ref.composition
-        self.is_aggregation = self._ref.aggregation
-        self.is_relation = self._ref.composition or self._ref.aggregation
+        self.is_nested = self._ref.is_nested
+        self.is_composition = self._ref.is_composition
+        self.is_aggregation = self._ref.is_aggregation
+        self.is_relation = self._ref.is_composition or self._ref.is_aggregation
 
         # special case for id references
         if self._ref.value._tx_fqn in ["entity.Object"] and not self.is_nested and not self.is_relation:

@@ -37,7 +37,7 @@ def get_compositions(obj: object) -> list:
     parents = list(filter(lambda x: x.value == obj, fields))
 
     comp_fields = list(
-        filter(lambda x: x.composition and x.value._tx_fqn == "entity.Object", parents)
+        filter(lambda x: x.is_composition and x.value._tx_fqn == "entity.Object", parents)
     )
 
     return comp_fields
@@ -58,7 +58,7 @@ def get_aggregation(obj: object) -> list:
     parents = list(filter(lambda x: x.value == obj, fields))
 
     agg_fields = list(
-        filter(lambda x: x.aggregation and x.value._tx_fqn == "entity.Object", parents)
+        filter(lambda x: x.is_aggregation and x.value._tx_fqn == "entity.Object", parents)
     )
 
     return agg_fields
@@ -105,10 +105,10 @@ def get_filtered_fields(field: object) -> bool:
 
     if not (
         (
-            (field.composition and field.value._tx_fqn == "entity.Object")
-            or (field.aggregation and field.value._tx_fqn == "entity.Object")
+            (field.is_composition and field.value._tx_fqn == "entity.Object")
+            or (field.is_aggregation and field.value._tx_fqn == "entity.Object")
         )
-        and not field.nested
+        and not field.is_nested
     ):
         ret = True
 

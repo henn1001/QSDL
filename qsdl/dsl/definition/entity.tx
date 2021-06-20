@@ -38,7 +38,7 @@ Base:
     ('implements' supertype=[Base])? 
     
     // Special directives
-    ( deprecated?='@deprecated'
+    ( is_deprecated?='@deprecated'
         ('@namespace(value:' namespace=STRING ')')?
         )#
 
@@ -56,7 +56,7 @@ Operation :
     'extend' 'Operation' 
 
     // Special directives
-    ( deprecated?='@deprecated'
+    ( is_deprecated?='@deprecated'
         ('@namespace(value:' namespace=STRING ')')?
         )#
 
@@ -76,7 +76,7 @@ Object:
     ('implements' supertype=[Base])?
 
     // Special directives
-    ( deprecated?='@deprecated'
+    ( is_deprecated?='@deprecated'
         ('@namespace(value:' namespace=STRING ')')?
         )#
 
@@ -105,15 +105,15 @@ Field:
     (array?='[' &/.*\]/)?
     value=[ValueType]
     (']')?
-    (non_nullable?='!')?
+    (is_required?='!')?
 
     // Special directives
-    ( query?='@query'
-        nested?='@nested'
-        readonly?='@readOnly'
-        writeonly?='@writeOnly'
-        composition?='@composition'
-        aggregation?='@aggregation'
+    ( is_query?='@query'
+        is_nested?='@nested'
+        is_read_only?='@readOnly'
+        is_write_only?='@writeOnly'
+        is_composition?='@composition'
+        is_aggregation?='@aggregation'
         ('@path(value:' path=STRING ')')?
         ('@method(value:' method=Method ')')?
         )#
@@ -133,7 +133,7 @@ Argument:
     (array?='[' &/.*\]/)?
     value=[ValueType]
     (']')?
-    (non_nullable?='!')?
+    (is_required?='!')?
 ;
 
 Method:

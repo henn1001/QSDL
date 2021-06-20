@@ -30,7 +30,7 @@ class Operation:
     # defined in entity.tx
     description: str = None
     # Special directives
-    deprecated: bool = False
+    is_deprecated: bool = False
     namespace: str = None
     # Custom directives
     directives: List[Directive] = field(default_factory=list)

@@ -34,14 +34,14 @@ class entity.Enum  {
 class entity.Base  {
   description : Description
   name : ID
-  deprecated : optional<BOOL>
+  is_deprecated : optional<BOOL>
   namespace : STRING
 }
 
 
 class entity.Operation  {
   description : Description
-  deprecated : optional<BOOL>
+  is_deprecated : optional<BOOL>
   namespace : STRING
 }
 
@@ -49,7 +49,7 @@ class entity.Operation  {
 class entity.Object  {
   description : Description
   name : ID
-  deprecated : optional<BOOL>
+  is_deprecated : optional<BOOL>
   namespace : STRING
 }
 
@@ -59,13 +59,13 @@ class entity.Field  {
   name : ID
   function : optional<BOOL>
   array : optional<BOOL>
-  non_nullable : optional<BOOL>
-  query : optional<BOOL>
-  nested : optional<BOOL>
-  readonly : optional<BOOL>
-  writeonly : optional<BOOL>
-  composition : optional<BOOL>
-  aggregation : optional<BOOL>
+  is_required : optional<BOOL>
+  is_query : optional<BOOL>
+  is_nested : optional<BOOL>
+  is_read_only : optional<BOOL>
+  is_write_only : optional<BOOL>
+  is_composition : optional<BOOL>
+  is_aggregation : optional<BOOL>
   path : STRING
   method : Method
 }
@@ -74,7 +74,7 @@ class entity.Field  {
 class entity.Argument  {
   name : ID
   array : optional<BOOL>
-  non_nullable : optional<BOOL>
+  is_required : optional<BOOL>
 }
 
 
@@ -110,11 +110,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Description |  |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | Comment | \\/\\/.*$ |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | Comment | \\/\\/.*$ |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Description |  |
 end legend
 
 @enduml

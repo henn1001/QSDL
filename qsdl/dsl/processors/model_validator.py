@@ -220,7 +220,7 @@ def validate_reference(schema: Schema, metamodel: TextXMetaModel):
         fields = list(
             filter(
                 lambda x: x.value._tx_fqn == "entity.Object"
-                and (not x.nested and not x.composition and not x.aggregation),
+                and (not x.is_nested and not x.is_composition and not x.is_aggregation),
                 ent.fields,
             )
         )
@@ -239,7 +239,7 @@ def validate_reference(schema: Schema, metamodel: TextXMetaModel):
         fields = list(
             filter(
                 lambda x: x.value._tx_fqn == "entity.Object"
-                and (not x.nested and not x.composition and not x.aggregation),
+                and (not x.is_nested and not x.is_composition and not x.is_aggregation),
                 ent.fields,
             )
         )
@@ -290,7 +290,7 @@ def validate_nested_bases(schema: Schema, metamodel: TextXMetaModel):
     for base in bases:
         for field in xtx.get_children_of_type("Field", schema):
             if field.parent._tx_fqn in ["entity.Object", "entity.Base"] and field.value == base:
-                if not field.nested:
+                if not field.is_nested:
                     msg = f"The Base {base.name} is used but is not declared as nested."
                     raise TextXSemanticError(msg, filename=schema._tx_filename)
 
@@ -364,7 +364,7 @@ def has_composition(obj: Object) -> bool:
     ret = False
 
     for field in obj.fields:
-        if field.composition and field.value._tx_fqn == "entity.Object":
+        if field.is_composition and field.value._tx_fqn == "entity.Object":
             ret = True
             break
 
@@ -383,7 +383,7 @@ def has_aggregation(obj: Object) -> bool:
     ret = False
 
     for field in obj.fields:
-        if field.aggregation and field.value._tx_fqn == "entity.Object":
+        if field.is_aggregation and field.value._tx_fqn == "entity.Object":
             ret = True
             break
 

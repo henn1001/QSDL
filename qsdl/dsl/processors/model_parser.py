@@ -67,7 +67,7 @@ def get_compositions(schema: Schema, obj: Object) -> List[Field]:
 
     fields = get_parents(schema, obj)
 
-    fltr = filter(lambda x: x.composition and x.value._tx_fqn == "entity.Object", fields)
+    fltr = filter(lambda x: x.is_composition and x.value._tx_fqn == "entity.Object", fields)
     comp_fields = list(fltr)
 
     return comp_fields
@@ -87,7 +87,7 @@ def get_aggregation(schema: Schema, obj: Object) -> List[Field]:
 
     fields = get_parents(schema, obj)
 
-    fltr = filter(lambda x: x.aggregation and x.value._tx_fqn == "entity.Object", fields)
+    fltr = filter(lambda x: x.is_aggregation and x.value._tx_fqn == "entity.Object", fields)
     agg_fields = list(fltr)
 
     return agg_fields
@@ -130,7 +130,7 @@ def get_query_fields(obj: Object) -> List[Field]:
     tmp = obj
     while True:
         for field in tmp.fields:
-            if field.query:
+            if field.is_query:
                 fields.append(field)
 
         if tmp.supertype:
@@ -266,7 +266,7 @@ def path_argument_builder(
         argument.name = parent_obj.name.lower() + "_" + get_id(parent_obj)
         argument.value = Scalar(name="ID")
         argument.path = True
-        argument.non_nullable = True
+        argument.is_required = True
 
         arguments.append(argument)
 
@@ -277,7 +277,7 @@ def path_argument_builder(
         argument.name = get_id(obj)
         argument.value = Scalar(name="ID")
         argument.path = True
-        argument.non_nullable = True
+        argument.is_required = True
 
         arguments.append(argument)
 
@@ -307,7 +307,7 @@ def query_argument_builder(
 
         argument.name = field.name
         argument.value = field.value
-        argument.query = True
+        argument.is_query = True
 
         arguments.append(argument)
 
@@ -339,7 +339,7 @@ def body_argument_builder(
         argument.name = get_id(obj)
         argument.value = Scalar(name="ID")
         argument.body = True
-        argument.non_nullable = True
+        argument.is_required = True
     else:
         argument.name = "body"
         argument.value = obj
@@ -635,7 +635,7 @@ def parse_operations(schema: Schema):
                 if argument.value.name == "ID":
                     argument.path = True
                 elif field.method == "GET":
-                    argument.query = True
+                    argument.is_query = True
                 else:
                     argument.body = True
 

@@ -13,7 +13,7 @@
       {{ parameter.name }}:{{ " " -}}
       {{ "[" if parameter.array -}}
       {{ parameter.value.name -}}
-      {{ "!" if parameter.non_nullable -}}
+      {{ "!" if parameter.is_required -}}
       {{ "]" if parameter.array -}}
     {% endif -%}
     {{ ", " if not loop.last -}}
@@ -35,23 +35,23 @@
 
 {################################################################}
 {% macro render_input(entity) %}
-{% for field in util.get_fields_as_list(entity) if not field.readonly and util.get_filtered_fields(field) %}
+{% for field in util.get_fields_as_list(entity) if not field.is_read_only and util.get_filtered_fields(field) %}
  {% if field.value._tx_fqn in ["entity.Object", "entity.Base"] %}
   {{ field.name }}:{{ " " -}}
   {% if field.array %}{{ "[" }}{% endif -%}
-  {% if not field.nested and not field.composition and not field.aggregation -%}
+  {% if not field.is_nested and not field.is_composition and not field.is_aggregation -%}
   ID{{ "" -}}
   {% else -%}
   {{ field.value.name }}Input{{ "" -}}
   {% endif %}
   {% if field.array %}{{ "]" }}{% endif -%}
-  {% if field.non_nullable %}{{ "!" }}{% endif %}
+  {% if field.is_required %}{{ "!" }}{% endif %}
  {% else %}
   {{ field.name }}:{{ " " -}}
   {% if field.array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}
   {% if field.array %}{{ "]" }}{% endif -%}
-  {% if field.non_nullable %}{{ "!" }}{% endif %}
+  {% if field.is_required %}{{ "!" }}{% endif %}
  {% endif %}
 
 {% endfor %}
@@ -59,7 +59,7 @@
 
 {################################################################}
 {% macro render_fields(entity, filter_ro=False, filter_wo=False, filter_objects=False) %}
-{% for field in util.get_fields_as_list(entity) if field.readonly == (field.readonly if not filter_ro else False) and field.writeonly == (field.writeonly if not filter_wo else False) %}
+{% for field in util.get_fields_as_list(entity) if field.is_read_only == (field.is_read_only if not filter_ro else False) and field.is_write_only == (field.is_write_only if not filter_wo else False) %}
   {% if field.description %}
   {{ field.description }}
   {% endif %}
@@ -67,19 +67,19 @@
   {% if field.array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}
   {% if field.array %}{{ "]" }}{% endif -%}
-  {% if field.non_nullable %}{{ "!" }}{% endif %}
+  {% if field.is_required %}{{ "!" }}{% endif %}
 
 {% endfor %}
 {% endmacro %}
 
 {################################################################}
 {% macro render_field(field, filter_ro=False, filter_wo=False) %}
-{% if field.readonly == (field.readonly if not filter_ro else False) and field.writeonly == (field.writeonly if not filter_wo else False) %}
+{% if field.is_read_only == (field.is_read_only if not filter_ro else False) and field.is_write_only == (field.is_write_only if not filter_wo else False) %}
   {{field.name}}:{{ " " -}}
   {% if field.array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}
   {% if field.array %}{{ "]" }}{% endif -%}
-  {% if field.non_nullable %}{{ "!" }}{% endif %}
+  {% if field.is_required %}{{ "!" }}{% endif %}
 
 {% endif %}
 {% endmacro %}

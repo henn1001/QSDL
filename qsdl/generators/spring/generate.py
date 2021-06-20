@@ -99,8 +99,8 @@ def get_paginated_object(obj: Object, model: Model) -> Model:
     item_field = Field()
     item_field.name = "items"
     item_field.array = True
-    item_field.non_nullable = True
-    item_field.nested = True
+    item_field.is_required = True
+    item_field.is_nested = True
     item_field.value = obj
     item_field._tx_fqn = "entity.Field"
     new_object.fields.append(item_field)

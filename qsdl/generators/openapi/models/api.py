@@ -89,7 +89,7 @@ class _Operation:
             # param.name = stringcase.camelcase(argument.name)
             param.name = argument.name
             param.json_key = argument.name
-            param.is_required = argument.non_nullable
+            param.is_required = argument.is_required
             param.is_array = argument.array
 
             param.type = util.custom_type(argument.value.name)
@@ -102,7 +102,7 @@ class _Operation:
                 param.is_ref_body = True
 
             param.is_path = argument.path
-            param.is_query = argument.query
+            param.is_query = argument.is_query
             param.is_body = argument.body
 
             if param.is_path:
