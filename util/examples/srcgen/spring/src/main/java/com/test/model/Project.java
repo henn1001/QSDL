@@ -3,12 +3,10 @@
  */
 package com.test.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.validation.Valid;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.*;
+import javax.persistence.*;
+import javax.validation.*;
+import com.fasterxml.jackson.annotation.*;
 
 public class Project extends BaseType {
 
@@ -17,19 +15,16 @@ public class Project extends BaseType {
 
   @Valid
   @JsonProperty(value = "metrics")
-  private List<Metric> metrics;
+  private List<Metric> metrics = new ArrayList<>();
 
-  @Valid
   @JsonIgnore
-  private List<Ticket> tickets;
+  private List<Ticket> tickets = new ArrayList<>();
 
-  @Valid
   @JsonIgnore
-  private List<Role> roles;
+  private List<Role> roles = new ArrayList<>();
 
-  @Valid
   @JsonIgnore
-  private List<Milestone> milestones;
+  private List<Milestone> milestones = new ArrayList<>();
 
   /**
    * archive

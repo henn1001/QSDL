@@ -14,7 +14,13 @@
 
 """Directive class"""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from . import Base, Field, Object, Operation
 
 
 @dataclass
@@ -25,4 +31,4 @@ class Directive:
     value: str = None
 
     # required by textX
-    parent: object = None
+    parent: Union[Base, Operation, Object, Field, Object] = None

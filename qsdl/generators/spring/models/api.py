@@ -14,16 +14,22 @@
 
 """Spring Generator Api class"""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, TYPE_CHECKING
 
 import stringcase
 
 from .. import util
 
+if TYPE_CHECKING:
+    from qsdl.dsl.models import Field, Operation
+
 
 @dataclass
 class _Parameter:
+    """Custom dataclass"""
 
     name: str = None
     json_key: str = None
@@ -36,15 +42,13 @@ class _Parameter:
     is_path: bool = False
     is_body: bool = False
 
-    def __post_init__(self):
-        _ = None
-
 
 @dataclass
 class _Operation:
+    """Custom dataclass"""
 
     # the textx object
-    _ref: object
+    _ref: Field
 
     # computed attributes
     name: str = None
@@ -66,100 +70,67 @@ class _Operation:
     def __post_init__(self):
 
         self.name = self._ref.name
-        self.tag = self._ref.tag
+        self.tag = self._ref.parent.namespace
         self.summary = self._ref.summary
         self.description = self._ref.description
         self.path = self._ref.path
-        self.method = self._ref.method
-        self.is_crud = self._ref.is_crud
+        self.method = self._ref.method.lower()
+        # self.is_crud = field.is_crud
         self.is_pageable = self._ref.is_pageable
 
         self._add_parameters()
 
+        # remove reference for faster debugging
+        self._ref = None
+
     def _add_parameters(self):
 
-        for p in self._ref.parameters:
+        for argument in self._ref.arguments:
             param = _Parameter()
-            param.name = stringcase.camelcase(p["name"])
-            param.json_key = p["name"]
-            param.is_required = p["required"].lower() == "true"
-            param.is_array = False
+            param.name = stringcase.camelcase(argument.name)
+            param.json_key = argument.name
+            param.is_required = argument.non_nullable
+            param.is_array = argument.array
 
-            if isinstance(p["type"], dict):
-                param.type = util.custom_type(p["type"]["value"].name)
-            else:
-                param.type = util.custom_type(p["type"].value.name)
+            param.type = util.custom_type(argument.value.name)
 
-            if p["in"] == "path":
-                param.is_path = True
+            param.is_path = argument.path
+            param.is_query = argument.query
+            param.is_body = argument.body
+
+            if param.is_path:
                 self.path_parameters.append(param)
-
-            if p["in"] == "query":
-                param.is_query = True
+                self.parameters.append(param)
+            if param.is_query:
                 self.query_parameters.append(param)
+                self.parameters.append(param)
+            if param.is_body and not self._ref.method == "DELETE":
+                self.body_parameters.append(param)
+                self.parameters.append(param)
 
-            self.parameters.append(param)
+        # response
+        if self._ref.value:
+            param = _Parameter()
+            param.name = stringcase.camelcase(self._ref.value.name)
+            param.json_key = self._ref.value.name
+            param.is_required = False
+            param.is_array = self._ref.array
 
-        for p in self._ref.request:
-            if p._tx_fqn == "entity.Object":
-                param = _Parameter()
-                # param.name = stringcase.camelcase(p.name)
-                param.name = "body"
-                param.json_key = p.name
-                param.is_required = True
-                param.is_array = False
+            param.type = util.custom_type(self._ref.value.name)
 
-                param.type = util.custom_type(p.name)
+            if self._ref.is_pageable:
+                param.name += "List"
+                param.json_key += "List"
+                param.type += "List"
 
-            else:
-                # entity.Field?
-                param = _Parameter()
-                param.name = stringcase.camelcase(p.name)
-                param.json_key = p.name
-                param.is_required = p.non_nullable
-                param.is_array = p.array
-
-                param.type = util.custom_type(p.value.name)
-
-            param.is_body = True
-            self.body_parameters.append(param)
-            self.parameters.append(param)
-
-        if self._ref.response:
-            p = self._ref.response
-
-            if isinstance(p, dict):
-                # entity.Object?
-
-                param = _Parameter()
-                param.name = stringcase.camelcase(p["value"].name)
-                param.json_key = p["value"].name
-                param.is_required = False
-                param.is_array = p["array"]
-                param.type = util.custom_type(p["value"].name)
-
-                if p["paging"]:
-                    param.name += "List"
-                    param.json_key += "List"
-                    param.type += "List"
-
-                self.response = param if param.type != "Void" else None
-            else:
-                # entity.Field?
-                param = _Parameter()
-                param.name = stringcase.camelcase(p.value.name)
-                param.json_key = p.value.name
-                param.is_required = p.non_nullable
-                param.is_array = p.array
-                param.type = util.custom_type(p.value.name)
-
-                self.response = param if param.type != "Void" else None
+            self.response = param
 
 
 @dataclass
 class Api:
+    """Custom dataclass"""
 
-    _ref: object
+    _ref: Operation
 
     # computed attributes
     name: str = None
@@ -167,28 +138,20 @@ class Api:
     tag: str = None
     description: str = None
     operations: List = field(default_factory=list)
-    imports: List = field(default_factory=list)
-
-    # addons
-    has_crud: bool = False
-
 
     def __post_init__(self):
 
-        tag_and_name = self._ref[0]
-        operations = self._ref[1]
+        name = self._ref.parent.name if self._ref.parent._tx_fqn == "entity.Object" else "Default"
 
-        self.name = tag_and_name[1]
-        self.capital_name = stringcase.capitalcase(self.name)
-        self.tag = tag_and_name[0]
-        self.description = None
+        self.name = stringcase.lowercase(name)
+        self.capital_name = stringcase.capitalcase(name)
+        self.tag = stringcase.lowercase(self._ref.namespace)
+        self.description = self._ref.description
 
-        self._add_operations(operations)
+        self._add_operations(self._ref.fields)
 
-        for opr in self.operations:
-            if opr.is_crud:
-                self.has_crud = True
-                break
+        # remove reference for faster debugging
+        self._ref = None
 
     def _add_operations(self, operations):
 

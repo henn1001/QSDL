@@ -12,7 +12,7 @@
     "python.formatting.provider": "black",
     "python.formatting.blackArgs": [
         "--line-length",
-        "100"
+        "120"
     ],
     "code-runner.executorMap": {
         "python": "$pythonPath -u -m qsdl util/examples/input.tx -g openapi -o util/examples/srcgen/"

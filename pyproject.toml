@@ -56,11 +56,13 @@ disable = [
     "bad-continuation",
     "too-few-public-methods",
     "too-many-instance-attributes",
-    "line-too-long"
+    "line-too-long",
+    "duplicate-code",
+    "cyclic-import",
 ]
 
 [tool.black]
-line-length = 100
+line-length = 120
 
 [build-system]
 requires = ["poetry>=0.12"]

@@ -14,14 +14,13 @@
 
 """Schema class"""
 
-from dataclasses import dataclass, field
-from typing import List, Union
+from __future__ import annotations
 
-from .base import Base
-from .enum import Enum
-from .object import Object
-from .operation import Operation
-from .scalar import Scalar
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, List, Union
+
+if TYPE_CHECKING:
+    from . import Base, Enum, Object, Operation, Scalar
 
 
 @dataclass

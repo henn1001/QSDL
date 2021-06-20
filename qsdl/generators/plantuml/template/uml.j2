@@ -2,7 +2,7 @@
 ```plantuml
 @startuml
 
-{% for enum in xtx.get_children_of_type("Enum", model) %}
+{% for enum in xtx.get_children_of_type("Enum", schema) %}
 enum {{enum.name}} {
     {% for value in enum.values %}
     {{value}}
@@ -19,10 +19,10 @@ enum {{enum.name}} {
 ```plantuml
 @startuml
 
-{% for base in xtx.get_children_of_type("Base", model) %}
+{% for base in xtx.get_children_of_type("Base", schema) %}
 abstract class {{base.name}} {% if base.supertype %}<extends {{base.supertype.name}}> {% endif %}{
     {% for field in util.get_fields_as_list(base) %}
-    {{field.name}}: {{field.value.name}}
+    {{field.name}}: {{"[" if field.array}}{{field.value.name}}{{"]" if field.array}}
     {% endfor %}
 }
 
@@ -36,18 +36,17 @@ abstract class {{base.name}} {% if base.supertype %}<extends {{base.supertype.na
 ```plantuml
 @startuml
 
-{% for object in xtx.get_children_of_type("Object", model) %}
+{% for object in xtx.get_children_of_type("Object", schema) %}
 {% if object.namespace %}
 namespace {{object.namespace}} #DDDDDD {
 {% endif %}
 class {{object.name}} {% if object.supertype %}<implements {{object.supertype.name}}> {% endif %}{
     {% for field in util.get_fields_as_list(object) if util.get_filtered_fields(field) %}
-    {{field.name}}: {% if field.array %}[{% endif %}{{field.value.name}}{% if field.array %}]{% endif %}
-
+    {{field.name}}: {{"[" if field.array}}{{field.value.name}}{{"]" if field.array}}
     {% endfor %}
 
-    {% for operation in util.get_operations_of_object(object) %}
-    {method} {{ operation.method | upper }} {{ operation.name }}()
+    {% for field in object.operation.fields %}
+    {method} {{field.method | upper}} {{field.name}}()
     {% endfor %}
 }
 {% if object.namespace %}
@@ -56,13 +55,13 @@ class {{object.name}} {% if object.supertype %}<implements {{object.supertype.na
 
 {% endfor %}
 
-{% for obj in util.get_domain_objects() %}
-    {% if util.is_aggregation(obj, obj.d_parent) %}
-{% if obj.d_parent.namespace %}{{obj.d_parent.namespace}}.{% endif %}{{ obj.d_parent.name }} --o {% if obj.parent %}{{obj.namespace}}.{% endif %}{{ obj.name }}
-    {% endif %}
-    {% if util.is_composition(obj, obj.d_parent) %}
-{% if obj.d_parent.namespace %}{{obj.d_parent.namespace}}.{% endif %}{{ obj.d_parent.name }} --* {% if obj.parent %}{{obj.namespace}}.{% endif %}{{ obj.name }}
-    {% endif %}
+{% for obj in xtx.get_children_of_type("Object", schema) %}
+  {% for field in util.get_aggregation(obj) %}
+{{field.parent.namespace + "." if field.parent.namespace}}{{field.parent.name}} --o {{obj.namespace + "." if obj.namespace}}{{obj.name}}
+  {% endfor %}
+  {% for field in util.get_compositions(obj) %}
+{{field.parent.namespace + "." if field.parent.namespace}}{{field.parent.name}} --* {{obj.namespace + "." if obj.namespace}}{{obj.name}}
+  {% endfor %}
 {% endfor %}
 
 

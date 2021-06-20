@@ -3,8 +3,8 @@
  */
 package com.test.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import javax.persistence.*;
+import com.fasterxml.jackson.annotation.*;
 
 public enum Status {
 

@@ -14,13 +14,13 @@
 
 """Object class"""
 
-from dataclasses import dataclass, field
-from typing import List
+from __future__ import annotations
 
-from .directive import Directive
-from .field import Field
-from .operation import Operation
-from .base import Base
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from . import Base, Directive, Field, Operation, Schema
 
 
 @dataclass
@@ -40,4 +40,7 @@ class Object:
     operation: Operation = None
 
     # required by textX
-    parent: object = None
+    parent: Schema = None
+
+    # addons
+    is_crud: bool = False

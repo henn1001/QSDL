@@ -5,31 +5,10 @@
     description: |
       {{ parameter.description | indent | trim("\"") | trim }}
   {% endif %}
-    in: {{ parameter.in }}
-    required: {{ parameter.required }}
+    in: {{ "query" if  parameter.is_query else "path" }}
+    required: {{ parameter.is_required | lower }}
     schema:
-  {% set parameter = parameter.type %}
-  {% if parameter.value._tx_fqn in ["entity.Object", "entity.Base"] and parameter.array %}
-      type: array
-      items:
-        $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
-  {% elif parameter.value._tx_fqn in ["entity.Object", "entity.Base"] %}
-      $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
-  {% else %}
-    {% if parameter.array %}
-      type: array
-      items:
-        {{ get_parameter_type(parameter) | indent(2) | trim }}
-      {% if get_parameter_format(parameter) %}
-      {{ get_parameter_format(parameter) | indent(2) | trim  }}
-      {% endif %}
-    {% else %}
-      {{ get_parameter_type(parameter) | indent(4) | trim }}
-      {% if get_parameter_format(parameter) %}
-      {{ get_parameter_format(parameter) | indent(4) | trim }}
-      {% endif %}
-    {% endif %}
-  {% endif %}
+      {{ get_ref_type_format(parameter) | indent(4) | trim }}
 {% endfor %}
 {% if operation.is_pageable %}
   - name: cursor
@@ -64,19 +43,14 @@
     application/json:
       schema:
   {% set ns = namespace(var=true) %}
-  {% for parameter in operation.request %}
-    {# handle auto CRUD Objects #}
-    {% if parameter._tx_fqn == "entity.Object" %}
-        $ref: '#/components/schemas/{{ parameter.name|capitalize }}'
-    {# handle query and mutation with array object input #}
-    {% elif parameter.value._tx_fqn in ["entity.Object", "entity.Base"] and parameter.array %}
+  {% for parameter in operation.body_parameters %}
+    {% if parameter.is_ref_body %}
+        {% if parameter.array %}
         type: array
         items:
-          $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
-    {# handle query and mutation with object input #}
-    {% elif parameter.value._tx_fqn in ["entity.Object", "entity.Base"] %}
-        $ref: '#/components/schemas/{{ parameter.value.name|capitalize }}'
-    {% elif parameter.value._tx_fqn == "entity.Scalar" and operation.request|length == 1 and parameter.value.name == "Object" %}
+        {% endif %}
+        {{ "     " if parameter.array }}$ref: '{{parameter.ref}}'
+    {% elif operation.body_parameters|length == 1 and parameter.type == "object" %}
         type: object
     {% else %}
     {# handle query and mutation with custom input #}
@@ -86,53 +60,45 @@
         {% set ns.var = false %}
       {% endif %}
           {{ parameter.name }}:
-        {% if parameter.array %}
-            type: array
-            items:
-              {{ get_parameter_type(parameter) | indent(2) | trim }}
-            {% if get_parameter_format(parameter) %}
-            {{ get_parameter_format(parameter) | indent(2) | trim  }}
-            {% endif %}
-        {% else %}
-            {{ get_parameter_type(parameter) | indent(10) | trim }}
-            {% if get_parameter_format(parameter) %}
-            {{ get_parameter_format(parameter) | indent(10) | trim }}
-            {% endif %}
-        {% endif %}
+            {{ get_ref_type_format(parameter) | indent(10) | trim }}
     {% endif %}
   {% endfor %}
 {% endmacro %}
 
 
 {% macro get_response(operation) %}
-{% set field = operation.response  %}
+{% set parameter = operation.response  %}
   content:
     application/json:
       schema:
-    {% if field.array %}
-        type: array
-        items:
-          {{ get_parameter_type(field, true) | indent(2) | trim }}
-        {% if get_parameter_format(field) %}
-        {{ get_parameter_format(field) | indent(2) | trim  }}
-        {% endif %}
-    {% else %}
-        {{ get_parameter_type(field, true) | indent(6) | trim }}
-        {% if get_parameter_format(field) %}
-        {{ get_parameter_format(field) | indent(2) | trim }}
-        {% endif %}
-    {% endif %}
+        {{ get_ref_type_format(parameter) | indent(6) | trim }}
+{% endmacro %}
+
+
+{% macro get_ref_type_format(parameter) %}
+{% if parameter.is_array %}
+  type: array
+  items:
+{% endif %}
+{% if parameter.ref %}
+  {{ "  " if parameter.is_array }}$ref: '{{parameter.ref}}'
+{% else %}
+  {{ "  " if parameter.is_array }}type: {{parameter.type}}
+  {% if parameter.format %}
+  {{ "  " if parameter.is_array }}format: {{parameter.format}}
+  {% endif %}
+{% endif %}
 {% endmacro %}
 
 
 {% macro get_schema(type) %}
-{% for field in util.get_fields_as_list(type) if util.get_filtered_fields(field) %}
-  {{ field.name }}:
+{% for field in type.attributes %}
+  {{ field.json_key }}:
   {% if field.description %}
     description: |
       {{ field.description | indent | trim("\"") | trim }}
   {% endif %}
-  {% if field.array %}
+  {% if field.is_array %}
     type: array
     items:
       {{ get_parameter_type(field) | indent(2) | trim }}
@@ -150,46 +116,31 @@
 
 
 {% macro get_parameter_type(field, response=false) %}
-{% if field.value._tx_fqn == "entity.Object" or field.value._tx_fqn == "entity.Base" %}
-  {% if field.nested %}
-  $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
-  {% elif  response %}
-  $ref: '#/components/schemas/{{ field.value.name|capitalize }}{% if field.paging %}List{% endif %}'
+{% if field.is_object or field.is_base %}
+  {% if field.is_nested %}
+  $ref: '#/components/schemas/{{ field.type }}'
   {% else %}
 {# assign the objects ID type#}
-  type: {{ parameters.id_type }}
-    {% if parameters.id_type_format %}
-  format: {{parameters.id_type_format}}
+  type: {{ config.id_type }}
+    {% if config.id_type_format %}
+  format: {{config.id_type_format}}
     {% endif %}
   {% endif %}
-{% elif field.value._tx_fqn == "entity.Enum" %}
-  $ref: '#/components/schemas/{{ field.value.name|capitalize }}'
+{% elif field.is_enum %}
+  $ref: '#/components/schemas/{{ field.type }}'
 {% else %}
-  type: {{ field.value|oapi_type }}
+  type: {{ field.type }}
 {% endif %}
 {% endmacro %}
 
 
 {% macro get_parameter_format(field) %}
-{% if field.value.name == "Int" %}
-  format: int32
-{% elif field.value.name == "Long" %}
-  format: int64
-{% elif field.value.name == "Float" %}
-  format: float
-{% elif field.value.name == "Double" %}
-  format: double
-{% elif field.value.name == "ID"%}
-  {% if parameters.id_type_format %}
-  format: {{parameters.id_type_format}}
-  {% endif %}
-  x-qsdl-type: ID
-{% elif field.value.name == "Date" %}
-  format: date-time
+{% if field.format %}
+  format: {{field.format}}
 {% endif %}
-{% if field.readonly %}
+{% if field.is_read_only %}
   readOnly: true
-{% elif field.writeonly %}
+{% elif field.is_write_only %}
   writeOnly: true
 {% endif %}
 {% endmacro %}

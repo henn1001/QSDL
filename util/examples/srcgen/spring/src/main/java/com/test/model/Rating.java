@@ -3,11 +3,10 @@
  */
 package com.test.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.validation.Valid;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.*;
+import javax.persistence.*;
+import javax.validation.*;
+import com.fasterxml.jackson.annotation.*;
 
 public class Rating {
 
@@ -16,7 +15,7 @@ public class Rating {
 
   @Valid
   @JsonProperty(value = "scores")
-  private List<Float> scores;
+  private List<Float> scores = new ArrayList<>();
 
   /**
    * user

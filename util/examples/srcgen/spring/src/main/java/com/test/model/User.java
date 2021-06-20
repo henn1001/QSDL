@@ -3,12 +3,11 @@
  */
 package com.test.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.validation.Valid;
+import java.util.*;
+import javax.persistence.*;
+import javax.validation.*;
 import javax.validation.constraints.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 public class User {
 
@@ -21,7 +20,7 @@ public class User {
 
   @Valid
   @JsonProperty(value = "emails")
-  private List<String> emails;
+  private List<String> emails = new ArrayList<>();
 
   @JsonProperty(value = "password")
   private String password;

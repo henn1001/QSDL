@@ -3,19 +3,18 @@
  */
 package com.test.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.validation.Valid;
+import java.util.*;
+import javax.persistence.*;
+import javax.validation.*;
 import javax.validation.constraints.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 public class TicketList {
 
   @NotNull
   @Valid
   @JsonProperty(value = "items", required = true)
-  private List<Ticket> items;
+  private List<Ticket> items = new ArrayList<>();
 
   @JsonProperty(value = "next_cursor")
   private String nextCursor;

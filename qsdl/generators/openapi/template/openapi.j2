@@ -1,23 +1,23 @@
 {% import 'openapi.macro.j2' as macro with context %}
 openapi: 3.0.3
 info:
-{% if model.title %}
-  title: {{ model.title }}
+{% if schema.title %}
+  title: {{ schema.title }}
 {% else %}
   title: Untitled API
 {% endif %}
-{% if model.description %}
+{% if schema.description %}
   description: |
-    {{ model.description|indent|trim("\"") }}
+    {{ schema.description|indent|trim("\"") }}
 {% endif %}
-{% if model.version %}
-  version: '{{ model.version }}'
+{% if schema.version %}
+  version: '{{ schema.version }}'
 {% else %}
   version: '0.1.0'
 {% endif %}
-{% if model.servers %}
+{% if schema.servers %}
 servers:
-  {% for server in model.servers %}
+  {% for server in schema.servers %}
   - url: '{{ server }}'
   {% endfor %}
 {% endif %}
@@ -30,8 +30,9 @@ tags:
 {% endfor %}
 {% endif %}
 
-paths: {%+ if not util.get_operations() %}{}{% endif %} 
-{% for operation in util.get_operations() %}
+paths: {%+ if not apis %}{}{% endif %} 
+{% for api in apis %}
+{% for operation in api.operations %}
   {% if util.is_path_unique(operation.path) %}
   '{{ operation.path }}':
   {% endif %}
@@ -46,25 +47,23 @@ paths: {%+ if not util.get_operations() %}{}{% endif %}
         {{ operation.description | indent | trim("\"") | trim }}
     {% endif %}
       operationId: {{ operation.name }}
-    {% if operation.is_crud %}
-      x-qsdl-domain-object: true
-    {% endif %}
   {% if operation.parameters %}
       parameters:
         {{ macro.get_parameters(operation) | indent(6) | trim }}
   {% endif %}
-  {% if operation.request %}
+  {% if operation.body_parameters %}
       requestBody:
         {{ macro.get_requestBody(operation) | indent(6) | trim }}
   {% endif %}
       responses:
         '200':
           description: OK
-  {% if operation.response and operation.response.value.name != 'Void' %}
+      {% if operation.response %}
           {{ macro.get_response(operation) | indent(8) | trim }}
-  {% endif %}
+      {% endif %}
         default:
           $ref: '#/components/responses/DefaultError'
+{% endfor %}
 {% endfor %}
 
 components:
@@ -83,67 +82,51 @@ components:
             $ref: '#/components/schemas/ApiError'
 
   schemas:
-{% for enum in xtx.get_children_of_type("Enum", model) %}
-    {{ enum.name|capitalize }}:
-    {% if enum.description %}
+{% for model in models %}
+  {% if model.is_enum %}
+    {{ model.name }}:
+    {% if model.description %}
       description: |
-        {{ enum.description | indent | trim("\"") | trim }}
+        {{ model.description | indent | trim("\"") | trim }}
     {% endif %}
       type: string
       enum:
-        {% for value in enum.values %}
+        {% for value in model.constants %}
         - {{value}}
         {% endfor %}
 
-{% endfor %}
-{% for base in xtx.get_children_of_type("Base", model) %}
-    {{ base.name|capitalize }}:
-    {% if base.description %}
+  {% else %}
+    {{ model.name }}:
+    {% if model.description %}
       description: |
-        {{ base.description | indent | trim("\"") | trim }}
+        {{ model.description | indent | trim("\"") | trim }}
     {% endif %}
-    {% if util.get_required(base) %}
+    {% if model._ref.supertype %}
+      allOf:
+        - $ref: '#/components/schemas/{{model._ref.supertype.name}}'
+        -
+        {% if model.get_required() %}
+          required:
+          {% for field in model.get_required() %}
+            - {{field.name}}
+          {% endfor %}
+        {% endif %}
+          type: object
+          properties:
+            {{ macro.get_schema(model) | indent(10) | trim }}
+    {% else %}
+     {% if model.get_required() %}
       required:
-      {% for field in util.get_required(base) %}
+      {% for field in model.get_required() %}
         - {{field.name}}
       {% endfor %}
-    {% endif %}
+     {% endif %}
       type: object
       properties:
-        {{ macro.get_schema(base) | indent(6) | trim }}
+        {{ macro.get_schema(model) | indent(6) | trim }}
+     {% endif %}
 
-{% endfor %}
-{% for object in xtx.get_children_of_type("Object", model) %}
-    {{ object.name|capitalize }}List:
-      required:
-        - items
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/{{ object.name|capitalize }}"
-        next_cursor:
-          type: string
-        total_count:
-          type: integer
-          format: int64
-
-    {{ object.name|capitalize }}:
-    {% if object.description %}
-      description: |
-        {{ object.description | indent | trim("\"") | trim }}
-    {% endif %}
-    {% if util.get_required(object) %}
-      required:
-      {% for field in util.get_required(object) %}
-        - {{field.name}}
-      {% endfor %}
-    {% endif %}
-      type: object
-      properties:
-        {{ macro.get_schema(object) | indent(6) | trim }}
-
+  {% endif %}
 {% endfor %}
     ApiError:
       required:

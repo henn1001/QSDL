@@ -3,11 +3,10 @@
  */
 package com.test.model;
 
-import java.util.Objects;
-import javax.validation.Valid;
+import java.util.*;
+import javax.persistence.*;
 import javax.validation.constraints.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 public class Buzzword {
 
@@ -18,10 +17,6 @@ public class Buzzword {
   @NotNull
   @JsonProperty(value = "name", required = true)
   private String name;
-
-  @Valid
-  @JsonIgnore
-  private QueryMachine test;
 
   /**
    * id
@@ -47,18 +42,6 @@ public class Buzzword {
     return this;
   }
 
-  /**
-   * test
-   */
-  public QueryMachine getTest() {
-    return test;
-  }
-
-  public Buzzword setTest(QueryMachine test) {
-    this.test = test;
-    return this;
-  }
-
 
   @Override
   public boolean equals(Object o) {
@@ -70,13 +53,12 @@ public class Buzzword {
     }
     Buzzword buzzword = (Buzzword) o;
     return Objects.equals(this.id, buzzword.id) &&
-        Objects.equals(this.name, buzzword.name) &&
-        Objects.equals(this.test, buzzword.test);
+        Objects.equals(this.name, buzzword.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, test);
+    return Objects.hash(id, name);
   }
 
   @Override

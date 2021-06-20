@@ -333,7 +333,7 @@ class TestArgument:
             }
 
             extend Operation {
-                field1(arg: ID): Void @path(value:"path") @method(value: DELETE)
+                field1(arg: ID): Void @path(value:"path1") @method(value: DELETE)
                 field2(arg: Int): Void @path(value:"path2") @method(value: DELETE)
                 field3(arg: Float): Void @path(value:"path3") @method(value: DELETE)
                 field4(arg: String): Void @path(value:"path4") @method(value: DELETE)
@@ -349,6 +349,7 @@ class TestArgument:
         openapi = wrapper_generate(test_input)
 
         ops = [
+            "/path1/{arg}",
             "/path2",
             "/path3",
             "/path4",
@@ -362,7 +363,7 @@ class TestArgument:
 
         for _path in ops:
 
-            if _path in ["/path1"]:
+            if _path in ["/path1/{arg}"]:
                 assert openapi["paths"][_path]["delete"]["parameters"][0]["in"] == "path"
             else:
                 assert "parameters" not in openapi["paths"][_path]["delete"]

@@ -21,7 +21,6 @@ paths:
         - Management
       summary: List Projects
       operationId: getProjects
-      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: query
@@ -64,7 +63,6 @@ paths:
         - Management
       summary: Create a Project
       operationId: createProject
-      x-qsdl-domain-object: true
       requestBody:
         required: true
         content:
@@ -86,7 +84,6 @@ paths:
         - Management
       summary: Read the specified Project
       operationId: getProject
-      x-qsdl-domain-object: true
       parameters:
         - name: id
           in: path
@@ -94,8 +91,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
       responses:
         '200':
           description: OK
@@ -110,7 +105,6 @@ paths:
         - Management
       summary: Replace the specified Project
       operationId: replaceProject
-      x-qsdl-domain-object: true
       parameters:
         - name: id
           in: path
@@ -118,8 +112,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
       requestBody:
         required: true
         content:
@@ -140,7 +132,6 @@ paths:
         - Management
       summary: Update the specified Project
       operationId: updateProject
-      x-qsdl-domain-object: true
       parameters:
         - name: id
           in: path
@@ -148,8 +139,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
       requestBody:
         required: true
         content:
@@ -170,7 +159,6 @@ paths:
         - Management
       summary: Delete the specified Project
       operationId: deleteProject
-      x-qsdl-domain-object: true
       parameters:
         - name: id
           in: path
@@ -178,8 +166,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
       responses:
         '200':
           description: OK
@@ -191,7 +177,6 @@ paths:
         - Management
       summary: List Roles
       operationId: getRolesForProject
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -199,8 +184,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -237,7 +220,6 @@ paths:
         - Management
       summary: Create a Role
       operationId: createRoleForProject
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -245,8 +227,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
       requestBody:
         required: true
         content:
@@ -268,7 +248,6 @@ paths:
         - Management
       summary: Read the specified Role
       operationId: getRoleForProject
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -276,15 +255,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: role
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -299,7 +275,6 @@ paths:
         - Management
       summary: Replace the specified Role
       operationId: replaceRoleForProject
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -307,15 +282,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: role
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -336,7 +308,6 @@ paths:
         - Management
       summary: Update the specified Role
       operationId: updateRoleForProject
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -344,15 +315,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: role
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -373,7 +341,6 @@ paths:
         - Management
       summary: Delete the specified Role
       operationId: deleteRoleForProject
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -381,15 +348,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: role
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -401,7 +365,6 @@ paths:
         - Management
       summary: List Roles
       operationId: getRolesForSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -409,7 +372,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -446,7 +408,6 @@ paths:
         - Management
       summary: Create a Role
       operationId: createRoleForSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -454,7 +415,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -476,7 +436,6 @@ paths:
         - Management
       summary: Read the specified Role
       operationId: getRoleForSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -484,14 +443,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: role
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -506,7 +463,6 @@ paths:
         - Management
       summary: Replace the specified Role
       operationId: replaceRoleForSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -514,14 +470,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: role
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -542,7 +496,6 @@ paths:
         - Management
       summary: Update the specified Role
       operationId: updateRoleForSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -550,14 +503,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: role
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -578,7 +529,6 @@ paths:
         - Management
       summary: Delete the specified Role
       operationId: deleteRoleForSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: sprint_name
           in: path
@@ -586,14 +536,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: role
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -612,14 +560,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: name
           in: query
           required: false
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -656,7 +602,7 @@ paths:
       tags:
         - Management
       summary: Add User
-      operationId: addUserForRole
+      operationId: addUserToRole
       parameters:
         - name: role_role
           in: path
@@ -664,7 +610,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -675,7 +620,6 @@ paths:
                 name:
                   type: integer
                   format: int64
-                  x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -686,7 +630,7 @@ paths:
       tags:
         - Management
       summary: Remove User
-      operationId: removeUserForRole
+      operationId: removeUserFromRole
       parameters:
         - name: role_role
           in: path
@@ -694,7 +638,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -705,7 +648,6 @@ paths:
                 name:
                   type: integer
                   format: int64
-                  x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -717,7 +659,6 @@ paths:
         - Management
       summary: List Users
       operationId: getUsers
-      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: query
@@ -725,7 +666,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -762,7 +702,6 @@ paths:
         - Management
       summary: Create a User
       operationId: createUser
-      x-qsdl-domain-object: true
       requestBody:
         required: true
         content:
@@ -784,7 +723,6 @@ paths:
         - Management
       summary: Read the specified User
       operationId: getUser
-      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: path
@@ -792,7 +730,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -807,7 +744,6 @@ paths:
         - Management
       summary: Replace the specified User
       operationId: replaceUser
-      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: path
@@ -815,7 +751,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -836,7 +771,6 @@ paths:
         - Management
       summary: Update the specified User
       operationId: updateUser
-      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: path
@@ -844,7 +778,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -865,7 +798,6 @@ paths:
         - Management
       summary: Delete the specified User
       operationId: deleteUser
-      x-qsdl-domain-object: true
       parameters:
         - name: name
           in: path
@@ -873,7 +805,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -885,7 +816,6 @@ paths:
         - Incident
       summary: List Tickets
       operationId: getTickets
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -893,8 +823,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -931,7 +859,6 @@ paths:
         - Incident
       summary: Create a Ticket
       operationId: createTicket
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -939,8 +866,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
       requestBody:
         required: true
         content:
@@ -962,7 +887,6 @@ paths:
         - Incident
       summary: Read the specified Ticket
       operationId: getTicket
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -970,15 +894,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: number
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -993,7 +914,6 @@ paths:
         - Incident
       summary: Replace the specified Ticket
       operationId: replaceTicket
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -1001,15 +921,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: number
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -1030,7 +947,6 @@ paths:
         - Incident
       summary: Update the specified Ticket
       operationId: updateTicket
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -1038,15 +954,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: number
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -1067,7 +980,6 @@ paths:
         - Incident
       summary: Delete the specified Ticket
       operationId: deleteTicket
-      x-qsdl-domain-object: true
       parameters:
         - name: project_id
           in: path
@@ -1075,225 +987,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-            readOnly: true
         - name: number
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
-      responses:
-        '200':
-          description: OK
-        default:
-          $ref: '#/components/responses/DefaultError'
-  '/projects/{project_id}/milestones':
-    get:
-      tags:
-        - Incident
-      summary: List Milestones
-      operationId: getMilestonesForProject
-      x-qsdl-domain-object: true
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
-            readOnly: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MilestoneList'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    post:
-      tags:
-        - Incident
-      summary: Create a Milestone
-      operationId: createMilestoneForProject
-      x-qsdl-domain-object: true
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
-            readOnly: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Milestone'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Milestone'
-        default:
-          $ref: '#/components/responses/DefaultError'
-  '/projects/{project_id}/milestones/{milestone}':
-    get:
-      tags:
-        - Incident
-      summary: Read the specified Milestone
-      operationId: getMilestoneForProject
-      x-qsdl-domain-object: true
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
-            readOnly: true
-        - name: milestone
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Milestone'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Incident
-      summary: Replace the specified Milestone
-      operationId: replaceMilestoneForProject
-      x-qsdl-domain-object: true
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
-            readOnly: true
-        - name: milestone
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Milestone'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Milestone'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    patch:
-      tags:
-        - Incident
-      summary: Update the specified Milestone
-      operationId: updateMilestoneForProject
-      x-qsdl-domain-object: true
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
-            readOnly: true
-        - name: milestone
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Milestone'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Milestone'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    delete:
-      tags:
-        - Incident
-      summary: Delete the specified Milestone
-      operationId: deleteMilestoneForProject
-      x-qsdl-domain-object: true
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
-            readOnly: true
-        - name: milestone
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -1312,7 +1011,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -1349,7 +1047,7 @@ paths:
       tags:
         - Incident
       summary: Add Milestone
-      operationId: addMilestoneForTicket
+      operationId: addMilestoneToTicket
       parameters:
         - name: ticket_number
           in: path
@@ -1357,7 +1055,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -1368,7 +1065,6 @@ paths:
                 milestone:
                   type: integer
                   format: int64
-                  x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -1379,7 +1075,7 @@ paths:
       tags:
         - Incident
       summary: Remove Milestone
-      operationId: removeMilestoneForTicket
+      operationId: removeMilestoneFromTicket
       parameters:
         - name: ticket_number
           in: path
@@ -1387,7 +1083,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -1398,7 +1093,194 @@ paths:
                 milestone:
                   type: integer
                   format: int64
-                  x-qsdl-type: ID
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/projects/{project_id}/milestones':
+    get:
+      tags:
+        - Incident
+      summary: List Milestones
+      operationId: getMilestones
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilestoneList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      tags:
+        - Incident
+      summary: Create a Milestone
+      operationId: createMilestone
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Milestone'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/projects/{project_id}/milestones/{milestone}':
+    get:
+      tags:
+        - Incident
+      summary: Read the specified Milestone
+      operationId: getMilestone
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: milestone
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    put:
+      tags:
+        - Incident
+      summary: Replace the specified Milestone
+      operationId: replaceMilestone
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: milestone
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Milestone'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Incident
+      summary: Update the specified Milestone
+      operationId: updateMilestone
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: milestone
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Milestone'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - Incident
+      summary: Delete the specified Milestone
+      operationId: deleteMilestone
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: milestone
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -1410,7 +1292,6 @@ paths:
         - Incident
       summary: List Sprints
       operationId: getSprints
-      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1418,7 +1299,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -1455,7 +1335,6 @@ paths:
         - Incident
       summary: Create a Sprint
       operationId: createSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1463,7 +1342,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -1485,7 +1363,6 @@ paths:
         - Incident
       summary: Read the specified Sprint
       operationId: getSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1493,14 +1370,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: name
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -1515,7 +1390,6 @@ paths:
         - Incident
       summary: Replace the specified Sprint
       operationId: replaceSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1523,14 +1397,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: name
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -1551,7 +1423,6 @@ paths:
         - Incident
       summary: Update the specified Sprint
       operationId: updateSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1559,14 +1430,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: name
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -1587,7 +1456,6 @@ paths:
         - Incident
       summary: Delete the specified Sprint
       operationId: deleteSprint
-      x-qsdl-domain-object: true
       parameters:
         - name: milestone_milestone
           in: path
@@ -1595,14 +1463,12 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
         - name: name
           in: path
           required: true
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -1664,7 +1530,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
@@ -1686,7 +1551,6 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
@@ -1721,39 +1585,30 @@ paths:
           schema:
             type: integer
             format: int64
-            x-qsdl-type: ID
       responses:
         '200':
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/buzzwords/{buzzword_id}/query/submit':
+  '/query/submit':
     post:
       tags:
         - Incident
       summary: submitQuery
       operationId: submitQuery
-      parameters:
-        - name: buzzword_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            x-qsdl-type: ID
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Querymachine'
+              $ref: '#/components/schemas/QueryMachine'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Querymachine'
+                $ref: '#/components/schemas/QueryMachine'
         default:
           $ref: '#/components/responses/DefaultError'
   '/query/submits':
@@ -1765,14 +1620,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Querymachine'
+              $ref: '#/components/schemas/QueryMachine'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Querymachine'
+                $ref: '#/components/schemas/QueryMachine'
         default:
           $ref: '#/components/responses/DefaultError'
 
@@ -1822,7 +1677,7 @@ components:
           items:
             $ref: '#/components/schemas/Rating'
 
-    Basetype:
+    BaseType:
       required:
         - id
         - name
@@ -1831,7 +1686,6 @@ components:
         id:
           type: integer
           format: int64
-          x-qsdl-type: ID
           readOnly: true
         name:
           type: string
@@ -1862,7 +1716,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Project"
+            $ref: '#/components/schemas/Project'
         next_cursor:
           type: string
         total_count:
@@ -1870,45 +1724,20 @@ components:
           format: int64
 
     Project:
-      required:
-        - id
-        - name
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          x-qsdl-type: ID
-          readOnly: true
-        name:
-          type: string
-        description:
-          type: string
-        creation_by:
-          type: string
-          readOnly: true
-        creation_date:
-          type: string
-          format: date-time
-          readOnly: true
-        last_update_by:
-          type: string
-          readOnly: true
-        last_update_date:
-          type: string
-          format: date-time
-          readOnly: true
-        meta_inf:
+      allOf:
+        - $ref: '#/components/schemas/BaseType'
+        -
           type: object
-        archive:
-          description: |
-            Archive this Project
-          type: boolean
-          writeOnly: true
-        metrics:
-          type: array
-          items:
-            $ref: '#/components/schemas/Metric'
+          properties:
+            archive:
+              description: |
+                Archive this Project
+              type: boolean
+              writeOnly: true
+            metrics:
+              type: array
+              items:
+                $ref: '#/components/schemas/Metric'
 
     RoleList:
       required:
@@ -1918,7 +1747,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Role"
+            $ref: '#/components/schemas/Role'
         next_cursor:
           type: string
         total_count:
@@ -1933,7 +1762,6 @@ components:
         role:
           type: integer
           format: int64
-          x-qsdl-type: ID
         users:
           type: array
           items:
@@ -1947,7 +1775,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/User"
+            $ref: '#/components/schemas/User'
         next_cursor:
           type: string
         total_count:
@@ -1962,7 +1790,6 @@ components:
         name:
           type: integer
           format: int64
-          x-qsdl-type: ID
         full_name:
           type: string
         emails:
@@ -1980,7 +1807,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Ticket"
+            $ref: '#/components/schemas/Ticket'
         next_cursor:
           type: string
         total_count:
@@ -1995,7 +1822,6 @@ components:
         number:
           type: integer
           format: int64
-          x-qsdl-type: ID
         title:
           type: string
         issuer:
@@ -2017,7 +1843,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Milestone"
+            $ref: '#/components/schemas/Milestone'
         next_cursor:
           type: string
         total_count:
@@ -2032,7 +1858,6 @@ components:
         milestone:
           type: integer
           format: int64
-          x-qsdl-type: ID
 
     SprintList:
       required:
@@ -2042,7 +1867,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Sprint"
+            $ref: '#/components/schemas/Sprint'
         next_cursor:
           type: string
         total_count:
@@ -2057,26 +1882,10 @@ components:
         name:
           type: integer
           format: int64
-          x-qsdl-type: ID
         roles:
           type: array
           items:
             $ref: '#/components/schemas/Role'
-
-    BuzzwordList:
-      required:
-        - items
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/Buzzword"
-        next_cursor:
-          type: string
-        total_count:
-          type: integer
-          format: int64
 
     Buzzword:
       required:
@@ -2087,26 +1896,10 @@ components:
         id:
           type: integer
           format: int64
-          x-qsdl-type: ID
         name:
           type: string
 
-    QuerymachineList:
-      required:
-        - items
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/Querymachine"
-        next_cursor:
-          type: string
-        total_count:
-          type: integer
-          format: int64
-
-    Querymachine:
+    QueryMachine:
       required:
         - request
       type: object

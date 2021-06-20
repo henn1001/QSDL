@@ -81,7 +81,6 @@ type User @namespace(value:"Management"){
     type Buzzword @namespace(value:"Incident"){
         id: ID!
         name: String!
-        test: QueryMachine @composition
 
         extend Operation {
             getBuzzwords(name: String): [Buzzword]

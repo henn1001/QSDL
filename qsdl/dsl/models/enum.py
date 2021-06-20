@@ -14,8 +14,13 @@
 
 """Enum class"""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import List
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from . import Schema
 
 
 @dataclass
@@ -28,4 +33,4 @@ class Enum:
     values: List[str] = field(default_factory=list)
 
     # required by textX
-    parent: object = None
+    parent: Schema = None

@@ -14,10 +14,15 @@
 
 """Global QSDL Configuration"""
 
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Callable, List, Set
+from typing import TYPE_CHECKING, Callable
 
 from qsdl.dsl.models import Schema
+
+if TYPE_CHECKING:
+    from qsdl.generators import ConfigType
 
 
 class Config:
@@ -32,25 +37,11 @@ class Config:
     # path to a output folder
     output_path: Path = None
 
-    # all possible endpoints/paths for OpenAPI.
-    domain_objects: List[object] = []
-
-    # all global operations for OpenAPI.
-    operations: List[object] = []
-
-    # used to identify if we need to derive operation names from
-    # their parents.
-    dupl_objects: Set = set()
-
-    # used to flag paths as used in order to prevent path duplicates in
-    # OpenAPI
-    used_paths: List[str] = []
-
     # the used generator
     generator: Callable = None
 
     # Generator specific parameters
-    config: object = None
+    config: ConfigType = None
 
     # All registered generators
     available_generators: str = ["openapi", "graphql", "plantuml", "spring"]

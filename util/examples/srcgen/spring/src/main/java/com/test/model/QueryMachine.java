@@ -3,9 +3,10 @@
  */
 package com.test.model;
 
-import java.util.Objects;
+import java.util.*;
+import javax.persistence.*;
 import javax.validation.constraints.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 public class QueryMachine {
 

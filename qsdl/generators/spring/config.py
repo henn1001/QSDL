@@ -27,3 +27,6 @@ class Config:
     artifact_id: str = "app"
     interface_pattern: bool = False
     database: List[str] = field(default_factory=lambda: ["no", "hibernate"])
+
+    # used to change the OpenAPI type for ID between "String" and "Long"
+    id_type: str = "Long"

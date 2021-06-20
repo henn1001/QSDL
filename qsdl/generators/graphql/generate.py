@@ -18,10 +18,10 @@ from pathlib import Path
 
 from textx import model as xtx
 
-from qsdl import util
 from qsdl.dsl.models import Schema
 from qsdl.render import render
 
+from . import util
 from .config import Config
 
 
@@ -31,12 +31,14 @@ def generate(schema: Schema, output_path: Path, config: Config):
     output_file = output_path / "schema.graphql"
     template_path = Path(__file__).parent / "template" / "graphql.j2"
 
+    util.schema = schema
+
     # build the render arguments
     context = {
-        "model": schema,
+        "schema": schema,
         "xtx": xtx,
         "util": util,
-        "parameters": config,
+        "config": config,
     }
 
     render(output_file, context, template_path)

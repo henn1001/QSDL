@@ -14,36 +14,176 @@
 
 """Spring Generator"""
 
-
 from pathlib import Path
+from typing import List
 
-import stringcase
+import pathspec
 from textx import model as xtx
 
 import qsdl.core as core
 from qsdl.config import Config as core_config
-from qsdl.dsl.models import Schema
+from qsdl.dsl.models import Field, Object, Scalar, Schema
 from qsdl.render import render
 
 from . import util
 from .config import Config
-from .parse import parse_apis, parse_ignored_files, parse_models
+from .models import Api, Model
+
+
+def parse_apis(schema: Schema) -> List[Api]:
+    """Parse QSDL schema into custom API model.
+
+    Args:
+        schema (Schema): The QSDL schema model.
+
+    Returns:
+        List[Api]: A list of custom API models.
+    """
+    apis = []
+
+    entities = xtx.get_children_of_type("Operation", schema)
+
+    for entity in entities:
+        new_api = Api(entity)
+        apis.append(new_api)
+
+    return apis
+
+
+def parse_models(schema: Schema) -> List[Model]:
+    """Parse QSDL schema into custom models.
+
+    Args:
+        schema (Schema): The QSDL schema model.
+    Returns:
+        List[Model]: The parsed models.
+    """
+    models = []
+
+    enum_list = xtx.get_children_of_type("Enum", schema)
+    base_list = xtx.get_children_of_type("Base", schema)
+    object_list = xtx.get_children_of_type("Object", schema)
+
+    for obj in enum_list + base_list:
+        model = Model(obj)
+        models.append(model)
+
+    for obj in object_list:
+        model = Model(obj)
+        models.append(model)
+
+        # add paging response for all objects with default CRUD endpoints
+        if obj.is_crud:
+            model = get_paginated_object(obj, model)
+            model.is_crud = False
+            models.insert(-1, model)
+
+    return models
+
+
+def get_paginated_object(obj: Object, model: Model) -> Model:
+    """Returns a pagable custom model that is used to return a given model.
+
+    Args:
+        obj (Object): The QSDL Object.
+        model (Model): The custom Model.
+
+    Returns:
+        Model: The pagable custom model.
+    """
+
+    # represents the model
+    new_object = Object()
+    new_object.name = model.name + "List"
+    new_object._tx_fqn = "entity.Object"
+
+    # contains the item list of the entity
+    item_field = Field()
+    item_field.name = "items"
+    item_field.array = True
+    item_field.non_nullable = True
+    item_field.nested = True
+    item_field.value = obj
+    item_field._tx_fqn = "entity.Field"
+    new_object.fields.append(item_field)
+
+    # next cursor
+    cursor_field = Field(name="next_cursor")
+    string_scalar = Scalar(name="String")
+    string_scalar._tx_fqn = "entity.Scalar"
+    cursor_field.value = string_scalar
+    cursor_field._tx_fqn = "entity.Field"
+    new_object.fields.append(cursor_field)
+
+    # total count
+    count_field = Field(name="total_count")
+    long_scalar = Scalar(name="Long")
+    long_scalar._tx_fqn = "entity.Scalar"
+    count_field.value = long_scalar
+    count_field._tx_fqn = "entity.Field"
+    new_object.fields.append(count_field)
+
+    # init the new model class
+    model = Model(new_object)
+
+    return model
+
+
+def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list):
+    """Removes all generated files mentioned in .qsdl-ignore.
+
+    Utilizes the pathspec python package.
+    https://github.com/cpburnz/python-path-specification
+
+    Args:
+        api_files (list): [description]
+        model_files (list): [description]
+        supporting_files (list): [description]
+    """
+    ignorefile_path = output_path / ".qsdl-ignore"
+
+    if ignorefile_path.is_file():
+        supporting_files.remove((".qsdl-ignore.j2", ".qsdl-ignore"))
+
+        # read the spec
+        with open(ignorefile_path, "r") as infile:
+            spec = pathspec.PathSpec.from_lines("gitwildmatch", infile)
+
+        # loop over each all files and remove matches
+        # note the copy() - we dont want to modify the list directly
+        for src, dest, _ in api_files.copy():
+            if spec.match_file(output_path / dest):
+                api_files.remove((src, dest, _))
+
+        for src, dest, _ in model_files.copy():
+            if spec.match_file(output_path / dest):
+                model_files.remove((src, dest, _))
+
+        for src, dest in supporting_files.copy():
+            if spec.match_file(output_path / dest):
+                supporting_files.remove((src, dest))
 
 
 def generate(schema: Schema, output_path: Path, config: Config):
-    """Generator func for spring.
-    """
+    """Generator func for spring"""
+
+    if config.id_type not in ["Long", "String"]:
+        raise ValueError("id_type must be `Long` or `String`")
+
+    # sets the id type and schema
+    util.custom_types["ID"] = config.id_type
+    util.schema = schema
+
     base_package = config.group_id.replace(".", "/")
 
-    api_files = []
-
     ## for development
-    if isinstance(config.database, list):
-        config.database = "hibernate"
+    # if isinstance(config.database, list):
+    #     config.database = "hibernate"
 
     # loop and generate api files
-    for api in parse_apis(schema):
+    api_files = []
 
+    for api in parse_apis(schema):
         # fmt: off
         if config.interface_pattern:
             api_files.append(("src/main/java/api/Api.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}Api.java", api))
@@ -54,9 +194,9 @@ def generate(schema: Schema, output_path: Path, config: Config):
         api_files.append(("src/main/java/api/Service.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}Service.java", api))
         # fmt: on
 
+    # loop and generate model_files
     model_files = []
 
-    # loop and generate model_files
     for model in parse_models(schema):
         # fmt: off
         if config.database == "hibernate" and model.is_crud :
@@ -106,7 +246,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
     # fmt: on
 
     # remove ignored files from generator
-    parse_ignored_files(output_path, api_files, model_files, supporting_files)
+    remove_ignored_files(output_path, api_files, model_files, supporting_files)
 
     # build the render arguments
     context = {

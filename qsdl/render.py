@@ -18,7 +18,7 @@ from pathlib import Path
 
 import jinja2
 
-from qsdl.util import pluralize, singularize
+from qsdl.filter import pluralize, singularize
 
 
 def render(

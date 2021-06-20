@@ -14,11 +14,13 @@
 
 """Field class"""
 
-from dataclasses import dataclass, field
-from typing import List
+from __future__ import annotations
 
-from .directive import Directive
-from .argument import Argument
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, List, Union
+
+if TYPE_CHECKING:
+    from . import Argument, Base, Directive, Object, Operation
 
 
 @dataclass
@@ -48,5 +50,12 @@ class Field:
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
 
+    # custom
+    summary: str = None
+    is_pageable: bool = False
+    path_parameters: List[Argument] = field(default_factory=list)
+    query_parameters: List[Argument] = field(default_factory=list)
+    body_parameters: List[Argument] = field(default_factory=list)
+
     # required by textX
-    parent: object = None
+    parent: Union[Base, Object, Operation] = None

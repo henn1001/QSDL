@@ -1,0 +1,60 @@
+{% import 'macro/macro.j2' as macro with context %}
+{% set object = type %}
+# begin object {{ object.name }} 
+{% if object.description %}
+{{ object.description }}
+{% endif %}
+type {{object.name}} {% if object.supertype %}implements {{object.supertype.name}} {% endif %}{
+    {{ macro.render_fields(object, filter_wo=True) | indent(2) | trim }}
+}
+
+type {{object.name}}List {
+    items: [{{object.name}}]!
+    next_cursor: String
+    total_count: Int
+}
+
+input {{object.name}}Input {
+    {{ macro.render_input(object) | indent(2) | trim }}
+}
+{% if util.get_operations_of_object_of_queries(object) %}
+
+extend type Query {
+    {% for operation in util.get_operations_of_object_of_queries(object) %}
+    {% if operation.description %}
+    {{ operation.description }}
+    {% endif %}
+    {{ operation.name -}}
+        {{ macro.render_arguments(operation) | trim -}}
+      {% if operation.value %}: {{ macro.render_response(operation) | trim }}
+      {% else %}: Void
+      {% endif %}
+    {% endfor %}
+}
+{% endif %}
+{% if util.get_operations_of_object_of_mutations(object) %}
+
+extend type Mutation {
+  {% for operation in util.get_operations_of_object_of_mutations(object) %}
+    {% if operation.description %}
+    {{ operation.description }}
+    {% endif %}
+    {{ operation.name -}}
+        {{ macro.render_arguments(operation) | trim -}}: {{ operation.name }}Payload
+  {% endfor %}
+}
+  {% for operation in util.get_operations_of_object_of_mutations(object) %}
+
+type {{ operation.name }}Payload implements Response {
+    code: String!
+    success: Boolean!
+    message: String!
+    details: String
+    {% if operation.value %}
+    response: {{ macro.render_response(operation) }}
+    {% endif %}
+}
+  {% endfor %}
+{% endif %}
+# end object {{ object.name }}
+{{""}}

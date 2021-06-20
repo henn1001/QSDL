@@ -3,13 +3,11 @@
  */
 package com.test.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.validation.Valid;
+import java.util.*;
+import javax.persistence.*;
+import javax.validation.*;
 import javax.validation.constraints.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 public class Milestone {
 
@@ -17,9 +15,8 @@ public class Milestone {
   @JsonProperty(value = "milestone", required = true)
   private Long milestone;
 
-  @Valid
   @JsonIgnore
-  private List<Sprint> sprints;
+  private List<Sprint> sprints = new ArrayList<>();
 
   /**
    * milestone

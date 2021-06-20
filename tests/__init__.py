@@ -48,8 +48,9 @@ def wrapper_generate(test_input: str) -> dict:
     with open(openapi_file) as file:
         openapi = yaml.load(file, Loader=yaml.FullLoader)
 
-    with open(graphql_file) as file:
-        gql = graphql.build_schema(file.read())
+    # FIXME: disabled for now
+    # with open(graphql_file) as file:
+    #     gql = graphql.build_schema(file.read())
 
     return openapi
 

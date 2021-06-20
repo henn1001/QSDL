@@ -1,0 +1,41 @@
+{% import 'macro/macro.j2' as macro with context %}
+{% set object = type %}
+{% if util.get_queries_of_operation(object) %}
+extend type Query {
+    {% for operation in util.get_queries_of_operation(object) %}
+    {% if operation.description %}
+    {{ operation.description }}
+    {% endif %}
+    {{ operation.name -}}
+        {{ macro.render_arguments(operation) | trim -}}
+      {% if operation.value %}: {{ macro.render_response(operation) | trim }}
+      {% else %}: Void
+      {% endif %}
+    {% endfor %}
+}
+{% endif %}
+{% if util.get_mutations_of_operation(object) %}
+
+extend type Mutation {
+  {% for operation in util.get_mutations_of_operation(object) %}
+    {% if operation.description %}
+    {{ operation.description }}
+    {% endif %}
+    {{ operation.name -}}
+        {{ macro.render_arguments(operation) | trim -}}: {{ operation.name }}Payload
+  {% endfor %}
+}
+  {% for operation in util.get_mutations_of_operation(object) %}
+
+type {{ operation.name }}Payload implements Response {
+    code: String!
+    success: Boolean!
+    message: String!
+    details: String
+    {% if operation.value %}
+    response: {{ macro.render_response(operation) }}
+    {% endif %}
+}
+  {% endfor %}
+{% endif %}
+{{""}}

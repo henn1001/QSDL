@@ -14,11 +14,13 @@
 
 """Base class"""
 
-from dataclasses import dataclass, field
-from typing import List
+from __future__ import annotations
 
-from .directive import Directive
-from .field import Field
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from . import Directive, Field, Schema
 
 
 @dataclass
@@ -37,4 +39,4 @@ class Base:
     fields: List[Field] = field(default_factory=list)
 
     # required by textX
-    parent: object = None
+    parent: Schema = None

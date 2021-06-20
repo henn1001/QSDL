@@ -17,7 +17,7 @@ import os
 from tests import wrapper_generate
 from tests import wrapper_generate_failure
 
-from qsdl import parse
+from qsdl.dsl import textx
 
 
 class TestCore:
@@ -29,4 +29,4 @@ class TestCore:
     def test_get_metamodel_plantuml(self):
         """Verify that we can print the plantuml model"""
 
-        assert parse.get_metamodel(print_uml=True)
+        assert textx.get_metamodel(print_uml=True)

@@ -1,0 +1,10 @@
+{% set enum = type %}
+{% if enum.description %}
+{{ enum.description }}
+{% endif %}
+enum {{enum.name}} {
+    {% for value in enum.values %}
+    {{value}}
+    {% endfor %}
+}
+{{""}}

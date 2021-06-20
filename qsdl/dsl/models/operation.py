@@ -14,11 +14,13 @@
 
 """Operation class"""
 
-from dataclasses import dataclass, field
-from typing import List
+from __future__ import annotations
 
-from .directive import Directive
-from .field import Field
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, List, Union
+
+if TYPE_CHECKING:
+    from . import Directive, Field, Object, Schema
 
 
 @dataclass
@@ -35,4 +37,4 @@ class Operation:
     fields: List[Field] = field(default_factory=list)
 
     # required by textX
-    parent: object = None
+    parent: Union[Schema, Object]  = None

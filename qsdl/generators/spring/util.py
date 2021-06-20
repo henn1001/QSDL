@@ -14,37 +14,55 @@
 
 """Spring Generator Utility functions"""
 
-import stringcase
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, List, Union
 
 from textx import model as xtx
 
-from qsdl.config import Config
+if TYPE_CHECKING:
+    from qsdl.dsl.models import Base, Enum, Object, Schema
+
+
+# the parsed schema definition.
+schema: Schema = None
+
+
+custom_types = {
+    "Int": "Integer",
+    "Long": "Long",
+    "Float": "Float",
+    "Double": "Double",
+    "String": "String",
+    "Boolean": "Boolean",
+    "ID": "Long",
+    "Date": "OffsetDateTime",
+    "Object": "Object",
+    "Void": "Void",
+}
 
 
 def custom_type(input_type: str) -> str:
-    """Maps Scalars to Java types.
+    """Converter map for custom types.
 
     Args:
-        input_type (str): The typ to map.
+        input_type (str): The type to map.
 
     Returns:
-        str: The mapped Java type name or the Scalar name.
+        str: The mapped type name or the input_type if it does not exist.
     """
-    return {
-        "Int": "Integer",
-        "Long": "Long",
-        "Float": "Float",
-        "Double": "Double",
-        "String": "String",
-        "Boolean": "Boolean",
-        "ID": "Long",
-        "Date": "OffsetDateTime",
-        "Object": "Object",
-        "Void": "Void",
-    }.get(input_type, input_type)
+    return custom_types.get(input_type, input_type)
 
 
-def has_id(entity):
+def has_id(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object has an ID.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
@@ -63,7 +81,15 @@ def has_id(entity):
     return ret
 
 
-def has_list(entity):
+def has_list(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object has an array.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
@@ -77,7 +103,15 @@ def has_list(entity):
     return ret
 
 
-def has_float(entity):
+def has_float(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object has a float.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
@@ -91,7 +125,15 @@ def has_float(entity):
     return ret
 
 
-def has_date(entity):
+def has_date(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object has a date.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
@@ -105,7 +147,15 @@ def has_date(entity):
     return ret
 
 
-def has_enum(entity):
+def has_enum(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object has an enum.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
@@ -119,7 +169,15 @@ def has_enum(entity):
     return ret
 
 
-def has_model(entity):
+def has_model(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object has a base or object.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
@@ -133,7 +191,15 @@ def has_model(entity):
     return ret
 
 
-def has_required(entity):
+def has_required(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object has an required attribute.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
@@ -147,7 +213,15 @@ def has_required(entity):
     return ret
 
 
-def has_relation(entity):
+def has_relation(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object has a relation.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
@@ -161,7 +235,15 @@ def has_relation(entity):
     return ret
 
 
-def has_relation_not_nested(entity):
+def has_relation_not_nested(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object has a relation that is not nested.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
@@ -175,12 +257,20 @@ def has_relation_not_nested(entity):
     return ret
 
 
-def is_supertype(entity):
-    base_list = xtx.get_children_of_type("Base", Config.schema)
-    object_list = xtx.get_children_of_type("Object", Config.schema)
+def is_supertype(entity: Union[Base, Object]) -> bool:
+    """Checks if the Base or Object is used somewhere as a supertype.
 
-    for it in base_list + object_list:
-        if entity == it.supertype:
+    Args:
+        entity (Union[Base, Object]): Either entity.Object or entity.Field.
+
+    Returns:
+        bool: Returns True on detection.
+    """
+    base_list = xtx.get_children_of_type("Base", schema)
+    object_list = xtx.get_children_of_type("Object", schema)
+
+    for itr in base_list + object_list:
+        if entity == itr.supertype:
             return True
 
     return False
@@ -195,44 +285,38 @@ def is_nested(entity: object) -> bool:
     Returns:
         bool: [description]
     """
-    ret = False
+    base_list = xtx.get_children_of_type("Base", schema)
+    object_list = xtx.get_children_of_type("Object", schema)
 
-    for field in xtx.get_children_of_type("Field", Config.schema):
-        if field.value == entity:
-            if field.nested:
-                ret = True
-                break
+    for itr in base_list + object_list:
+        for field in itr.fields:
+            if field.value == entity and field.nested:
+                return True
 
-    return ret
-
-
-def get_class_name(old_name):
-    new_name = stringcase.pascalcase(old_name)
-
-    return new_name
+    return False
 
 
-def get_attr_name(old_name):
-    new_name = stringcase.camelcase(old_name)
+def get_enum_values(entity: Enum) -> List[Enum]:
+    """Returns all enum values.
 
-    return new_name
+    Args:
+        entity (Enum): entity.Enum
 
-
-def get_enum_values(entity):
+    Returns:
+        List[Enum]: All enum values.
+    """
     values = []
 
-    if entity._tx_fqn not in ["entity.Enum"]:
-        raise ValueError
+    if entity._tx_fqn in ["entity.Enum"]:
 
-    for value in entity.values:
-        values.append(value)
+        for value in entity.values:
+            values.append(value)
 
     return values
 
 
 def get_model_imports(entity):
-    """Returns all imports for this model.
-    """
+    """Returns all imports for this model."""
     imports = []
 
     if entity._tx_fqn not in ["entity.Enum", "entity.Base", "entity.Object"]:
@@ -267,12 +351,3 @@ def get_model_imports(entity):
         imports.extend(_import)
 
     return imports
-
-
-def getter(field):
-    return "get" + stringcase.capitalcase(field.name)
-
-
-def setter(field):
-    return "set" + stringcase.capitalcase(field.name)
-

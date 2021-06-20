@@ -14,7 +14,13 @@
 
 """Argument class"""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from . import Field
 
 
 @dataclass
@@ -30,5 +36,10 @@ class Argument:
     non_nullable_array: bool = False
     non_nullable: bool = False
 
+    # custom
+    path: bool = False
+    query: bool = False
+    body: bool = False
+
     # required by textX
-    parent: object = None
+    parent: Field = None

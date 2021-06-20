@@ -24,11 +24,24 @@ from pyfiglet import Figlet
 from PyInquirer import prompt
 from textx.exceptions import TextXSemanticError, TextXSyntaxError
 
-from qsdl import __folder__
 from qsdl.config import Config
 from qsdl.generators import ConfigType, GeneratorType, get_config, get_generator
-from qsdl.models import Color
-from qsdl.parse import parse_domain_model, parse_schema
+from qsdl.dsl.textx import parse_schema
+
+
+class Color:
+    """For printing stuff nicer to console"""
+
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[36m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
 
 
 def prompt_user() -> Tuple[GeneratorType, ConfigType]:
@@ -119,10 +132,6 @@ def init(generator_name: str, config_path: Path = None) -> Tuple[GeneratorType, 
     Config.raw_schema = None
     Config.schema = None
     Config.output_path = None
-    Config.domain_objects = []
-    Config.operations = []
-    Config.dupl_objects = set()
-    Config.used_paths = []
     Config.generator = None
     Config.config = None
 
@@ -144,8 +153,7 @@ def init(generator_name: str, config_path: Path = None) -> Tuple[GeneratorType, 
     return generator, config
 
 
-def generate(
-    raw_schema: str, output_path: Path, generator_name: str, config_path: Path = None) -> int:
+def generate(raw_schema: str, output_path: Path, generator_name: str, config_path: Path = None) -> int:
     """The main function of QSDL.
 
     Generates various things from the provided schema definition.
@@ -166,9 +174,6 @@ def generate(
         # build a model from schema definition file
         Config.schema = parse_schema(raw_schema)
 
-        # init domain model
-        Config.domain_objects, Config.operations = parse_domain_model(Config.schema)
-
         # set global config
         Config.raw_schema = raw_schema
         Config.output_path = output_path
@@ -177,7 +182,7 @@ def generate(
         output_path.mkdir(exist_ok=True, parents=True)
 
         # call generator
-        Config.generator(Config.schema, Config.output_path, Config.config) # pylint: disable=not-callable # fmt: skip
+        Config.generator(Config.schema, Config.output_path, Config.config)  # pylint: disable=not-callable # fmt: skip
 
     except (TextXSyntaxError, TextXSemanticError, Exception):  # pylint: disable=W0703
         traceback.print_exc()

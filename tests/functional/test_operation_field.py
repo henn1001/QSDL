@@ -182,7 +182,7 @@ class TestOperationField:
             assert schema["items"]["type"] == _type
 
             if _format:
-                assert schema["format"] == _format
+                assert schema["items"]["format"] == _format
 
     def test_field_object_07_positive(self):
         """Verify required"""

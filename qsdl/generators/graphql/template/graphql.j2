@@ -1,4 +1,3 @@
-{% import 'graphql.macro.j2' as macro with context %}
 scalar Long
 scalar Double
 scalar Date
@@ -27,8 +26,23 @@ input Pageable {
 }
 
 {# Start drawing loop#}
-{% for type in model.types %}
-{{ macro.render_loop(type) }}
+{% for type in schema.types %}
+{% if type._tx_fqn == "entity.Scalar" %}
+{% include "types/scalar.j2" with context %}
+
+{% elif type._tx_fqn == "entity.Enum" %}
+{% include "types/enum.j2" with context %}
+
+{% elif type._tx_fqn == "entity.Base" %}
+{% include "types/base.j2" with context %}
+
+{% elif type._tx_fqn == "entity.Object" %}
+{% include "types/object.j2" with context %}
+
+{% elif type._tx_fqn == "entity.Operation" %}
+{% include "types/operation.j2" with context %}
+
+{% endif %}
 {% endfor %}
 
 schema{
