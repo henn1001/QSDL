@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from textx.metamodel import TextXMetaModel
@@ -25,6 +26,10 @@ from qsdl.dsl.processors.model_validator import validate, validate_operations
 
 if TYPE_CHECKING:
     from qsdl.dsl.models import Schema
+
+
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(name)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 
 def model_processor(schema: Schema, metamodel: TextXMetaModel):
@@ -40,6 +45,8 @@ def model_processor(schema: Schema, metamodel: TextXMetaModel):
         TextXSemanticError: Exception for logical errors.
     """
 
+    logger.info("running schema validation...")
+
     # run post validation
     validate(schema, metamodel)
 
@@ -52,3 +59,5 @@ def model_processor(schema: Schema, metamodel: TextXMetaModel):
 
     # validate operation uniqueness
     validate_operations(schema)
+
+    logger.info("schema successfully loaded")
