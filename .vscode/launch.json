@@ -60,6 +60,19 @@
             ],
             "justMyCode": false,
             "console": "integratedTerminal"
+        },
+        {
+            "name": "QSDL - Void",
+            "type": "python",
+            "request": "launch",
+            "module": "qsdl",
+            "args": [
+                "util/examples/input.tx",
+                "-g",
+                "void",
+            ],
+            "justMyCode": false,
+            "console": "integratedTerminal"
         }
     ]
 }

@@ -27,6 +27,8 @@ from .plantuml import Config as PlantumlConfig
 from .plantuml import generate as plantuml_generator
 from .spring import Config as SpringConfig
 from .spring import generate as spring_generator
+from .void import Config as VoidConfig
+from .void import generate as void_generator
 
 ConfigType = Union[GraphqlConfig, OpenapiConfig, PlantumlConfig, SpringConfig]
 GeneratorType = Callable[[Schema, Path, ConfigType], None]
@@ -37,6 +39,7 @@ GENERATORS = {
     "graphql": (graphql_generator, GraphqlConfig()),
     "plantuml": (plantuml_generator, PlantumlConfig()),
     "spring": (spring_generator, SpringConfig()),
+    "void": (void_generator, VoidConfig()),
 }
 
 
