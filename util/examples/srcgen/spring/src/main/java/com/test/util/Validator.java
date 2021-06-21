@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
-import com.test.constants.AppError;
+import com.test.constant.AppError;
 import com.test.exception.ApiException;
 
 public class Validator {

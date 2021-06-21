@@ -38,4 +38,4 @@ def singularize(word: str) -> str:
     Returns:
         str: Plural form of the word.
     """
-    return inflect.engine().singular_noun(word)
+    return inflect.engine().singular_noun(word) or word

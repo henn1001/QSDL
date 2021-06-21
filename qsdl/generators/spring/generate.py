@@ -174,7 +174,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     base_package = config.group_id.replace(".", "/")
 
-    ## for development
+    # # for development
     # if isinstance(config.database, list):
     #     config.database = "hibernate"
 
@@ -183,13 +183,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     for api in parse_apis(schema):
         # fmt: off
-        if config.interface_pattern:
-            api_files.append(("src/main/java/api/Api.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}Api.java", api))
-            api_files.append(("src/main/java/api/ApiController.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}ApiController.java", api))
-        else:
-            api_files.append(("src/main/java/api/Controller.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}Controller.java", api))
-
-        api_files.append(("src/main/java/api/Service.j2", f"src/main/java/{base_package}/api/{api.tag}/{api.name}/{api.capital_name}Service.java", api))
+        api_files.append(("src/main/java/api/Controller.j2", f"src/main/java/{base_package}/api/{api.name}Controller.java", api))
+        api_files.append(("src/main/java/api/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api))
         # fmt: on
 
     # loop and generate model_files
@@ -228,8 +223,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/config/SchedulerConfig.j2", f"src/main/java/{base_package}/config/SchedulerConfig.java"),
         ("src/main/java/config/HomeController.j2", f"src/main/java/{base_package}/config/HomeController.java"),
         # constants
-        ("src/main/java/constants/AppError.j2", f"src/main/java/{base_package}/constants/AppError.java"),
-        ("src/main/java/constants/Constants.j2", f"src/main/java/{base_package}/constants/Constants.java"),
+        ("src/main/java/constant/AppError.j2", f"src/main/java/{base_package}/constant/AppError.java"),
+        ("src/main/java/constant/Constants.j2", f"src/main/java/{base_package}/constant/Constants.java"),
         # util
         ("src/main/java/util/Json.j2", f"src/main/java/{base_package}/util/Json.java"),
         ("src/main/java/util/Time.j2", f"src/main/java/{base_package}/util/Time.java"),

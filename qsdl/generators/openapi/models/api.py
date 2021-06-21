@@ -23,7 +23,7 @@ from .. import util
 
 if TYPE_CHECKING:
     from qsdl.dsl.models import Api as QAPI
-    from qsdl.dsl.models import Field
+    from qsdl.dsl.models import Operation
 
 
 @dataclass
@@ -51,7 +51,7 @@ class _Operation:
     """Custom dataclass"""
 
     # the textx object
-    _ref: Field
+    _ref: Operation
 
     # computed attributes
     name: str = None

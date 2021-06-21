@@ -142,7 +142,7 @@ class Model:
         self.imports = util.get_model_imports(self._ref)
 
         # addons
-        self.is_crud = not self._ref.api if self.is_object else False
+        self.is_crud = self._ref.is_crud if self.is_object else False
         self.is_supertype = util.is_supertype(self._ref) if self.is_base else False
         self.is_nested = util.is_nested(self._ref)
         self.has_id = util.has_id(self._ref)

@@ -24,7 +24,7 @@ import stringcase
 from .. import util
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Field
+    from qsdl.dsl.models import Operation
     from qsdl.dsl.models import Api as QAPI
 
 
@@ -49,7 +49,7 @@ class _Operation:
     """Custom dataclass"""
 
     # the textx object
-    _ref: Field
+    _ref: Operation
 
     # computed attributes
     name: str = None
@@ -70,13 +70,15 @@ class _Operation:
 
     def __post_init__(self):
 
+        is_crud = self._ref.parent.parent.is_crud if self._ref.parent.parent._tx_fqn == "entity.Object" else False
+
         self.name = self._ref.name
         self.tag = self._ref.parent.namespace
         self.summary = self._ref.summary
         self.description = self._ref.description
         self.path = self._ref.path
         self.method = self._ref.method.lower()
-        # self.is_crud = field.is_crud
+        self.is_crud = is_crud
         self.is_pageable = self._ref.is_pageable
 
         self._add_parameters()
@@ -132,19 +134,20 @@ class Api:
 
     # computed attributes
     name: str = None
-    capital_name: str = None
     tag: str = None
     description: str = None
     operations: List = field(default_factory=list)
+    is_crud: bool = False
 
     def __post_init__(self):
 
         name = self._ref.parent.name if self._ref.parent._tx_fqn == "entity.Object" else "Default"
+        is_crud = self._ref.parent.is_crud if self._ref.parent._tx_fqn == "entity.Object" else False
 
-        self.name = stringcase.lowercase(name)
-        self.capital_name = stringcase.capitalcase(name)
+        self.name = name
         self.tag = stringcase.lowercase(self._ref.namespace)
         self.description = self._ref.description
+        self.is_crud = is_crud
 
         self._add_operations(self._ref.operations)
 

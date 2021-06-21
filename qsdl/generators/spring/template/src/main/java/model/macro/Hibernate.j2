@@ -2,8 +2,7 @@
   Returns the class annotation
 #}
 {% macro class_annotation() %}
-  {{- "@Entity" if model.is_object and model.is_crud }}
-  {{- "@Entity" if model.is_nested }}
+  {{- "@Entity" if (model.is_object and model.is_crud) or model.is_nested }}
   {{- "@MappedSuperclass" if model.is_supertype }}
 {% endmacro %}
 

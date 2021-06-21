@@ -5,7 +5,7 @@ package com.test.exception;
 
 import java.util.List;
 
-import com.test.constants.AppError;
+import com.test.constant.AppError;
 import com.test.model.ApiError;
 
 public class ApiException extends Exception {
