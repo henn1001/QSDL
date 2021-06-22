@@ -28,7 +28,9 @@
   #}
   {% if attr.is_id %}
   @Id
+    {% if attr.is_read_only %}
   @GeneratedValue(generator="optimized-sequence")
+    {% endif %}
   {% endif %}
   {#
     Serialization for objects
@@ -41,12 +43,14 @@
     Relations
   #}
   {% if attr.is_relation or (attr.is_base and attr.is_nested) %}
-    {% if attr.is_array %}
+    {% if attr.forgein_key %}
+  @Column(name="fk_{{attr.forgein_key|lower}}")
+    {% elif attr.is_array %}
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name="{{model.name|lower}}_{{attr.json_key}}_id")
+  @JoinColumn(name="fk_{{model.name|lower}}")
     {% else %}
   @OneToOne({% if attr.is_relation %}mappedBy = "{{model.name|lower}}", {% endif %}cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name="{{attr.json_key}}_id")
+  @JoinColumn(name="fk_{{model.name|lower}}")
     {% endif %}
   {% elif attr.is_array and ( model.is_object and model.is_crud or model.is_nested) %}
   @ElementCollection

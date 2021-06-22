@@ -174,9 +174,9 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     base_package = config.group_id.replace(".", "/")
 
-    # # for development
-    # if isinstance(config.database, list):
-    #     config.database = "hibernate"
+    # for development
+    if isinstance(config.database, list):
+        config.database = "hibernate"
 
     # loop and generate api files
     api_files = []
@@ -185,6 +185,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         # fmt: off
         api_files.append(("src/main/java/api/Controller.j2", f"src/main/java/{base_package}/api/{api.name}Controller.java", api))
         api_files.append(("src/main/java/api/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api))
+        if config.database == "hibernate" and api.domain_object :
+            api_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{api.name}Repository.java", api))
         # fmt: on
 
     # loop and generate model_files
@@ -192,9 +194,6 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     for model in parse_models(schema):
         # fmt: off
-        if config.database == "hibernate" and model.is_crud :
-            model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{model.name}Repository.java", model))
-
         model_files.append(("src/main/java/model/Pojo.j2", f"src/main/java/{base_package}/model/{model.name}.java", model))
         # fmt: on
 
@@ -249,6 +248,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "base_package": config.group_id,
         "basePath": "/v1",
         "database": config.database,
+        "util": util,
     }
 
     # generate supporting files

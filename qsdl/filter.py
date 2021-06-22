@@ -15,6 +15,7 @@
 """Filter functions"""
 
 import inflect
+import stringcase
 
 
 def pluralize(word: str) -> str:
@@ -39,3 +40,27 @@ def singularize(word: str) -> str:
         str: Plural form of the word.
     """
     return inflect.engine().singular_noun(word) or word
+
+
+def pascalcase(word: str) -> str:
+    """Returns the Pascalcase form of a word using stringcase.
+
+    Args:
+        word (str): A word.
+
+    Returns:
+        str: Pascalcase form of the word.
+    """
+    return stringcase.pascalcase(word)
+
+
+def camelcase(word: str) -> str:
+    """Returns the Camelcase form of a word using stringcase.
+
+    Args:
+        word (str): A word.
+
+    Returns:
+        str: Camelcase form of the word.
+    """
+    return stringcase.camelcase(word)

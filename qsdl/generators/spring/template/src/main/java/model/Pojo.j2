@@ -26,7 +26,7 @@ public class {{model.name}}{% if model.extends %} extends {{model.extends}}{% en
   {# 
     Set @Valid for any container
   #}
-  {% if (attr.is_array or attr.is_enum or attr.is_base or attr.is_object) and not (attr.is_relation and not attr.is_nested) %}
+  {% if (attr.is_array or attr.is_base or attr.is_object) and not (attr.is_relation and not attr.is_nested) %}
   @Valid
   {% endif %}
   {# 

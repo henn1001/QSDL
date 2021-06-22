@@ -10,8 +10,11 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+@MappedSuperclass
 public class BaseType {
 
+  @Id
+  @GeneratedValue(generator="optimized-sequence")
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
   private Long id;
 
@@ -36,6 +39,8 @@ public class BaseType {
   @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
   private OffsetDateTime lastUpdateDate;
 
+  @Column(columnDefinition = "BINARY(1048576)")
+  @org.hibernate.annotations.Type(type = "serializable")
   @JsonProperty(value = "meta_inf")
   private Object metaInf;
 

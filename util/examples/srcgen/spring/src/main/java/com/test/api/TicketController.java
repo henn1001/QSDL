@@ -125,7 +125,7 @@ public class TicketController {
     produces = { "application/json" },
     consumes = { "application/json" }
   )
-  public ResponseEntity<Ticket> updateTicket(@PathVariable("project_id") Long projectId, @PathVariable("number") Long number, Ticket body) throws Exception {
+  public ResponseEntity<Ticket> updateTicket(@PathVariable("project_id") Long projectId, @PathVariable("number") Long number, @RequestBody Ticket body) throws Exception {
     Validator.validateExRequired(body);
     Ticket response = TicketService.updateTicket(projectId, number, body);
     return new ResponseEntity<>(response, HttpStatus.OK);

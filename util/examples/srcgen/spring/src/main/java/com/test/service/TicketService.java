@@ -6,14 +6,15 @@ package com.test.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.test.constant.AppError;
 import com.test.exception.ApiException;
+import com.test.repository.*;
 import com.test.model.*;
 
 @Service
@@ -21,40 +22,126 @@ public class TicketService {
 
   private static Logger log = LoggerFactory.getLogger(TicketService.class.getSimpleName());
 
+  @javax.annotation.Resource
+  private ProjectRepository projectRepository;
+
+  @javax.annotation.Resource
+  private TicketRepository ticketRepository;
 
   @PostConstruct
   private void init() {
 
   }
 
+  private void validateProjectId(Long id) throws Exception {
+    if (!projectRepository.existsById(id)) {
+      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+    }
+  }
+
   public TicketList getTickets(Long projectId, ApiPageable pageable) throws Exception {
 
-  return null;
+    // confirm existence of parent
+    validateProjectId(projectId);
+
+    List<Ticket> items = ticketRepository.findByProjectId(projectId, pageable);
+
+    Long totalCount = pageable.totalCount(ticketRepository.count());
+    String nextCursor = pageable.nextCursor(items);
+
+    TicketList ret = new TicketList()
+        .setTotalCount(totalCount)
+        .setNextCursor(nextCursor)
+        .setItems(items);
+
+    return ret;
   }
 
   public Ticket createTicket(Long projectId, Ticket body) throws Exception {
 
-  return null;
+    // confirm existence of parent
+    validateProjectId(projectId);
+
+    // add parent relation
+    body.setProjectId(projectId);
+
+    Ticket ret = ticketRepository.save(body);
+
+    return ret;
   }
 
   public Ticket getTicket(Long projectId, Long number) throws Exception {
 
-  return null;
+    // confirm existence of parent
+    validateProjectId(projectId);
+
+    Ticket ret = ticketRepository.findByProjectIdAndNumber(projectId, number).orElse(null);
+
+    if (ret == null) {
+      throw new ApiException(AppError.NOT_FOUND, "Ticket " + number.toString() + " does not exist");
+    }
+
+    return ret;
   }
 
   public Ticket replaceTicket(Long projectId, Long number, Ticket body) throws Exception {
 
-  return null;
+    // confirm existence of parent
+    validateProjectId(projectId);
+
+    // add parent relation
+    body.setProjectId(projectId);
+
+    Ticket dbEntity = ticketRepository.findByProjectIdAndNumber(projectId, number).orElse(null);
+
+    if (dbEntity == null) {
+      throw new ApiException(AppError.NOT_FOUND, "Ticket " + number.toString() + " does not exist");
+    }
+
+    // update new object with all readOnly fields from previous entry
+
+    Ticket ret = ticketRepository.save(body);
+
+    return ret;
   }
 
   public Ticket updateTicket(Long projectId, Long number, Ticket body) throws Exception {
 
-  return null;
+    // confirm existence of parent
+    validateProjectId(projectId);
+
+    // add parent relation
+    body.setProjectId(projectId);
+
+    Ticket dbEntity = ticketRepository.findByProjectIdAndNumber(projectId, number).orElse(null);
+
+    if (dbEntity == null) {
+      throw new ApiException(AppError.NOT_FOUND, "Ticket " + number.toString() + " does not exist");
+    }
+
+    // update dbEntity with all writeable fields if present
+    Optional.ofNullable(body.getNumber()).ifPresent(v -> dbEntity.setNumber(v));
+    Optional.ofNullable(body.getTitle()).ifPresent(v -> dbEntity.setTitle(v));
+    Optional.ofNullable(body.getBody()).ifPresent(v -> dbEntity.setBody(v));
+    Optional.ofNullable(body.getStatus()).ifPresent(v -> dbEntity.setStatus(v));
+
+    Ticket ret = ticketRepository.save(dbEntity);
+
+    return ret;
   }
 
   public Void deleteTicket(Long projectId, Long number) throws Exception {
 
-  return null;
+    // confirm existence of parent
+    validateProjectId(projectId);
+
+    if (!ticketRepository.existsByProjectIdAndNumber(projectId, number)) {
+      throw new ApiException(AppError.NOT_FOUND, "Ticket " + number.toString() + " does not exist");
+    }
+
+    ticketRepository.deleteById(number);
+
+    return null;
   }
 
 }

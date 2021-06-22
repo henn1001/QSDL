@@ -8,23 +8,21 @@ import javax.persistence.*;
 import javax.validation.*;
 import com.fasterxml.jackson.annotation.*;
 
+@Entity
 public class Project extends BaseType {
 
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
   private Boolean archive;
 
-  @Valid
-  @JsonProperty(value = "metrics")
-  private List<Metric> metrics = new ArrayList<>();
-
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name="fk_project")
   @JsonIgnore
   private List<Ticket> tickets = new ArrayList<>();
 
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name="fk_project")
   @JsonIgnore
   private List<Role> roles = new ArrayList<>();
-
-  @JsonIgnore
-  private List<Milestone> milestones = new ArrayList<>();
 
   /**
    * archive
@@ -35,26 +33,6 @@ public class Project extends BaseType {
 
   public Project setArchive(Boolean archive) {
     this.archive = archive;
-    return this;
-  }
-
-  /**
-   * metrics
-   */
-  public List<Metric> getMetrics() {
-    return metrics;
-  }
-
-  public Project setMetrics(List<Metric> metrics) {
-    this.metrics = metrics;
-    return this;
-  }
-
-  public Project addMetricsItem(Metric metricsItem) {
-    if (this.metrics == null) {
-      this.metrics = new ArrayList<>();
-    }
-    this.metrics.add(metricsItem);
     return this;
   }
 
@@ -98,26 +76,6 @@ public class Project extends BaseType {
     return this;
   }
 
-  /**
-   * milestones
-   */
-  public List<Milestone> getMilestones() {
-    return milestones;
-  }
-
-  public Project setMilestones(List<Milestone> milestones) {
-    this.milestones = milestones;
-    return this;
-  }
-
-  public Project addMilestonesItem(Milestone milestonesItem) {
-    if (this.milestones == null) {
-      this.milestones = new ArrayList<>();
-    }
-    this.milestones.add(milestonesItem);
-    return this;
-  }
-
 
   @Override
   public boolean equals(Object o) {
@@ -129,15 +87,13 @@ public class Project extends BaseType {
     }
     Project project = (Project) o;
     return Objects.equals(this.archive, project.archive) &&
-        Objects.equals(this.metrics, project.metrics) &&
         Objects.equals(this.tickets, project.tickets) &&
-        Objects.equals(this.roles, project.roles) &&
-        Objects.equals(this.milestones, project.milestones);
+        Objects.equals(this.roles, project.roles);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(archive, metrics, tickets, roles, milestones);
+    return Objects.hash(archive, tickets, roles);
   }
 
   @Override

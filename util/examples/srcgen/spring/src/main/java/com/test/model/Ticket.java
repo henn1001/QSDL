@@ -5,35 +5,29 @@ package com.test.model;
 
 import java.util.*;
 import javax.persistence.*;
-import javax.validation.*;
 import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
+@Entity
 public class Ticket {
 
   @NotNull
+  @Id
   @JsonProperty(value = "number", required = true)
   private Long number;
 
   @JsonProperty(value = "title")
   private String title;
 
-  @JsonProperty(value = "issuer")
-  private Long issuer;
-
-  @Valid
-  @JsonProperty(value = "issuer_body", access = JsonProperty.Access.READ_ONLY)
-  private User issuerBody;
-
   @JsonProperty(value = "body")
   private String body;
 
-  @Valid
   @JsonProperty(value = "status")
   private Status status;
 
+  @Column(name="fk_project")
   @JsonIgnore
-  private List<Milestone> milestones = new ArrayList<>();
+  private Long projectId;
 
   /**
    * number
@@ -56,30 +50,6 @@ public class Ticket {
 
   public Ticket setTitle(String title) {
     this.title = title;
-    return this;
-  }
-
-  /**
-   * issuer
-   */
-  public Long getIssuer() {
-    return issuer;
-  }
-
-  public Ticket setIssuer(Long issuer) {
-    this.issuer = issuer;
-    return this;
-  }
-
-  /**
-   * issuerBody
-   */
-  public User getIssuerBody() {
-    return issuerBody;
-  }
-
-  public Ticket setIssuerBody(User issuerBody) {
-    this.issuerBody = issuerBody;
     return this;
   }
 
@@ -108,22 +78,14 @@ public class Ticket {
   }
 
   /**
-   * milestones
+   * projectId
    */
-  public List<Milestone> getMilestones() {
-    return milestones;
+  public Long getProjectId() {
+    return projectId;
   }
 
-  public Ticket setMilestones(List<Milestone> milestones) {
-    this.milestones = milestones;
-    return this;
-  }
-
-  public Ticket addMilestonesItem(Milestone milestonesItem) {
-    if (this.milestones == null) {
-      this.milestones = new ArrayList<>();
-    }
-    this.milestones.add(milestonesItem);
+  public Ticket setProjectId(Long projectId) {
+    this.projectId = projectId;
     return this;
   }
 
@@ -139,16 +101,14 @@ public class Ticket {
     Ticket ticket = (Ticket) o;
     return Objects.equals(this.number, ticket.number) &&
         Objects.equals(this.title, ticket.title) &&
-        Objects.equals(this.issuer, ticket.issuer) &&
-        Objects.equals(this.issuerBody, ticket.issuerBody) &&
         Objects.equals(this.body, ticket.body) &&
         Objects.equals(this.status, ticket.status) &&
-        Objects.equals(this.milestones, ticket.milestones);
+        Objects.equals(this.projectId, ticket.projectId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(number, title, issuer, issuerBody, body, status, milestones);
+    return Objects.hash(number, title, body, status, projectId);
   }
 
   @Override

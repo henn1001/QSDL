@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, List, Union
 from textx import model as xtx
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Object, Schema
+    from qsdl.dsl.models import Base, Enum, Field, Object, Schema
 
 
 # the parsed schema definition.
@@ -351,3 +351,117 @@ def get_model_imports(entity):
         imports.extend(_import)
 
     return imports
+
+
+def get_parents(obj: Object) -> List[Field]:
+    """Returns all Objects whos Field value is this Object.
+
+    Args:
+        schema (Schema): The QSDL schema model.
+        obj (Object): entity.Object
+
+    Returns:
+        List[Field]: [entity.Field]
+    """
+    parents = []
+
+    fields = xtx.get_children_of_type("Field", schema)
+
+    parents = [x.parent for x in fields if x.value == obj and x.parent._tx_fqn == "entity.Object"]
+
+    return parents
+
+
+def get_filtered_fields_as_list(entity: Object) -> List[Field]:
+    """Returns all fields ob a object including its supertype as list.
+
+    We only want to include composition or aggregations when they are nested.
+
+    Args:
+        entity (object): entity.Object
+
+    Returns:
+        list: [entity.Field]
+    """
+    tmp = entity
+    fields = []
+
+    while True:
+        tmp_list = []
+        for field in tmp.fields:
+
+            # filter out all compositions and aggregations that are not nested
+            if not ((field.is_composition or field.is_aggregation) and not field.is_nested):
+                tmp_list.append(field)
+
+        fields = tmp_list + fields
+        if not tmp.supertype:
+            break
+
+        tmp = tmp.supertype
+
+    return fields
+
+def get_id_for_repo(entity: Object) -> str:
+    """Returns the ID name of a API Object.
+
+    If no ID is found, we return ID regardless because that is
+    the default internal id.
+
+    Args:
+        entity (Object): entity.Object.
+
+    Returns:
+        str: Returns ID name for the query
+    """
+    ret = None
+    tmp = entity
+
+    while True:
+        for field in tmp.fields:
+
+            if field.value.name == "ID":
+                ret = field.name
+                break
+
+        if not tmp.supertype:
+            break
+
+        tmp = tmp.supertype
+
+    if not ret:
+        ret = "ID"
+
+    return ret.capitalize()
+
+def get_parent_id_for_repo(entity: Object) -> str:
+    """Returns the ID name of a API Object.
+
+    If no ID is found, we return ID regardless because that is
+    the default internal id.
+
+    Args:
+        entity (Object): entity.Object.
+
+    Returns:
+        str: Returns ID name for the query
+    """
+    ret = None
+    tmp = entity
+
+    while True:
+        for field in tmp.fields:
+
+            if field.value.name == "ID":
+                ret = field.name
+                break
+
+        if not tmp.supertype:
+            break
+
+        tmp = tmp.supertype
+
+
+    ret = entity.name.lower() + ret.capitalize()
+
+    return ret

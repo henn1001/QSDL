@@ -19,7 +19,7 @@ from pathlib import Path
 
 import jinja2
 
-from qsdl.filter import pluralize, singularize
+from qsdl.filter import pluralize, singularize, pascalcase, camelcase
 
 logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(name)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -54,6 +54,8 @@ def render(
 
     jinja_env.filters["pluralize"] = pluralize
     jinja_env.filters["singularize"] = singularize
+    jinja_env.filters["pascal"] = pascalcase
+    jinja_env.filters["camel"] = camelcase
 
     # load the template
     template = jinja_env.get_template(template_path.name)

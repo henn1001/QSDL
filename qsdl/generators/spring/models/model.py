@@ -21,10 +21,12 @@ from typing import TYPE_CHECKING, List, Union
 
 import stringcase
 
+from qsdl.dsl.models import Field, Scalar
+
 from .. import util
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Field, Object
+    from qsdl.dsl.models import Base, Enum, Object
 
 
 @dataclass
@@ -52,6 +54,8 @@ class _Attribute:
     is_composition: bool = False
     is_aggregation: bool = False
     is_relation: bool = False
+
+    forgein_key: str = False
 
     getter: str = None
     setter: str = None
@@ -135,6 +139,7 @@ class Model:
         # attributes
         if not self.is_enum:
             self._add_attributes()
+            self._add_foreign_keys()
         else:
             self.constants = util.get_enum_values(self._ref)
 
@@ -154,4 +159,18 @@ class Model:
 
         for entity_field in self._ref.fields:
             attribute = _Attribute(entity_field)
+            self.attributes.append(attribute)
+
+    def _add_foreign_keys(self):
+
+        parents = util.get_parents(self._ref)
+
+        for parent in parents:
+            fk_field = Field()
+            fk_field.name = stringcase.snakecase(parent.name + util.get_id_for_repo(parent))
+            fk_field.value = Scalar(name=util.custom_types["ID"])
+
+            attribute = _Attribute(fk_field)
+            attribute.is_relation = True
+            attribute.forgein_key = parent.name
             self.attributes.append(attribute)

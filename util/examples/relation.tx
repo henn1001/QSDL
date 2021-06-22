@@ -1,0 +1,53 @@
+title: "Test API"
+version: "1.0"
+description: """
+A simple parent child relation example.
+
+Tests:
+  -  extending from a base
+  -  read & writeOnly
+  -  compositions
+  -  aggregations
+  -  usage of enums and generic json object
+"""
+
+servers: ["/api/v1"]
+
+enum Status {
+    OPEN
+    TO_DO
+    CLOSED
+}
+
+base BaseType {
+    id: ID! @readOnly
+    name: String! @query
+    description: String
+    creation_by: String @readOnly
+    creation_date: Date @readOnly
+    last_update_by: String @readOnly
+    last_update_date: Date @readOnly
+    meta_inf: Object
+}
+
+
+// NameSpace Management
+type Project extends BaseType @namespace(value:"Management") {
+    archive: Boolean @writeOnly
+    users: [User] @composition
+}
+
+type User @namespace(value:"Management"){
+    id: ID! @readOnly
+    name: String
+}
+
+
+// NameSpace Incident
+type Ticket @namespace(value:"Incident"){
+    id: ID! @readOnly
+    title: String
+    body: String
+    status: Status
+    users: [User] @aggregation
+}

@@ -121,7 +121,7 @@ public class ProjectController {
     produces = { "application/json" },
     consumes = { "application/json" }
   )
-  public ResponseEntity<Project> updateProject(@PathVariable("id") Long id, Project body) throws Exception {
+  public ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) throws Exception {
     Validator.validateExRequired(body);
     Project response = ProjectService.updateProject(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);

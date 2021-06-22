@@ -32,7 +32,7 @@
   {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
       @RequestBody Map<String, Object> body
   {%- elif operation.body_parameters and operation.method == "patch" -%}
-      {{ param_helper(operation.body_parameters[0]) }}
+      @RequestBody {{ param_helper(operation.body_parameters[0]) }}
   {%- elif operation.body_parameters -%}
       @Valid @RequestBody {{ param_helper(operation.body_parameters[0]) }}
   {%- endif -%}

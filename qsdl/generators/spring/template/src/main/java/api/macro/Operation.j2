@@ -1,9 +1,15 @@
 {% macro logic(operation) -%}
-  {% if operation.method == "get" and operation.is_pageable and operation.is_crud %}
+  {% if operation.method == "get" and operation.is_pageable %}
     {# 
+     ########################################################################################
       Get all entities.
     #}
-    List<{{api.name}}> items = {{api.name|lower}}Repository.findAll();
+    {% if operation.domain_parent %}
+    // confirm existence of parent
+    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    {% endif %}
+    List<{{api.name}}> items = {{api.name|lower}}Repository.{{ operation.get_repo_find_all_name() }}({{ operation.get_repo_find_all_parameters() }});
 
     Long totalCount = pageable.totalCount({{api.name|lower}}Repository.count());
     String nextCursor = pageable.nextCursor(items);
@@ -14,68 +20,109 @@
         .setItems(items);
 
     return ret;
-
-  {% elif operation.method == "post"  %}
+  {% elif operation.method == "post" %}
     {# 
+     ########################################################################################
       Create a entity.
     #}
+    {% if operation.domain_parent %}
+    // confirm existence of parent
+    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    // add parent relation
+    body.set{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    {% endif %}
     {{api.name}} ret = {{api.name|lower}}Repository.save(body);
 
     return ret;
-  {% elif operation.method == "get"  %}
+  {% elif operation.method == "get" %}
     {# 
+     ########################################################################################
       Get a entity.
+
     #}
-    {{api.name}} ret = {{api.name|lower}}Repository.findById(id).orElse(null);
+    {% if operation.domain_parent %}
+    // confirm existence of parent
+    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    {% endif %}
+    {{api.name}} ret = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
 
     if (ret == null) {
-      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + id.toString() + " does not exist");
+      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
     return ret;
-  {% elif operation.method == "put"  %}
+  {% elif operation.method == "put" %}
     {# 
+     ########################################################################################
       Replace entities.
     #}
-    {{api.name}} dbEntity = {{api.name|lower}}Repository.findById(id).orElse(null);
+    {% if operation.domain_parent %}
+    // confirm existence of parent
+    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    // add parent relation
+    body.set{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    {% endif %}
+    {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + id.toString() + " does not exist");
+      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
-    // copy readOnly fields
-    body.setId(dbEntity.getId());
+    // update new object with all readOnly fields from previous entry
+    {% for p in operation.get_read_only_parameters() %}
+    body.set{{p}}(dbEntity.get{{p}}());
+    {% endfor %}
 
     {{api.name}} ret = {{api.name|lower}}Repository.save(body);
 
     return ret;
-  {% elif operation.method == "patch"  %}
+  {% elif operation.method == "patch" %}
     {# 
+     ########################################################################################
       Patch entities.
     #}
-    {{api.name}} dbEntity = {{api.name|lower}}Repository.findById(id).orElse(null);
+    {% if operation.domain_parent %}
+    // confirm existence of parent
+    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    // add parent relation
+    body.set{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    {% endif %}
+    {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + id.toString() + " does not exist");
+      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
-    // all writeable fields
-    if (body.getName() != null) {
-      dbEntity.setName(body.getName());
-    }
+    // update dbEntity with all writeable fields if present
+    {% for p in operation.get_writable_parameters() %}
+    Optional.ofNullable(body.get{{p}}()).ifPresent(v -> dbEntity.set{{p}}(v));
+    {% endfor %}
 
     {{api.name}} ret = {{api.name|lower}}Repository.save(dbEntity);
 
     return ret;
-  {% elif operation.method == "delete"  %}
+  {% elif operation.method == "delete" %}
     {# 
+     ########################################################################################
       Delete entities.
     #}
-    if (!{{api.name|lower}}Repository.existsById(id)) {
-      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + id.toString() + " does not exist");
+    {% if operation.domain_parent %}
+    // confirm existence of parent
+    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    {% endif %}
+    if (!{{api.name|lower}}Repository.exists{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }})) {
+      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
-    {{api.name|lower}}Repository.deleteById(id);
+    {{api.name|lower}}Repository.deleteById({{operation.path_parameters[-1].name}});
 
     return null;
   {% endif %}

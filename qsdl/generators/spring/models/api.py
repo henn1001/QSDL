@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from qsdl.dsl.models.object import Object
 from typing import List, TYPE_CHECKING
 
 import stringcase
@@ -62,6 +63,9 @@ class _Operation:
     is_crud: bool = False
     is_pageable: bool = False
 
+    domain_object: Object = None
+    domain_parent: Object = None
+
     parameters: List[_Parameter] = field(default_factory=list)
     path_parameters: List[_Parameter] = field(default_factory=list)
     query_parameters: List[_Parameter] = field(default_factory=list)
@@ -72,6 +76,7 @@ class _Operation:
 
         is_crud = self._ref.parent.parent.is_crud if self._ref.parent.parent._tx_fqn == "entity.Object" else False
 
+        # assign values to self
         self.name = self._ref.name
         self.tag = self._ref.parent.namespace
         self.summary = self._ref.summary
@@ -80,6 +85,9 @@ class _Operation:
         self.method = self._ref.method.lower()
         self.is_crud = is_crud
         self.is_pageable = self._ref.is_pageable
+
+        self.domain_object = self._ref.domain_object
+        self.domain_parent = self._ref.domain_parent
 
         self._add_parameters()
 
@@ -125,6 +133,67 @@ class _Operation:
 
             self.response = param
 
+    def get_read_only_parameters(self) -> List[str]:
+        ret = []
+
+        # first get all fields including supertypes
+        filtered_fields = util.get_filtered_fields_as_list(self.domain_object)
+
+        # get read only fields
+        field_names = [x.name for x in filtered_fields if x.is_read_only]
+
+        for name in field_names:
+            getter = stringcase.pascalcase(name)
+            ret.append(getter)
+
+        return ret
+
+    def get_writable_parameters(self) -> List[str]:
+        ret = []
+
+        # first get all fields including supertypes
+        filtered_fields = util.get_filtered_fields_as_list(self.domain_object)
+
+        # get read only fields
+        field_names = [x.name for x in filtered_fields if not x.is_read_only]
+
+        for name in field_names:
+            getter = stringcase.pascalcase(name)
+            ret.append(getter)
+
+        return ret
+
+    def get_repo_find_all_name(self) -> str:
+        ret = "find"
+        ret += "By" + stringcase.pascalcase(self.path_parameters[0].name) if self.domain_parent else "All"
+        return ret
+
+    def get_repo_find_all_parameters(self) -> str:
+        ret = ""
+        for parameter in self.path_parameters:
+            ret += parameter.name
+            ret += ", "
+        
+        # add pagable object or remove last seperator
+        if self.is_pageable:
+            ret += "pageable"
+        else:
+            ret = ret[:-2]
+        return ret
+
+    def get_repo_by_id_name(self) -> str:
+        ret = "By"
+        for parameter in self.path_parameters:
+            ret += stringcase.pascalcase(parameter.name)
+            ret += "And"
+        return ret[:-3]
+
+    def get_repo_by_id_parameters(self) -> str:
+        ret = ""
+        for parameter in self.path_parameters:
+            ret += parameter.name
+            ret += ", "
+        return ret[:-2]
 
 @dataclass
 class Api:
@@ -137,17 +206,23 @@ class Api:
     tag: str = None
     description: str = None
     operations: List = field(default_factory=list)
-    is_crud: bool = False
+
+    domain_object: Object = None
+    domain_parents: List[Object] = field(default_factory=list)
 
     def __post_init__(self):
 
         name = self._ref.parent.name if self._ref.parent._tx_fqn == "entity.Object" else "Default"
-        is_crud = self._ref.parent.is_crud if self._ref.parent._tx_fqn == "entity.Object" else False
+        domain_object = self._ref.parent if self._ref.parent._tx_fqn == "entity.Object" else None
+        domain_parents = util.get_parents(domain_object) if domain_object else None
 
+        # assign values to self
         self.name = name
         self.tag = stringcase.lowercase(self._ref.namespace)
         self.description = self._ref.description
-        self.is_crud = is_crud
+
+        self.domain_object = domain_object
+        self.domain_parents = domain_parents
 
         self._add_operations(self._ref.operations)
 

@@ -360,6 +360,8 @@ def operation_builder(
 
     operation = Operation()
     operation.parent = api
+    operation.domain_object = obj
+    operation.domain_parent = parent_obj
 
     if method == "getA":
         name = "get" + name_builder(obj, parent_obj if duplicate else None, "For", "s")

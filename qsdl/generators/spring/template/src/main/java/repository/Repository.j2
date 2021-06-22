@@ -4,6 +4,7 @@
 package {{base_package}}.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,18 @@ import org.springframework.stereotype.Repository;
 import {{base_package}}.model.*;
 
 @Repository
-public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, Long> {
+public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long> {
+
+  @Query(value = "select * from {{api.name|upper}} where {{ util.get_id_for_repo(api.domain_object) | upper }} < {{ ":#{#pageable.cursor}" }} order by {{ util.get_id_for_repo(api.domain_object) | upper }} desc limit {{ ":#{#pageable.limit}" }}", nativeQuery = true)
+  public List<{{api.name}}> findAll(@Param("pageable") ApiPageable pageable);
+  {% for domain_parent in api.domain_parents %}
+
+  @Query(value = "select * from {{api.name|upper}} where FK_{{domain_parent.name|upper}} = :{{ util.get_parent_id_for_repo(domain_parent) | camel }} and {{ util.get_id_for_repo(api.domain_object) | upper }} < {{ ":#{#pageable.cursor}" }} order by {{ util.get_id_for_repo(api.domain_object) | upper }} desc limit {{ ":#{#pageable.limit}" }}", nativeQuery = true)
+  public List<{{api.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
+
+  public Optional<{{api.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}And{{ util.get_id_for_repo(api.domain_object) }}(Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, Long {{ util.get_id_for_repo(api.domain_object) | camel }});
+
+  public Boolean existsBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}And{{ util.get_id_for_repo(api.domain_object) }}(Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, Long {{ util.get_id_for_repo(api.domain_object) | camel }});
+  {% endfor %}
 
 }

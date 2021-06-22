@@ -49,5 +49,8 @@ class Operation:
     query_parameters: List[Argument] = field(default_factory=list)
     body_parameters: List[Argument] = field(default_factory=list)
 
+    domain_object: Object = None
+    domain_parent: Object = None
+
     # required by textX
     parent: Union[Base, Object, Api] = None

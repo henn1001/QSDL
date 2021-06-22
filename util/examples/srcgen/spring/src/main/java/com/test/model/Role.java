@@ -5,49 +5,44 @@ package com.test.model;
 
 import java.util.*;
 import javax.persistence.*;
-import javax.validation.*;
-import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
+@Entity
 public class Role {
 
-  @NotNull
-  @JsonProperty(value = "role", required = true)
-  private Long role;
+  @Id
+  @GeneratedValue(generator="optimized-sequence")
+  @JsonIgnore
+  private Long id;
 
-  @Valid
-  @JsonProperty(value = "users")
-  private List<User> users = new ArrayList<>();
+  @JsonProperty(value = "role")
+  private String role;
+
+  @Column(name="fk_project")
+  @JsonIgnore
+  private Long projectId;
 
   /**
    * role
    */
-  public Long getRole() {
+  public String getRole() {
     return role;
   }
 
-  public Role setRole(Long role) {
+  public Role setRole(String role) {
     this.role = role;
     return this;
   }
 
   /**
-   * users
+   * projectId
    */
-  public List<User> getUsers() {
-    return users;
+  public Long getProjectId() {
+    return projectId;
   }
 
-  public Role setUsers(List<User> users) {
-    this.users = users;
-    return this;
-  }
-
-  public Role addUsersItem(User usersItem) {
-    if (this.users == null) {
-      this.users = new ArrayList<>();
-    }
-    this.users.add(usersItem);
+  public Role setProjectId(Long projectId) {
+    this.projectId = projectId;
     return this;
   }
 
@@ -62,12 +57,12 @@ public class Role {
     }
     Role role = (Role) o;
     return Objects.equals(this.role, role.role) &&
-        Objects.equals(this.users, role.users);
+        Objects.equals(this.projectId, role.projectId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(role, users);
+    return Objects.hash(role, projectId);
   }
 
   @Override

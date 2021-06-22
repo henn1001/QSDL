@@ -6,14 +6,15 @@ package com.test.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.test.constant.AppError;
 import com.test.exception.ApiException;
+import com.test.repository.*;
 import com.test.model.*;
 
 @Service
@@ -21,6 +22,8 @@ public class ProjectService {
 
   private static Logger log = LoggerFactory.getLogger(ProjectService.class.getSimpleName());
 
+  @javax.annotation.Resource
+  private ProjectRepository projectRepository;
 
   @PostConstruct
   private void init() {
@@ -29,32 +32,85 @@ public class ProjectService {
 
   public ProjectList getProjects(String name, ApiPageable pageable) throws Exception {
 
-  return null;
+    List<Project> items = projectRepository.findAll(pageable);
+
+    Long totalCount = pageable.totalCount(projectRepository.count());
+    String nextCursor = pageable.nextCursor(items);
+
+    ProjectList ret = new ProjectList()
+        .setTotalCount(totalCount)
+        .setNextCursor(nextCursor)
+        .setItems(items);
+
+    return ret;
   }
 
   public Project createProject(Project body) throws Exception {
 
-  return null;
+    Project ret = projectRepository.save(body);
+
+    return ret;
   }
 
   public Project getProject(Long id) throws Exception {
 
-  return null;
+    Project ret = projectRepository.findById(id).orElse(null);
+
+    if (ret == null) {
+      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+    }
+
+    return ret;
   }
 
   public Project replaceProject(Long id, Project body) throws Exception {
 
-  return null;
+    Project dbEntity = projectRepository.findById(id).orElse(null);
+
+    if (dbEntity == null) {
+      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+    }
+
+    // update new object with all readOnly fields from previous entry
+    body.setId(dbEntity.getId());
+    body.setCreationBy(dbEntity.getCreationBy());
+    body.setCreationDate(dbEntity.getCreationDate());
+    body.setLastUpdateBy(dbEntity.getLastUpdateBy());
+    body.setLastUpdateDate(dbEntity.getLastUpdateDate());
+
+    Project ret = projectRepository.save(body);
+
+    return ret;
   }
 
   public Project updateProject(Long id, Project body) throws Exception {
 
-  return null;
+    Project dbEntity = projectRepository.findById(id).orElse(null);
+
+    if (dbEntity == null) {
+      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+    }
+
+    // update dbEntity with all writeable fields if present
+    Optional.ofNullable(body.getName()).ifPresent(v -> dbEntity.setName(v));
+    Optional.ofNullable(body.getDescription()).ifPresent(v -> dbEntity.setDescription(v));
+    Optional.ofNullable(body.getMetaInf()).ifPresent(v -> dbEntity.setMetaInf(v));
+    Optional.ofNullable(body.getArchive()).ifPresent(v -> dbEntity.setArchive(v));
+
+    Project ret = projectRepository.save(dbEntity);
+
+    return ret;
   }
 
   public Void deleteProject(Long id) throws Exception {
 
-  return null;
+    if (!projectRepository.existsById(id)) {
+      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+    }
+
+    projectRepository.deleteById(id);
+
+    return null;
   }
 
 }

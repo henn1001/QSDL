@@ -6,14 +6,15 @@ package com.test.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.test.constant.AppError;
 import com.test.exception.ApiException;
+import com.test.repository.*;
 import com.test.model.*;
 
 @Service
@@ -21,70 +22,52 @@ public class RoleService {
 
   private static Logger log = LoggerFactory.getLogger(RoleService.class.getSimpleName());
 
+  @javax.annotation.Resource
+  private ProjectRepository projectRepository;
+
+  @javax.annotation.Resource
+  private RoleRepository roleRepository;
 
   @PostConstruct
   private void init() {
 
   }
 
-  public RoleList getRolesForProject(Long projectId, ApiPageable pageable) throws Exception {
-
-  return null;
+  private void validateProjectId(Long id) throws Exception {
+    if (!projectRepository.existsById(id)) {
+      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+    }
   }
 
-  public Role createRoleForProject(Long projectId, Role body) throws Exception {
+  public RoleList getRoles(Long projectId, ApiPageable pageable) throws Exception {
 
-  return null;
+    // confirm existence of parent
+    validateProjectId(projectId);
+
+    List<Role> items = roleRepository.findByProjectId(projectId, pageable);
+
+    Long totalCount = pageable.totalCount(roleRepository.count());
+    String nextCursor = pageable.nextCursor(items);
+
+    RoleList ret = new RoleList()
+        .setTotalCount(totalCount)
+        .setNextCursor(nextCursor)
+        .setItems(items);
+
+    return ret;
   }
 
-  public Role getRoleForProject(Long projectId, Long role) throws Exception {
+  public Role createRole(Long projectId, Role body) throws Exception {
 
-  return null;
-  }
+    // confirm existence of parent
+    validateProjectId(projectId);
 
-  public Role replaceRoleForProject(Long projectId, Long role, Role body) throws Exception {
+    // add parent relation
+    body.setProjectId(projectId);
 
-  return null;
-  }
+    Role ret = roleRepository.save(body);
 
-  public Role updateRoleForProject(Long projectId, Long role, Role body) throws Exception {
-
-  return null;
-  }
-
-  public Void deleteRoleForProject(Long projectId, Long role) throws Exception {
-
-  return null;
-  }
-
-  public RoleList getRolesForSprint(Long sprintName, ApiPageable pageable) throws Exception {
-
-  return null;
-  }
-
-  public Role createRoleForSprint(Long sprintName, Role body) throws Exception {
-
-  return null;
-  }
-
-  public Role getRoleForSprint(Long sprintName, Long role) throws Exception {
-
-  return null;
-  }
-
-  public Role replaceRoleForSprint(Long sprintName, Long role, Role body) throws Exception {
-
-  return null;
-  }
-
-  public Role updateRoleForSprint(Long sprintName, Long role, Role body) throws Exception {
-
-  return null;
-  }
-
-  public Void deleteRoleForSprint(Long sprintName, Long role) throws Exception {
-
-  return null;
+    return ret;
   }
 
 }
