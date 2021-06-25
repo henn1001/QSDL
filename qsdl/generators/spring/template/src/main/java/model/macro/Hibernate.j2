@@ -42,15 +42,33 @@
   {#
     Relations
   #}
-  {% if attr.is_relation and attr.forgein_key and attr.forgein_key_with_join_table  %}
+  {% if attr.is_relation and not attr.forgein_key_field %}
+      {# the parent side of the relation  #}
+      {% if attr.is_aggregation and attr.is_array %}
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "{{model.name|lower}}_to_{{attr.type|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{attr.type|lower}}_id"))
+      {% elif attr.is_aggregation and not attr.is_array %}
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
-  {% elif attr.is_relation and attr.forgein_key %}
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="fk_{{attr.forgein_key|lower}}")
-  {% elif attr.is_relation %}
+  @JoinColumn(name="{{attr.type|lower}}_id")
+      {% elif attr.is_composition and attr.is_array %}
   @OneToMany(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, orphanRemoval = true)
-  {% elif model.is_base and model.is_nested %}
+      {% elif attr.is_composition and not attr.is_array %}
+  @OneToOne(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, orphanRemoval = true)
+      {% endif %}
+  {% elif attr.is_relation and attr.forgein_key_field %}
+      {# the child side of the relation  #}
+      {% if attr.is_aggregation and attr.forgein_key_field.array %}
+  @ManyToMany(mappedBy = "{{attr.forgein_key_field.name}}", fetch = FetchType.LAZY)
+      {% elif attr.is_aggregation and not attr.forgein_key_field.array  %}
+  @OneToMany(mappedBy = "{{attr.forgein_key_field.name}}", fetch = FetchType.LAZY)
+      {% elif attr.is_composition and attr.forgein_key_field.array %}
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name="{{attr.type|lower}}_id")
+      {% elif attr.is_composition and not attr.forgein_key_field.array %}
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name="{{attr.type|lower}}_id")
+      {% endif %}
+  {% elif model.is_base and model.is_nested  %}
   @ElementCollection
   {% endif %}
 {% endmacro %}

@@ -5,52 +5,61 @@ package com.test.model;
 
 import java.util.*;
 import javax.persistence.*;
-import javax.validation.*;
+import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
 @Entity
-public class Project extends BaseType {
+public class Role {
 
-  @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
-  private Boolean archive;
+  @Id
+  @GeneratedValue(generator="optimized-sequence")
+  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+  private Long id;
 
-  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, orphanRemoval = true)
+  @NotNull
+  @JsonProperty(value = "name", required = true)
+  private String name;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name="project_id")
   @JsonIgnore
-  private Set<Role> roles = new LinkedHashSet<>();
+  private Project project;
 
 
 
   /**
-   * archive
+   * id
    */
-  public Boolean getArchive() {
-    return archive;
+  public Long getId() {
+    return id;
   }
 
-  public Project setArchive(Boolean archive) {
-    this.archive = archive;
+  public Role setId(Long id) {
+    this.id = id;
     return this;
   }
 
   /**
-   * roles
+   * name
    */
-  public Set<Role> getRoles() {
-    return roles;
+  public String getName() {
+    return name;
   }
 
-  public Project setRoles(Set<Role> roles) {
-    this.roles = roles;
+  public Role setName(String name) {
+    this.name = name;
     return this;
   }
 
-  public Project addRolesItem(Role rolesItem) {
-    this.roles.add(rolesItem);
-    return this;
+  /**
+   * project
+   */
+  public Project getProject() {
+    return project;
   }
 
-  public Project removeRolesItem(Role rolesItem) {
-    this.roles.remove(rolesItem);
+  public Role setProject(Project project) {
+    this.project = project;
     return this;
   }
 
@@ -64,13 +73,14 @@ public class Project extends BaseType {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Project project = (Project) o;
-    return Objects.equals(this.archive, project.archive);
+    Role role = (Role) o;
+    return Objects.equals(this.id, role.id) &&
+        Objects.equals(this.name, role.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(archive);
+    return Objects.hash(id, name);
   }
 
   @Override
@@ -94,9 +104,9 @@ public class Project extends BaseType {
     return ret;
   }
 
-  public static Project fromJson(String json)
+  public static Role fromJson(String json)
       throws com.test.util.Json.JsonException {
-    return com.test.util.Json.serializer().fromJson(json, Project.class);
+    return com.test.util.Json.serializer().fromJson(json, Role.class);
   }
 
 }

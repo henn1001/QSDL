@@ -31,6 +31,8 @@ public class Ticket {
   @JsonIgnore
   private Set<User> users = new LinkedHashSet<>();
 
+
+
   /**
    * id
    */
@@ -100,6 +102,8 @@ public class Ticket {
     this.users.remove(usersItem);
     return this;
   }
+
+
 
   @Override
   public boolean equals(Object o) {

@@ -47,22 +47,26 @@ public class {{model.name}}{% if model.extends %} extends {{model.extends}}{% en
   {% else %}
   @JsonProperty(value = "{{attr.json_key}}"{% if attr.is_required %}, required = true{% endif %}{% if attr.is_read_only %}, access = JsonProperty.Access.READ_ONLY{% endif %}{% if attr.is_write_only %}, access = JsonProperty.Access.WRITE_ONLY{% endif %})
   {% endif %}
-  {% if attr.is_array %}
+  {% if attr.is_array and attr.is_relation %}
+  private Set<{{attr.type}}> {{attr.name}} = new LinkedHashSet<>();
+  {% elif attr.is_array %}
   private List<{{attr.type}}> {{attr.name}} = new ArrayList<>();
   {% else %}
   private {{attr.type}} {{attr.name}};
   {% endif %}
 
 {% endfor %}
+
+
 {% for attr in model.attributes  %}
   /**
    * {{attr.name}}
    */
-  public {% if attr.is_array %}List<{% endif %}{{attr.type}}{% if attr.is_array %}>{% endif %} {{attr.getter}}() {
+  public {% if attr.is_array and attr.is_relation %}Set<{% elif attr.is_array %}List<{% endif %}{{attr.type}}{% if attr.is_array %}>{% endif %} {{attr.getter}}() {
     return {{attr.name}};
   }
 
-  public {{model.name}} {{attr.setter}}({% if attr.is_array %}List<{% endif %}{{attr.type}}{% if attr.is_array %}>{% endif %} {{attr.name}}) {
+  public {{model.name}} {{attr.setter}}({% if attr.is_array and attr.is_relation %}Set<{% elif attr.is_array %}List<{% endif %}{{attr.type}}{% if attr.is_array %}>{% endif %} {{attr.name}}) {
     this.{{attr.name}} = {{attr.name}};
     return this;
   }
@@ -80,6 +84,7 @@ public class {{model.name}}{% if model.extends %} extends {{model.extends}}{% en
   {% endif %}
 
 {% endfor %}
+
 
   @Override
   public boolean equals(Object o) {
@@ -131,28 +136,6 @@ public class {{model.name}}{% if model.extends %} extends {{model.extends}}{% en
       throws {{base_package}}.util.Json.JsonException {
     return {{base_package}}.util.Json.serializer().fromJson(json, {{model.name}}.class);
   }
-  {#
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class {{model.name}} {\n");
-    {% for attr in model.attributes %}
-    sb.append("    {{attr.name}}: ").append(toIndentedString({{attr.name}})).append("\n");
-    {% endfor %}
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
-    }
-    return o.toString().replace("\n", "\n    ");
-  }#}
 
 }
 {% endif %}

@@ -55,8 +55,7 @@ class _Attribute:
     is_aggregation: bool = False
     is_relation: bool = False
 
-    forgein_key: str = False
-    forgein_key_with_join_table: bool = False
+    forgein_key_field: Field = None
 
     getter: str = None
     setter: str = None
@@ -164,17 +163,26 @@ class Model:
 
     def _add_foreign_keys(self):
 
+        # get the fields of all parents that
+        # use self as aggregation or composition
         fields = util.get_parent_fields(self._ref)
 
         for p_field in fields:
             parent = p_field.parent
+            
+            # create a new field for self that represents the other side
+            # of the reference
             fk_field = Field()
-            fk_field.name = stringcase.snakecase(parent.name + "s")
-            fk_field.value = Scalar(name=parent.name)
+
+            # aggregations 
+            fk_field.name = stringcase.snakecase(parent.name)
+            fk_field.name = fk_field.name + "s" if p_field.is_aggregation else fk_field.name
+
+            fk_field.value = parent
             fk_field.array = p_field.is_aggregation
+            fk_field.is_aggregation = p_field.is_aggregation
+            fk_field.is_composition = p_field.is_composition
 
             attribute = _Attribute(fk_field)
-            attribute.is_relation = True
-            attribute.forgein_key = parent.name
-            attribute.forgein_key_with_join_table = p_field.is_aggregation
+            attribute.forgein_key_field = p_field
             self.attributes.append(attribute)

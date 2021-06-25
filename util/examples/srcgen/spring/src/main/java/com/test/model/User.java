@@ -16,12 +16,15 @@ public class User {
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
   private Long id;
 
-  @JsonProperty(value = "name")
+  @NotNull
+  @JsonProperty(value = "name", required = true)
   private String name;
 
   @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
   @JsonIgnore
   private Set<Ticket> tickets = new LinkedHashSet<>();
+
+
 
   /**
    * id
@@ -68,6 +71,8 @@ public class User {
     this.tickets.remove(ticketsItem);
     return this;
   }
+
+
 
   @Override
   public boolean equals(Object o) {

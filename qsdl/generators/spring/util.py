@@ -229,7 +229,7 @@ def has_aggregation(entity: Object) -> bool:
 
         for field in fields:
 
-            if field.is_composition or field.is_aggregation:
+            if field.is_aggregation:
                 ret = True
                 break
 

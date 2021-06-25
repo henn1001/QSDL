@@ -23,6 +23,8 @@ public class TicketList {
   @JsonProperty(value = "total_count")
   private Long totalCount;
 
+
+
   /**
    * items
    */
@@ -68,6 +70,7 @@ public class TicketList {
     this.totalCount = totalCount;
     return this;
   }
+
 
 
   @Override

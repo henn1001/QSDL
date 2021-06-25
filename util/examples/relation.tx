@@ -34,12 +34,17 @@ base BaseType {
 // NameSpace Management
 type Project extends BaseType @namespace(value:"Management") {
     archive: Boolean @writeOnly
-    //users: [User] @composition
+    roles: [Role] @composition
+}
+
+type Role @namespace(value:"Management") {
+    id: ID! @readOnly
+    name: String!
 }
 
 type User @namespace(value:"Management"){
     id: ID! @readOnly
-    name: String
+    name: String!
 }
 
 

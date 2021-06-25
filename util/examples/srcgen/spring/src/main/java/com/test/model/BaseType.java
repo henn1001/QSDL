@@ -44,6 +44,8 @@ public class BaseType {
   @JsonProperty(value = "meta_inf")
   private Object metaInf;
 
+
+
   /**
    * id
    */
@@ -139,6 +141,7 @@ public class BaseType {
     this.metaInf = metaInf;
     return this;
   }
+
 
 
   @Override
