@@ -3,14 +3,14 @@
  */
 package com.test.service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
 
 import com.test.constant.AppError;
 import com.test.exception.ApiException;
@@ -24,6 +24,9 @@ public class ProjectService {
 
   @javax.annotation.Resource
   private ProjectRepository projectRepository;
+
+  @Autowired
+  EntityManager entityManager;
 
   @PostConstruct
   private void init() {

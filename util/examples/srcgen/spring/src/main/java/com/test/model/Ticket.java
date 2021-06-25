@@ -5,16 +5,17 @@ package com.test.model;
 
 import java.util.*;
 import javax.persistence.*;
+import javax.validation.*;
 import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
 @Entity
 public class Ticket {
 
-  @NotNull
   @Id
-  @JsonProperty(value = "number", required = true)
-  private Long number;
+  @GeneratedValue(generator="optimized-sequence")
+  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+  private Long id;
 
   @JsonProperty(value = "title")
   private String title;
@@ -25,19 +26,20 @@ public class Ticket {
   @JsonProperty(value = "status")
   private Status status;
 
-  @Column(name="fk_project")
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
   @JsonIgnore
-  private Long projectId;
+  private Set<User> users = new LinkedHashSet<>();
 
   /**
-   * number
+   * id
    */
-  public Long getNumber() {
-    return number;
+  public Long getId() {
+    return id;
   }
 
-  public Ticket setNumber(Long number) {
-    this.number = number;
+  public Ticket setId(Long id) {
+    this.id = id;
     return this;
   }
 
@@ -78,17 +80,26 @@ public class Ticket {
   }
 
   /**
-   * projectId
+   * users
    */
-  public Long getProjectId() {
-    return projectId;
+  public Set<User> getUsers() {
+    return users;
   }
 
-  public Ticket setProjectId(Long projectId) {
-    this.projectId = projectId;
+  public Ticket setUsers(Set<User> users) {
+    this.users = users;
     return this;
   }
 
+  public Ticket addUsersItem(User usersItem) {
+    this.users.add(usersItem);
+    return this;
+  }
+
+  public Ticket removeUsersItem(User usersItem) {
+    this.users.remove(usersItem);
+    return this;
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -99,16 +110,15 @@ public class Ticket {
       return false;
     }
     Ticket ticket = (Ticket) o;
-    return Objects.equals(this.number, ticket.number) &&
+    return Objects.equals(this.id, ticket.id) &&
         Objects.equals(this.title, ticket.title) &&
         Objects.equals(this.body, ticket.body) &&
-        Objects.equals(this.status, ticket.status) &&
-        Objects.equals(this.projectId, ticket.projectId);
+        Objects.equals(this.status, ticket.status);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(number, title, body, status, projectId);
+    return Objects.hash(id, title, body, status);
   }
 
   @Override

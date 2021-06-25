@@ -36,10 +36,12 @@ public class ProjectList {
   }
 
   public ProjectList addItemsItem(Project itemsItem) {
-    if (this.items == null) {
-      this.items = new ArrayList<>();
-    }
     this.items.add(itemsItem);
+    return this;
+  }
+
+  public ProjectList removeItemsItem(Project itemsItem) {
+    this.items.remove(itemsItem);
     return this;
   }
 

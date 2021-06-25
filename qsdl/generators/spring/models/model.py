@@ -56,6 +56,7 @@ class _Attribute:
     is_relation: bool = False
 
     forgein_key: str = False
+    forgein_key_with_join_table: bool = False
 
     getter: str = None
     setter: str = None
@@ -163,14 +164,17 @@ class Model:
 
     def _add_foreign_keys(self):
 
-        parents = util.get_parents(self._ref)
+        fields = util.get_parent_fields(self._ref)
 
-        for parent in parents:
+        for p_field in fields:
+            parent = p_field.parent
             fk_field = Field()
-            fk_field.name = stringcase.snakecase(parent.name + util.get_id_for_repo(parent))
-            fk_field.value = Scalar(name=util.custom_types["ID"])
+            fk_field.name = stringcase.snakecase(parent.name + "s")
+            fk_field.value = Scalar(name=parent.name)
+            fk_field.array = p_field.is_aggregation
 
             attribute = _Attribute(fk_field)
             attribute.is_relation = True
             attribute.forgein_key = parent.name
+            attribute.forgein_key_with_join_table = p_field.is_aggregation
             self.attributes.append(attribute)

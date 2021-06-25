@@ -7,7 +7,8 @@ Tests:
   -  extending from a base
   -  read & writeOnly
   -  compositions
-  -  aggregations
+  -  object without a id
+  -  object with a id that has a different name
   -  usage of enums and generic json object
 """
 
@@ -34,20 +35,19 @@ base BaseType {
 // NameSpace Management
 type Project extends BaseType @namespace(value:"Management") {
     archive: Boolean @writeOnly
-    //users: [User] @composition
+    tickets: [Ticket] @composition
+    roles: [Role] @composition
 }
 
-type User @namespace(value:"Management"){
-    id: ID! @readOnly
-    name: String
+type Role @namespace(value:"Management"){
+    role: String
 }
 
 
 // NameSpace Incident
 type Ticket @namespace(value:"Incident"){
-    id: ID! @readOnly
+    number: ID!
     title: String
     body: String
     status: Status
-    users: [User] @aggregation
 }

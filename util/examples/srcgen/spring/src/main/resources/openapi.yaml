@@ -9,8 +9,7 @@ info:
       -  extending from a base
       -  read & writeOnly
       -  compositions
-      -  object without a id
-      -  object with a id that has a different name
+      -  aggregations
       -  usage of enums and generic json object
     
   version: '1.0'
@@ -179,14 +178,14 @@ paths:
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/projects/{project_id}/roles':
+  '/tickets/{ticket_id}/users':
     get:
       tags:
         - Management
-      summary: List Roles
-      operationId: getRoles
+      summary: List Users
+      operationId: getUsersForTicket
       parameters:
-        - name: project_id
+        - name: ticket_id
           in: path
           required: true
           schema:
@@ -220,16 +219,121 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RoleList'
+                $ref: '#/components/schemas/UserList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets/{ticket_id}/users/{id}/add':
+    post:
+      tags:
+        - Management
+      summary: Add User
+      operationId: addUserToTicket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets/{ticket_id}/users/{id}/remove':
+    post:
+      tags:
+        - Management
+      summary: Remove User
+      operationId: removeUserFromTicket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/users':
+    get:
+      tags:
+        - Management
+      summary: List Users
+      operationId: getUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
         default:
           $ref: '#/components/responses/DefaultError'
     post:
       tags:
         - Management
-      summary: Create a Role
-      operationId: createRole
+      summary: Create a User
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/users/{id}':
+    get:
+      tags:
+        - Management
+      summary: Read the specified User
+      operationId: getUser
       parameters:
-        - name: project_id
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    put:
+      tags:
+        - Management
+      summary: Replace the specified User
+      operationId: replaceUser
+      parameters:
+        - name: id
           in: path
           required: true
           schema:
@@ -240,51 +344,66 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Role'
+              $ref: '#/components/schemas/User'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Role'
+                $ref: '#/components/schemas/User'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/projects/{project_id}/tickets':
-    get:
+    patch:
       tags:
-        - Incident
-      summary: List Tickets
-      operationId: getTickets
+        - Management
+      summary: Update the specified User
+      operationId: updateUser
       parameters:
-        - name: project_id
+        - name: id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - Management
+      summary: Delete the specified User
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
           schema:
             type: integer
             format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets':
+    get:
+      tags:
+        - Incident
+      summary: List Tickets
+      operationId: getTickets
       responses:
         '200':
           description: OK
@@ -299,13 +418,6 @@ paths:
         - Incident
       summary: Create a Ticket
       operationId: createTicket
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
       requestBody:
         required: true
         content:
@@ -321,20 +433,14 @@ paths:
                 $ref: '#/components/schemas/Ticket'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/projects/{project_id}/tickets/{number}':
+  '/tickets/{id}':
     get:
       tags:
         - Incident
       summary: Read the specified Ticket
       operationId: getTicket
       parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: number
+        - name: id
           in: path
           required: true
           schema:
@@ -355,13 +461,7 @@ paths:
       summary: Replace the specified Ticket
       operationId: replaceTicket
       parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: number
+        - name: id
           in: path
           required: true
           schema:
@@ -388,13 +488,7 @@ paths:
       summary: Update the specified Ticket
       operationId: updateTicket
       parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: number
+        - name: id
           in: path
           required: true
           schema:
@@ -421,13 +515,7 @@ paths:
       summary: Delete the specified Ticket
       operationId: deleteTicket
       parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: number
+        - name: id
           in: path
           required: true
           schema:
@@ -518,7 +606,7 @@ components:
               type: boolean
               writeOnly: true
 
-    RoleList:
+    UserList:
       required:
         - items
       type: object
@@ -526,17 +614,23 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/Role'
+            $ref: '#/components/schemas/User'
         next_cursor:
           type: string
         total_count:
           type: integer
           format: int64
 
-    Role:
+    User:
+      required:
+        - id
       type: object
       properties:
-        role:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
           type: string
 
     TicketList:
@@ -556,12 +650,13 @@ components:
 
     Ticket:
       required:
-        - number
+        - id
       type: object
       properties:
-        number:
+        id:
           type: integer
           format: int64
+          readOnly: true
         title:
           type: string
         body:

@@ -10,12 +10,12 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
 
-public class RoleList {
+public class UserList {
 
   @NotNull
   @Valid
   @JsonProperty(value = "items", required = true)
-  private List<Role> items = new ArrayList<>();
+  private List<User> items = new ArrayList<>();
 
   @JsonProperty(value = "next_cursor")
   private String nextCursor;
@@ -26,20 +26,22 @@ public class RoleList {
   /**
    * items
    */
-  public List<Role> getItems() {
+  public List<User> getItems() {
     return items;
   }
 
-  public RoleList setItems(List<Role> items) {
+  public UserList setItems(List<User> items) {
     this.items = items;
     return this;
   }
 
-  public RoleList addItemsItem(Role itemsItem) {
-    if (this.items == null) {
-      this.items = new ArrayList<>();
-    }
+  public UserList addItemsItem(User itemsItem) {
     this.items.add(itemsItem);
+    return this;
+  }
+
+  public UserList removeItemsItem(User itemsItem) {
+    this.items.remove(itemsItem);
     return this;
   }
 
@@ -50,7 +52,7 @@ public class RoleList {
     return nextCursor;
   }
 
-  public RoleList setNextCursor(String nextCursor) {
+  public UserList setNextCursor(String nextCursor) {
     this.nextCursor = nextCursor;
     return this;
   }
@@ -62,7 +64,7 @@ public class RoleList {
     return totalCount;
   }
 
-  public RoleList setTotalCount(Long totalCount) {
+  public UserList setTotalCount(Long totalCount) {
     this.totalCount = totalCount;
     return this;
   }
@@ -76,10 +78,10 @@ public class RoleList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    RoleList rolelist = (RoleList) o;
-    return Objects.equals(this.items, rolelist.items) &&
-        Objects.equals(this.nextCursor, rolelist.nextCursor) &&
-        Objects.equals(this.totalCount, rolelist.totalCount);
+    UserList userlist = (UserList) o;
+    return Objects.equals(this.items, userlist.items) &&
+        Objects.equals(this.nextCursor, userlist.nextCursor) &&
+        Objects.equals(this.totalCount, userlist.totalCount);
   }
 
   @Override
@@ -108,9 +110,9 @@ public class RoleList {
     return ret;
   }
 
-  public static RoleList fromJson(String json)
+  public static UserList fromJson(String json)
       throws com.test.util.Json.JsonException {
-    return com.test.util.Json.serializer().fromJson(json, RoleList.class);
+    return com.test.util.Json.serializer().fromJson(json, UserList.class);
   }
 
 }

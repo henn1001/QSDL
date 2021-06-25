@@ -20,6 +20,27 @@
         .setItems(items);
 
     return ret;
+  {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
+    {# 
+     ########################################################################################
+      Create a entity.
+    #}
+    // confirm existence of parent
+    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+
+    // link to parent
+    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+    {{ operation.domain_object.name }} {{ operation.domain_object.name|lower }} = entityManager.getReference({{ operation.domain_object.name }}.class, {{ operation.path_parameters[1].name }});
+    
+    {% if operation.path.endswith('/add') %}
+    {{ operation.domain_parent.name|lower }}.add{{ operation.domain_object.name }}sItem({{ operation.domain_object.name | lower }});
+    {% elif operation.path.endswith('/remove') %}
+    {{ operation.domain_parent.name|lower }}.remove{{ operation.domain_object.name }}sItem({{ operation.domain_object.name | lower }});
+    {% endif %}
+
+    {{ operation.domain_parent.name|lower }}Repository.save({{ operation.domain_parent.name|lower }});
+
+    return null;
   {% elif operation.method == "post" %}
     {# 
      ########################################################################################
@@ -30,7 +51,8 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     // add parent relation
-    body.set{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+    body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
 
     {% endif %}
     {{api.name}} ret = {{api.name|lower}}Repository.save(body);
@@ -64,7 +86,8 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     // add parent relation
-    body.set{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+    body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
 
     {% endif %}
     {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
@@ -91,7 +114,8 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     // add parent relation
-    body.set{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+    body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
 
     {% endif %}
     {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
@@ -122,6 +146,9 @@
       throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
+    {% if api.has_aggregation %}
+    {{api.name|lower}}Repository.removeRelations({{operation.path_parameters[-1].name}});
+    {% endif %}
     {{api.name|lower}}Repository.deleteById({{operation.path_parameters[-1].name}});
 
     return null;

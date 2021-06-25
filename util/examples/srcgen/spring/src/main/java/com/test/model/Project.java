@@ -5,7 +5,6 @@ package com.test.model;
 
 import java.util.*;
 import javax.persistence.*;
-import javax.validation.*;
 import com.fasterxml.jackson.annotation.*;
 
 @Entity
@@ -13,16 +12,6 @@ public class Project extends BaseType {
 
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
   private Boolean archive;
-
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name="fk_project")
-  @JsonIgnore
-  private List<Ticket> tickets = new ArrayList<>();
-
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name="fk_project")
-  @JsonIgnore
-  private List<Role> roles = new ArrayList<>();
 
   /**
    * archive
@@ -36,46 +25,6 @@ public class Project extends BaseType {
     return this;
   }
 
-  /**
-   * tickets
-   */
-  public List<Ticket> getTickets() {
-    return tickets;
-  }
-
-  public Project setTickets(List<Ticket> tickets) {
-    this.tickets = tickets;
-    return this;
-  }
-
-  public Project addTicketsItem(Ticket ticketsItem) {
-    if (this.tickets == null) {
-      this.tickets = new ArrayList<>();
-    }
-    this.tickets.add(ticketsItem);
-    return this;
-  }
-
-  /**
-   * roles
-   */
-  public List<Role> getRoles() {
-    return roles;
-  }
-
-  public Project setRoles(List<Role> roles) {
-    this.roles = roles;
-    return this;
-  }
-
-  public Project addRolesItem(Role rolesItem) {
-    if (this.roles == null) {
-      this.roles = new ArrayList<>();
-    }
-    this.roles.add(rolesItem);
-    return this;
-  }
-
 
   @Override
   public boolean equals(Object o) {
@@ -86,14 +35,12 @@ public class Project extends BaseType {
       return false;
     }
     Project project = (Project) o;
-    return Objects.equals(this.archive, project.archive) &&
-        Objects.equals(this.tickets, project.tickets) &&
-        Objects.equals(this.roles, project.roles);
+    return Objects.equals(this.archive, project.archive);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(archive, tickets, roles);
+    return Objects.hash(archive);
   }
 
   @Override

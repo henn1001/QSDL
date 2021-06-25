@@ -463,7 +463,7 @@ def operation_builder(
 
     elif method == "add":
         name = "add" + name_builder(obj, parent_obj if duplicate else None, "To")
-        path = path_builder(obj, parent_obj, False) + "/add"
+        path = path_builder(obj, parent_obj, True) + "/add"
 
         operation.name = name
         operation.value = None
@@ -472,14 +472,14 @@ def operation_builder(
 
         operation.summary = f"Add {obj.name}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, False)
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
         operation.query_parameters = []
-        operation.body_parameters = body_argument_builder(operation, obj, True)
+        operation.body_parameters = [] # body_argument_builder(operation, obj, True)
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     elif method == "remove":
         name = "remove" + name_builder(obj, parent_obj if duplicate else None, "From")
-        path = path_builder(obj, parent_obj, False) + "/remove"
+        path = path_builder(obj, parent_obj, True) + "/remove"
 
         operation.name = name
         operation.value = None
@@ -488,9 +488,9 @@ def operation_builder(
 
         operation.summary = f"Remove {obj.name}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, False)
+        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
         operation.query_parameters = []
-        operation.body_parameters = body_argument_builder(operation, obj, True)
+        operation.body_parameters = [] # body_argument_builder(operation, obj, True)
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     return operation

@@ -11,9 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
@@ -42,108 +40,103 @@ public class TicketController {
   }
 
   /**
-   * GET /projects/{project_id}/tickets : List Tickets
+   * GET /tickets : List Tickets
    *
-   * @param projectId (required)
+
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
   @GetMapping(
-    value = "/projects/{project_id}/tickets",
+    value = "/tickets",
     produces = { "application/json" }
   )
-  public ResponseEntity<TicketList> getTickets(@PathVariable("project_id") Long projectId, ApiPageable pageable) throws Exception {
-    TicketList response = TicketService.getTickets(projectId, pageable);
+  public ResponseEntity<TicketList> getTickets(ApiPageable pageable) throws Exception {
+    TicketList response = TicketService.getTickets(pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
-   * POST /projects/{project_id}/tickets : Create a Ticket
+   * POST /tickets : Create a Ticket
    *
-   * @param projectId (required)
    * @param body
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
   @PostMapping(
-    value = "/projects/{project_id}/tickets",
+    value = "/tickets",
     produces = { "application/json" },
     consumes = { "application/json" }
   )
-  public ResponseEntity<Ticket> createTicket(@PathVariable("project_id") Long projectId, @Valid @RequestBody Ticket body) throws Exception {
-    Ticket response = TicketService.createTicket(projectId, body);
+  public ResponseEntity<Ticket> createTicket(@Valid @RequestBody Ticket body) throws Exception {
+    Ticket response = TicketService.createTicket(body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
-   * GET /projects/{project_id}/tickets/{number} : Read the specified Ticket
+   * GET /tickets/{id} : Read the specified Ticket
    *
-   * @param projectId (required)
-   * @param number (required)
+   * @param id (required)
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
   @GetMapping(
-    value = "/projects/{project_id}/tickets/{number}",
+    value = "/tickets/{id}",
     produces = { "application/json" }
   )
-  public ResponseEntity<Ticket> getTicket(@PathVariable("project_id") Long projectId, @PathVariable("number") Long number) throws Exception {
-    Ticket response = TicketService.getTicket(projectId, number);
+  public ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) throws Exception {
+    Ticket response = TicketService.getTicket(id);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
-   * PUT /projects/{project_id}/tickets/{number} : Replace the specified Ticket
+   * PUT /tickets/{id} : Replace the specified Ticket
    *
-   * @param projectId (required)
-   * @param number (required)
+   * @param id (required)
    * @param body
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
   @PutMapping(
-    value = "/projects/{project_id}/tickets/{number}",
+    value = "/tickets/{id}",
     produces = { "application/json" },
     consumes = { "application/json" }
   )
-  public ResponseEntity<Ticket> replaceTicket(@PathVariable("project_id") Long projectId, @PathVariable("number") Long number, @Valid @RequestBody Ticket body) throws Exception {
-    Ticket response = TicketService.replaceTicket(projectId, number, body);
+  public ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @Valid @RequestBody Ticket body) throws Exception {
+    Ticket response = TicketService.replaceTicket(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
-   * PATCH /projects/{project_id}/tickets/{number} : Update the specified Ticket
+   * PATCH /tickets/{id} : Update the specified Ticket
    *
-   * @param projectId (required)
-   * @param number (required)
+   * @param id (required)
    * @param body
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
   @PatchMapping(
-    value = "/projects/{project_id}/tickets/{number}",
+    value = "/tickets/{id}",
     produces = { "application/json" },
     consumes = { "application/json" }
   )
-  public ResponseEntity<Ticket> updateTicket(@PathVariable("project_id") Long projectId, @PathVariable("number") Long number, @RequestBody Ticket body) throws Exception {
+  public ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) throws Exception {
     Validator.validateExRequired(body);
-    Ticket response = TicketService.updateTicket(projectId, number, body);
+    Ticket response = TicketService.updateTicket(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
-   * DELETE /projects/{project_id}/tickets/{number} : Delete the specified Ticket
+   * DELETE /tickets/{id} : Delete the specified Ticket
    *
-   * @param projectId (required)
-   * @param number (required)
+   * @param id (required)
    * @return OK (status code 200)
    *         or Unexpected error (status code default)
    */
   @DeleteMapping(
-    value = "/projects/{project_id}/tickets/{number}"
+    value = "/tickets/{id}"
   )
-  public ResponseEntity<Void> deleteTicket(@PathVariable("project_id") Long projectId, @PathVariable("number") Long number) throws Exception {
-    TicketService.deleteTicket(projectId, number);
+  public ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) throws Exception {
+    TicketService.deleteTicket(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

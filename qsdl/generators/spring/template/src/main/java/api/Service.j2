@@ -5,14 +5,14 @@
  */
 package {{base_package}}.service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
 
 import {{base_package}}.constant.AppError;
 import {{base_package}}.exception.ApiException;
@@ -36,13 +36,16 @@ public class {{api.name}}Service {
   private {{api.name}}Repository {{api.name|lower}}Repository;
 {% endif %}
 
+  @Autowired
+  EntityManager entityManager;
+
   @PostConstruct
   private void init() {
 
   }
 {% if database == "hibernate" and api.domain_parents %}
-
 {% for parent in api.domain_parents %}
+
   private void validate{{parent.name}}Id(Long id) throws Exception {
     if (!{{parent.name|lower}}Repository.existsById(id)) {
       throw new ApiException(AppError.NOT_FOUND, "{{parent.name}} " + id.toString() + " does not exist");
@@ -52,6 +55,9 @@ public class {{api.name}}Service {
 {% endif %}
 
 {% for operation in api.operations %}
+  {% if operation.method == "delete" and api.has_aggregation %}
+  @org.springframework.transaction.annotation.Transactional
+  {% endif %}
   public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws Exception {
 
   {% if database == "hibernate" and api.domain_object %}

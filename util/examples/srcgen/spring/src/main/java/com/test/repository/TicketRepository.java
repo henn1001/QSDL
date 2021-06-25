@@ -3,8 +3,7 @@
  */
 package com.test.repository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,14 +15,7 @@ import com.test.model.*;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-  @Query(value = "select * from TICKET where NUMBER < :#{#pageable.cursor} order by NUMBER desc limit :#{#pageable.limit}", nativeQuery = true)
+  @Query(value = "select * from TICKET where ID < :#{#pageable.cursor} order by ID desc limit :#{#pageable.limit}", nativeQuery = true)
   public List<Ticket> findAll(@Param("pageable") ApiPageable pageable);
-
-  @Query(value = "select * from TICKET where FK_PROJECT = :projectId and NUMBER < :#{#pageable.cursor} order by NUMBER desc limit :#{#pageable.limit}", nativeQuery = true)
-  public List<Ticket> findByProjectId(@Param("projectId") Long projectId, @Param("pageable") ApiPageable pageable);
-
-  public Optional<Ticket> findByProjectIdAndNumber(Long projectId, Long number);
-
-  public Boolean existsByProjectIdAndNumber(Long projectId, Long number);
 
 }

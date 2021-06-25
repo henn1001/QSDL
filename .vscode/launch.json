@@ -52,7 +52,7 @@
             "request": "launch",
             "module": "qsdl",
             "args": [
-                "util/examples/input.tx",
+                "util/examples/relation.tx",
                 "-g",
                 "spring",
                 "-o",

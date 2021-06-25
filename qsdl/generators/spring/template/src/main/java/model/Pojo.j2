@@ -69,10 +69,12 @@ public class {{model.name}}{% if model.extends %} extends {{model.extends}}{% en
   {% if attr.is_array %}
 
   public {{model.name}} add{{attr.name|capitalize}}Item({{attr.type}} {{attr.name}}Item) {
-    if (this.{{attr.name}} == null) {
-      this.{{attr.name}} = new ArrayList<>();
-    }
     this.{{attr.name}}.add({{attr.name}}Item);
+    return this;
+  }
+
+  public {{model.name}} remove{{attr.name|capitalize}}Item({{attr.type}} {{attr.name}}Item) {
+    this.{{attr.name}}.remove({{attr.name}}Item);
     return this;
   }
   {% endif %}

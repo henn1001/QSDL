@@ -248,8 +248,8 @@ class TestDirective:
         assert "ignored" in openapi["components"]["schemas"]["Foo"]["properties"]
 
         assert "/foos/{foo_field}/bars" in openapi["paths"]
-        assert "/foos/{foo_field}/bars/add" in openapi["paths"]
-        assert "/foos/{foo_field}/bars/remove" in openapi["paths"]
+        assert "/foos/{foo_field}/bars/{field}/add" in openapi["paths"]
+        assert "/foos/{foo_field}/bars/{field}/remove" in openapi["paths"]
 
     def test_directive_08_positive(self):
         """Verify usage of @path"""

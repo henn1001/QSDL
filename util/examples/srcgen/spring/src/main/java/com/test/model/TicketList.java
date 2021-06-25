@@ -36,10 +36,12 @@ public class TicketList {
   }
 
   public TicketList addItemsItem(Ticket itemsItem) {
-    if (this.items == null) {
-      this.items = new ArrayList<>();
-    }
     this.items.add(itemsItem);
+    return this;
+  }
+
+  public TicketList removeItemsItem(Ticket itemsItem) {
+    this.items.remove(itemsItem);
     return this;
   }
 

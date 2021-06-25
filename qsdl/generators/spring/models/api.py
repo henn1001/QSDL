@@ -209,6 +209,7 @@ class Api:
 
     domain_object: Object = None
     domain_parents: List[Object] = field(default_factory=list)
+    has_aggregation: bool = False
 
     def __post_init__(self):
 
@@ -223,6 +224,7 @@ class Api:
 
         self.domain_object = domain_object
         self.domain_parents = domain_parents
+        self.has_aggregation = util.has_aggregation(domain_object)
 
         self._add_operations(self._ref.operations)
 

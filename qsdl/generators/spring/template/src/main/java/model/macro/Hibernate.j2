@@ -42,17 +42,15 @@
   {#
     Relations
   #}
-  {% if attr.is_relation or (attr.is_base and attr.is_nested) %}
-    {% if attr.forgein_key %}
-  @Column(name="fk_{{attr.forgein_key|lower}}")
-    {% elif attr.is_array %}
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name="fk_{{model.name|lower}}")
-    {% else %}
-  @OneToOne({% if attr.is_relation %}mappedBy = "{{model.name|lower}}", {% endif %}cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name="fk_{{model.name|lower}}")
-    {% endif %}
-  {% elif attr.is_array and ( model.is_object and model.is_crud or model.is_nested) %}
+  {% if attr.is_relation and attr.forgein_key and attr.forgein_key_with_join_table  %}
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
+  {% elif attr.is_relation and attr.forgein_key %}
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name="fk_{{attr.forgein_key|lower}}")
+  {% elif attr.is_relation %}
+  @OneToMany(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, orphanRemoval = true)
+  {% elif model.is_base and model.is_nested %}
   @ElementCollection
   {% endif %}
 {% endmacro %}

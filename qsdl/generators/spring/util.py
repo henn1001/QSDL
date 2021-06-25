@@ -212,19 +212,42 @@ def has_required(entity: Union[Base, Object]) -> bool:
 
     return ret
 
-
-def has_relation(entity: Union[Base, Object]) -> bool:
-    """Checks if the Base or Object has a relation.
+def has_aggregation(entity: Object) -> bool:
+    """Checks if the Object is aggregated somewhere.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
+        entity (Object): entity.Object.
 
     Returns:
         bool: Returns True on detection.
     """
     ret = False
 
-    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
+    if entity._tx_fqn in ["entity.Object"]:
+
+        fields = get_parent_fields(entity)
+
+        for field in fields:
+
+            if field.is_composition or field.is_aggregation:
+                ret = True
+                break
+
+    return ret
+
+
+def has_relation(entity: Object) -> bool:
+    """Checks if the Object has a relation.
+
+    Args:
+        entity (Object): entity.Object.
+
+    Returns:
+        bool: Returns True on detection.
+    """
+    ret = False
+
+    if entity._tx_fqn in ["entity.Object"]:
 
         for field in entity.fields:
 
@@ -294,6 +317,28 @@ def is_nested(entity: object) -> bool:
                 return True
 
     return False
+
+def is_aggregation(entity: Object, parent: Object) -> bool:
+    """Checks if the first Object is aggregated in the second Object.
+
+    Args:
+        entity (Object): entity.Object.
+        parent (Object): entity.Object.
+
+    Returns:
+        bool: Returns True on detection.
+    """
+    ret = False
+
+    if entity._tx_fqn in ["entity.Object"] and parent._tx_fqn in ["entity.Object"]:
+
+        for field in parent.fields:
+
+            if field.is_aggregation and field.value == entity:
+                ret = True
+                break
+
+    return ret
 
 
 def get_enum_values(entity: Enum) -> List[Enum]:
@@ -370,6 +415,25 @@ def get_parents(obj: Object) -> List[Field]:
     parents = [x.parent for x in fields if x.value == obj and x.parent._tx_fqn == "entity.Object"]
 
     return parents
+
+
+def get_parent_fields(obj: Object) -> List[Field]:
+    """Returns all Objects whos Field value is this Object.
+
+    Args:
+        schema (Schema): The QSDL schema model.
+        obj (Object): entity.Object
+
+    Returns:
+        List[Field]: [entity.Field]
+    """
+    fields = []
+
+    fields = xtx.get_children_of_type("Field", schema)
+
+    fields = [x for x in fields if x.value == obj and x.parent._tx_fqn == "entity.Object"]
+
+    return fields
 
 
 def get_filtered_fields_as_list(entity: Object) -> List[Field]:

@@ -597,7 +597,7 @@ paths:
                 $ref: '#/components/schemas/UserList'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/roles/{role_role}/users/add':
+  '/roles/{role_role}/users/{name}/add':
     post:
       tags:
         - Management
@@ -610,22 +610,18 @@ paths:
           schema:
             type: integer
             format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: integer
-                  format: int64
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/roles/{role_role}/users/remove':
+  '/roles/{role_role}/users/{name}/remove':
     post:
       tags:
         - Management
@@ -638,16 +634,12 @@ paths:
           schema:
             type: integer
             format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: integer
-                  format: int64
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
@@ -1042,7 +1034,7 @@ paths:
                 $ref: '#/components/schemas/MilestoneList'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/tickets/{ticket_number}/milestones/add':
+  '/tickets/{ticket_number}/milestones/{milestone}/add':
     post:
       tags:
         - Incident
@@ -1055,22 +1047,18 @@ paths:
           schema:
             type: integer
             format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                milestone:
-                  type: integer
-                  format: int64
+        - name: milestone
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/tickets/{ticket_number}/milestones/remove':
+  '/tickets/{ticket_number}/milestones/{milestone}/remove':
     post:
       tags:
         - Incident
@@ -1083,16 +1071,12 @@ paths:
           schema:
             type: integer
             format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                milestone:
-                  type: integer
-                  format: int64
+        - name: milestone
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: OK
