@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @MappedSuperclass
-public class BaseType {
+public class BaseType extends AbstractPersistentObject {
 
   @Id
   @GeneratedValue(generator="optimized-sequence")
@@ -143,51 +143,6 @@ public class BaseType {
   }
 
 
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    BaseType basetype = (BaseType) o;
-    return Objects.equals(this.id, basetype.id) &&
-        Objects.equals(this.name, basetype.name) &&
-        Objects.equals(this.description, basetype.description) &&
-        Objects.equals(this.creationBy, basetype.creationBy) &&
-        Objects.equals(this.creationDate, basetype.creationDate) &&
-        Objects.equals(this.lastUpdateBy, basetype.lastUpdateBy) &&
-        Objects.equals(this.lastUpdateDate, basetype.lastUpdateDate) &&
-        Objects.equals(this.metaInf, basetype.metaInf);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, name, description, creationBy, creationDate, lastUpdateBy, lastUpdateDate, metaInf);
-  }
-
-  @Override
-  public String toString() {
-    String ret = new String();
-    try {
-      ret = com.test.util.Json.serializer().toString(this);
-    } catch (com.test.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
-
-  public String toPrettyString() {
-    String ret = new String();
-    try {
-      ret = com.test.util.Json.serializer().toPrettyString(this);
-    } catch (com.test.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
 
   public static BaseType fromJson(String json)
       throws com.test.util.Json.JsonException {

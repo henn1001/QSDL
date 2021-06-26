@@ -9,7 +9,7 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
 @Entity
-public class Role {
+public class Role extends AbstractPersistentObject {
 
   @Id
   @GeneratedValue(generator="optimized-sequence")
@@ -64,45 +64,6 @@ public class Role {
   }
 
 
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Role role = (Role) o;
-    return Objects.equals(this.id, role.id) &&
-        Objects.equals(this.name, role.name);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, name);
-  }
-
-  @Override
-  public String toString() {
-    String ret = new String();
-    try {
-      ret = com.test.util.Json.serializer().toString(this);
-    } catch (com.test.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
-
-  public String toPrettyString() {
-    String ret = new String();
-    try {
-      ret = com.test.util.Json.serializer().toPrettyString(this);
-    } catch (com.test.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
 
   public static Role fromJson(String json)
       throws com.test.util.Json.JsonException {

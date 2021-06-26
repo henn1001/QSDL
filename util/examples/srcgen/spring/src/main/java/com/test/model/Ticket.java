@@ -10,7 +10,7 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
 @Entity
-public class Ticket {
+public class Ticket extends AbstractPersistentObject {
 
   @Id
   @GeneratedValue(generator="optimized-sequence")
@@ -104,47 +104,6 @@ public class Ticket {
   }
 
 
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Ticket ticket = (Ticket) o;
-    return Objects.equals(this.id, ticket.id) &&
-        Objects.equals(this.title, ticket.title) &&
-        Objects.equals(this.body, ticket.body) &&
-        Objects.equals(this.status, ticket.status);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, title, body, status);
-  }
-
-  @Override
-  public String toString() {
-    String ret = new String();
-    try {
-      ret = com.test.util.Json.serializer().toString(this);
-    } catch (com.test.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
-
-  public String toPrettyString() {
-    String ret = new String();
-    try {
-      ret = com.test.util.Json.serializer().toPrettyString(this);
-    } catch (com.test.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
 
   public static Ticket fromJson(String json)
       throws com.test.util.Json.JsonException {

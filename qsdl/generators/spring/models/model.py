@@ -120,6 +120,7 @@ class Model:
     is_supertype: bool = False
     is_nested: bool = False
     has_id: bool = False
+    is_pagination: bool = False
 
     def __post_init__(self):
 

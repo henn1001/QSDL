@@ -12,7 +12,7 @@ import {{imp}};
 {% include "Enum.j2" with context %}
 {% else %}
 {{- hibernate.class_annotation() if database == "hibernate" -}}
-public class {{model.name}}{% if model.extends %} extends {{model.extends}}{% endif %} {
+public class {{model.name}}{% if model.extends %} extends {{model.extends}}{% elif not model.is_pagination %} extends AbstractPersistentObject{% endif %} {
 
 {{ hibernate.class_identifier() if database == "hibernate" -}}
 
@@ -85,52 +85,6 @@ public class {{model.name}}{% if model.extends %} extends {{model.extends}}{% en
 
 {% endfor %}
 
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    {% if model.attributes %}
-    {{model.name}} {{model.name|lower}} = ({{model.name}}) o;
-    return {% for attr in model.attributes  -%}
-      {% if not loop.first %}{{"        "}}{% endif -%}
-      Objects.equals(this.{{attr.name}}, {{model.name|lower}}.{{attr.name}})
-      {%- if not loop.last %} &&{{"\n"}}{% endif %}
-    {% endfor %};
-    {% else %}
-    return true;
-    {% endif %}
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash({% for attr in model.attributes  %}{{attr.name}}{% if not loop.last %}, {% endif %}{% endfor %});
-  }
-
-  @Override
-  public String toString() {
-    String ret = new String();
-    try {
-      ret = {{base_package}}.util.Json.serializer().toString(this);
-    } catch ({{base_package}}.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
-
-  public String toPrettyString() {
-    String ret = new String();
-    try {
-      ret = {{base_package}}.util.Json.serializer().toPrettyString(this);
-    } catch ({{base_package}}.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
 
   public static {{model.name}} fromJson(String json)
       throws {{base_package}}.util.Json.JsonException {

@@ -73,46 +73,6 @@ public class UserList {
 
 
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    UserList userlist = (UserList) o;
-    return Objects.equals(this.items, userlist.items) &&
-        Objects.equals(this.nextCursor, userlist.nextCursor) &&
-        Objects.equals(this.totalCount, userlist.totalCount);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(items, nextCursor, totalCount);
-  }
-
-  @Override
-  public String toString() {
-    String ret = new String();
-    try {
-      ret = com.test.util.Json.serializer().toString(this);
-    } catch (com.test.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
-
-  public String toPrettyString() {
-    String ret = new String();
-    try {
-      ret = com.test.util.Json.serializer().toPrettyString(this);
-    } catch (com.test.util.Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
-
   public static UserList fromJson(String json)
       throws com.test.util.Json.JsonException {
     return com.test.util.Json.serializer().fromJson(json, UserList.class);

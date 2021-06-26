@@ -123,6 +123,7 @@ def get_paginated_object(obj: Object, model: Model) -> Model:
 
     # init the new model class
     model = Model(new_object)
+    model.is_pagination = True
 
     return model
 
@@ -228,12 +229,15 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/util/Json.j2", f"src/main/java/{base_package}/util/Json.java"),
         ("src/main/java/util/Time.j2", f"src/main/java/{base_package}/util/Time.java"),
         ("src/main/java/util/Validator.j2", f"src/main/java/{base_package}/util/Validator.java"),
+        ("src/main/java/util/IdGenerator.j2", f"src/main/java/{base_package}/util/IdGenerator.java"),
         # exception
         ("src/main/java/exception/ApiException.j2", f"src/main/java/{base_package}/exception/ApiException.java"),
         ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{base_package}/exception/GlobalExceptionHandler.java"),
         # model
         ("src/main/java/model/ApiError.j2", f"src/main/java/{base_package}/model/ApiError.java"),
         ("src/main/java/model/ApiPageable.j2", f"src/main/java/{base_package}/model/ApiPageable.java"),
+        ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{base_package}/model/AbstractPersistentObject.java"),
+        ("src/main/java/model/PersistentObject.j2", f"src/main/java/{base_package}/model/PersistentObject.java"),
     ]
     # fmt: on
 
