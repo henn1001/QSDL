@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://gitlab.com/henn1001/qsdl/compare/v2.0.0...v2.1.0) (2021-06-26)
+
+
+### Features
+
+* **spring:** final draft for database support - begin optimizing and testing ([713798e](https://gitlab.com/henn1001/qsdl/commit/713798ea4486a3294043191a668b163c685483d0))
+* **spring:** fourth draft for database support ([2ea9b14](https://gitlab.com/henn1001/qsdl/commit/2ea9b142516952ea7d489d551cb756fa1b8bc9e5))
+* **spring:** introduce abstract class with uuid and version to resolve object identification and introduce optimistic locking ([5fe757a](https://gitlab.com/henn1001/qsdl/commit/5fe757acd436945fd2c510250ccf33d8d4dda157))
+* **spring:** second draft for database support ([0a17abd](https://gitlab.com/henn1001/qsdl/commit/0a17abd0e600e6f484bd245532f5e7e0e64f54b6))
+* **spring:** third draft for database support ([051c736](https://gitlab.com/henn1001/qsdl/commit/051c73611052ba208c080c1e5c8922a154a853f5))
+* added a void generator that does nothing ([31e3775](https://gitlab.com/henn1001/qsdl/commit/31e37750a73f96b29979602d279a96fe2f152aea))
+* added minimal logging information ([02b072d](https://gitlab.com/henn1001/qsdl/commit/02b072d0e76b80aa344e3dbddfc06441067482e7))
+
 ## [2.0.0](https://gitlab.com/henn1001/qsdl/compare/v1.0.1...v2.0.0) (2021-06-20)
 
 
