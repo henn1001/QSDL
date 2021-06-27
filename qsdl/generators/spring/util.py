@@ -96,7 +96,7 @@ def has_list(entity: Union[Base, Object]) -> bool:
 
         for field in entity.fields:
 
-            if field.array:
+            if field.is_array:
                 ret = True
                 break
 

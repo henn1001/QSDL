@@ -31,14 +31,14 @@ class Argument:
     # LHS
     name: str = None
     # RHS
-    array: bool = False
+    is_array: bool = False
     value: object = None
     is_required: bool = False
 
     # custom
-    path: bool = False
+    is_path: bool = False
     is_query: bool = False
-    body: bool = False
+    is_body: bool = False
 
     # required by textX
     parent: Field = None

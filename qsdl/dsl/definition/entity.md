@@ -50,7 +50,7 @@ class entity.Object  {
 class entity.Field  {
   description : Description
   name : ID
-  array : optional<BOOL>
+  is_array : optional<BOOL>
   is_required : optional<BOOL>
   is_query : optional<BOOL>
   is_nested : optional<BOOL>
@@ -71,7 +71,7 @@ class entity.Api  {
 class entity.Operation  {
   description : Description
   name : ID
-  array : optional<BOOL>
+  is_array : optional<BOOL>
   is_required : optional<BOOL>
   path : STRING
   method : Method
@@ -80,7 +80,7 @@ class entity.Operation  {
 
 class entity.Argument  {
   name : ID
-  array : optional<BOOL>
+  is_array : optional<BOOL>
   is_required : optional<BOOL>
 }
 
@@ -120,10 +120,10 @@ legend
   Match rules:
   |= Name  |= Rule details |
   | Description |  |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Comment | \\/\\/.*$ |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
 end legend
 
 @enduml

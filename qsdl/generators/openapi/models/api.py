@@ -91,7 +91,7 @@ class _Operation:
             param.name = argument.name
             param.json_key = argument.name
             param.is_required = argument.is_required
-            param.is_array = argument.array
+            param.is_array = argument.is_array
 
             param.type = util.custom_type(argument.value.name)
             param.format = util.custom_type_format(argument.value.name)
@@ -102,9 +102,9 @@ class _Operation:
             if argument.value._tx_fqn in ["entity.Base", "entity.Object"]:
                 param.is_ref_body = True
 
-            param.is_path = argument.path
+            param.is_path = argument.is_path
             param.is_query = argument.is_query
-            param.is_body = argument.body
+            param.is_body = argument.is_body
 
             if param.is_path:
                 self.path_parameters.append(param)
@@ -122,7 +122,7 @@ class _Operation:
             param.name = self._ref.value.name
             param.json_key = self._ref.value.name
             param.is_required = False
-            param.is_array = self._ref.array
+            param.is_array = self._ref.is_array
 
             param.type = util.custom_type(self._ref.value.name)
             param.format = util.custom_type_format(self._ref.value.name)

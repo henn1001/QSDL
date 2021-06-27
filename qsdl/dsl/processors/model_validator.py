@@ -182,12 +182,12 @@ def validate_array_id(schema: Schema, metamodel: TextXMetaModel):
     arguments = xtx.get_children_of_type("Argument", schema)
 
     for field in fields:
-        if field.value.name == "ID" and field.array:
+        if field.value.name == "ID" and field.is_array:
             msg = f"Array ID found for the field {field.name}."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
     for argument in arguments:
-        if argument.value.name == "ID" and argument.array:
+        if argument.value.name == "ID" and argument.is_array:
             msg = f"Array ID found for argument {argument.name}"
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 

@@ -33,7 +33,7 @@ class Operation:
     name: str = None
     arguments: List[Argument] = field(default_factory=list)
     # RHS
-    array: bool = False
+    is_array: bool = False
     value: object = None
     is_required: bool = False
     # Special directives

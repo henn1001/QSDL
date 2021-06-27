@@ -69,7 +69,7 @@ class _Attribute:
 
         self.type = util.custom_type(self._ref.value.name)
 
-        self.is_array = self._ref.array
+        self.is_array = self._ref.is_array
         self.is_enum = self._ref.value._tx_fqn in ["entity.Enum"]
         self.is_base = self._ref.value._tx_fqn in ["entity.Base"]
         self.is_object = self._ref.value._tx_fqn in ["entity.Object"]
@@ -180,7 +180,7 @@ class Model:
             fk_field.name = fk_field.name + "s" if p_field.is_aggregation else fk_field.name
 
             fk_field.value = parent
-            fk_field.array = p_field.is_aggregation
+            fk_field.is_array = p_field.is_aggregation
             fk_field.is_aggregation = p_field.is_aggregation
             fk_field.is_composition = p_field.is_composition
 

@@ -66,7 +66,7 @@ class _Attribute:
         self.type = util.custom_type(self._ref.value.name)
         self.format = util.custom_type_format(self._ref.value.name)
 
-        self.is_array = self._ref.array
+        self.is_array = self._ref.is_array
         self.is_enum = self._ref.value._tx_fqn in ["entity.Enum"]
         self.is_base = self._ref.value._tx_fqn in ["entity.Base"]
         self.is_object = self._ref.value._tx_fqn in ["entity.Object"]

@@ -5,16 +5,16 @@
   {%- for parameter in operation.arguments -%}
     {% if parameter.value._tx_fqn in ["entity.Object", "entity.Base"] -%}
       {{ parameter.name }}:{{ " " -}}
-      {{ "[" if parameter.array -}}
+      {{ "[" if parameter.is_array -}}
       {{ parameter.value.name }}Input{{ "" -}}
       {{ "!" -}}
-      {{ "]" if parameter.array -}}
+      {{ "]" if parameter.is_array -}}
     {% else -%}
       {{ parameter.name }}:{{ " " -}}
-      {{ "[" if parameter.array -}}
+      {{ "[" if parameter.is_array -}}
       {{ parameter.value.name -}}
       {{ "!" if parameter.is_required -}}
-      {{ "]" if parameter.array -}}
+      {{ "]" if parameter.is_array -}}
     {% endif -%}
     {{ ", " if not loop.last -}}
   {% endfor %}
@@ -28,9 +28,9 @@
 {################################################################}
 {% macro render_response(operation) %}
 {% set field = operation  %}
-  {% if field.array %}{{ "[" }}{% endif -%}
+  {% if field.is_array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}{% if field.is_pageable %}List{% endif -%}
-  {% if field.array %}{{ "]" }}{% endif -%}
+  {% if field.is_array %}{{ "]" }}{% endif -%}
 {% endmacro %}
 
 {################################################################}
@@ -38,19 +38,19 @@
 {% for field in util.get_fields_as_list(entity) if not field.is_read_only and util.get_filtered_fields(field) %}
  {% if field.value._tx_fqn in ["entity.Object", "entity.Base"] %}
   {{ field.name }}:{{ " " -}}
-  {% if field.array %}{{ "[" }}{% endif -%}
+  {% if field.is_array %}{{ "[" }}{% endif -%}
   {% if not field.is_nested and not field.is_composition and not field.is_aggregation -%}
   ID{{ "" -}}
   {% else -%}
   {{ field.value.name }}Input{{ "" -}}
   {% endif %}
-  {% if field.array %}{{ "]" }}{% endif -%}
+  {% if field.is_array %}{{ "]" }}{% endif -%}
   {% if field.is_required %}{{ "!" }}{% endif %}
  {% else %}
   {{ field.name }}:{{ " " -}}
-  {% if field.array %}{{ "[" }}{% endif -%}
+  {% if field.is_array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}
-  {% if field.array %}{{ "]" }}{% endif -%}
+  {% if field.is_array %}{{ "]" }}{% endif -%}
   {% if field.is_required %}{{ "!" }}{% endif %}
  {% endif %}
 
@@ -64,9 +64,9 @@
   {{ field.description }}
   {% endif %}
   {{field.name}}:{{ " " -}}
-  {% if field.array %}{{ "[" }}{% endif -%}
+  {% if field.is_array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}
-  {% if field.array %}{{ "]" }}{% endif -%}
+  {% if field.is_array %}{{ "]" }}{% endif -%}
   {% if field.is_required %}{{ "!" }}{% endif %}
 
 {% endfor %}
@@ -76,9 +76,9 @@
 {% macro render_field(field, filter_ro=False, filter_wo=False) %}
 {% if field.is_read_only == (field.is_read_only if not filter_ro else False) and field.is_write_only == (field.is_write_only if not filter_wo else False) %}
   {{field.name}}:{{ " " -}}
-  {% if field.array %}{{ "[" }}{% endif -%}
+  {% if field.is_array %}{{ "[" }}{% endif -%}
   {{ field.value.name -}}
-  {% if field.array %}{{ "]" }}{% endif -%}
+  {% if field.is_array %}{{ "]" }}{% endif -%}
   {% if field.is_required %}{{ "!" }}{% endif %}
 
 {% endif %}

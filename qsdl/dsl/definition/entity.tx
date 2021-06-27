@@ -81,7 +81,7 @@ Field:
     ':'
 
     // RHS
-    (array?='[' &/.*\]/)?
+    (is_array?='[' &/.*\]/)?
     value=[ValueType]
     (']')?
     (is_required?='!')?
@@ -130,7 +130,7 @@ Operation:
     ':'
 
     // RHS
-    (array?='[' &/.*\]/)?
+    (is_array?='[' &/.*\]/)?
     value=[ValueType]
     (']')?
     (is_required?='!')?
@@ -152,7 +152,7 @@ Argument:
     ':'
 
     // RHS
-    (array?='[' &/.*\]/)?
+    (is_array?='[' &/.*\]/)?
     value=[ValueType]
     (']')?
     (is_required?='!')?

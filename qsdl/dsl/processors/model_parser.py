@@ -248,7 +248,7 @@ def path_argument_builder(
 
         argument.name = parent_obj.name.lower() + "_" + get_id(parent_obj)
         argument.value = Scalar(name="ID")
-        argument.path = True
+        argument.is_path = True
         argument.is_required = True
 
         arguments.append(argument)
@@ -259,7 +259,7 @@ def path_argument_builder(
 
         argument.name = get_id(obj)
         argument.value = Scalar(name="ID")
-        argument.path = True
+        argument.is_path = True
         argument.is_required = True
 
         arguments.append(argument)
@@ -321,12 +321,12 @@ def body_argument_builder(
     if aggregation:
         argument.name = get_id(obj)
         argument.value = Scalar(name="ID")
-        argument.body = True
+        argument.is_body = True
         argument.is_required = True
     else:
         argument.name = "body"
         argument.value = obj
-        argument.body = True
+        argument.is_body = True
 
     arguments.append(argument)
 
@@ -371,7 +371,7 @@ def operation_builder(
         operation.value = obj
         operation.path = path
         operation.method = "GET"
-        # field.array = True # disabled if we use pagination
+        # field.is_array = True # disabled if we use pagination
         operation.is_pageable = True
 
         operation.summary = f"List {pluralize(obj.name)}"
@@ -618,10 +618,10 @@ def parse_operations(schema: Schema):
 
                 # set the argument type
                 if argument.value.name == "ID":
-                    argument.path = True
+                    argument.is_path = True
                 elif operation.method == "GET":
                     argument.is_query = True
                 else:
-                    argument.body = True
+                    argument.is_body = True
 
             operation.summary = operation.name

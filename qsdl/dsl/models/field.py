@@ -32,7 +32,7 @@ class Field:
     # LHS
     name: str = None
     # RHS
-    array: bool = False
+    is_array: bool = False
     value: object = None
     is_required: bool = False
     # Special directives

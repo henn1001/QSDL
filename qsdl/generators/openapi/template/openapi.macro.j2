@@ -45,11 +45,11 @@
   {% set ns = namespace(var=true) %}
   {% for parameter in operation.body_parameters %}
     {% if parameter.is_ref_body %}
-        {% if parameter.array %}
+        {% if parameter.is_array %}
         type: array
         items:
         {% endif %}
-        {{ "     " if parameter.array }}$ref: '{{parameter.ref}}'
+        {{ "     " if parameter.is_array }}$ref: '{{parameter.ref}}'
     {% elif operation.body_parameters|length == 1 and parameter.type == "object" %}
         type: object
     {% else %}

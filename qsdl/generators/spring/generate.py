@@ -98,7 +98,7 @@ def get_paginated_object(obj: Object, model: Model) -> Model:
     # contains the item list of the entity
     item_field = Field()
     item_field.name = "items"
-    item_field.array = True
+    item_field.is_array = True
     item_field.is_required = True
     item_field.is_nested = True
     item_field.value = obj
