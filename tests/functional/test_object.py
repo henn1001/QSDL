@@ -82,8 +82,7 @@ class TestObject:
 
         openapi = wrapper_generate(test_input)
 
-        ref = openapi["components"]["schemas"]["Bar"]["allOf"][0]
-        properties = openapi["components"]["schemas"]["Bar"]["allOf"][1]["properties"]
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
 
-        assert "Foo" in ref["$ref"]
+        assert "field" in properties
         assert "name" in properties

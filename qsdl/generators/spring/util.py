@@ -422,22 +422,12 @@ def get_filtered_fields_as_list(entity: Object) -> List[Field]:
     Returns:
         list: [entity.Field]
     """
-    tmp = entity
     fields = []
 
-    while True:
-        tmp_list = []
-        for field in tmp.fields:
-
-            # filter out all compositions and aggregations that are not nested
-            if not ((field.is_composition or field.is_aggregation) and not field.is_nested):
-                tmp_list.append(field)
-
-        fields = tmp_list + fields
-        if not tmp.supertype:
-            break
-
-        tmp = tmp.supertype
+    for field in entity.fields:
+        # filter out all compositions and aggregations that are not nested
+        if not ((field.is_composition or field.is_aggregation) and not field.is_nested):
+            fields.append(field)
 
     return fields
 

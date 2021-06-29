@@ -10,8 +10,8 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-@MappedSuperclass
-public class BaseType extends AbstractPersistentObject {
+@Embeddable
+public class BaseType {
 
   @NotNull
   @JsonProperty(value = "name", required = true)

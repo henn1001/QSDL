@@ -3,7 +3,7 @@
 #}
 {% macro class_annotation() %}
   {{- "@Entity" if (model.is_object and model.is_crud) or model.is_nested }}
-  {{- "@MappedSuperclass" if model.is_supertype }}
+  {{- "@Embeddable" if model.is_base }}
 {% endmacro %}
 
 {# 

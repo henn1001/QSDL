@@ -19,7 +19,7 @@ from typing import List, Union
 
 from textx import model as xtx
 
-from qsdl.dsl.models import Api, Argument, Base, Field, Object, Scalar, Schema
+from qsdl.dsl.models import Api, Argument, Field, Object, Scalar, Schema
 from qsdl.dsl.models.operation import Operation
 from qsdl.filter import pluralize
 
@@ -98,16 +98,35 @@ def get_query_fields(obj: Object) -> List[Field]:
     """
     fields = []
 
-    tmp = obj
-    while True:
-        for field in tmp.fields:
-            if field.is_query:
-                fields.append(field)
+    for field in obj.fields:
+        if field.is_query:
+            fields.append(field)
 
-        if tmp.supertype:
-            tmp = tmp.supertype
-        else:
+    return fields
+
+
+def get_all_fields_as_list(entity: Object) -> List[Field]:
+    """Returns all fields ob a object including its supertype as list.
+
+    Args:
+        entity (object): entity.Object
+
+    Returns:
+        list: [entity.Field]
+    """
+    tmp = entity
+    fields = []
+
+    while True:
+        tmp_list = []
+        for field in tmp.fields:
+            tmp_list.append(field)
+
+        fields = tmp_list + fields
+        if not tmp.supertype:
             break
+
+        tmp = tmp.supertype
 
     return fields
 
@@ -500,6 +519,11 @@ def parse_objects(schema: Schema):
         schema (Schema): The QSDL schema model.
     """
     objects = xtx.get_children_of_type("Object", schema)
+    bases = xtx.get_children_of_type("Base", schema)
+
+    # inherit all fields of parent objects
+    for entity in bases+ objects:
+        entity.fields = get_all_fields_as_list(entity)
 
     # add id fields for all objects
     for obj in objects:

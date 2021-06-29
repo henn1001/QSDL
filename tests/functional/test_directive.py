@@ -84,10 +84,9 @@ class TestDirective:
 
         openapi = wrapper_generate(test_input)
 
-        ref = openapi["components"]["schemas"]["Fruit"]["allOf"][0]
-        properties = openapi["components"]["schemas"]["Fruit"]["allOf"][1]["properties"]
+        properties = openapi["components"]["schemas"]["Fruit"]["properties"]
 
-        assert "Foo" in ref["$ref"]
+        assert properties["field1"]["$ref"]
         assert properties["field2"]["items"]["$ref"]
 
     def test_directive_03_positive(self):
@@ -108,10 +107,9 @@ class TestDirective:
 
         openapi = wrapper_generate(test_input)
 
-        ref = openapi["components"]["schemas"]["Fruit"]["allOf"][0]
-        properties = openapi["components"]["schemas"]["Fruit"]["allOf"][1]["properties"]
+        properties = openapi["components"]["schemas"]["Fruit"]["properties"]
 
-        assert "Foo" in ref["$ref"]
+        assert properties["field1"]["$ref"]
         assert properties["field2"]["items"]["$ref"]
 
     def test_directive_03_negative(self):
@@ -156,9 +154,8 @@ class TestDirective:
         properties = openapi["components"]["schemas"]["Foo"]["properties"]
         assert properties["name"]["readOnly"]
 
-        ref = openapi["components"]["schemas"]["Bar"]["allOf"][0]
-        properties = openapi["components"]["schemas"]["Bar"]["allOf"][1]["properties"]
-        assert "Foo" in ref["$ref"]
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+        assert properties["name"]["readOnly"]
         assert properties["world"]["readOnly"]
         assert properties["enum"]["readOnly"]
         assert properties["enum"]["$ref"]
@@ -189,9 +186,8 @@ class TestDirective:
         properties = openapi["components"]["schemas"]["Foo"]["properties"]
         assert properties["name"]["writeOnly"]
 
-        ref = openapi["components"]["schemas"]["Bar"]["allOf"][0]
-        properties = openapi["components"]["schemas"]["Bar"]["allOf"][1]["properties"]
-        assert "Foo" in ref["$ref"]
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+        assert properties["name"]["writeOnly"]
         assert properties["world"]["writeOnly"]
         assert properties["enum"]["writeOnly"]
         assert properties["enum"]["$ref"]

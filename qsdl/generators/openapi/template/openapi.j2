@@ -101,30 +101,15 @@ components:
       description: |
         {{ model.description | indent | trim("\"") | trim }}
     {% endif %}
-    {% if model._ref.supertype %}
-      allOf:
-        - $ref: '#/components/schemas/{{model._ref.supertype.name}}'
-        -
-        {% if model.get_required() %}
-          required:
-          {% for field in model.get_required() %}
-            - {{field.name}}
-          {% endfor %}
-        {% endif %}
-          type: object
-          properties:
-            {{ macro.get_schema(model) | indent(10) | trim }}
-    {% else %}
-     {% if model.get_required() %}
+    {% if model.get_required() %}
       required:
       {% for field in model.get_required() %}
         - {{field.name}}
       {% endfor %}
-     {% endif %}
+    {% endif %}
       type: object
       properties:
         {{ macro.get_schema(model) | indent(6) | trim }}
-     {% endif %}
 
   {% endif %}
 {% endfor %}

@@ -136,7 +136,7 @@ class _Operation:
     def get_read_only_parameters(self) -> List[str]:
         ret = []
 
-        # first get all fields including supertypes
+        # first get all fields
         filtered_fields = util.get_filtered_fields_as_list(self.domain_object)
 
         # get read only fields
@@ -151,7 +151,7 @@ class _Operation:
     def get_writable_parameters(self) -> List[str]:
         ret = []
 
-        # first get all fields including supertypes
+        # first get all fields
         filtered_fields = util.get_filtered_fields_as_list(self.domain_object)
 
         # get read only fields

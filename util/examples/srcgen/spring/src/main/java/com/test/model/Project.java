@@ -3,19 +3,47 @@
  */
 package com.test.model;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import javax.persistence.*;
 import javax.validation.*;
 import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-public class Project extends BaseType {
+public class Project extends AbstractPersistentObject {
 
   @Id
   @GeneratedValue(generator="optimized-sequence")
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
   private Long id;
+
+  @NotNull
+  @JsonProperty(value = "name", required = true)
+  private String name;
+
+  @JsonProperty(value = "description")
+  private String description;
+
+  @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
+  private String creationBy;
+
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+  @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
+  private OffsetDateTime creationDate;
+
+  @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
+  private String lastUpdateBy;
+
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+  @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
+  private OffsetDateTime lastUpdateDate;
+
+  @Column(columnDefinition = "BINARY(1048576)")
+  @org.hibernate.annotations.Type(type = "serializable")
+  @JsonProperty(value = "meta_inf")
+  private Object metaInf;
 
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
   private Boolean archive;
@@ -35,6 +63,90 @@ public class Project extends BaseType {
 
   public Project setId(Long id) {
     this.id = id;
+    return this;
+  }
+
+  /**
+   * name
+   */
+  public String getName() {
+    return name;
+  }
+
+  public Project setName(String name) {
+    this.name = name;
+    return this;
+  }
+
+  /**
+   * description
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  public Project setDescription(String description) {
+    this.description = description;
+    return this;
+  }
+
+  /**
+   * creationBy
+   */
+  public String getCreationBy() {
+    return creationBy;
+  }
+
+  public Project setCreationBy(String creationBy) {
+    this.creationBy = creationBy;
+    return this;
+  }
+
+  /**
+   * creationDate
+   */
+  public OffsetDateTime getCreationDate() {
+    return creationDate;
+  }
+
+  public Project setCreationDate(OffsetDateTime creationDate) {
+    this.creationDate = creationDate;
+    return this;
+  }
+
+  /**
+   * lastUpdateBy
+   */
+  public String getLastUpdateBy() {
+    return lastUpdateBy;
+  }
+
+  public Project setLastUpdateBy(String lastUpdateBy) {
+    this.lastUpdateBy = lastUpdateBy;
+    return this;
+  }
+
+  /**
+   * lastUpdateDate
+   */
+  public OffsetDateTime getLastUpdateDate() {
+    return lastUpdateDate;
+  }
+
+  public Project setLastUpdateDate(OffsetDateTime lastUpdateDate) {
+    this.lastUpdateDate = lastUpdateDate;
+    return this;
+  }
+
+  /**
+   * metaInf
+   */
+  public Object getMetaInf() {
+    return metaInf;
+  }
+
+  public Project setMetaInf(Object metaInf) {
+    this.metaInf = metaInf;
     return this;
   }
 

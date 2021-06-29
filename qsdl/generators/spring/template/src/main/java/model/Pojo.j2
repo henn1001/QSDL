@@ -12,7 +12,7 @@ import {{imp}};
 {% include "Enum.j2" with context %}
 {% else %}
 {{- hibernate.class_annotation() if database == "hibernate" -}}
-public class {{model.name}}{% if model.extends %} extends {{model.extends}}{% elif not model.is_pagination %} extends AbstractPersistentObject{% endif %} {
+public class {{model.name}}{% if not model.is_pagination and not model.is_base %} extends AbstractPersistentObject{% endif %} {
 
 {{ hibernate.class_identifier() if database == "hibernate" -}}
 
