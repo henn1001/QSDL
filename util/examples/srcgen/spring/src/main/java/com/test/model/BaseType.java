@@ -13,11 +13,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @MappedSuperclass
 public class BaseType extends AbstractPersistentObject {
 
-  @Id
-  @GeneratedValue(generator="optimized-sequence")
-  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  private Long id;
-
   @NotNull
   @JsonProperty(value = "name", required = true)
   private String name;
@@ -45,18 +40,6 @@ public class BaseType extends AbstractPersistentObject {
   private Object metaInf;
 
 
-
-  /**
-   * id
-   */
-  public Long getId() {
-    return id;
-  }
-
-  public BaseType setId(Long id) {
-    this.id = id;
-    return this;
-  }
 
   /**
    * name

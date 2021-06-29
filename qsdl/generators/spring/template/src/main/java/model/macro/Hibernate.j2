@@ -10,7 +10,7 @@
   Returns a class identifier.
 #}
 {% macro class_identifier() %}
-  {% if (model.is_base and model.is_nested) or (model.is_crud and not model.has_id) %}
+  {% if model.is_base and model.is_nested%}
   @Id
   @GeneratedValue(generator="optimized-sequence")
   @JsonIgnore

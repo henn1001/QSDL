@@ -28,8 +28,6 @@ class TestArgument:
         * `Base`
         * `Object`
 
-    04. `Argument` may contain a maximum of one `Scalar` value of `ID`.
-
     05. `Argument` value may be a list when enclosed with brackets.
 
     06. `Argument` value may be marked as required.
@@ -38,11 +36,9 @@ class TestArgument:
 
     08. `Argument` name/value pairs for post/put/patch methods are requestBody. [OpenAPI]
 
-    09. `Argument` value must be a `Scalar` of `ID` for delete method. Other types are ignored. [OpenAPI]
+    09. `Argument` value is ignored for delete method. [OpenAPI]
 
     10. `Argument` can only be used by `Operation` of `Api` only.
-
-    11. `Argument` value may not be a list for `Scalar` `ID`.
 
     """
 
@@ -101,7 +97,7 @@ class TestArgument:
             }
 
             extend Api {
-                field1(arg: ID): Void @path(value:"path1")
+                field1: Void @path(value:"path1/{arg}")
                 field2(arg: Int): Void @path(value:"path2")
                 field3(arg: Float): Void @path(value:"path3")
                 field4(arg: String): Void @path(value:"path4")
@@ -123,16 +119,6 @@ class TestArgument:
             extend Api {
                 field1(arg: String): Void @path(value:"path1")
                 field2(arg: field1): Void @path(value:"path2")
-            }
-        """
-
-        wrapper_generate_failure(test_input)
-
-    def test_argument_04_negative(self):
-        """Verify multiple IDs"""
-        test_input = """\
-            extend Api {
-                field(arg1: ID, arg2: ID): Void @path(value:"path")
             }
         """
 
@@ -203,7 +189,7 @@ class TestArgument:
             }
 
             extend Api {
-                field1(arg: ID): Void @path(value:"path1")
+                field1: Void @path(value:"path1/{arg}")
                 field2(arg: Int): Void @path(value:"path2")
                 field3(arg: Float): Void @path(value:"path3")
                 field4(arg: String): Void @path(value:"path4")
@@ -332,7 +318,7 @@ class TestArgument:
             }
 
             extend Api {
-                field1(arg: ID): Void @path(value:"path1") @method(value: DELETE)
+                field1: Void @path(value:"/path1/{arg}") @method(value: DELETE)
                 field2(arg: Int): Void @path(value:"path2") @method(value: DELETE)
                 field3(arg: Float): Void @path(value:"path3") @method(value: DELETE)
                 field4(arg: String): Void @path(value:"path4") @method(value: DELETE)
@@ -377,16 +363,6 @@ class TestArgument:
 
             type Bar {
                 field(arg: String): String
-            }
-        """
-
-        wrapper_generate_failure(test_input)
-
-    def test_argument_11_negative(self):
-        """Verify that we can not use array IDs"""
-        test_input = """\
-            extend Api {
-                field(arg: [ID]): Void @path(value:"path")
             }
         """
 

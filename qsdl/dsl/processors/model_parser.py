@@ -14,6 +14,7 @@
 
 """Model domain parser"""
 
+import re
 from typing import List, Union
 
 from textx import model as xtx
@@ -21,37 +22,6 @@ from textx import model as xtx
 from qsdl.dsl.models import Api, Argument, Base, Field, Object, Scalar, Schema
 from qsdl.dsl.models.operation import Operation
 from qsdl.filter import pluralize
-
-
-def get_id(entity: Union[Operation, Object, Base]) -> str:
-    """Returns the name of the ID of a Objects or Api or None if no ID exists.
-
-    The supertype of Base|Objects is searched as well.
-
-    Args:
-        entity (Union[Field, Object]): Either entity.Object or entity.Field.
-
-    Returns:
-        str: The name of the ID. None if no ID is found.
-    """
-    field_entity_name = None
-
-    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Base":
-
-        if entity.supertype:
-            field_entity_name = get_id(entity.supertype)
-
-        for field in entity.fields:
-            if field.value.name == "ID":
-                return field.name
-
-    elif entity._tx_fqn == "entity.Operation":
-
-        for argument in entity.arguments:
-            if argument.value.name == "ID":
-                return argument.name
-
-    return field_entity_name
 
 
 def get_compositions(schema: Schema, obj: Object) -> List[Field]:
@@ -95,7 +65,7 @@ def get_aggregation(schema: Schema, obj: Object) -> List[Field]:
 
 
 def get_parents(schema: Schema, obj: Object) -> List[Field]:
-    """Returns all Fields whos value is this Object.
+    """Returns all Fields whose value is this Object.
 
     Args:
         schema (Schema): The QSDL schema model.
@@ -140,6 +110,25 @@ def get_query_fields(obj: Object) -> List[Field]:
             break
 
     return fields
+
+
+def id_builder(obj: Object) -> Field:
+    """Creates and returns a ID field.
+
+    Args:
+        obj (Object): entity.Object
+
+    Returns:
+        Field: entity.Field
+    """
+    field = Field()
+    field.name = "id"
+    field.value = Scalar(name="ID")
+    field.is_read_only = True
+    field.is_required = True
+    field.parent = obj
+
+    return field
 
 
 def name_builder(
@@ -197,67 +186,45 @@ def path_builder(
             path = "/" + path
 
         if append_id:
-            path = path + "/{" + get_id(entity) + "}"
+            path = path + "/{id}"
 
         if parent_obj:
-            path = "/" + pluralize(parent_obj.name) + "/{" + parent_obj.name + "_" + get_id(parent_obj) + "}" + path
+            path = "/" + pluralize(parent_obj.name) + "/{" + parent_obj.name + "_id}" + path
 
     elif entity._tx_fqn == "entity.Operation":
 
-        if entity.path:
-            path = entity.path
-        else:
-            path = pluralize(entity.parent.parent.name)
+        path = entity.path
 
         if not path.startswith("/"):
             path = "/" + path
 
-        if get_id(entity):
-            path = path + "/{" + get_id(entity) + "}"
-
-        if parent_obj:
-            path = "/" + pluralize(parent_obj.name) + "/{" + parent_obj.name + "_" + get_id(parent_obj) + "}" + path
+        if path.endswith("/"):
+            path = path[:-1]
 
     return path.lower()
 
 
-def path_argument_builder(
-    operation: Operation,
-    obj: Object,
-    parent_obj: Object = None,
-    include_id: bool = False,
-) -> List[Argument]:
-    """Creates and returns the path arguments for a operation.
+def path_argument_builder(operation: Operation) -> List[Argument]:
+    """Creates and returns the path arguments for a operation path.
+
+    ID arguments are identified within {brackets}.
 
     Args:
         operation (Operation): The entity.Operation.
-        obj (Object): The entity.Object the entity.Operation belongs to.
-        parent_obj (Object, optional): The parent, entity.Object.
-            Defaults to None.
-        include_id (bool, optional): Enables the inclusion of the own ID.
-            Defaults to False.
 
     Returns:
         List[Argument]: [entity.Argument]
     """
     arguments = []
 
-    if parent_obj:
+    regex = r"{(.+?)}+?"
+    matches = re.findall(regex, operation.path)
+
+    for match in matches:
         argument = Argument()
         argument.parent = operation
 
-        argument.name = parent_obj.name.lower() + "_" + get_id(parent_obj)
-        argument.value = Scalar(name="ID")
-        argument.is_path = True
-        argument.is_required = True
-
-        arguments.append(argument)
-
-    if include_id:
-        argument = Argument()
-        argument.parent = operation
-
-        argument.name = get_id(obj)
+        argument.name = match.lower()
         argument.value = Scalar(name="ID")
         argument.is_path = True
         argument.is_required = True
@@ -267,10 +234,7 @@ def path_argument_builder(
     return arguments
 
 
-def query_argument_builder(
-    operation: Operation,
-    obj: Object,
-) -> List[Argument]:
+def query_argument_builder(operation: Operation, obj: Object) -> List[Argument]:
     """Creates and returns the query arguments for a operation.
 
     Args:
@@ -297,11 +261,7 @@ def query_argument_builder(
     return arguments
 
 
-def body_argument_builder(
-    operation: Operation,
-    obj: Object,
-    aggregation: bool = False,
-) -> List[Argument]:
+def body_argument_builder(operation: Operation, obj: Object) -> List[Argument]:
     """Creates and returns the query arguments for a operation.
 
     Args:
@@ -317,16 +277,9 @@ def body_argument_builder(
 
     argument = Argument()
     argument.parent = operation
-
-    if aggregation:
-        argument.name = get_id(obj)
-        argument.value = Scalar(name="ID")
-        argument.is_body = True
-        argument.is_required = True
-    else:
-        argument.name = "body"
-        argument.value = obj
-        argument.is_body = True
+    argument.name = "body"
+    argument.value = obj
+    argument.is_body = True
 
     arguments.append(argument)
 
@@ -376,7 +329,7 @@ def operation_builder(
 
         operation.summary = f"List {pluralize(obj.name)}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, False)
+        operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = query_argument_builder(operation, obj)
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
@@ -392,7 +345,7 @@ def operation_builder(
 
         operation.summary = f"Create a {obj.name}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, False)
+        operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
         operation.body_parameters = body_argument_builder(operation, obj)
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
@@ -408,7 +361,7 @@ def operation_builder(
 
         operation.summary = f"Read the specified {obj.name}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
@@ -424,7 +377,7 @@ def operation_builder(
 
         operation.summary = f"Replace the specified {obj.name}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
         operation.body_parameters = body_argument_builder(operation, obj)
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
@@ -440,7 +393,7 @@ def operation_builder(
 
         operation.summary = f"Update the specified {obj.name}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
         operation.body_parameters = body_argument_builder(operation, obj)
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
@@ -456,7 +409,7 @@ def operation_builder(
 
         operation.summary = f"Delete the specified {obj.name}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
@@ -472,9 +425,9 @@ def operation_builder(
 
         operation.summary = f"Add {obj.name}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
-        operation.body_parameters = [] # body_argument_builder(operation, obj, True)
+        operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     elif method == "remove":
@@ -488,9 +441,9 @@ def operation_builder(
 
         operation.summary = f"Remove {obj.name}"
 
-        operation.path_parameters = path_argument_builder(operation, obj, parent_obj, True)
+        operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
-        operation.body_parameters = [] # body_argument_builder(operation, obj, True)
+        operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
     return operation
@@ -518,17 +471,14 @@ def api_builder(
     """
     methods = []
 
-    obj_id = get_id(obj)
-
-    if obj_id and aggregation:
+    if aggregation:
         methods = ["getA", "add", "remove"]
-    elif aggregation:
-        methods = ["getA"]
-    elif obj_id:
-        methods = ["getA", "post", "get", "put", "patch", "delete"]
     else:
-        methods = ["getA", "post"]
+        methods = ["getA", "post", "get", "put", "patch", "delete"]
 
+    # it is importent here to only create the api once because
+    # we might loop multiple times over this object to add
+    # aggregations and compositions
     if not obj.api:
         obj.api = Api()
         obj.api.namespace = obj.namespace
@@ -537,9 +487,6 @@ def api_builder(
     for method in methods:
         operation = operation_builder(obj, parent_obj, duplicate, method)
         obj.api.operations.append(operation)
-
-    # pass down namespace of object to api
-    obj.api.namespace = obj.namespace
 
     return obj
 
@@ -553,9 +500,14 @@ def parse_objects(schema: Schema):
         schema (Schema): The QSDL schema model.
     """
     objects = xtx.get_children_of_type("Object", schema)
-    objects = list(filter(lambda x: not x.api, objects))
 
-    # loop over user defined Objects
+    # add id fields for all objects
+    for obj in objects:
+        id_field = id_builder(obj)
+        obj.fields.insert(0, id_field)
+
+    # filter custom definitions and add default apis for the rest
+    objects = list(filter(lambda x: not x.api, objects))
     for obj in objects:
 
         # flag crud object
@@ -610,8 +562,11 @@ def parse_operations(schema: Schema):
             if operation.value.name == "Void":
                 operation.value = None
 
-            append_id = bool(get_id(operation))
-            operation.path = path_builder(operation, None, append_id)
+            operation.path = path_builder(operation)
+
+            # fetch and add path parameters
+            id_arguments = path_argument_builder(operation)
+            operation.arguments = id_arguments + operation.arguments
 
             # loop over operation arguments
             for argument in operation.arguments:

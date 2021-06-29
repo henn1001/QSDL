@@ -17,14 +17,15 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from textx import model as xtx
 from textx.exceptions import TextXSemanticError
-from textx.metamodel import TextXMetaModel
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Field, Object, Operation, Schema
+    from textx.metamodel import TextXMetaModel
+
+    from qsdl.dsl.models import Schema
 
 
 def validate(schema: Schema, metamodel: TextXMetaModel):
@@ -38,10 +39,7 @@ def validate(schema: Schema, metamodel: TextXMetaModel):
         TextXSemanticError: Exception for logical errors.
     """
     validate_type_names(schema, metamodel)
-    validate_field_id_count(schema, metamodel)
-    validate_argument_id_count(schema, metamodel)
-    validate_array_id(schema, metamodel)
-    validate_reference(schema, metamodel)
+    validate_arguments(schema, metamodel)
     validate_custom_operations_path(schema, metamodel)
     validate_nested_bases(schema, metamodel)
 
@@ -83,45 +81,24 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
             msg = f"The namespace of {entity._tx_fqn} {entity.name} does not conform to the naming convention."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
+        if entity.name.upper() == "ID":
+            msg = f"The {entity._tx_fqn} {entity.name} uses the reserved name ID."
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-def validate_field_id_count(schema: Schema, metamodel: TextXMetaModel):
-    """Check that Objects only have one normal ID field.
+    entities = []
 
-    Args:
-        schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
+    entities.extend(xtx.get_children_of_type("Field", schema))
+    entities.extend(xtx.get_children_of_type("Argument", schema))
 
-    Raises:
-        TextXSemanticError: Exception for logical errors.
-    """
-    _ = metamodel
+    for entity in entities:
 
-    # loop for objects and their supertypes (bases)
-    objects = xtx.get_children_of_type("Object", schema)
-    bases = xtx.get_children_of_type("Base", schema)
-
-    for entity in objects + bases:
-        count = 0
-        tmp = entity
-
-        while True:
-            # check for multiple IDs
-            for field in tmp.fields:
-                if field.value.name == "ID":
-                    count = count + 1
-
-            if tmp.supertype:
-                tmp = tmp.supertype
-            else:
-                break
-
-        if count > 1:
-            msg = f"More than one ID found for {entity._tx_fqn} {entity.name}"
+        if entity.name.lower() == "id":
+            msg = f"The {entity._tx_fqn} {entity.name} uses the reserved name ID."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_argument_id_count(schema: Schema, metamodel: TextXMetaModel):
-    """Check that Fields only have one normal ID parameter.
+def validate_arguments(schema: Schema, metamodel: TextXMetaModel):
+    """Check that reference a maximum of one Object or Base.
 
     Args:
         schema (Schema): The parsed schema definition.
@@ -132,115 +109,25 @@ def validate_argument_id_count(schema: Schema, metamodel: TextXMetaModel):
     """
     _ = metamodel
 
-    # loop for custom queries and mutations
+    # loop for custom operations
     operations = xtx.get_children_of_type("Operation", schema)
 
-    for entity in operations:
-        count = 0
-
-        # check for multiple IDs
-        for argument in entity.arguments:
-            if argument.value.name == "ID":
-                count = count + 1
-
-        if count > 1:
-            msg = f"More than one ID found for {entity._tx_fqn} {entity.name}"
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-        # check for multiple refs or mix
+    for operation in operations:
         count = 0
         is_ref = False
 
-        for argument in entity.arguments:
-            if argument.value.name != "ID":
-                count = count + 1
+        for argument in operation.arguments:
+            count = count + 1
 
-                if argument.value._tx_fqn in ["entity.Object", "entity.Base"]:
-                    is_ref = True
+            if argument.value._tx_fqn in ["entity.Object", "entity.Base"]:
+                is_ref = True
 
         if is_ref and count > 1:
             msg = (
-                f"The Operation {entity.name} references more than one Object "
+                f"The Operation {operation.name} references more than one Object "
                 "or tries to mix them. Currently not supported"
             )
             raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-
-def validate_array_id(schema: Schema, metamodel: TextXMetaModel):
-    """Check that Fields only have one normal ID parameter.
-
-    Args:
-        schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
-
-    Raises:
-        TextXSemanticError: Exception for logical errors.
-    """
-    _ = metamodel
-
-    fields = xtx.get_children_of_type("Field", schema)
-    arguments = xtx.get_children_of_type("Argument", schema)
-
-    for field in fields:
-        if field.value.name == "ID" and field.is_array:
-            msg = f"Array ID found for the field {field.name}."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-    for argument in arguments:
-        if argument.value.name == "ID" and argument.is_array:
-            msg = f"Array ID found for argument {argument.name}"
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-
-def validate_reference(schema: Schema, metamodel: TextXMetaModel):
-    """Check that referenced objects use a ID.
-
-    Args:
-        schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
-
-    Raises:
-        TextXSemanticError: Exception for logical errors.
-    """
-    _ = metamodel
-
-    entities = xtx.get_children_of_type("Object", schema)
-    for ent in entities:
-        if (has_aggregation(ent) and not get_id(ent)) or (has_composition(ent) and not get_id(ent)):
-            msg = f"The type {ent.name} specifies a composition or aggregation but no ID value."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-        fields = list(
-            filter(
-                lambda x: x.value._tx_fqn == "entity.Object"
-                and (not x.is_nested and not x.is_composition and not x.is_aggregation),
-                ent.fields,
-            )
-        )
-
-        for field in fields:
-            if not get_id(field.value):
-                msg = f"The field {field.name} of type {ent.name} references a type with no ID."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-    entities = xtx.get_children_of_type("Base", schema)
-    for ent in entities:
-        if (has_aggregation(ent) and not get_id(ent)) or (has_composition(ent) and not get_id(ent)):
-            msg = f"The base {ent.name} specifies a composition or aggregation but no ID value."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-        fields = list(
-            filter(
-                lambda x: x.value._tx_fqn == "entity.Object"
-                and (not x.is_nested and not x.is_composition and not x.is_aggregation),
-                ent.fields,
-            )
-        )
-
-        for field in fields:
-            if not get_id(field.value):
-                msg = f"The field {field.name} of base {ent.name} references a type with no ID."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
 def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
@@ -255,15 +142,13 @@ def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
     """
     _ = metamodel
 
-    # get all queries who do not belong to objects
-    apis = xtx.get_children_of_type("Api", schema)
-    apis = list(filter(lambda x: x.parent._tx_fqn != "entity.Object", apis))
+    # loop for custom operations
+    operations = xtx.get_children_of_type("Operation", schema)
 
-    for api in apis:
-        for operation in api.operations:
-            if not operation.path:
-                msg = f"The custom Operation {operation.name} needs to specify a path."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+    for operation in operations:
+        if not operation.path:
+            msg = f"The custom Operation {operation.name} needs to specify a path."
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
 def validate_nested_bases(schema: Schema, metamodel: TextXMetaModel):
@@ -299,12 +184,11 @@ def validate_operations(schema: Schema):
     names = []
     paths = []
 
-    apis = xtx.get_children_of_type("Api", schema)
+    operations = xtx.get_children_of_type("Operation", schema)
 
-    for api in apis:
-        for operation in api.operations:
-            names.append(operation.name)
-            paths.append(operation.method + operation.path)
+    for operation in operations:
+        names.append(operation.name)
+        paths.append(operation.method + operation.path)
 
     if len(names) != len(set(names)):
         msg = "Duplicate operation names found."
@@ -313,64 +197,3 @@ def validate_operations(schema: Schema):
     if len(paths) != len(set(paths)):
         msg = "Duplicate operation paths found."
         raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-
-def get_id(entity: Union[Base, Object, Field]) -> str:
-    """Returns the name of the ID of a Object or Base.
-
-    Args:
-        entity (object): Either entity.Base or entity.Object.
-
-    Returns:
-        str: The name of the ID. None if no ID is found.
-    """
-    field_entity_name = None
-
-    if entity._tx_fqn == "entity.Object" or entity._tx_fqn == "entity.Base":
-
-        if entity.supertype:
-            field_entity_name = get_id(entity.supertype)
-
-        for field in entity.fields:
-            if field.value.name == "ID":
-                return field.name
-
-    return field_entity_name
-
-
-def has_composition(obj: Object) -> bool:
-    """Checks if the object has any composition.
-
-    Args:
-        obj (object): entity.Object
-
-    Returns:
-        bool: Returns true for any composition.
-    """
-    ret = False
-
-    for field in obj.fields:
-        if field.is_composition and field.value._tx_fqn == "entity.Object":
-            ret = True
-            break
-
-    return ret
-
-
-def has_aggregation(obj: Object) -> bool:
-    """Checks if the object has any aggregation.
-
-    Args:
-        obj (object): entity.Object
-
-    Returns:
-        bool: Returns true for any aggregation.
-    """
-    ret = False
-
-    for field in obj.fields:
-        if field.is_aggregation and field.value._tx_fqn == "entity.Object":
-            ret = True
-            break
-
-    return ret

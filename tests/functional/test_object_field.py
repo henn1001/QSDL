@@ -19,7 +19,6 @@ class TestObjectField:
     """Test Fields for Objects.
 
     01. `Field` of `Object` may be a `Scalar` value with one one of the following:
-        * `ID`
         * `Int`
         * `Long`
         * `Float`
@@ -37,11 +36,7 @@ class TestObjectField:
 
     05. `Field` of `Object` value may be a list when enclosed with brackets.
 
-    06. `Field` of `Object` value may not be a list for `Scalar` `ID`.
-
     07. `Field` of `Object` value may be marked as required.
-
-    08. `Field` of `Object` values may only have one `ID`. This includes inherited values.
 
     """
 
@@ -50,7 +45,6 @@ class TestObjectField:
 
         test_input = """\
             type Foo {
-                id: ID
                 int: Int
                 long: Long
                 float: Float
@@ -118,7 +112,7 @@ class TestObjectField:
         """Verify base usage"""
         test_input = """\
             base Foo {
-                field: ID
+                field: Int
             }
 
             type Bar {
@@ -136,7 +130,7 @@ class TestObjectField:
         """Verify base usage"""
         test_input = """\
             base Base {
-                field: ID
+                field: Int
             }
 
             type Object {
@@ -150,7 +144,7 @@ class TestObjectField:
         """Verify object usage"""
         test_input = """\
             type Foo {
-                field: ID
+                field: Int
             }
 
             type Bar {
@@ -183,7 +177,11 @@ class TestObjectField:
         properties = openapi["components"]["schemas"]["Foo"]["properties"]
 
         for key, value in properties.items():
-            if key == "int":
+            if key == "id":
+                assert value["type"] == "integer"
+                if "int64":
+                    assert value["format"] == "int64"
+            elif key == "int":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "integer"
                 assert value["format"] == "int32"
@@ -207,17 +205,6 @@ class TestObjectField:
             else:
                 assert False
 
-    def test_field_object_06_negative(self):
-        """Verify that we can not use array IDs"""
-
-        test_input = """\
-            type Foo {
-                field: [ID]
-            }
-        """
-
-        wrapper_generate_failure(test_input)
-
     def test_field_object_07_positive(self):
         """Verify required"""
         test_input = """\
@@ -233,22 +220,3 @@ class TestObjectField:
 
         assert "field1" in required
         assert "field2" in required
-
-    def test_field_object_08_negative(self):
-        """Verify multiple IDs"""
-
-        test_input = """\
-            base One {
-                id: ID
-            }
-
-            base Two extends One{
-                name: String
-            }
-
-            type Three extends Two {
-                field: ID
-            }
-        """
-
-        wrapper_generate_failure(test_input)

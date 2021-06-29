@@ -70,12 +70,10 @@ class TestDirective:
         """Verify usage of @nested"""
         test_input = """\
             base Foo {
-                id: ID
                 field1: Bar @nested
             }
 
             type Bar {
-                id: ID
                 name: String
             }
 
@@ -96,12 +94,10 @@ class TestDirective:
         """Verify usage of @nested"""
         test_input = """\
             base Foo {
-                id: ID
                 field1: Bar @nested
             }
 
             base Bar {
-                id: ID
                 name: String
             }
 
@@ -122,12 +118,10 @@ class TestDirective:
         """Verify usage of @nested"""
         test_input = """\
             base Base {
-                id: ID
                 field1: Nested
             }
 
             base Nested {
-                id: ID
                 name: String
             }
 
@@ -147,7 +141,6 @@ class TestDirective:
             }
 
             base Foo {
-                id: ID
                 name: String @readOnly
             }
 
@@ -181,7 +174,6 @@ class TestDirective:
             }
 
             base Foo {
-                id: ID
                 name: String @writeOnly
             }
 
@@ -210,13 +202,13 @@ class TestDirective:
         """Verify usage of @composition"""
         test_input = """\
             type Foo {
-                field: ID 
+                field: Int
                 composition: Bar @composition
                 ignored: String @composition
             }
 
             type Bar {
-                field: ID 
+                field: Int
             }
         """
 
@@ -225,20 +217,19 @@ class TestDirective:
         assert "composition" not in openapi["components"]["schemas"]["Foo"]["properties"]
         assert "ignored" in openapi["components"]["schemas"]["Foo"]["properties"]
 
-        assert "/foos/{foo_field}/bars" in openapi["paths"]
-        assert "/foos/{foo_field}/bars/{field}" in openapi["paths"]
+        assert "/foos/{foo_id}/bars" in openapi["paths"]
+        assert "/foos/{foo_id}/bars/{id}" in openapi["paths"]
 
     def test_directive_07_positive(self):
         """Verify usage of @aggregation"""
         test_input = """\
             type Foo {
-                field: ID 
                 aggregation: Bar @aggregation
                 ignored: String @aggregation
             }
 
             type Bar {
-                field: ID 
+                field: Int
             }
         """
 
@@ -247,9 +238,9 @@ class TestDirective:
         assert "aggregation" not in openapi["components"]["schemas"]["Foo"]["properties"]
         assert "ignored" in openapi["components"]["schemas"]["Foo"]["properties"]
 
-        assert "/foos/{foo_field}/bars" in openapi["paths"]
-        assert "/foos/{foo_field}/bars/{field}/add" in openapi["paths"]
-        assert "/foos/{foo_field}/bars/{field}/remove" in openapi["paths"]
+        assert "/foos/{foo_id}/bars" in openapi["paths"]
+        assert "/foos/{foo_id}/bars/{id}/add" in openapi["paths"]
+        assert "/foos/{foo_id}/bars/{id}/remove" in openapi["paths"]
 
     def test_directive_08_positive(self):
         """Verify usage of @path"""
@@ -277,10 +268,10 @@ class TestDirective:
         """Verify usage of @path"""
         test_input = """\
             type Foo {
-                id : ID
+                field : Int
 
                 extend Api {
-                    getObject: String
+                    getObject: String @path(value:"foos")
                     getObjects: [String] @path(value:"objects")
                 }
             }
@@ -319,7 +310,7 @@ class TestDirective:
             }
 
             type Bar @namespace(value:"Test") {
-                field : ID
+                field : Int
             }
 
             extend Api @namespace(value:"Test") {
@@ -331,9 +322,9 @@ class TestDirective:
 
         assert "Test" in openapi["paths"]["/bars"]["get"]["tags"]
         assert "Test" in openapi["paths"]["/bars"]["post"]["tags"]
-        assert "Test" in openapi["paths"]["/bars/{field}"]["get"]["tags"]
-        assert "Test" in openapi["paths"]["/bars/{field}"]["put"]["tags"]
-        assert "Test" in openapi["paths"]["/bars/{field}"]["patch"]["tags"]
-        assert "Test" in openapi["paths"]["/bars/{field}"]["delete"]["tags"]
+        assert "Test" in openapi["paths"]["/bars/{id}"]["get"]["tags"]
+        assert "Test" in openapi["paths"]["/bars/{id}"]["put"]["tags"]
+        assert "Test" in openapi["paths"]["/bars/{id}"]["patch"]["tags"]
+        assert "Test" in openapi["paths"]["/bars/{id}"]["delete"]["tags"]
 
         assert "Test" in openapi["paths"]["/path"]["get"]["tags"]

@@ -242,7 +242,7 @@ paths:
                 $ref: '#/components/schemas/Role'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/projects/{project_id}/roles/{role}':
+  '/projects/{project_id}/roles/{id}':
     get:
       tags:
         - Management
@@ -255,7 +255,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: role
+        - name: id
           in: path
           required: true
           schema:
@@ -282,7 +282,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: role
+        - name: id
           in: path
           required: true
           schema:
@@ -315,7 +315,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: role
+        - name: id
           in: path
           required: true
           schema:
@@ -348,7 +348,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: role
+        - name: id
           in: path
           required: true
           schema:
@@ -359,14 +359,14 @@ paths:
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/sprints/{sprint_name}/roles':
+  '/sprints/{sprint_id}/roles':
     get:
       tags:
         - Management
       summary: List Roles
       operationId: getRolesForSprint
       parameters:
-        - name: sprint_name
+        - name: sprint_id
           in: path
           required: true
           schema:
@@ -409,7 +409,7 @@ paths:
       summary: Create a Role
       operationId: createRoleForSprint
       parameters:
-        - name: sprint_name
+        - name: sprint_id
           in: path
           required: true
           schema:
@@ -430,20 +430,20 @@ paths:
                 $ref: '#/components/schemas/Role'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/sprints/{sprint_name}/roles/{role}':
+  '/sprints/{sprint_id}/roles/{id}':
     get:
       tags:
         - Management
       summary: Read the specified Role
       operationId: getRoleForSprint
       parameters:
-        - name: sprint_name
+        - name: sprint_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: role
+        - name: id
           in: path
           required: true
           schema:
@@ -464,13 +464,13 @@ paths:
       summary: Replace the specified Role
       operationId: replaceRoleForSprint
       parameters:
-        - name: sprint_name
+        - name: sprint_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: role
+        - name: id
           in: path
           required: true
           schema:
@@ -497,13 +497,13 @@ paths:
       summary: Update the specified Role
       operationId: updateRoleForSprint
       parameters:
-        - name: sprint_name
+        - name: sprint_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: role
+        - name: id
           in: path
           required: true
           schema:
@@ -530,13 +530,13 @@ paths:
       summary: Delete the specified Role
       operationId: deleteRoleForSprint
       parameters:
-        - name: sprint_name
+        - name: sprint_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: role
+        - name: id
           in: path
           required: true
           schema:
@@ -547,14 +547,14 @@ paths:
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/roles/{role_role}/users':
+  '/roles/{role_id}/users':
     get:
       tags:
         - Management
       summary: List Users
       operationId: getUsersForRole
       parameters:
-        - name: role_role
+        - name: role_id
           in: path
           required: true
           schema:
@@ -565,7 +565,7 @@ paths:
           required: false
           schema:
             type: integer
-            format: int64
+            format: int32
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -597,20 +597,20 @@ paths:
                 $ref: '#/components/schemas/UserList'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/roles/{role_role}/users/{name}/add':
+  '/roles/{role_id}/users/{id}/add':
     post:
       tags:
         - Management
       summary: Add User
       operationId: addUserToRole
       parameters:
-        - name: role_role
+        - name: role_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -621,20 +621,20 @@ paths:
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/roles/{role_role}/users/{name}/remove':
+  '/roles/{role_id}/users/{id}/remove':
     post:
       tags:
         - Management
       summary: Remove User
       operationId: removeUserFromRole
       parameters:
-        - name: role_role
+        - name: role_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -657,7 +657,7 @@ paths:
           required: false
           schema:
             type: integer
-            format: int64
+            format: int32
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -709,14 +709,14 @@ paths:
                 $ref: '#/components/schemas/User'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/users/{name}':
+  '/users/{id}':
     get:
       tags:
         - Management
       summary: Read the specified User
       operationId: getUser
       parameters:
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -737,7 +737,7 @@ paths:
       summary: Replace the specified User
       operationId: replaceUser
       parameters:
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -764,7 +764,7 @@ paths:
       summary: Update the specified User
       operationId: updateUser
       parameters:
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -791,7 +791,7 @@ paths:
       summary: Delete the specified User
       operationId: deleteUser
       parameters:
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -873,7 +873,7 @@ paths:
                 $ref: '#/components/schemas/Ticket'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/projects/{project_id}/tickets/{number}':
+  '/projects/{project_id}/tickets/{id}':
     get:
       tags:
         - Incident
@@ -886,7 +886,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: number
+        - name: id
           in: path
           required: true
           schema:
@@ -913,7 +913,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: number
+        - name: id
           in: path
           required: true
           schema:
@@ -946,7 +946,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: number
+        - name: id
           in: path
           required: true
           schema:
@@ -979,7 +979,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: number
+        - name: id
           in: path
           required: true
           schema:
@@ -990,14 +990,14 @@ paths:
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/tickets/{ticket_number}/milestones':
+  '/tickets/{ticket_id}/milestones':
     get:
       tags:
         - Incident
       summary: List Milestones
       operationId: getMilestonesForTicket
       parameters:
-        - name: ticket_number
+        - name: ticket_id
           in: path
           required: true
           schema:
@@ -1034,20 +1034,20 @@ paths:
                 $ref: '#/components/schemas/MilestoneList'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/tickets/{ticket_number}/milestones/{milestone}/add':
+  '/tickets/{ticket_id}/milestones/{id}/add':
     post:
       tags:
         - Incident
       summary: Add Milestone
       operationId: addMilestoneToTicket
       parameters:
-        - name: ticket_number
+        - name: ticket_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: milestone
+        - name: id
           in: path
           required: true
           schema:
@@ -1058,20 +1058,20 @@ paths:
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/tickets/{ticket_number}/milestones/{milestone}/remove':
+  '/tickets/{ticket_id}/milestones/{id}/remove':
     post:
       tags:
         - Incident
       summary: Remove Milestone
       operationId: removeMilestoneFromTicket
       parameters:
-        - name: ticket_number
+        - name: ticket_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: milestone
+        - name: id
           in: path
           required: true
           schema:
@@ -1153,7 +1153,7 @@ paths:
                 $ref: '#/components/schemas/Milestone'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/projects/{project_id}/milestones/{milestone}':
+  '/projects/{project_id}/milestones/{id}':
     get:
       tags:
         - Incident
@@ -1166,7 +1166,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: milestone
+        - name: id
           in: path
           required: true
           schema:
@@ -1193,7 +1193,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: milestone
+        - name: id
           in: path
           required: true
           schema:
@@ -1226,7 +1226,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: milestone
+        - name: id
           in: path
           required: true
           schema:
@@ -1259,7 +1259,7 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: milestone
+        - name: id
           in: path
           required: true
           schema:
@@ -1270,14 +1270,14 @@ paths:
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/milestones/{milestone_milestone}/sprints':
+  '/milestones/{milestone_id}/sprints':
     get:
       tags:
         - Incident
       summary: List Sprints
       operationId: getSprints
       parameters:
-        - name: milestone_milestone
+        - name: milestone_id
           in: path
           required: true
           schema:
@@ -1320,7 +1320,7 @@ paths:
       summary: Create a Sprint
       operationId: createSprint
       parameters:
-        - name: milestone_milestone
+        - name: milestone_id
           in: path
           required: true
           schema:
@@ -1341,20 +1341,20 @@ paths:
                 $ref: '#/components/schemas/Sprint'
         default:
           $ref: '#/components/responses/DefaultError'
-  '/milestones/{milestone_milestone}/sprints/{name}':
+  '/milestones/{milestone_id}/sprints/{id}':
     get:
       tags:
         - Incident
       summary: Read the specified Sprint
       operationId: getSprint
       parameters:
-        - name: milestone_milestone
+        - name: milestone_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -1375,13 +1375,13 @@ paths:
       summary: Replace the specified Sprint
       operationId: replaceSprint
       parameters:
-        - name: milestone_milestone
+        - name: milestone_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -1408,13 +1408,13 @@ paths:
       summary: Update the specified Sprint
       operationId: updateSprint
       parameters:
-        - name: milestone_milestone
+        - name: milestone_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -1441,13 +1441,13 @@ paths:
       summary: Delete the specified Sprint
       operationId: deleteSprint
       parameters:
-        - name: milestone_milestone
+        - name: milestone_id
           in: path
           required: true
           schema:
             type: integer
             format: int64
-        - name: name
+        - name: id
           in: path
           required: true
           schema:
@@ -1663,14 +1663,9 @@ components:
 
     BaseType:
       required:
-        - id
         - name
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          readOnly: true
         name:
           type: string
         description:
@@ -1711,11 +1706,15 @@ components:
       allOf:
         - $ref: '#/components/schemas/BaseType'
         -
+          required:
+            - id
           type: object
           properties:
+            id:
+              type: integer
+              format: int64
+              readOnly: true
             archive:
-              description: |
-                Archive this Project
               type: boolean
               writeOnly: true
             metrics:
@@ -1740,12 +1739,17 @@ components:
 
     Role:
       required:
+        - id
         - role
       type: object
       properties:
-        role:
+        id:
           type: integer
           format: int64
+          readOnly: true
+        role:
+          type: integer
+          format: int32
         users:
           type: array
           items:
@@ -1768,12 +1772,17 @@ components:
 
     User:
       required:
+        - id
         - name
       type: object
       properties:
-        name:
+        id:
           type: integer
           format: int64
+          readOnly: true
+        name:
+          type: integer
+          format: int32
         full_name:
           type: string
         emails:
@@ -1800,12 +1809,17 @@ components:
 
     Ticket:
       required:
+        - id
         - number
       type: object
       properties:
-        number:
+        id:
           type: integer
           format: int64
+          readOnly: true
+        number:
+          type: integer
+          format: int32
         title:
           type: string
         issuer:
@@ -1836,12 +1850,17 @@ components:
 
     Milestone:
       required:
+        - id
         - milestone
       type: object
       properties:
-        milestone:
+        id:
           type: integer
           format: int64
+          readOnly: true
+        milestone:
+          type: integer
+          format: int32
 
     SprintList:
       required:
@@ -1860,12 +1879,17 @@ components:
 
     Sprint:
       required:
+        - id
         - name
       type: object
       properties:
-        name:
+        id:
           type: integer
           format: int64
+          readOnly: true
+        name:
+          type: integer
+          format: int32
         roles:
           type: array
           items:
@@ -1880,14 +1904,20 @@ components:
         id:
           type: integer
           format: int64
+          readOnly: true
         name:
           type: string
 
     QueryMachine:
       required:
+        - id
         - request
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
         request:
           type: string
           writeOnly: true

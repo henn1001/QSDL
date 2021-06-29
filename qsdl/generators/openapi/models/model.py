@@ -112,7 +112,6 @@ class Model:
     is_crud: bool = False
     is_supertype: bool = False
     is_nested: bool = False
-    has_id: bool = False
 
     def __post_init__(self):
 
@@ -139,7 +138,6 @@ class Model:
         self.is_crud = not self._ref.api if self.is_object else False
         self.is_supertype = util.is_supertype(self._ref) if self.is_base else False
         self.is_nested = util.is_nested(self._ref)
-        self.has_id = util.has_id(self._ref)
 
     def _add_attributes(self):
 

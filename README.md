@@ -52,7 +52,7 @@ The QSDL CLI command has the following structure:
 
 For example, to run the generator on a minimal schema definition file:
 
-    $ echo "type Project { id: ID name: String }" > project.tx
+    $ echo "type Project { name: String }" > project.tx
     $ qsdl project.tx -g openapi
     $ tree srcgen/
       srcgen/
@@ -133,7 +133,6 @@ Example:
 
 There are already several builtin types available.
 
-- `ID`
 - `Int`
 - `Long`
 - `Float`
@@ -195,7 +194,6 @@ Base Rules:
 Field Rules:
 
 1.  `Field` of `Base` may be a `Scalar` value with one one of the following:
-    * `ID`
     * `Int`
     * `Long`
     * `Float`
@@ -213,19 +211,12 @@ Field Rules:
 
 5.  `Field` of `Base` value may be a list when enclosed with brackets.
 
-6.  `Field` of `Base` value may not be a list for `Scalar` `ID`.
-
-7.  `Field` of `Base` value may be marked as required.
-
-8.  `Field` of `Base` values may only have one `ID`. This includes inherited values.
+6.  `Field` of `Base` value may be marked as required.
 
 Example:
 
     "The very basic type all Domain Objects should have."
     base BaseType {
-        "The Object identifier."
-        id: ID! @readOnly
-
         "The Object name."
         name: String! @query
 
@@ -267,7 +258,6 @@ Object Rules:
 Field Rules:
 
 1.  `Field` of `Object` may be a `Scalar` value with one one of the following:
-    * `ID`
     * `Int`
     * `Long`
     * `Float`
@@ -285,16 +275,11 @@ Field Rules:
 
 5.  `Field` of `Object` value may be a list when enclosed with brackets.
 
-6.  `Field` of `Object` value may not be a list for `Scalar` `ID`.
-
-7.  `Field` of `Object` value may be marked as required.
-
-8.  `Field` of `Object` values may only have one `ID`. This includes inherited values.
+6.  `Field` of `Object` value may be marked as required.
 
 Example:
 
     base BaseType {
-        id: ID! @readOnly
         name: String! @query
         description: String
         creation_by: String @readOnly
@@ -342,8 +327,7 @@ Api Rules:
 
 Operation Rules:
 
-1.  `Operation` of `Api` may be a `Scalar` value with one one of the following:
-    * `ID`
+1.  `Operation` of `Api` value may be a `Scalar` value with one one of the following:
     * `Int`
     * `Long`
     * `Float`

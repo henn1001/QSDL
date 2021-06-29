@@ -23,7 +23,6 @@ base Metric {
 }
 
 base BaseType {
-    id: ID! @readOnly
     name: String! @query
     description: String
     creation_by: String @readOnly
@@ -36,7 +35,6 @@ base BaseType {
 
 // NameSpace Management
 type Project extends BaseType @namespace(value:"Management") {
-    "Archive this Project"
     archive: Boolean @writeOnly
     metrics: [Metric] @nested
     tickets: [Ticket] @composition
@@ -45,12 +43,12 @@ type Project extends BaseType @namespace(value:"Management") {
 }
 
 type Role @namespace(value:"Management"){
-    role: ID!
+    role: Int!
     users: [User] @aggregation @nested
 }
 
 type User @namespace(value:"Management"){
-    name: ID! @query
+    name: Int! @query
     full_name: String
     emails: [String]
     password: String @protected
@@ -59,7 +57,7 @@ type User @namespace(value:"Management"){
 
 // NameSpace Incident
     type Ticket @namespace(value:"Incident"){
-        number: ID!
+        number: Int!
         title: String
         issuer: User
         issuer_body: User @nested @readOnly
@@ -69,25 +67,24 @@ type User @namespace(value:"Management"){
     }
 
     type Milestone @namespace(value:"Incident"){
-        milestone: ID!
+        milestone: Int!
         sprints: [Sprint] @composition
     }
 
     type Sprint @namespace(value:"Incident"){
-        name: ID!
+        name: Int!
         roles: [Role] @composition @nested
     }
 
     type Buzzword @namespace(value:"Incident"){
-        id: ID!
         name: String!
 
         extend Api {
-            getBuzzwords(name: String): [Buzzword]
-            createBuzzword(body: Buzzword): Buzzword @method(value: POST)
-            getBuzzword(id: ID!): Buzzword
-            updateBuzzword(id: ID!, body: String, test: [Boolean]): Buzzword @method(value: PUT)
-            deleteBuzzword(id: ID!): Void @method(value: DELETE)
+            getBuzzwords(name: String): [Buzzword] @path(value:"/buzzwords")
+            createBuzzword(body: Buzzword): Buzzword @path(value:"/buzzwords") @method(value: POST)
+            getBuzzword: Buzzword @path(value:"/buzzwords/{id}")
+            updateBuzzword(body: String, test: [Boolean]): Buzzword @path(value:"/buzzwords/{id}") @method(value: PUT)
+            deleteBuzzword: Void @path(value:"/buzzwords/{id}") @method(value: DELETE)
         }
     }
 

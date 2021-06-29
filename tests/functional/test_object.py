@@ -53,7 +53,7 @@ class TestObject:
         """Verify empty fields"""
         test_input = """\
             type Foo {
-                field: ID
+                field: Int
             }
         """
 
@@ -72,7 +72,7 @@ class TestObject:
         """Verify object extends base"""
         test_input = """\
             base Foo {
-                id: ID
+                field: Int
             }
 
             type Bar extends Foo {

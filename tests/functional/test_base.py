@@ -32,7 +32,7 @@ class TestBase:
         """Verify PascalCase naming convention"""
         test_input = """\
             base Foo {
-                field: ID
+                field: Int
             }
         """
 
@@ -53,7 +53,7 @@ class TestBase:
         """Verify empty fields"""
         test_input = """\
             base Foo {
-                field: ID
+                field: Int
             }
         """
 
@@ -72,7 +72,7 @@ class TestBase:
         """Verify base extends base"""
         test_input = """\
             base Foo {
-                id: ID
+                field: Int
             }
 
             base Bar extends Foo {

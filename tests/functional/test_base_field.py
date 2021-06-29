@@ -19,7 +19,6 @@ class TestBaseField:
     """Test Fields for Bases.
 
     01. `Field` of `Base` may be a `Scalar` value with one one of the following:
-        * `ID`
         * `Int`
         * `Long`
         * `Float`
@@ -37,11 +36,7 @@ class TestBaseField:
 
     05. `Field` of `Base` value may be a list when enclosed with brackets.
 
-    06. `Field` of `Base` value may not be a list for `Scalar` `ID`.
-
     07. `Field` of `Base` value may be marked as required.
-
-    08. `Field` of `Base` values may only have one `ID`. This includes inherited values.
 
     """
 
@@ -50,7 +45,6 @@ class TestBaseField:
 
         test_input = """\
             base Foo {
-                id: ID
                 int: Int
                 long: Long
                 float: Float
@@ -67,11 +61,7 @@ class TestBaseField:
         properties = openapi["components"]["schemas"]["Foo"]["properties"]
 
         for key, value in properties.items():
-            if key == "id":
-                assert value["type"] == "integer"
-                if "int64":
-                    assert value["format"] == "int64"
-            elif key == "int":
+            if key == "int":
                 assert value["type"] == "integer"
                 assert value["format"] == "int32"
             elif key == "long":
@@ -118,7 +108,7 @@ class TestBaseField:
         """Verify base usage"""
         test_input = """\
             base Foo {
-                field: ID
+                field: Int
             }
 
             base Bar {
@@ -136,7 +126,7 @@ class TestBaseField:
         """Verify base usage"""
         test_input = """\
             base Base {
-                field: ID
+                field: Int
             }
 
             base Type {
@@ -150,7 +140,7 @@ class TestBaseField:
         """Verify object usage"""
         test_input = """\
             type Foo {
-                field: ID
+                field: Int
             }
 
             base Bar {
@@ -207,17 +197,6 @@ class TestBaseField:
             else:
                 assert False
 
-    def test_field_base_06_negative(self):
-        """Verify that we can not use array IDs"""
-
-        test_input = """\
-            base Foo {
-                field: [ID]
-            }
-        """
-
-        wrapper_generate_failure(test_input)
-
     def test_field_base_07_positive(self):
         """Verify required"""
         test_input = """\
@@ -233,22 +212,3 @@ class TestBaseField:
 
         assert "field1" in required
         assert "field2" in required
-
-    def test_field_base_08_negative(self):
-        """Verify multiple IDs"""
-
-        test_input = """\
-            base One {
-                id: ID
-            }
-
-            base Two extends One{
-                name: String
-            }
-
-            base Three extends Two {
-                field: ID
-            }
-        """
-
-        wrapper_generate_failure(test_input)

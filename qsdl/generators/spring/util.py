@@ -54,33 +54,6 @@ def custom_type(input_type: str) -> str:
     return custom_types.get(input_type, input_type)
 
 
-def has_id(entity: Union[Base, Object]) -> bool:
-    """Checks if the Base or Object has an ID.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
-
-        if entity.supertype:
-            ret = has_id(entity.supertype)
-
-            if ret:
-                return True
-
-        for field in entity.fields:
-
-            if field.value.name == "ID":
-                return True
-
-    return ret
-
-
 def has_list(entity: Union[Base, Object]) -> bool:
     """Checks if the Base or Object has an array.
 
@@ -212,6 +185,7 @@ def has_required(entity: Union[Base, Object]) -> bool:
 
     return ret
 
+
 def has_aggregation(entity: Object) -> bool:
     """Checks if the Object is aggregated somewhere.
 
@@ -317,6 +291,7 @@ def is_nested(entity: object) -> bool:
                 return True
 
     return False
+
 
 def is_aggregation(entity: Object, parent: Object) -> bool:
     """Checks if the first Object is aggregated in the second Object.
@@ -466,6 +441,7 @@ def get_filtered_fields_as_list(entity: Object) -> List[Field]:
 
     return fields
 
+
 def get_id_for_repo(entity: Object) -> str:
     """Returns the ID name of a API Object.
 
@@ -498,6 +474,7 @@ def get_id_for_repo(entity: Object) -> str:
 
     return ret.capitalize()
 
+
 def get_parent_id_for_repo(entity: Object) -> str:
     """Returns the ID name of a API Object.
 
@@ -524,7 +501,6 @@ def get_parent_id_for_repo(entity: Object) -> str:
             break
 
         tmp = tmp.supertype
-
 
     ret = entity.name.lower() + ret.capitalize()
 

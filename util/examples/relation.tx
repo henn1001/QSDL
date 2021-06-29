@@ -20,7 +20,6 @@ enum Status {
 }
 
 base BaseType {
-    id: ID! @readOnly
     name: String! @query
     description: String
     creation_by: String @readOnly
@@ -38,19 +37,16 @@ type Project extends BaseType @namespace(value:"Management") {
 }
 
 type Role @namespace(value:"Management") {
-    id: ID! @readOnly
     name: String!
 }
 
 type User @namespace(value:"Management"){
-    id: ID! @readOnly
     name: String!
 }
 
 
 // NameSpace Incident
 type Ticket @namespace(value:"Incident"){
-    id: ID! @readOnly
     title: String
     body: String
     status: Status

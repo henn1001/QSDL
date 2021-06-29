@@ -70,7 +70,6 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
         "Double": Scalar(name="Double"),
         "String": Scalar(name="String"),
         "Boolean": Scalar(name="Boolean"),
-        "ID": Scalar(name="ID"),
         "Date": Scalar(name="Date"),
         "Object": Scalar(name="Object"),
         "Void": Scalar(name="Void"),

@@ -83,11 +83,10 @@ class TestApi:
         """Verify Api CRUD overwrite"""
         test_input = """\
             type Foo {
-                id: ID
                 name: String
 
                 extend Api {
-                    getFoo: Foo
+                    getFoo: Foo @path(value:"/foos")
                 }
             }
         """
@@ -106,7 +105,6 @@ class TestApi:
         """Verify Api CRUD overwrite"""
         test_input = """\
             type Type {
-                id: ID
                 name: String
 
                 extend Api {
@@ -135,7 +133,6 @@ class TestApi:
 
         test_input = """\
             type Type {
-                id: ID
                 name: String
             }
 
@@ -162,7 +159,6 @@ class TestApi:
 
         test_input = """\
             type Type {
-                id: ID
                 name: String
             }
 

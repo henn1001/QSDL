@@ -740,14 +740,9 @@ components:
 
     BaseType:
       required:
-        - id
         - name
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          readOnly: true
         name:
           type: string
         description:
@@ -788,8 +783,14 @@ components:
       allOf:
         - $ref: '#/components/schemas/BaseType'
         -
+          required:
+            - id
           type: object
           properties:
+            id:
+              type: integer
+              format: int64
+              readOnly: true
             archive:
               type: boolean
               writeOnly: true

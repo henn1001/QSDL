@@ -6,10 +6,16 @@ package com.test.model;
 import java.util.*;
 import javax.persistence.*;
 import javax.validation.*;
+import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
 @Entity
 public class Project extends BaseType {
+
+  @Id
+  @GeneratedValue(generator="optimized-sequence")
+  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+  private Long id;
 
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
   private Boolean archive;
@@ -19,6 +25,18 @@ public class Project extends BaseType {
   private Set<Role> roles = new LinkedHashSet<>();
 
 
+
+  /**
+   * id
+   */
+  public Long getId() {
+    return id;
+  }
+
+  public Project setId(Long id) {
+    this.id = id;
+    return this;
+  }
 
   /**
    * archive

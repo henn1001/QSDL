@@ -18,8 +18,7 @@ from tests import wrapper_generate, wrapper_generate_failure
 class TestApiOperation:
     """Test Fields for Operations.
 
-    01. `Operation` of `Api` may be a `Scalar` value with one one of the following:
-        * `ID`
+    01. `Operation` of `Api` value may be a `Scalar` value with one one of the following:
         * `Int`
         * `Long`
         * `Float`
@@ -47,7 +46,6 @@ class TestApiOperation:
 
         test_input = """\
             extend Api {
-                id: ID @path(value:"path1")
                 int: Int @path(value:"path2")
                 long: Long @path(value:"path3")
                 float: Float @path(value:"path4")
@@ -66,7 +64,6 @@ class TestApiOperation:
             return var["200"]["content"]["application/json"]["schema"]
 
         ops = [
-            ("/path1", "get", "integer", "int64"),
             ("/path2", "get", "integer", "int32"),
             ("/path3", "get", "integer", "int64"),
             ("/path4", "get", "number", "float"),
@@ -110,7 +107,7 @@ class TestApiOperation:
         """Verify base usage"""
         test_input = """\
             base Foo {
-                field: ID
+                field: String
             }
 
             extend Api {
@@ -130,7 +127,7 @@ class TestApiOperation:
         """Verify object usage"""
         test_input = """\
             type Foo {
-                field: ID
+                field: String
             }
 
             extend Api {
