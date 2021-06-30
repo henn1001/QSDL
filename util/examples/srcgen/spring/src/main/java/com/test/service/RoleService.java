@@ -52,10 +52,10 @@ public class RoleService {
     Long totalCount = pageable.totalCount(roleRepository.count());
     String nextCursor = pageable.nextCursor(items);
 
-    RoleList ret = new RoleList()
-        .setTotalCount(totalCount)
-        .setNextCursor(nextCursor)
-        .setItems(items);
+    RoleList ret = new RoleList();
+    ret.totalCount = totalCount;
+    ret.nextCursor = nextCursor;
+    ret.items = items;
 
     return ret;
   }
@@ -127,7 +127,7 @@ public class RoleService {
     }
 
     // update dbEntity with all writeable fields if present
-    Optional.ofNullable(body.getName()).ifPresent(v -> dbEntity.setName(v));
+    Optional.ofNullable(body.name).ifPresent(v -> dbEntity.name = v);
 
     Role ret = roleRepository.save(dbEntity);
 

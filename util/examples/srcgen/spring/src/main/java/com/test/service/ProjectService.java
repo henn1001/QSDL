@@ -40,10 +40,10 @@ public class ProjectService {
     Long totalCount = pageable.totalCount(projectRepository.count());
     String nextCursor = pageable.nextCursor(items);
 
-    ProjectList ret = new ProjectList()
-        .setTotalCount(totalCount)
-        .setNextCursor(nextCursor)
-        .setItems(items);
+    ProjectList ret = new ProjectList();
+    ret.totalCount = totalCount;
+    ret.nextCursor = nextCursor;
+    ret.items = items;
 
     return ret;
   }
@@ -76,10 +76,10 @@ public class ProjectService {
 
     // update new object with all readOnly fields from previous entry
     body.copyIdentiy(dbEntity);
-    body.setCreationBy(dbEntity.getCreationBy());
-    body.setCreationDate(dbEntity.getCreationDate());
-    body.setLastUpdateBy(dbEntity.getLastUpdateBy());
-    body.setLastUpdateDate(dbEntity.getLastUpdateDate());
+    body.creationBy = dbEntity.creationBy;
+    body.creationDate = dbEntity.creationDate;
+    body.lastUpdateBy = dbEntity.lastUpdateBy;
+    body.lastUpdateDate = dbEntity.lastUpdateDate;
 
     Project ret = projectRepository.save(body);
 
@@ -95,10 +95,10 @@ public class ProjectService {
     }
 
     // update dbEntity with all writeable fields if present
-    Optional.ofNullable(body.getName()).ifPresent(v -> dbEntity.setName(v));
-    Optional.ofNullable(body.getDescription()).ifPresent(v -> dbEntity.setDescription(v));
-    Optional.ofNullable(body.getMetaInf()).ifPresent(v -> dbEntity.setMetaInf(v));
-    Optional.ofNullable(body.getArchive()).ifPresent(v -> dbEntity.setArchive(v));
+    Optional.ofNullable(body.name).ifPresent(v -> dbEntity.name = v);
+    Optional.ofNullable(body.description).ifPresent(v -> dbEntity.description = v);
+    Optional.ofNullable(body.metaInf).ifPresent(v -> dbEntity.metaInf = v);
+    Optional.ofNullable(body.archive).ifPresent(v -> dbEntity.archive = v);
 
     Project ret = projectRepository.save(dbEntity);
 

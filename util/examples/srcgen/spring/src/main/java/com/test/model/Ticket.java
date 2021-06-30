@@ -13,13 +13,13 @@ import com.fasterxml.jackson.annotation.*;
 public class Ticket extends AbstractPersistentObject {
 
   @JsonProperty(value = "title")
-  private String title;
+  public String title;
 
   @JsonProperty(value = "body")
-  private String body;
+  public String body;
 
   @JsonProperty(value = "status")
-  private Status status;
+  public Status status;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
@@ -27,42 +27,6 @@ public class Ticket extends AbstractPersistentObject {
   private Set<User> users = new LinkedHashSet<>();
 
 
-
-  /**
-   * title
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  public Ticket setTitle(String title) {
-    this.title = title;
-    return this;
-  }
-
-  /**
-   * body
-   */
-  public String getBody() {
-    return body;
-  }
-
-  public Ticket setBody(String body) {
-    this.body = body;
-    return this;
-  }
-
-  /**
-   * status
-   */
-  public Status getStatus() {
-    return status;
-  }
-
-  public Ticket setStatus(Status status) {
-    this.status = status;
-    return this;
-  }
 
   /**
    * users

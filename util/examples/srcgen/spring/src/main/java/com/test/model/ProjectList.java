@@ -15,61 +15,13 @@ public class ProjectList {
   @NotNull
   @Valid
   @JsonProperty(value = "items", required = true)
-  private List<Project> items = new ArrayList<>();
+  public List<Project> items = new ArrayList<>();
 
   @JsonProperty(value = "next_cursor")
-  private String nextCursor;
+  public String nextCursor;
 
   @JsonProperty(value = "total_count")
-  private Long totalCount;
-
-
-
-  /**
-   * items
-   */
-  public List<Project> getItems() {
-    return items;
-  }
-
-  public ProjectList setItems(List<Project> items) {
-    this.items = items;
-    return this;
-  }
-
-  public ProjectList addItemsItem(Project itemsItem) {
-    this.items.add(itemsItem);
-    return this;
-  }
-
-  public ProjectList removeItemsItem(Project itemsItem) {
-    this.items.remove(itemsItem);
-    return this;
-  }
-
-  /**
-   * nextCursor
-   */
-  public String getNextCursor() {
-    return nextCursor;
-  }
-
-  public ProjectList setNextCursor(String nextCursor) {
-    this.nextCursor = nextCursor;
-    return this;
-  }
-
-  /**
-   * totalCount
-   */
-  public Long getTotalCount() {
-    return totalCount;
-  }
-
-  public ProjectList setTotalCount(Long totalCount) {
-    this.totalCount = totalCount;
-    return this;
-  }
+  public Long totalCount;
 
 
 

@@ -14,10 +14,17 @@
     Long totalCount = pageable.totalCount({{api.name|lower}}Repository.count());
     String nextCursor = pageable.nextCursor(items);
 
+    {% if encapsulation %}
     {{api.name}}List ret = new {{api.name}}List()
         .setTotalCount(totalCount)
         .setNextCursor(nextCursor)
         .setItems(items);
+    {% else %}
+    {{api.name}}List ret = new {{api.name}}List();
+    ret.totalCount = totalCount;
+    ret.nextCursor = nextCursor;
+    ret.items = items;
+    {% endif %}
 
     return ret;
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
@@ -98,8 +105,12 @@
 
     // update new object with all readOnly fields from previous entry
     body.copyIdentiy(dbEntity);
-    {% for p in operation.get_read_only_parameters() %}
+    {% for p in operation.get_read_only_parameters(encapsulation) %}
+      {% if encapsulation %}
     body.set{{p}}(dbEntity.get{{p}}());
+      {% else %}
+    body.{{p}} = dbEntity.{{p}};
+      {% endif %}
     {% endfor %}
 
     {{api.name}} ret = {{api.name|lower}}Repository.save(body);
@@ -126,8 +137,12 @@
     }
 
     // update dbEntity with all writeable fields if present
-    {% for p in operation.get_writable_parameters() %}
+    {% for p in operation.get_writable_parameters(encapsulation) %}
+      {% if encapsulation %}
     Optional.ofNullable(body.get{{p}}()).ifPresent(v -> dbEntity.set{{p}}(v));
+      {% else %}
+    Optional.ofNullable(body.{{p}}).ifPresent(v -> dbEntity.{{p}} = v);
+      {% endif %}
     {% endfor %}
 
     {{api.name}} ret = {{api.name|lower}}Repository.save(dbEntity);

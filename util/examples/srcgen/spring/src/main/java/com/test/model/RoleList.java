@@ -15,61 +15,13 @@ public class RoleList {
   @NotNull
   @Valid
   @JsonProperty(value = "items", required = true)
-  private List<Role> items = new ArrayList<>();
+  public List<Role> items = new ArrayList<>();
 
   @JsonProperty(value = "next_cursor")
-  private String nextCursor;
+  public String nextCursor;
 
   @JsonProperty(value = "total_count")
-  private Long totalCount;
-
-
-
-  /**
-   * items
-   */
-  public List<Role> getItems() {
-    return items;
-  }
-
-  public RoleList setItems(List<Role> items) {
-    this.items = items;
-    return this;
-  }
-
-  public RoleList addItemsItem(Role itemsItem) {
-    this.items.add(itemsItem);
-    return this;
-  }
-
-  public RoleList removeItemsItem(Role itemsItem) {
-    this.items.remove(itemsItem);
-    return this;
-  }
-
-  /**
-   * nextCursor
-   */
-  public String getNextCursor() {
-    return nextCursor;
-  }
-
-  public RoleList setNextCursor(String nextCursor) {
-    this.nextCursor = nextCursor;
-    return this;
-  }
-
-  /**
-   * totalCount
-   */
-  public Long getTotalCount() {
-    return totalCount;
-  }
-
-  public RoleList setTotalCount(Long totalCount) {
-    this.totalCount = totalCount;
-    return this;
-  }
+  public Long totalCount;
 
 
 

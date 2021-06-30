@@ -252,6 +252,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "basePath": "/v1",
         "database": config.database,
         "util": util,
+        "encapsulation": False,
     }
 
     # generate supporting files

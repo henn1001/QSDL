@@ -15,61 +15,13 @@ public class UserList {
   @NotNull
   @Valid
   @JsonProperty(value = "items", required = true)
-  private List<User> items = new ArrayList<>();
+  public List<User> items = new ArrayList<>();
 
   @JsonProperty(value = "next_cursor")
-  private String nextCursor;
+  public String nextCursor;
 
   @JsonProperty(value = "total_count")
-  private Long totalCount;
-
-
-
-  /**
-   * items
-   */
-  public List<User> getItems() {
-    return items;
-  }
-
-  public UserList setItems(List<User> items) {
-    this.items = items;
-    return this;
-  }
-
-  public UserList addItemsItem(User itemsItem) {
-    this.items.add(itemsItem);
-    return this;
-  }
-
-  public UserList removeItemsItem(User itemsItem) {
-    this.items.remove(itemsItem);
-    return this;
-  }
-
-  /**
-   * nextCursor
-   */
-  public String getNextCursor() {
-    return nextCursor;
-  }
-
-  public UserList setNextCursor(String nextCursor) {
-    this.nextCursor = nextCursor;
-    return this;
-  }
-
-  /**
-   * totalCount
-   */
-  public Long getTotalCount() {
-    return totalCount;
-  }
-
-  public UserList setTotalCount(Long totalCount) {
-    this.totalCount = totalCount;
-    return this;
-  }
+  public Long totalCount;
 
 
 

@@ -16,134 +16,38 @@ public class Project extends AbstractPersistentObject {
 
   @NotNull
   @JsonProperty(value = "name", required = true)
-  private String name;
+  public String name;
 
   @JsonProperty(value = "description")
-  private String description;
+  public String description;
 
   @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
-  private String creationBy;
+  public String creationBy;
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
-  private OffsetDateTime creationDate;
+  public OffsetDateTime creationDate;
 
   @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
-  private String lastUpdateBy;
+  public String lastUpdateBy;
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
-  private OffsetDateTime lastUpdateDate;
+  public OffsetDateTime lastUpdateDate;
 
   @Column(columnDefinition = "BINARY(1048576)")
   @org.hibernate.annotations.Type(type = "serializable")
   @JsonProperty(value = "meta_inf")
-  private Object metaInf;
+  public Object metaInf;
 
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
-  private Boolean archive;
+  public Boolean archive;
 
   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, orphanRemoval = true)
   @JsonIgnore
   private Set<Role> roles = new LinkedHashSet<>();
 
 
-
-  /**
-   * name
-   */
-  public String getName() {
-    return name;
-  }
-
-  public Project setName(String name) {
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * description
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  public Project setDescription(String description) {
-    this.description = description;
-    return this;
-  }
-
-  /**
-   * creationBy
-   */
-  public String getCreationBy() {
-    return creationBy;
-  }
-
-  public Project setCreationBy(String creationBy) {
-    this.creationBy = creationBy;
-    return this;
-  }
-
-  /**
-   * creationDate
-   */
-  public OffsetDateTime getCreationDate() {
-    return creationDate;
-  }
-
-  public Project setCreationDate(OffsetDateTime creationDate) {
-    this.creationDate = creationDate;
-    return this;
-  }
-
-  /**
-   * lastUpdateBy
-   */
-  public String getLastUpdateBy() {
-    return lastUpdateBy;
-  }
-
-  public Project setLastUpdateBy(String lastUpdateBy) {
-    this.lastUpdateBy = lastUpdateBy;
-    return this;
-  }
-
-  /**
-   * lastUpdateDate
-   */
-  public OffsetDateTime getLastUpdateDate() {
-    return lastUpdateDate;
-  }
-
-  public Project setLastUpdateDate(OffsetDateTime lastUpdateDate) {
-    this.lastUpdateDate = lastUpdateDate;
-    return this;
-  }
-
-  /**
-   * metaInf
-   */
-  public Object getMetaInf() {
-    return metaInf;
-  }
-
-  public Project setMetaInf(Object metaInf) {
-    this.metaInf = metaInf;
-    return this;
-  }
-
-  /**
-   * archive
-   */
-  public Boolean getArchive() {
-    return archive;
-  }
-
-  public Project setArchive(Boolean archive) {
-    this.archive = archive;
-    return this;
-  }
 
   /**
    * roles

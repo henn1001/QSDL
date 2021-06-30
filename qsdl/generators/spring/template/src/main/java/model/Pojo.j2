@@ -48,15 +48,17 @@ public class {{model.name}}{% if not model.is_pagination and not model.is_base %
   {% if attr.is_array and attr.is_relation %}
   private Set<{{attr.type}}> {{attr.name}} = new LinkedHashSet<>();
   {% elif attr.is_array %}
-  private List<{{attr.type}}> {{attr.name}} = new ArrayList<>();
+  {{ "private" if encapsulation else "public"}} List<{{attr.type}}> {{attr.name}} = new ArrayList<>();
   {% else %}
-  private {{attr.type}} {{attr.name}};
+  {{ "private" if encapsulation else "public"}} {{attr.type}} {{attr.name}};
   {% endif %}
 
 {% endfor %}
+{% for attr in model.attributes if (encapsulation and not attr.is_id) or attr.is_relation %}
+{% if loop.first %}
 
 
-{% for attr in model.attributes if not attr.is_id %}
+{% endif %}
   /**
    * {{attr.name}}
    */

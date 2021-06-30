@@ -40,10 +40,10 @@ public class TicketService {
     Long totalCount = pageable.totalCount(ticketRepository.count());
     String nextCursor = pageable.nextCursor(items);
 
-    TicketList ret = new TicketList()
-        .setTotalCount(totalCount)
-        .setNextCursor(nextCursor)
-        .setItems(items);
+    TicketList ret = new TicketList();
+    ret.totalCount = totalCount;
+    ret.nextCursor = nextCursor;
+    ret.items = items;
 
     return ret;
   }
@@ -91,9 +91,9 @@ public class TicketService {
     }
 
     // update dbEntity with all writeable fields if present
-    Optional.ofNullable(body.getTitle()).ifPresent(v -> dbEntity.setTitle(v));
-    Optional.ofNullable(body.getBody()).ifPresent(v -> dbEntity.setBody(v));
-    Optional.ofNullable(body.getStatus()).ifPresent(v -> dbEntity.setStatus(v));
+    Optional.ofNullable(body.title).ifPresent(v -> dbEntity.title = v);
+    Optional.ofNullable(body.body).ifPresent(v -> dbEntity.body = v);
+    Optional.ofNullable(body.status).ifPresent(v -> dbEntity.status = v);
 
     Ticket ret = ticketRepository.save(dbEntity);
 

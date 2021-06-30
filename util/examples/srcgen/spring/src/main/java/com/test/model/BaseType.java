@@ -15,115 +15,29 @@ public class BaseType {
 
   @NotNull
   @JsonProperty(value = "name", required = true)
-  private String name;
+  public String name;
 
   @JsonProperty(value = "description")
-  private String description;
+  public String description;
 
   @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
-  private String creationBy;
+  public String creationBy;
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
-  private OffsetDateTime creationDate;
+  public OffsetDateTime creationDate;
 
   @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
-  private String lastUpdateBy;
+  public String lastUpdateBy;
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
-  private OffsetDateTime lastUpdateDate;
+  public OffsetDateTime lastUpdateDate;
 
   @Column(columnDefinition = "BINARY(1048576)")
   @org.hibernate.annotations.Type(type = "serializable")
   @JsonProperty(value = "meta_inf")
-  private Object metaInf;
-
-
-
-  /**
-   * name
-   */
-  public String getName() {
-    return name;
-  }
-
-  public BaseType setName(String name) {
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * description
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  public BaseType setDescription(String description) {
-    this.description = description;
-    return this;
-  }
-
-  /**
-   * creationBy
-   */
-  public String getCreationBy() {
-    return creationBy;
-  }
-
-  public BaseType setCreationBy(String creationBy) {
-    this.creationBy = creationBy;
-    return this;
-  }
-
-  /**
-   * creationDate
-   */
-  public OffsetDateTime getCreationDate() {
-    return creationDate;
-  }
-
-  public BaseType setCreationDate(OffsetDateTime creationDate) {
-    this.creationDate = creationDate;
-    return this;
-  }
-
-  /**
-   * lastUpdateBy
-   */
-  public String getLastUpdateBy() {
-    return lastUpdateBy;
-  }
-
-  public BaseType setLastUpdateBy(String lastUpdateBy) {
-    this.lastUpdateBy = lastUpdateBy;
-    return this;
-  }
-
-  /**
-   * lastUpdateDate
-   */
-  public OffsetDateTime getLastUpdateDate() {
-    return lastUpdateDate;
-  }
-
-  public BaseType setLastUpdateDate(OffsetDateTime lastUpdateDate) {
-    this.lastUpdateDate = lastUpdateDate;
-    return this;
-  }
-
-  /**
-   * metaInf
-   */
-  public Object getMetaInf() {
-    return metaInf;
-  }
-
-  public BaseType setMetaInf(Object metaInf) {
-    this.metaInf = metaInf;
-    return this;
-  }
+  public Object metaInf;
 
 
 

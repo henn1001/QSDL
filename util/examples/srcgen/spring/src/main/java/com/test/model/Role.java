@@ -13,26 +13,14 @@ public class Role extends AbstractPersistentObject {
 
   @NotNull
   @JsonProperty(value = "name", required = true)
-  private String name;
+  public String name;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="project_id")
   @JsonIgnore
-  private Project project;
+  public Project project;
 
 
-
-  /**
-   * name
-   */
-  public String getName() {
-    return name;
-  }
-
-  public Role setName(String name) {
-    this.name = name;
-    return this;
-  }
 
   /**
    * project

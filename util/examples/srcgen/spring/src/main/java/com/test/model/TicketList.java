@@ -15,61 +15,13 @@ public class TicketList {
   @NotNull
   @Valid
   @JsonProperty(value = "items", required = true)
-  private List<Ticket> items = new ArrayList<>();
+  public List<Ticket> items = new ArrayList<>();
 
   @JsonProperty(value = "next_cursor")
-  private String nextCursor;
+  public String nextCursor;
 
   @JsonProperty(value = "total_count")
-  private Long totalCount;
-
-
-
-  /**
-   * items
-   */
-  public List<Ticket> getItems() {
-    return items;
-  }
-
-  public TicketList setItems(List<Ticket> items) {
-    this.items = items;
-    return this;
-  }
-
-  public TicketList addItemsItem(Ticket itemsItem) {
-    this.items.add(itemsItem);
-    return this;
-  }
-
-  public TicketList removeItemsItem(Ticket itemsItem) {
-    this.items.remove(itemsItem);
-    return this;
-  }
-
-  /**
-   * nextCursor
-   */
-  public String getNextCursor() {
-    return nextCursor;
-  }
-
-  public TicketList setNextCursor(String nextCursor) {
-    this.nextCursor = nextCursor;
-    return this;
-  }
-
-  /**
-   * totalCount
-   */
-  public Long getTotalCount() {
-    return totalCount;
-  }
-
-  public TicketList setTotalCount(Long totalCount) {
-    this.totalCount = totalCount;
-    return this;
-  }
+  public Long totalCount;
 
 
 

@@ -13,25 +13,13 @@ public class User extends AbstractPersistentObject {
 
   @NotNull
   @JsonProperty(value = "name", required = true)
-  private String name;
+  public String name;
 
   @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
   @JsonIgnore
   private Set<Ticket> tickets = new LinkedHashSet<>();
 
 
-
-  /**
-   * name
-   */
-  public String getName() {
-    return name;
-  }
-
-  public User setName(String name) {
-    this.name = name;
-    return this;
-  }
 
   /**
    * tickets

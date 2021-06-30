@@ -52,10 +52,10 @@ public class UserService {
     Long totalCount = pageable.totalCount(userRepository.count());
     String nextCursor = pageable.nextCursor(items);
 
-    UserList ret = new UserList()
-        .setTotalCount(totalCount)
-        .setNextCursor(nextCursor)
-        .setItems(items);
+    UserList ret = new UserList();
+    ret.totalCount = totalCount;
+    ret.nextCursor = nextCursor;
+    ret.items = items;
 
     return ret;
   }
@@ -99,10 +99,10 @@ public class UserService {
     Long totalCount = pageable.totalCount(userRepository.count());
     String nextCursor = pageable.nextCursor(items);
 
-    UserList ret = new UserList()
-        .setTotalCount(totalCount)
-        .setNextCursor(nextCursor)
-        .setItems(items);
+    UserList ret = new UserList();
+    ret.totalCount = totalCount;
+    ret.nextCursor = nextCursor;
+    ret.items = items;
 
     return ret;
   }
@@ -150,7 +150,7 @@ public class UserService {
     }
 
     // update dbEntity with all writeable fields if present
-    Optional.ofNullable(body.getName()).ifPresent(v -> dbEntity.setName(v));
+    Optional.ofNullable(body.name).ifPresent(v -> dbEntity.name = v);
 
     User ret = userRepository.save(dbEntity);
 

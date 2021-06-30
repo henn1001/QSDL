@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, List, Union
 
 import stringcase
 
-from qsdl.dsl.models import Field, Scalar
+from qsdl.dsl.models import Field
 
 from .. import util
 
@@ -168,12 +168,12 @@ class Model:
 
         for p_field in fields:
             parent = p_field.parent
-            
+
             # create a new field for self that represents the other side
             # of the reference
             fk_field = Field()
 
-            # aggregations 
+            # aggregations
             fk_field.name = stringcase.snakecase(parent.name)
             fk_field.name = fk_field.name + "s" if p_field.is_aggregation else fk_field.name
 

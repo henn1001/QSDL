@@ -17,16 +17,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from qsdl.dsl.models.object import Object
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 import stringcase
+
+from qsdl.dsl.models.object import Object
 
 from .. import util
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Operation
     from qsdl.dsl.models import Api as QAPI
+    from qsdl.dsl.models import Operation
 
 
 @dataclass
@@ -133,7 +134,7 @@ class _Operation:
 
             self.response = param
 
-    def get_read_only_parameters(self) -> List[str]:
+    def get_read_only_parameters(self, encapsulation) -> List[str]:
         ret = []
 
         # first get all fields
@@ -143,12 +144,12 @@ class _Operation:
         field_names = [x.name for x in filtered_fields if x.is_read_only and x.name.lower() != "id"]
 
         for name in field_names:
-            getter = stringcase.pascalcase(name)
+            getter = stringcase.pascalcase(name) if encapsulation else stringcase.camelcase(name)
             ret.append(getter)
 
         return ret
 
-    def get_writable_parameters(self) -> List[str]:
+    def get_writable_parameters(self, encapsulation) -> List[str]:
         ret = []
 
         # first get all fields
@@ -158,7 +159,7 @@ class _Operation:
         field_names = [x.name for x in filtered_fields if not x.is_read_only]
 
         for name in field_names:
-            getter = stringcase.pascalcase(name)
+            getter = stringcase.pascalcase(name) if encapsulation else stringcase.camelcase(name)
             ret.append(getter)
 
         return ret
@@ -173,7 +174,7 @@ class _Operation:
         for parameter in self.path_parameters:
             ret += parameter.name
             ret += ", "
-        
+
         # add pagable object or remove last seperator
         if self.is_pageable:
             ret += "pageable"
@@ -194,6 +195,7 @@ class _Operation:
             ret += parameter.name
             ret += ", "
         return ret[:-2]
+
 
 @dataclass
 class Api:
