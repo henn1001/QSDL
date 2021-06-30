@@ -3,11 +3,21 @@
  */
 package {{base_package}}.model;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.test.util.IdGenerator;
 
-public abstract class AbstractPersistentObject implements PersistentObject {
+@MappedSuperclass
+public abstract class AbstractPersistentObject {
+
+  @Id
+  @GeneratedValue(generator = "optimized-sequence")
+  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+  private Long id;
 
   @JsonIgnore
   private String uuid = IdGenerator.createId();
@@ -17,36 +27,35 @@ public abstract class AbstractPersistentObject implements PersistentObject {
   private Integer version;
 
 
+  public Long getId() {
+    return id;
+  }
 
   public String getUUID() {
     return uuid;
-  }
-
-  public PersistentObject setUUID(String uuid) {
-    this.uuid = uuid;
-    return this;
   }
 
   public Integer getVersion() {
     return version;
   }
 
-  public PersistentObject setVersion(Integer version) {
-    this.version = version;
-    return this;
+
+
+  public void copyIdentiy(AbstractPersistentObject o) {
+    id = o.getId();
+    uuid = o.getUUID();
+    version = o.getVersion();
   }
-
-
 
   public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
-    if (o == null || !(o instanceof PersistentObject)) {
+    if (o == null || !(o instanceof AbstractPersistentObject)) {
       return false;
     }
 
-    PersistentObject other = (PersistentObject) o;
+    AbstractPersistentObject other = (AbstractPersistentObject) o;
 
     // if the uuid is missing, return false
     if (uuid == null) {

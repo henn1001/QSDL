@@ -140,7 +140,7 @@ class _Operation:
         filtered_fields = util.get_filtered_fields_as_list(self.domain_object)
 
         # get read only fields
-        field_names = [x.name for x in filtered_fields if x.is_read_only]
+        field_names = [x.name for x in filtered_fields if x.is_read_only and x.name.lower() != "id"]
 
         for name in field_names:
             getter = stringcase.pascalcase(name)

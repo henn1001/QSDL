@@ -75,7 +75,7 @@ public class ProjectService {
     }
 
     // update new object with all readOnly fields from previous entry
-    body.setId(dbEntity.getId());
+    body.copyIdentiy(dbEntity);
     body.setCreationBy(dbEntity.getCreationBy());
     body.setCreationDate(dbEntity.getCreationDate());
     body.setLastUpdateBy(dbEntity.getLastUpdateBy());

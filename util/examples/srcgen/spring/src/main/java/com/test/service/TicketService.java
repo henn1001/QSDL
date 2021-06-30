@@ -75,7 +75,7 @@ public class TicketService {
     }
 
     // update new object with all readOnly fields from previous entry
-    body.setId(dbEntity.getId());
+    body.copyIdentiy(dbEntity);
 
     Ticket ret = ticketRepository.save(body);
 

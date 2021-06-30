@@ -14,11 +14,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 public class Project extends AbstractPersistentObject {
 
-  @Id
-  @GeneratedValue(generator="optimized-sequence")
-  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  private Long id;
-
   @NotNull
   @JsonProperty(value = "name", required = true)
   private String name;
@@ -53,18 +48,6 @@ public class Project extends AbstractPersistentObject {
   private Set<Role> roles = new LinkedHashSet<>();
 
 
-
-  /**
-   * id
-   */
-  public Long getId() {
-    return id;
-  }
-
-  public Project setId(Long id) {
-    this.id = id;
-    return this;
-  }
 
   /**
    * name

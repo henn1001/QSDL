@@ -237,7 +237,6 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/model/ApiError.j2", f"src/main/java/{base_package}/model/ApiError.java"),
         ("src/main/java/model/ApiPageable.j2", f"src/main/java/{base_package}/model/ApiPageable.java"),
         ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{base_package}/model/AbstractPersistentObject.java"),
-        ("src/main/java/model/PersistentObject.j2", f"src/main/java/{base_package}/model/PersistentObject.java"),
     ]
     # fmt: on
 

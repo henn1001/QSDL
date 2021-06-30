@@ -11,11 +11,6 @@ import com.fasterxml.jackson.annotation.*;
 @Entity
 public class Role extends AbstractPersistentObject {
 
-  @Id
-  @GeneratedValue(generator="optimized-sequence")
-  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  private Long id;
-
   @NotNull
   @JsonProperty(value = "name", required = true)
   private String name;
@@ -26,18 +21,6 @@ public class Role extends AbstractPersistentObject {
   private Project project;
 
 
-
-  /**
-   * id
-   */
-  public Long getId() {
-    return id;
-  }
-
-  public Role setId(Long id) {
-    this.id = id;
-    return this;
-  }
 
   /**
    * name

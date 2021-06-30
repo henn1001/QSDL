@@ -14,9 +14,7 @@ import {{imp}};
 {{- hibernate.class_annotation() if database == "hibernate" -}}
 public class {{model.name}}{% if not model.is_pagination and not model.is_base %} extends AbstractPersistentObject{% endif %} {
 
-{{ hibernate.class_identifier() if database == "hibernate" -}}
-
-{% for attr in model.attributes %}
+{% for attr in model.attributes if not attr.is_id %}
   {# 
     Required attributes
   #}
@@ -58,7 +56,7 @@ public class {{model.name}}{% if not model.is_pagination and not model.is_base %
 {% endfor %}
 
 
-{% for attr in model.attributes  %}
+{% for attr in model.attributes if not attr.is_id %}
   /**
    * {{attr.name}}
    */

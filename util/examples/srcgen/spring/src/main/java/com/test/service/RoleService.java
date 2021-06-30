@@ -104,7 +104,7 @@ public class RoleService {
     }
 
     // update new object with all readOnly fields from previous entry
-    body.setId(dbEntity.getId());
+    body.copyIdentiy(dbEntity);
 
     Role ret = roleRepository.save(body);
 

@@ -12,11 +12,6 @@ import com.fasterxml.jackson.annotation.*;
 @Entity
 public class Ticket extends AbstractPersistentObject {
 
-  @Id
-  @GeneratedValue(generator="optimized-sequence")
-  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  private Long id;
-
   @JsonProperty(value = "title")
   private String title;
 
@@ -32,18 +27,6 @@ public class Ticket extends AbstractPersistentObject {
   private Set<User> users = new LinkedHashSet<>();
 
 
-
-  /**
-   * id
-   */
-  public Long getId() {
-    return id;
-  }
-
-  public Ticket setId(Long id) {
-    this.id = id;
-    return this;
-  }
 
   /**
    * title

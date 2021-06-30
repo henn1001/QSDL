@@ -134,7 +134,7 @@ public class UserService {
     }
 
     // update new object with all readOnly fields from previous entry
-    body.setId(dbEntity.getId());
+    body.copyIdentiy(dbEntity);
 
     User ret = userRepository.save(body);
 

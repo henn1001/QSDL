@@ -97,6 +97,7 @@
     }
 
     // update new object with all readOnly fields from previous entry
+    body.copyIdentiy(dbEntity);
     {% for p in operation.get_read_only_parameters() %}
     body.set{{p}}(dbEntity.get{{p}}());
     {% endfor %}

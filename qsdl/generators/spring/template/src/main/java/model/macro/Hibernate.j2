@@ -9,19 +9,6 @@
 {# 
   Returns a class identifier.
 #}
-{% macro class_identifier() %}
-  {% if model.is_base and model.is_nested%}
-  @Id
-  @GeneratedValue(generator="optimized-sequence")
-  @JsonIgnore
-  private Long id;
-
-  {% endif %}
-{% endmacro %}
-
-{# 
-  Returns a class identifier.
-#}
 {% macro attribute_annotation(attr) -%}
   {#
     ID
