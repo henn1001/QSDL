@@ -162,6 +162,10 @@ class Model:
 
     def _add_foreign_keys(self):
 
+        # we only care about object relations
+        if not self.is_object:
+            return
+
         # get the fields of all parents that
         # use self as aggregation or composition
         fields = util.get_parent_fields(self._ref)

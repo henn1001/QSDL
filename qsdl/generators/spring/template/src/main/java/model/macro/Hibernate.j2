@@ -2,7 +2,7 @@
   Returns the class annotation
 #}
 {% macro class_annotation() %}
-  {{- "@Entity" if (model.is_object and model.is_crud) or model.is_nested }}
+  {{- "@Entity" if (model.is_object and model.is_crud) }}
   {{- "@Embeddable" if model.is_base }}
 {% endmacro %}
 
@@ -55,8 +55,10 @@
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="{{attr.type|lower}}_id")
       {% endif %}
-  {% elif model.is_base and model.is_nested  %}
+  {% elif attr.is_base and attr.is_nested and attr.is_array %}
   @ElementCollection
+  {% elif attr.is_base and attr.is_nested and not attr.is_array %}
+  @Embedded 
   {% endif %}
 {% endmacro %}
 
