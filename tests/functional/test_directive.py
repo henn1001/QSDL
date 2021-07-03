@@ -200,7 +200,6 @@ class TestDirective:
             type Foo {
                 field: Int
                 composition: Bar @composition
-                ignored: String @composition
             }
 
             type Bar {
@@ -211,17 +210,30 @@ class TestDirective:
         openapi = wrapper_generate(test_input)
 
         assert "composition" not in openapi["components"]["schemas"]["Foo"]["properties"]
-        assert "ignored" in openapi["components"]["schemas"]["Foo"]["properties"]
 
         assert "/foos/{foo_id}/bars" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}" in openapi["paths"]
+
+    def test_directive_06_negative(self):
+        """Verify usage of @composition"""
+        test_input = """\
+            type Foo {
+                field: Int
+                ignored: String @composition
+            }
+
+            type Bar {
+                field: Int
+            }
+        """
+
+        wrapper_generate_failure(test_input)
 
     def test_directive_07_positive(self):
         """Verify usage of @aggregation"""
         test_input = """\
             type Foo {
-                aggregation: Bar @aggregation
-                ignored: String @aggregation
+                aggregation: [Bar] @aggregation
             }
 
             type Bar {
@@ -232,11 +244,24 @@ class TestDirective:
         openapi = wrapper_generate(test_input)
 
         assert "aggregation" not in openapi["components"]["schemas"]["Foo"]["properties"]
-        assert "ignored" in openapi["components"]["schemas"]["Foo"]["properties"]
 
         assert "/foos/{foo_id}/bars" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}/add" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}/remove" in openapi["paths"]
+
+    def test_directive_07_negative(self):
+        """Verify usage of @aggregation"""
+        test_input = """\
+            type Foo {
+                ignored: String @aggregation
+            }
+
+            type Bar {
+                field: Int
+            }
+        """
+
+        wrapper_generate_failure(test_input)
 
     def test_directive_08_positive(self):
         """Verify usage of @path"""

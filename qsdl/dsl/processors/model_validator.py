@@ -41,7 +41,7 @@ def validate(schema: Schema, metamodel: TextXMetaModel):
     validate_type_names(schema, metamodel)
     validate_arguments(schema, metamodel)
     validate_custom_operations_path(schema, metamodel)
-    validate_nested_bases(schema, metamodel)
+    validate_field_directives(schema, metamodel)
 
 
 def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
@@ -151,8 +151,8 @@ def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_nested_bases(schema: Schema, metamodel: TextXMetaModel):
-    """Check that used bases are declared as nested.
+def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
+    """Checks various rules that apply to field directives.
 
     Args:
         schema (Schema): The parsed schema definition.
@@ -164,11 +164,38 @@ def validate_nested_bases(schema: Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
     bases = xtx.get_children_of_type("Base", schema)
+    objects = xtx.get_children_of_type("Object", schema)
 
-    for base in bases:
-        for field in xtx.get_children_of_type("Field", schema):
-            if field.value == base and not field.is_nested:
-                msg = f"The Base {base.name} is used but is not declared as nested."
+    for entity in bases + objects:
+        for field in entity.fields:
+
+            # verify that queries are only used on scalars
+            if field.is_query and not field.value._tx_fqn == "entity.Scalar":
+                msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as query."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+            # verify that references to base are nested
+            if field.value._tx_fqn == "entity.Base" and not field.is_nested:
+                msg = f"The Field {field.name} for {field.parent.name} references a base but is not declared as nested."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+            # verify that nested is used only for Bases and Objects
+            if field.is_nested and not (field.value._tx_fqn == "entity.Base" or field.value._tx_fqn == "entity.Object"):
+                msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as nested."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+            # verify that composition is used only on Objects
+            if field.is_composition and not field.value._tx_fqn == "entity.Object":
+                msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as composition."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+            # verify that aggregation is used only on Objects and array
+            if field.is_aggregation and not field.value._tx_fqn == "entity.Object":
+                msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as aggregation."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+            if field.is_aggregation and not field.is_array:
+                msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as aggregation."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
