@@ -131,6 +131,7 @@ class _Operation:
                 param.name += "List"
                 param.json_key += "List"
                 param.type += "List"
+                param.is_array = False
 
             if self._ref.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
                 param.ref = f"#/components/schemas/{ param.type }"

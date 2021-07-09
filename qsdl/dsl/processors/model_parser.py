@@ -343,7 +343,7 @@ def operation_builder(
         operation.value = obj
         operation.path = path
         operation.method = "GET"
-        # field.is_array = True # disabled if we use pagination
+        operation.is_array = True
         operation.is_pageable = True
 
         operation.summary = f"List {pluralize(obj.name)}"

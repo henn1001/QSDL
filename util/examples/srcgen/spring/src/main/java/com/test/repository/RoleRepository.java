@@ -10,7 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.test.model.*;
+import com.test.domain.*;
+import com.test.model.ApiPageable;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {

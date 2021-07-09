@@ -15,12 +15,12 @@
     String nextCursor = pageable.nextCursor(items);
 
     {% if encapsulation %}
-    {{api.name}}List ret = new {{api.name}}List()
+    ObjectList ret = new ObjectList()
         .setTotalCount(totalCount)
         .setNextCursor(nextCursor)
         .setItems(items);
     {% else %}
-    {{api.name}}List ret = new {{api.name}}List();
+    ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;
     ret.nextCursor = nextCursor;
     ret.items = items;

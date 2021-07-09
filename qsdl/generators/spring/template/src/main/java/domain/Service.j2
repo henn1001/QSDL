@@ -19,6 +19,7 @@ import {{base_package}}.exception.ApiException;
 {% if database == "hibernate" and api.domain_object %}
 import {{base_package}}.repository.*;
 {% endif %}
+import {{base_package}}.domain.*;
 import {{base_package}}.model.*;
 
 @Service

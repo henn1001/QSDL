@@ -128,9 +128,10 @@ class _Operation:
             param.type = util.custom_type(self._ref.value.name)
 
             if self._ref.is_pageable:
-                param.name += "List"
-                param.json_key += "List"
-                param.type += "List"
+                param.name = "ObjectList"
+                param.json_key = "ObjectList"
+                param.type = "ObjectList"
+                param.is_array = False
 
             self.response = param
 

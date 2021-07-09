@@ -10,12 +10,12 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
 
-public class UserList {
+public class ObjectList {
 
   @NotNull
   @Valid
   @JsonProperty(value = "items", required = true)
-  public List<User> items = new ArrayList<>();
+  public List<? extends AbstractPersistentObject> items = new ArrayList<>();
 
   @JsonProperty(value = "next_cursor")
   public String nextCursor;
@@ -25,9 +25,9 @@ public class UserList {
 
 
 
-  public static UserList fromJson(String json)
+  public static ObjectList fromJson(String json)
       throws com.test.util.Json.JsonException {
-    return com.test.util.Json.serializer().fromJson(json, UserList.class);
+    return com.test.util.Json.serializer().fromJson(json, ObjectList.class);
   }
 
 }

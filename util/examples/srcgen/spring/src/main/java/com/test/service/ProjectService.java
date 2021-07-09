@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import com.test.constant.AppError;
 import com.test.exception.ApiException;
 import com.test.repository.*;
+import com.test.domain.*;
 import com.test.model.*;
 
 @Service
@@ -33,14 +34,14 @@ public class ProjectService {
 
   }
 
-  public ProjectList getProjects(String name, ApiPageable pageable) throws Exception {
+  public ObjectList getProjects(String name, ApiPageable pageable) throws Exception {
 
     List<Project> items = projectRepository.findAll(pageable);
 
     Long totalCount = pageable.totalCount(projectRepository.count());
     String nextCursor = pageable.nextCursor(items);
 
-    ProjectList ret = new ProjectList();
+    ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;
     ret.nextCursor = nextCursor;
     ret.items = items;

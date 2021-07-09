@@ -10,7 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import {{base_package}}.model.*;
+import {{base_package}}.domain.*;
+import {{base_package}}.model.ApiPageable;
 
 @Repository
 public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long> {

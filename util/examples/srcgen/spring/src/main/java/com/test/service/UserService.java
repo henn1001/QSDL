@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import com.test.constant.AppError;
 import com.test.exception.ApiException;
 import com.test.repository.*;
+import com.test.domain.*;
 import com.test.model.*;
 
 @Service
@@ -42,7 +43,7 @@ public class UserService {
     }
   }
 
-  public UserList getUsersForTicket(Long ticketId, ApiPageable pageable) throws Exception {
+  public ObjectList getUsersForTicket(Long ticketId, ApiPageable pageable) throws Exception {
 
     // confirm existence of parent
     validateTicketId(ticketId);
@@ -52,7 +53,7 @@ public class UserService {
     Long totalCount = pageable.totalCount(userRepository.count());
     String nextCursor = pageable.nextCursor(items);
 
-    UserList ret = new UserList();
+    ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;
     ret.nextCursor = nextCursor;
     ret.items = items;
@@ -92,14 +93,14 @@ public class UserService {
     return null;
   }
 
-  public UserList getUsers(ApiPageable pageable) throws Exception {
+  public ObjectList getUsers(ApiPageable pageable) throws Exception {
 
     List<User> items = userRepository.findAll(pageable);
 
     Long totalCount = pageable.totalCount(userRepository.count());
     String nextCursor = pageable.nextCursor(items);
 
-    UserList ret = new UserList();
+    ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;
     ret.nextCursor = nextCursor;
     ret.items = items;

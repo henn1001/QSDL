@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import com.test.constant.AppError;
 import com.test.exception.ApiException;
 import com.test.repository.*;
+import com.test.domain.*;
 import com.test.model.*;
 
 @Service
@@ -42,7 +43,7 @@ public class RoleService {
     }
   }
 
-  public RoleList getRoles(Long projectId, ApiPageable pageable) throws Exception {
+  public ObjectList getRoles(Long projectId, ApiPageable pageable) throws Exception {
 
     // confirm existence of parent
     validateProjectId(projectId);
@@ -52,7 +53,7 @@ public class RoleService {
     Long totalCount = pageable.totalCount(roleRepository.count());
     String nextCursor = pageable.nextCursor(items);
 
-    RoleList ret = new RoleList();
+    ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;
     ret.nextCursor = nextCursor;
     ret.items = items;

@@ -70,62 +70,7 @@ def parse_models(schema: Schema) -> List[Model]:
         model = Model(obj)
         models.append(model)
 
-        # add paging response for all objects with default CRUD endpoints
-        if obj.is_crud:
-            model = get_paginated_object(obj, model)
-            model.is_crud = False
-            models.insert(-1, model)
-
     return models
-
-
-def get_paginated_object(obj: Object, model: Model) -> Model:
-    """Returns a pagable custom model that is used to return a given model.
-
-    Args:
-        obj (Object): The QSDL Object.
-        model (Model): The custom Model.
-
-    Returns:
-        Model: The pagable custom model.
-    """
-
-    # represents the model
-    new_object = Object()
-    new_object.name = model.name + "List"
-    new_object._tx_fqn = "entity.Object"
-
-    # contains the item list of the entity
-    item_field = Field()
-    item_field.name = "items"
-    item_field.is_array = True
-    item_field.is_required = True
-    item_field.is_nested = True
-    item_field.value = obj
-    item_field._tx_fqn = "entity.Field"
-    new_object.fields.append(item_field)
-
-    # next cursor
-    cursor_field = Field(name="next_cursor")
-    string_scalar = Scalar(name="String")
-    string_scalar._tx_fqn = "entity.Scalar"
-    cursor_field.value = string_scalar
-    cursor_field._tx_fqn = "entity.Field"
-    new_object.fields.append(cursor_field)
-
-    # total count
-    count_field = Field(name="total_count")
-    long_scalar = Scalar(name="Long")
-    long_scalar._tx_fqn = "entity.Scalar"
-    count_field.value = long_scalar
-    count_field._tx_fqn = "entity.Field"
-    new_object.fields.append(count_field)
-
-    # init the new model class
-    model = Model(new_object)
-    model.is_pagination = True
-
-    return model
 
 
 def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list):
@@ -184,10 +129,10 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     for api in parse_apis(schema):
         # fmt: off
-        api_files.append(("src/main/java/api/Controller.j2", f"src/main/java/{base_package}/api/{api.name}Controller.java", api))
-        api_files.append(("src/main/java/api/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api))
+        api_files.append(("src/main/java/domain/Controller.j2", f"src/main/java/{base_package}/controller/{api.name}Controller.java", api))
+        api_files.append(("src/main/java/domain/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api))
         if config.database == "hibernate" and api.domain_object :
-            api_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{api.name}Repository.java", api))
+            api_files.append(("src/main/java/domain/Repository.j2", f"src/main/java/{base_package}/repository/{api.name}Repository.java", api))
         # fmt: on
 
     # loop and generate model_files
@@ -195,7 +140,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     for model in parse_models(schema):
         # fmt: off
-        model_files.append(("src/main/java/model/Pojo.j2", f"src/main/java/{base_package}/model/{model.name}.java", model))
+        model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{base_package}/domain/{model.name}.java", model))
         # fmt: on
 
     # fmt: off
@@ -221,7 +166,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/config/ApplicationProperties.j2", f"src/main/java/{base_package}/config/ApplicationProperties.java"),
         ("src/main/java/config/AsyncConfig.j2", f"src/main/java/{base_package}/config/AsyncConfig.java"),
         ("src/main/java/config/SchedulerConfig.j2", f"src/main/java/{base_package}/config/SchedulerConfig.java"),
-        ("src/main/java/config/HomeController.j2", f"src/main/java/{base_package}/config/HomeController.java"),
+        # api
+        ("src/main/java/controller/HomeController.j2", f"src/main/java/{base_package}/controller/HomeController.java"),
         # constants
         ("src/main/java/constant/AppError.j2", f"src/main/java/{base_package}/constant/AppError.java"),
         ("src/main/java/constant/Constants.j2", f"src/main/java/{base_package}/constant/Constants.java"),
@@ -237,6 +183,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/model/ApiError.j2", f"src/main/java/{base_package}/model/ApiError.java"),
         ("src/main/java/model/ApiPageable.j2", f"src/main/java/{base_package}/model/ApiPageable.java"),
         ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{base_package}/model/AbstractPersistentObject.java"),
+        ("src/main/java/model/ObjectList.j2", f"src/main/java/{base_package}/model/ObjectList.java"),
     ]
     # fmt: on
 
