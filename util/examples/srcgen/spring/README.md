@@ -9,7 +9,7 @@
 
 ## Requirements
 
--   [JDK 11](https://www.oracle.com/java/technologies/javase-downloads.html#JDK11) or [OpenJDK 11](https://openjdk.java.net/install/)
+-   [OpenJDK 16](https://adoptopenjdk.net/)
 
 ## Running the application
 
