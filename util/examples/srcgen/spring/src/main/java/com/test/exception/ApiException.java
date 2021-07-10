@@ -5,34 +5,34 @@ package com.test.exception;
 
 import java.util.List;
 
-import com.test.constant.AppError;
+import com.test.config.Errors;
 import com.test.model.ApiError;
 
 public class ApiException extends Exception {
 
   static final long serialVersionUID = 1L;
 
-  private ApiError error;
+  private ApiError apiError;
 
-  public ApiException(AppError error) {
+  public ApiException(Errors error) {
     super(error.getMessage());
-    this.error = error.getError();
+    this.apiError = error.getApiError();
   }
 
-  public ApiException(AppError error, String details) {
+  public ApiException(Errors error, String details) {
     super(error.getMessage());
-    this.error = error.getError();
-    this.error.addDetailsItem(details);
+    this.apiError = error.getApiError();
+    this.apiError.addDetailsItem(details);
   }
 
-  public ApiException(AppError error, List<String> details) {
+  public ApiException(Errors error, List<String> details) {
     super(error.getMessage());
-    this.error = error.getError();
-    this.error.setDetails(details);
+    this.apiError = error.getApiError();
+    this.apiError.setDetails(details);
   }
 
-  public ApiError getError() {
-    return error;
+  public ApiError getApiError() {
+    return apiError;
   }
 
 }

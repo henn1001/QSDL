@@ -12,7 +12,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
-import com.test.constant.AppError;
+import com.test.config.Errors;
 import com.test.exception.ApiException;
 import com.test.repository.*;
 import com.test.domain.*;
@@ -39,7 +39,7 @@ public class RoleService {
 
   private void validateProjectId(Long id) throws Exception {
     if (!projectRepository.existsById(id)) {
-      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
     }
   }
 
@@ -83,7 +83,7 @@ public class RoleService {
     Role ret = roleRepository.findByProjectIdAndId(projectId, id).orElse(null);
 
     if (ret == null) {
-      throw new ApiException(AppError.NOT_FOUND, "Role " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Role " + id.toString() + " does not exist");
     }
 
     return ret;
@@ -101,7 +101,7 @@ public class RoleService {
     Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "Role " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Role " + id.toString() + " does not exist");
     }
 
     // update new object with all readOnly fields from previous entry
@@ -124,7 +124,7 @@ public class RoleService {
     Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "Role " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Role " + id.toString() + " does not exist");
     }
 
     // update dbEntity with all writeable fields if present
@@ -141,7 +141,7 @@ public class RoleService {
     validateProjectId(projectId);
 
     if (!roleRepository.existsByProjectIdAndId(projectId, id)) {
-      throw new ApiException(AppError.NOT_FOUND, "Role " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Role " + id.toString() + " does not exist");
     }
 
     roleRepository.deleteById(id);

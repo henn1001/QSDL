@@ -7,18 +7,13 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.format.annotation.DateTimeFormat;
 
 public class ApiError {
 
-  @NotNull
   @JsonProperty(value = "code", required = true)
   private Integer code;
 
-  @NotNull
   @JsonProperty(value = "message", required = true)
   private String message;
 
@@ -28,11 +23,9 @@ public class ApiError {
   @JsonProperty(value = "path")
   private String path;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "timestamp")
   private OffsetDateTime timestamp;
 
-  @Valid
   @JsonProperty(value = "details")
   private List<String> details;
 

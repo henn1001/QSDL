@@ -79,7 +79,7 @@
     {{api.name}} ret = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
 
     if (ret == null) {
-      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
     return ret;
@@ -100,7 +100,7 @@
     {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
     // update new object with all readOnly fields from previous entry
@@ -133,7 +133,7 @@
     {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
     // update dbEntity with all writeable fields if present
@@ -159,7 +159,7 @@
 
     {% endif %}
     if (!{{api.name|lower}}Repository.exists{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }})) {
-      throw new ApiException(AppError.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
     {% if api.has_aggregation %}

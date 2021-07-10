@@ -14,7 +14,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
-import {{base_package}}.constant.AppError;
+import {{base_package}}.config.Errors;
 import {{base_package}}.exception.ApiException;
 {% if database == "hibernate" and api.domain_object %}
 import {{base_package}}.repository.*;
@@ -49,7 +49,7 @@ public class {{api.name}}Service {
 
   private void validate{{parent.name}}Id(Long id) throws Exception {
     if (!{{parent.name|lower}}Repository.existsById(id)) {
-      throw new ApiException(AppError.NOT_FOUND, "{{parent.name}} " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "{{parent.name}} " + id.toString() + " does not exist");
     }
   }
 {% endfor %}

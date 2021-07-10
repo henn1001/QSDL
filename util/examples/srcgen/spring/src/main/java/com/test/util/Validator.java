@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
-import com.test.constant.AppError;
+import com.test.config.Errors;
 import com.test.exception.ApiException;
 
 public class Validator {
@@ -30,7 +30,7 @@ public class Validator {
     }
 
     if (!errors.isEmpty()) {
-      throw new ApiException(AppError.BAD_REQEST, errors);
+      throw new ApiException(Errors.BAD_REQEST, errors);
     }
   }
 
@@ -50,7 +50,7 @@ public class Validator {
     }
 
     if (!errors.isEmpty()) {
-      throw new ApiException(AppError.BAD_REQEST, errors);
+      throw new ApiException(Errors.BAD_REQEST, errors);
     }
   }
 

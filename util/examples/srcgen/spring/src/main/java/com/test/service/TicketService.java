@@ -12,7 +12,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
-import com.test.constant.AppError;
+import com.test.config.Errors;
 import com.test.exception.ApiException;
 import com.test.repository.*;
 import com.test.domain.*;
@@ -61,7 +61,7 @@ public class TicketService {
     Ticket ret = ticketRepository.findById(id).orElse(null);
 
     if (ret == null) {
-      throw new ApiException(AppError.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
     }
 
     return ret;
@@ -72,7 +72,7 @@ public class TicketService {
     Ticket dbEntity = ticketRepository.findById(id).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
     }
 
     // update new object with all readOnly fields from previous entry
@@ -88,7 +88,7 @@ public class TicketService {
     Ticket dbEntity = ticketRepository.findById(id).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
     }
 
     // update dbEntity with all writeable fields if present
@@ -104,7 +104,7 @@ public class TicketService {
   public Void deleteTicket(Long id) throws Exception {
 
     if (!ticketRepository.existsById(id)) {
-      throw new ApiException(AppError.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
     }
 
     ticketRepository.deleteById(id);

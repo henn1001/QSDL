@@ -166,11 +166,10 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/config/ApplicationProperties.j2", f"src/main/java/{base_package}/config/ApplicationProperties.java"),
         ("src/main/java/config/AsyncConfig.j2", f"src/main/java/{base_package}/config/AsyncConfig.java"),
         ("src/main/java/config/SchedulerConfig.j2", f"src/main/java/{base_package}/config/SchedulerConfig.java"),
+        ("src/main/java/config/Errors.j2", f"src/main/java/{base_package}/config/Errors.java"),
+        ("src/main/java/config/Constants.j2", f"src/main/java/{base_package}/config/Constants.java"),
         # api
         ("src/main/java/controller/HomeController.j2", f"src/main/java/{base_package}/controller/HomeController.java"),
-        # constants
-        ("src/main/java/constant/AppError.j2", f"src/main/java/{base_package}/constant/AppError.java"),
-        ("src/main/java/constant/Constants.j2", f"src/main/java/{base_package}/constant/Constants.java"),
         # util
         ("src/main/java/util/Json.j2", f"src/main/java/{base_package}/util/Json.java"),
         ("src/main/java/util/Time.j2", f"src/main/java/{base_package}/util/Time.java"),

@@ -12,7 +12,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
-import com.test.constant.AppError;
+import com.test.config.Errors;
 import com.test.exception.ApiException;
 import com.test.repository.*;
 import com.test.domain.*;
@@ -61,7 +61,7 @@ public class ProjectService {
     Project ret = projectRepository.findById(id).orElse(null);
 
     if (ret == null) {
-      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
     }
 
     return ret;
@@ -72,7 +72,7 @@ public class ProjectService {
     Project dbEntity = projectRepository.findById(id).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
     }
 
     // update new object with all readOnly fields from previous entry
@@ -92,7 +92,7 @@ public class ProjectService {
     Project dbEntity = projectRepository.findById(id).orElse(null);
 
     if (dbEntity == null) {
-      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
     }
 
     // update dbEntity with all writeable fields if present
@@ -109,7 +109,7 @@ public class ProjectService {
   public Void deleteProject(Long id) throws Exception {
 
     if (!projectRepository.existsById(id)) {
-      throw new ApiException(AppError.NOT_FOUND, "Project " + id.toString() + " does not exist");
+      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
     }
 
     projectRepository.deleteById(id);

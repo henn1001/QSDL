@@ -3,17 +3,13 @@
  */
 package com.test.model;
 
-import java.util.*;
-import javax.persistence.*;
-import javax.validation.*;
-import javax.validation.constraints.*;
-import com.fasterxml.jackson.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class ObjectList {
 
-  @NotNull
-  @Valid
   @JsonProperty(value = "items", required = true)
   public List<? extends AbstractPersistentObject> items = new ArrayList<>();
 
@@ -24,6 +20,27 @@ public class ObjectList {
   public Long totalCount;
 
 
+
+  @Override
+  public String toString() {
+    String ret = new String();
+    try {
+      ret = com.test.util.Json.serializer().toString(this);
+    } catch (com.test.util.Json.JsonException e) {
+      e.printStackTrace();
+    }
+    return ret;
+  }
+
+  public String toPrettyString() {
+    String ret = new String();
+    try {
+      ret = com.test.util.Json.serializer().toPrettyString(this);
+    } catch (com.test.util.Json.JsonException e) {
+      e.printStackTrace();
+    }
+    return ret;
+  }
 
   public static ObjectList fromJson(String json)
       throws com.test.util.Json.JsonException {
