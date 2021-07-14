@@ -50,7 +50,7 @@ public class UserService {
 
     List<User> items = userRepository.findByTicketId(ticketId, pageable);
 
-    Long totalCount = pageable.totalCount(userRepository.count());
+    Long totalCount = pageable.totalCount(userRepository);
     String nextCursor = pageable.nextCursor(items);
 
     ObjectList ret = new ObjectList();
@@ -97,7 +97,7 @@ public class UserService {
 
     List<User> items = userRepository.findAll(pageable);
 
-    Long totalCount = pageable.totalCount(userRepository.count());
+    Long totalCount = pageable.totalCount(userRepository);
     String nextCursor = pageable.nextCursor(items);
 
     ObjectList ret = new ObjectList();

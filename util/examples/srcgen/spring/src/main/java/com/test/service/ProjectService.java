@@ -38,7 +38,7 @@ public class ProjectService {
 
     List<Project> items = projectRepository.findAll(pageable);
 
-    Long totalCount = pageable.totalCount(projectRepository.count());
+    Long totalCount = pageable.totalCount(projectRepository);
     String nextCursor = pageable.nextCursor(items);
 
     ObjectList ret = new ObjectList();

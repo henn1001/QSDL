@@ -11,7 +11,7 @@
     {% endif %}
     List<{{api.name}}> items = {{api.name|lower}}Repository.{{ operation.get_repo_find_all_name() }}({{ operation.get_repo_find_all_parameters() }});
 
-    Long totalCount = pageable.totalCount({{api.name|lower}}Repository.count());
+    Long totalCount = pageable.totalCount({{api.name|lower}}Repository);
     String nextCursor = pageable.nextCursor(items);
 
     {% if encapsulation %}

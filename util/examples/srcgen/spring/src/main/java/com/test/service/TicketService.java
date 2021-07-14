@@ -38,7 +38,7 @@ public class TicketService {
 
     List<Ticket> items = ticketRepository.findAll(pageable);
 
-    Long totalCount = pageable.totalCount(ticketRepository.count());
+    Long totalCount = pageable.totalCount(ticketRepository);
     String nextCursor = pageable.nextCursor(items);
 
     ObjectList ret = new ObjectList();

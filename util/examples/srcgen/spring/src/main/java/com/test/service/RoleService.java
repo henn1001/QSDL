@@ -50,7 +50,7 @@ public class RoleService {
 
     List<Role> items = roleRepository.findByProjectId(projectId, pageable);
 
-    Long totalCount = pageable.totalCount(roleRepository.count());
+    Long totalCount = pageable.totalCount(roleRepository);
     String nextCursor = pageable.nextCursor(items);
 
     ObjectList ret = new ObjectList();
