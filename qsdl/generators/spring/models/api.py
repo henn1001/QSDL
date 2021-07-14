@@ -217,7 +217,7 @@ class Api:
     def __post_init__(self):
 
         name = self._ref.parent.name if self._ref.parent._tx_fqn == "entity.Object" else "Default"
-        domain_object = self._ref.parent if self._ref.parent._tx_fqn == "entity.Object" else None
+        domain_object = self._ref.parent if self._ref.parent._tx_fqn == "entity.Object" and self._ref.parent.is_crud else None
         domain_parents = util.get_parents(domain_object) if domain_object else None
 
         # assign values to self
@@ -225,9 +225,11 @@ class Api:
         self.tag = stringcase.lowercase(self._ref.namespace)
         self.description = self._ref.description
 
-        self.domain_object = domain_object
-        self.domain_parents = domain_parents
-        self.has_aggregation = util.has_aggregation(domain_object)
+        # skip for custom operations
+        if domain_object:
+            self.domain_object = domain_object
+            self.domain_parents = domain_parents
+            self.has_aggregation = util.has_aggregation(domain_object)
 
         self._add_operations(self._ref.operations)
 
