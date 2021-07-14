@@ -16,10 +16,33 @@ import com.test.model.ApiPageable;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-  @Query(value = "select * from ROLE where ID < :#{#pageable.cursor} order by ID desc limit :#{#pageable.limit}", nativeQuery = true)
+  @Query(
+      value = """
+
+          SELECT *
+          FROM role
+          WHERE 1 = 1
+            AND ID < :#{#pageable.cursor}
+          ORDER BY id DESC
+          LIMIT :#{#pageable.limit}
+
+          """,
+      nativeQuery = true)
   public List<Role> findAll(@Param("pageable") ApiPageable pageable);
 
-  @Query(value = "select * from ROLE where PROJECT_ID = :projectId and ID < :#{#pageable.cursor} order by ID desc limit :#{#pageable.limit}", nativeQuery = true)
+  @Query(
+      value = """
+
+          SELECT *
+          FROM role
+          WHERE 1 = 1
+            AND project_id = :projectId
+            AND id < :#{#pageable.cursor}
+          ORDER BY id DESC
+          LIMIT :#{#pageable.limit}
+
+          """,
+      nativeQuery = true)
   public List<Role> findByProjectId(@Param("projectId") Long projectId, @Param("pageable") ApiPageable pageable);
 
   public Optional<Role> findByProjectIdAndId(Long projectId, Long id);

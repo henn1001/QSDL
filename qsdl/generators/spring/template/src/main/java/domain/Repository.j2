@@ -16,15 +16,52 @@ import {{base_package}}.model.ApiPageable;
 @Repository
 public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long> {
 
-  @Query(value = "select * from {{api.name|upper}} where {{ util.get_id_for_repo(api.domain_object) | upper }} < {{ ":#{#pageable.cursor}" }} order by {{ util.get_id_for_repo(api.domain_object) | upper }} desc limit {{ ":#{#pageable.limit}" }}", nativeQuery = true)
+  @Query(
+      value = """
+
+          SELECT *
+          FROM {{api.name|lower}}
+          WHERE 1 = 1
+            AND ID < {{ ":#{#pageable.cursor}" }}
+          ORDER BY id DESC
+          LIMIT {{ ":#{#pageable.limit}" }}
+
+          """,
+      nativeQuery = true)
   public List<{{api.name}}> findAll(@Param("pageable") ApiPageable pageable);
   {% for domain_parent in api.domain_parents %}
 
     {% if util.is_aggregation(api.domain_object, domain_parent) %}
-  @Query(value = "select * from {{api.name|upper}} inner join {{domain_parent.name|upper}}_TO_{{api.name|upper}} on {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{api.name|upper}}_ID = {{api.name|upper}}.ID where {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent) | camel }} and ID < {{ ":#{#pageable.cursor}" }} order by {{ util.get_id_for_repo(api.domain_object) | upper }} desc limit {{ ":#{#pageable.limit}" }}", nativeQuery = true)
+  @Query(
+      value = """
+
+          SELECT *
+          FROM {{api.name|lower}}
+            INNER JOIN {{domain_parent.name|lower}}_to_{{api.name|lower}}
+            ON {{domain_parent.name|lower}}_to_{{api.name|lower}}.{{api.name|lower}}_id = {{api.name|lower}}.id
+          WHERE 1 = 1
+            AND {{domain_parent.name|lower}}_to_{{api.name|lower}}.{{domain_parent.name|lower}}_id = :{{ util.get_parent_id_for_repo(domain_parent) | camel }}
+            AND ID < {{ ":#{#pageable.cursor}" }}
+          ORDER BY id DESC
+          LIMIT {{ ":#{#pageable.limit}" }}
+
+          """,
+      nativeQuery = true)
   public List<{{api.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
     {% else %}
-  @Query(value = "select * from {{api.name|upper}} where {{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent) | camel }} and {{ util.get_id_for_repo(api.domain_object) | upper }} < {{ ":#{#pageable.cursor}" }} order by {{ util.get_id_for_repo(api.domain_object) | upper }} desc limit {{ ":#{#pageable.limit}" }}", nativeQuery = true)
+  @Query(
+      value = """
+
+          SELECT *
+          FROM {{api.name|lower}}
+          WHERE 1 = 1
+            AND {{domain_parent.name|lower}}_id = :{{ util.get_parent_id_for_repo(domain_parent) | camel }}
+            AND id < {{ ":#{#pageable.cursor}" }}
+          ORDER BY id DESC
+          LIMIT {{ ":#{#pageable.limit}" }}
+
+          """,
+      nativeQuery = true)
   public List<{{api.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
 
   public Optional<{{api.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}And{{ util.get_id_for_repo(api.domain_object) }}(Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, Long {{ util.get_id_for_repo(api.domain_object) | camel }});
@@ -35,7 +72,19 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
 
   {% if api.has_aggregation %}
   @Modifying
-  @Query(value = "delete from {% for domain_parent in api.domain_parents %}{{domain_parent.name|upper}}_TO_{{api.name|upper}}{{ ", " if not loop.last }}{% endfor %} where {{api.name|upper}}_ID = :id", nativeQuery = true)
+  @Query(
+      value = """
+
+          DELETE
+          FROM
+            {% for domain_parent in api.domain_parents %}
+            {{domain_parent.name|upper}}_to_{{api.name|upper}}{{ ", " if not loop.last }}
+            {% endfor %}
+          WHERE 1 = 1
+            AND {{api.name|upper}}_id = :id
+
+          """,
+      nativeQuery = true)
   public void removeRelations(@Param("id") Long id);
 
   {% endif %}

@@ -16,7 +16,18 @@ import com.test.model.ApiPageable;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-  @Query(value = "select * from TICKET where ID < :#{#pageable.cursor} order by ID desc limit :#{#pageable.limit}", nativeQuery = true)
+  @Query(
+      value = """
+
+          SELECT *
+          FROM ticket
+          WHERE 1 = 1
+            AND ID < :#{#pageable.cursor}
+          ORDER BY id DESC
+          LIMIT :#{#pageable.limit}
+
+          """,
+      nativeQuery = true)
   public List<Ticket> findAll(@Param("pageable") ApiPageable pageable);
 
 }

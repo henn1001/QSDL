@@ -16,14 +16,49 @@ import com.test.model.ApiPageable;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-  @Query(value = "select * from USER where ID < :#{#pageable.cursor} order by ID desc limit :#{#pageable.limit}", nativeQuery = true)
+  @Query(
+      value = """
+
+          SELECT *
+          FROM user
+          WHERE 1 = 1
+            AND ID < :#{#pageable.cursor}
+          ORDER BY id DESC
+          LIMIT :#{#pageable.limit}
+
+          """,
+      nativeQuery = true)
   public List<User> findAll(@Param("pageable") ApiPageable pageable);
 
-  @Query(value = "select * from USER inner join TICKET_TO_USER on TICKET_TO_USER.USER_ID = USER.ID where TICKET_TO_USER.TICKET_ID = :ticketId and ID < :#{#pageable.cursor} order by ID desc limit :#{#pageable.limit}", nativeQuery = true)
+  @Query(
+      value = """
+
+          SELECT *
+          FROM user
+            INNER JOIN ticket_to_user
+            ON ticket_to_user.user_id = user.id
+          WHERE 1 = 1
+            AND ticket_to_user.ticket_id = :ticketId
+            AND ID < :#{#pageable.cursor}
+          ORDER BY id DESC
+          LIMIT :#{#pageable.limit}
+
+          """,
+      nativeQuery = true)
   public List<User> findByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") ApiPageable pageable);
 
   @Modifying
-  @Query(value = "delete from TICKET_TO_USER where USER_ID = :id", nativeQuery = true)
+  @Query(
+      value = """
+
+          DELETE
+          FROM
+            TICKET_to_USER
+          WHERE 1 = 1
+            AND USER_id = :id
+
+          """,
+      nativeQuery = true)
   public void removeRelations(@Param("id") Long id);
 
 }

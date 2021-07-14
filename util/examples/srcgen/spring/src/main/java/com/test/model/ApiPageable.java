@@ -6,6 +6,7 @@ package com.test.model;
 import java.util.Base64;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.test.util.Json;
 
@@ -30,8 +31,8 @@ public class ApiPageable {
     this.count = count != null ? count : false;
   }
 
-  public Long totalCount(long count) {
-    return this.count ? count : null;
+  public Long totalCount(JpaRepository<?, Long> repository) {
+    return this.count ? repository.count() : null;
   }
 
   public String nextCursor(List<?> items) {

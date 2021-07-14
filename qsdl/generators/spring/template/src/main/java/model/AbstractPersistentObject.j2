@@ -9,7 +9,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.test.util.IdGenerator;
+import {{base_package}}.util.IdGenerator;
 
 @MappedSuperclass
 public abstract class AbstractPersistentObject {
@@ -77,8 +77,8 @@ public abstract class AbstractPersistentObject {
   public String toString() {
     String ret = new String();
     try {
-      ret = com.test.util.Json.serializer().toString(this);
-    } catch (com.test.util.Json.JsonException e) {
+      ret = {{base_package}}.util.Json.serializer().toString(this);
+    } catch ({{base_package}}.util.Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;
@@ -87,8 +87,8 @@ public abstract class AbstractPersistentObject {
   public String toPrettyString() {
     String ret = new String();
     try {
-      ret = com.test.util.Json.serializer().toPrettyString(this);
-    } catch (com.test.util.Json.JsonException e) {
+      ret = {{base_package}}.util.Json.serializer().toPrettyString(this);
+    } catch ({{base_package}}.util.Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;
