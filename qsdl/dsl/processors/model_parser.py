@@ -505,6 +505,7 @@ def api_builder(
 
     for method in methods:
         operation = operation_builder(obj, parent_obj, duplicate, method)
+        operation.is_aggregation = aggregation
         obj.api.operations.append(operation)
 
     return obj

@@ -369,7 +369,7 @@ paths:
   '/tickets/{ticket_id}/users':
     get:
       tags:
-        - Management
+        - Incident
       summary: List Users
       operationId: getUsersForTicket
       parameters:
@@ -413,7 +413,7 @@ paths:
   '/tickets/{ticket_id}/users/{id}/add':
     post:
       tags:
-        - Management
+        - Incident
       summary: Add User
       operationId: addUserToTicket
       parameters:
@@ -437,7 +437,7 @@ paths:
   '/tickets/{ticket_id}/users/{id}/remove':
     post:
       tags:
-        - Management
+        - Incident
       summary: Remove User
       operationId: removeUserFromTicket
       parameters:

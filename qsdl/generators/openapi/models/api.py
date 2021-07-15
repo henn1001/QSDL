@@ -81,6 +81,11 @@ class _Operation:
         # self.is_crud = field.is_crud
         self.is_pageable = self._ref.is_pageable
 
+        # special for aggregations
+        # we want to move them to the parent namespace
+        if self._ref.is_aggregation:
+            self.tag = self._ref.domain_parent.namespace
+
         self._add_parameters()
 
     def _add_parameters(self):
