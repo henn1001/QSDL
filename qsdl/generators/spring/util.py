@@ -351,7 +351,6 @@ def get_model_imports(entity):
         _import = ["java.util.*"]
         imports.extend(_import)
 
-    # TODO: if use db
     _import = ["javax.persistence.*"]
     imports.extend(_import)
 

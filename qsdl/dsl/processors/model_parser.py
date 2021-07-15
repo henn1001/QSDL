@@ -267,12 +267,12 @@ def query_argument_builder(operation: Operation, obj: Object) -> List[Argument]:
 
     query_fields = get_query_fields(obj)
 
-    for operation in query_fields:
+    for field in query_fields:
         argument = Argument()
         argument.parent = operation
 
-        argument.name = operation.name
-        argument.value = operation.value
+        argument.name = field.name
+        argument.value = field.value
         argument.is_query = True
 
         arguments.append(argument)
