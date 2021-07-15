@@ -15,12 +15,12 @@
 """Spring Generator"""
 
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 import pathspec
 from textx import model as xtx
 
-from qsdl.dsl.models import Field, Object, Scalar, Schema
+from qsdl.dsl.models import Schema
 from qsdl.render import render
 
 from . import util
@@ -28,24 +28,31 @@ from .config import Config
 from .models import Api, Model
 
 
-def parse_apis(schema: Schema) -> List[Api]:
-    """Parse QSDL schema into custom API model.
+def parse_domain(schema: Schema) -> List[Tuple[Api, Model]]:
+    """Parse QSDL schema into custom API and Model.
+
+    Returns both the Api and (if present) the Model object.
 
     Args:
         schema (Schema): The QSDL schema model.
 
     Returns:
-        List[Api]: A list of custom API models.
+        List[Tuple(Api, Model)]: A list of custom API and Model.
     """
-    apis = []
+    ret = []
 
     entities = xtx.get_children_of_type("Api", schema)
 
     for entity in entities:
         new_api = Api(entity)
-        apis.append(new_api)
+        new_model = None
 
-    return apis
+        if entity.parent._tx_fqn == "entity.Object":
+            new_model = Model(entity.parent)
+
+        ret.append((new_api, new_model))
+
+    return ret
 
 
 def parse_models(schema: Schema) -> List[Model]:
@@ -60,27 +67,23 @@ def parse_models(schema: Schema) -> List[Model]:
 
     enum_list = xtx.get_children_of_type("Enum", schema)
     base_list = xtx.get_children_of_type("Base", schema)
-    object_list = xtx.get_children_of_type("Object", schema)
 
     for obj in enum_list + base_list:
-        model = Model(obj)
-        models.append(model)
-
-    for obj in object_list:
         model = Model(obj)
         models.append(model)
 
     return models
 
 
-def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list):
+def remove_ignored_files(output_path: Path, domain_files: list, model_files: list, supporting_files: list):
     """Removes all generated files mentioned in .qsdl-ignore.
 
     Utilizes the pathspec python package.
     https://github.com/cpburnz/python-path-specification
 
     Args:
-        api_files (list): [description]
+        output_path (Path): [description]
+        domain_files (list): [description]
         model_files (list): [description]
         supporting_files (list): [description]
     """
@@ -95,9 +98,9 @@ def remove_ignored_files(output_path: Path, api_files: list, model_files: list, 
 
         # loop over each all files and remove matches
         # note the copy() - we dont want to modify the list directly
-        for src, dest, _ in api_files.copy():
+        for src, dest, _, _  in domain_files.copy():
             if spec.match_file(output_path / dest):
-                api_files.remove((src, dest, _))
+                domain_files.remove((src, dest, _))
 
         for src, dest, _ in model_files.copy():
             if spec.match_file(output_path / dest):
@@ -106,6 +109,21 @@ def remove_ignored_files(output_path: Path, api_files: list, model_files: list, 
         for src, dest in supporting_files.copy():
             if spec.match_file(output_path / dest):
                 supporting_files.remove((src, dest))
+
+
+def generate_openapi(output_path: Path):
+    """Helper that calls the openapi generator.
+
+    Args:
+        output_path (Path): The requested destination.
+    """
+    gen_schema_file = output_path / "src/main/resources/openapi.yaml"
+    gen_schema_file.parent.mkdir(exist_ok=True, parents=True)
+
+    import qsdl.core as core  # pylint: disable=import-outside-toplevel
+    from qsdl.config import Config as core_config  # pylint: disable=import-outside-toplevel
+
+    core.generate(core_config.raw_schema, gen_schema_file.parent, "openapi")
 
 
 def generate(schema: Schema, output_path: Path, config: Config):
@@ -124,18 +142,22 @@ def generate(schema: Schema, output_path: Path, config: Config):
     if isinstance(config.database, list):
         config.database = "hibernate"
 
-    # loop and generate api files
-    api_files = []
+    # loop and generate domain files
+    domain_files = []
 
-    for api in parse_apis(schema):
+    for api, model in parse_domain(schema):
         # fmt: off
-        api_files.append(("src/main/java/domain/Controller.j2", f"src/main/java/{base_package}/controller/{api.name}Controller.java", api))
-        api_files.append(("src/main/java/domain/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api))
+        domain_files.append(("src/main/java/domain/Controller.j2", f"src/main/java/{base_package}/controller/{api.name}Controller.java", api, model))
+        domain_files.append(("src/main/java/domain/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api, model))
+
+        if model:
+            domain_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{base_package}/domain/{model.name}.java", api, model))
+
         if config.database == "hibernate" and api.domain_object :
-            api_files.append(("src/main/java/domain/Repository.j2", f"src/main/java/{base_package}/repository/{api.name}Repository.java", api))
+            domain_files.append(("src/main/java/domain/Repository.j2", f"src/main/java/{base_package}/repository/{api.name}Repository.java", api, model))
         # fmt: on
 
-    # loop and generate model_files
+    # loop and generate model files
     model_files = []
 
     for model in parse_models(schema):
@@ -187,7 +209,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
     # fmt: on
 
     # remove ignored files from generator
-    remove_ignored_files(output_path, api_files, model_files, supporting_files)
+    remove_ignored_files(output_path, domain_files, model_files, supporting_files)
 
     # build the render arguments
     context = {
@@ -215,16 +237,12 @@ def generate(schema: Schema, output_path: Path, config: Config):
         render(output_file, context, template_path)
 
     # generate apis
-    for src, dest, api in api_files:
+    for src, dest, api, model in domain_files:
         context["api"] = api
+        context["model"] = model
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
         render(output_file, context, template_path)
 
-    # copy spec
-    gen_schema_file = output_path / "src/main/resources/openapi.yaml"
-    gen_schema_file.parent.mkdir(exist_ok=True, parents=True)
-
-    import qsdl.core as core # pylint: disable=import-outside-toplevel
-    from qsdl.config import Config as core_config # pylint: disable=import-outside-toplevel
-    core.generate(core_config.raw_schema, gen_schema_file.parent, "openapi")
+    # run openapi generator to create spec file
+    generate_openapi(output_path)
