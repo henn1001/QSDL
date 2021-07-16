@@ -5,6 +5,7 @@ package com.test.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,6 +18,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
@@ -211,17 +214,25 @@ public class Json {
     }
   }
 
-  public JsonNode nodeFromJson(String json) {
+  public ObjectNode nodeFromJson(String json) {
     try {
-      return mapper.readTree(json);
+      return (ObjectNode) mapper.readTree(json);
     } catch (IOException e) {
       throw new JsonException(e);
     }
   }
 
-  public JsonNode nodeFromObject(Object obj) {
+  public ObjectNode nodeFromObject(Object obj) {
     try {
-      return mapper.readTree(toString(obj));
+      return (ObjectNode) mapper.readTree(toString(obj));
+    } catch (IOException e) {
+      throw new JsonException(e);
+    }
+  }
+
+  public ArrayNode nodeFromList(List<Object> obj) {
+    try {
+      return (ArrayNode) mapper.readTree(toString(obj));
     } catch (IOException e) {
       throw new JsonException(e);
     }

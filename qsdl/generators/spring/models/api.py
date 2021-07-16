@@ -229,7 +229,7 @@ class Api:
         if domain_object:
             self.domain_object = domain_object
             self.domain_parents = domain_parents
-            self.has_aggregation = util.has_aggregation(domain_object)
+            self.has_aggregation = util.has(domain_object, has_aggregation=True)
 
         self._add_operations(self._ref.operations)
 

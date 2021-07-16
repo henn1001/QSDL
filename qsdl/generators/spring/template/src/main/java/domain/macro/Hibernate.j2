@@ -22,9 +22,9 @@
   {#
     Serialization for objects
   #}
-  {% if attr.type == "Object" %}
-  @Column(columnDefinition = "BINARY(1048576)")
-  @org.hibernate.annotations.Type(type = "serializable")
+  {% if attr.type == "ObjectNode" %}
+  @Lob
+  @Convert(converter = {{base_package}}.util.NodeConverter.class)
   {% endif %}
   {#
     Relations

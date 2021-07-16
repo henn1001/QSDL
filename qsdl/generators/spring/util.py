@@ -37,7 +37,7 @@ custom_types = {
     "Boolean": "Boolean",
     "ID": "Long",
     "Date": "OffsetDateTime",
-    "Object": "Object",
+    "Object": "ObjectNode",
     "Void": "Void",
 }
 
@@ -54,8 +54,17 @@ def custom_type(input_type: str) -> str:
     return custom_types.get(input_type, input_type)
 
 
-def has_list(entity: Union[Base, Object]) -> bool:
-    """Checks if the Base or Object has an array.
+def has(
+    entity: Union[Base, Object],
+    has_type: List = None,
+    has_list: bool = False,
+    has_model: bool = False,
+    has_required: bool = False,
+    has_aggregation: bool = False,
+    has_relation: bool = False,
+    has_relation_not_nested: bool = False,
+) -> bool:
+    """Checks if the Base or Object has various attributes.
 
     Args:
         entity (Union[Base, Object]): Either entity.Base or entity.Object.
@@ -67,187 +76,43 @@ def has_list(entity: Union[Base, Object]) -> bool:
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
 
-        for field in entity.fields:
-
-            if field.is_array:
-                ret = True
-                break
-
-    return ret
-
-
-def has_float(entity: Union[Base, Object]) -> bool:
-    """Checks if the Base or Object has a float.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
-
-        for field in entity.fields:
-
-            if field.value.name in ["Float", "Double"]:
-                ret = True
-                break
-
-    return ret
-
-
-def has_date(entity: Union[Base, Object]) -> bool:
-    """Checks if the Base or Object has a date.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
-
-        for field in entity.fields:
-
-            if field.value.name in ["Date"]:
-                ret = True
-                break
-
-    return ret
-
-
-def has_enum(entity: Union[Base, Object]) -> bool:
-    """Checks if the Base or Object has an enum.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
-
-        for field in entity.fields:
-
-            if field.value._tx_fqn in ["Enum"]:
-                ret = True
-                break
-
-    return ret
-
-
-def has_model(entity: Union[Base, Object]) -> bool:
-    """Checks if the Base or Object has a base or object.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
-
-        for field in entity.fields:
-
-            if field.value._tx_fqn in ["entity.Base", "entity.Object"]:
-                ret = True
-                break
-
-    return ret
-
-
-def has_required(entity: Union[Base, Object]) -> bool:
-    """Checks if the Base or Object has an required attribute.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
-
-        for field in entity.fields:
-
-            if field.is_required:
-                ret = True
-                break
-
-    return ret
-
-
-def has_aggregation(entity: Object) -> bool:
-    """Checks if the Object is aggregated somewhere.
-
-    Args:
-        entity (Object): entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Object"]:
-
-        fields = get_parent_fields(entity)
+        # for the aggregation check - we want to search the parent fields
+        fields = entity.fields if not has_aggregation else get_parent_fields(entity)
 
         for field in fields:
 
-            if field.is_aggregation:
+            # checks for scalar types
+            if has_type and field.value.name in has_type:
                 ret = True
                 break
 
-    return ret
-
-
-def has_relation(entity: Object) -> bool:
-    """Checks if the Object has a relation.
-
-    Args:
-        entity (Object): entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Object"]:
-
-        for field in entity.fields:
-
-            if field.is_composition or field.is_aggregation:
+            # check for lists
+            if has_list and field.is_array:
                 ret = True
                 break
 
-    return ret
+            # check for base and object references
+            if has_model and field.value._tx_fqn in ["entity.Base", "entity.Object"]:
+                ret = True
+                break
 
+            # checks if there is a required attribute
+            if has_required and field.is_required:
+                ret = True
+                break
 
-def has_relation_not_nested(entity: Union[Base, Object]) -> bool:
-    """Checks if the Base or Object has a relation that is not nested.
+            # checks if the Object is aggregated somewhere
+            if has_aggregation and field.is_aggregation:
+                ret = True
+                break
 
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
+            # checks if the Object has a relation
+            if has_relation and (field.is_composition or field.is_aggregation):
+                ret = True
+                break
 
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
-
-        for field in entity.fields:
-
-            if (field.is_composition or field.is_aggregation) and not field.is_nested:
+            # checks if the Base or Object has a relation that is not nested
+            if has_relation_not_nested and ((field.is_composition or field.is_aggregation) and not field.is_nested):
                 ret = True
                 break
 
@@ -343,29 +208,33 @@ def get_model_imports(entity):
         raise ValueError
 
     # note: the order is already sorted
-    if has_date(entity):
+    if has(entity, has_type=["Date"]):
         _import = ["java.time.OffsetDateTime"]
         imports.extend(_import)
 
-    if has_list(entity) or entity._tx_fqn != "entity.Enum":
+    if has(entity, has_list=True) or entity._tx_fqn != "entity.Enum":
         _import = ["java.util.*"]
         imports.extend(_import)
 
     _import = ["javax.persistence.*"]
     imports.extend(_import)
 
-    if has_list(entity) or has_model(entity):
+    if has(entity, has_list=True) or has(entity, has_model=True):
         _import = ["javax.validation.*"]
         imports.extend(_import)
 
-    if has_required(entity):
+    if has(entity, has_required=True):
         _import = ["javax.validation.constraints.*"]
         imports.extend(_import)
 
     _import = ["com.fasterxml.jackson.annotation.*"]
     imports.extend(_import)
 
-    if has_date(entity):
+    if has(entity, has_type=["Object"]):
+        _import = ["com.fasterxml.jackson.databind.node.ObjectNode"]
+        imports.extend(_import)
+
+    if has(entity, has_type=["Date"]):
         _import = ["org.springframework.format.annotation.DateTimeFormat"]
         imports.extend(_import)
 

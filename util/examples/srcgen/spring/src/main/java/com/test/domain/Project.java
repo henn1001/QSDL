@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.*;
 import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.test.model.AbstractPersistentObject;
@@ -37,10 +38,10 @@ public class Project extends AbstractPersistentObject {
   @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
   public OffsetDateTime lastUpdateDate;
 
-  @Column(columnDefinition = "BINARY(1048576)")
-  @org.hibernate.annotations.Type(type = "serializable")
+  @Lob
+  @Convert(converter = com.test.util.NodeConverter.class)
   @JsonProperty(value = "meta_inf")
-  public Object metaInf;
+  public ObjectNode metaInf;
 
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
   public Boolean archive;

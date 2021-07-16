@@ -8,6 +8,7 @@ import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Embeddable
@@ -34,10 +35,10 @@ public class BaseType {
   @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
   public OffsetDateTime lastUpdateDate;
 
-  @Column(columnDefinition = "BINARY(1048576)")
-  @org.hibernate.annotations.Type(type = "serializable")
+  @Lob
+  @Convert(converter = com.test.util.NodeConverter.class)
   @JsonProperty(value = "meta_inf")
-  public Object metaInf;
+  public ObjectNode metaInf;
 
 
 

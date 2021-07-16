@@ -30,7 +30,7 @@
   {%- endif -%}
 
   {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      @RequestBody Map<String, Object> body
+      @RequestBody ObjectNode body
   {%- elif operation.body_parameters and operation.method == "patch" -%}
       @RequestBody {{ param_helper(operation.body_parameters[0]) }}
   {%- elif operation.body_parameters -%}
@@ -58,7 +58,7 @@
   {%- endif -%}
 
   {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      Map<String, Object> body
+      ObjectNode body
   {%- elif operation.body_parameters and operation.method == "patch" -%}
       {{ param_helper(operation.body_parameters[0]) }}
   {%- elif operation.body_parameters -%}
@@ -80,7 +80,7 @@
   {%- endif -%}
 
   {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      Map<String, Object> body
+      ObjectNode body
   {%- elif operation.body_parameters -%}
       {{ param_helper(operation.body_parameters[0]) }}
   {%- endif -%}
