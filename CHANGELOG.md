@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://gitlab.com/henn1001/qsdl/compare/v2.1.0...v2.2.0) (2021-07-18)
+
+
+### Features
+
+* **core:** add various validation checks and rules to field directive usage ([37c3909](https://gitlab.com/henn1001/qsdl/commit/37c390911cb0d9ebc089305f9157ad6804cf8d91))
+* **spring:** add internal flag for public field access ([8ba74e0](https://gitlab.com/henn1001/qsdl/commit/8ba74e0894f996acfe8da8a026a9b6aa248383c6))
+* **spring:** added query parameter generation ([04fd528](https://gitlab.com/henn1001/qsdl/commit/04fd5285acd7cce1ffbe611863a7d20905e18aab))
+* **spring:** bump to java 16 and springboot 2.5.2 ([884ed11](https://gitlab.com/henn1001/qsdl/commit/884ed11f6ed75e97e52b27eff5d17922bd69c6fe))
+* **spring:** switch to ObjectNode for json objects ([cebe117](https://gitlab.com/henn1001/qsdl/commit/cebe117f99c1efdf39d06a107d2b9a373600af14))
+* **spring:** utilize text blocks for sql statements ([1a8c3fb](https://gitlab.com/henn1001/qsdl/commit/1a8c3fb39936c84bc7dbb860147481e0931c04b7))
+* removed the internal scalar ID in favor of assigning a id to all domain objects by default ([e04e89f](https://gitlab.com/henn1001/qsdl/commit/e04e89fdee68b57cb52e0f57ef8d81a5c8ac4780))
+* revert usage of object extensions "allof" for openapi ([fac7136](https://gitlab.com/henn1001/qsdl/commit/fac713605dcc216f972df49f7b68d49dd8ff9547))
+
+
+### Bug Fixes
+
+* switch namespace of aggregation to parent ([5eebea1](https://gitlab.com/henn1001/qsdl/commit/5eebea150cc9c6fe00e16de56b288a0bb7747429))
+* **spring:** prevent unnecessary count queries on getall requests ([42a3d1b](https://gitlab.com/henn1001/qsdl/commit/42a3d1b24056193bcf7d3aaa6c63629a7d9240ec))
+* **spring:** resolve issue with nested base-types ([d020146](https://gitlab.com/henn1001/qsdl/commit/d020146c5c5a71e4bfb22e14cf2f942471275f20))
+
 ## [2.1.0](https://gitlab.com/henn1001/qsdl/compare/v2.0.0...v2.1.0) (2021-06-26)
 
 

@@ -19,6 +19,6 @@ A Schema-Definition-Language Generator inspired by GraphQL.
 
 from pathlib import Path
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 __folder__ = Path(__file__).parent
