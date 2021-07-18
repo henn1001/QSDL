@@ -68,9 +68,16 @@ def has(
 
     Args:
         entity (Union[Base, Object]): Either entity.Base or entity.Object.
+        has_type (List, optional): [description]. Defaults to None.
+        has_list (bool, optional): [description]. Defaults to False.
+        has_model (bool, optional): [description]. Defaults to False.
+        has_required (bool, optional): [description]. Defaults to False.
+        has_aggregation (bool, optional): [description]. Defaults to False.
+        has_relation (bool, optional): [description]. Defaults to False.
+        has_relation_not_nested (bool, optional): [description]. Defaults to False.
 
     Returns:
-        bool: Returns True on detection.
+        bool:  Returns True on detection.
     """
     ret = False
 

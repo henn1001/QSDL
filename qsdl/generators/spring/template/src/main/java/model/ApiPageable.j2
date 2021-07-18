@@ -4,7 +4,9 @@
 package {{base_package}}.model;
 
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -18,6 +20,8 @@ public class ApiPageable {
 
   public boolean count;
 
+  public Map<String, Object> query;
+
   public ApiPageable(String cursor, Long limit, Boolean count) {
     Long parsedCursor = null;
 
@@ -29,6 +33,7 @@ public class ApiPageable {
     this.cursor = parsedCursor != null && parsedCursor > 0 ? parsedCursor : Long.MAX_VALUE;
     this.limit = limit != null && limit > 0 ? Math.min(1000l, Math.max(1l, limit)) : 100;
     this.count = count != null ? count : false;
+    this.query = new HashMap<>();
   }
 
   public Long totalCount(JpaRepository<?, Long> repository) {

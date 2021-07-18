@@ -37,6 +37,8 @@ public class ProjectService {
 
   public ObjectList getProjects(String name, ApiPageable pageable) throws Exception {
 
+    pageable.query.put("name", name);
+
     List<Project> items = projectRepository.findAll(pageable);
 
     Long totalCount = pageable.totalCount(projectRepository);

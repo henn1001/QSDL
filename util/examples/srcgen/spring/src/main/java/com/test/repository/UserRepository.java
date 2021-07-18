@@ -20,10 +20,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
       value = """
 
           SELECT *
-          FROM user
+          FROM USER
           WHERE 1 = 1
-            AND ID < :#{#pageable.cursor}
-          ORDER BY id DESC
+            AND USER.ID < :#{#pageable.cursor}
+          ORDER BY USER.ID DESC
           LIMIT :#{#pageable.limit}
 
           """,
@@ -34,13 +34,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
       value = """
 
           SELECT *
-          FROM user
-            INNER JOIN ticket_to_user
-            ON ticket_to_user.user_id = user.id
+          FROM USER
+            INNER JOIN TICKET_TO_USER
+            ON TICKET_TO_USER.USER_ID = USER.ID
           WHERE 1 = 1
-            AND ticket_to_user.ticket_id = :ticketId
-            AND ID < :#{#pageable.cursor}
-          ORDER BY id DESC
+            AND TICKET_TO_USER.TICKET_ID = :ticketId
+            AND USER.ID < :#{#pageable.cursor}
+          ORDER BY USER.ID DESC
           LIMIT :#{#pageable.limit}
 
           """,
@@ -53,9 +53,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
           DELETE
           FROM
-            TICKET_to_USER
+            TICKET_TO_USER
           WHERE 1 = 1
-            AND USER_id = :id
+            AND USER_ID = :id
 
           """,
       nativeQuery = true)

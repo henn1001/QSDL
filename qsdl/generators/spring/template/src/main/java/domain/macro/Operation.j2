@@ -9,6 +9,9 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     {% endif %}
+    {% for parameter in operation.query_parameters %}
+    pageable.query.put("{{parameter.name}}", {{parameter.name}});{{ "\n" if  loop.last}}
+    {% endfor %}
     List<{{api.name}}> items = {{api.name|lower}}Repository.{{ operation.get_repo_find_all_name() }}({{ operation.get_repo_find_all_parameters() }});
 
     Long totalCount = pageable.totalCount({{api.name|lower}}Repository);

@@ -20,10 +20,10 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
       value = """
 
           SELECT *
-          FROM role
+          FROM ROLE
           WHERE 1 = 1
-            AND ID < :#{#pageable.cursor}
-          ORDER BY id DESC
+            AND ROLE.ID < :#{#pageable.cursor}
+          ORDER BY ROLE.ID DESC
           LIMIT :#{#pageable.limit}
 
           """,
@@ -34,11 +34,11 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
       value = """
 
           SELECT *
-          FROM role
+          FROM ROLE
           WHERE 1 = 1
-            AND project_id = :projectId
-            AND id < :#{#pageable.cursor}
-          ORDER BY id DESC
+            AND PROJECT_ID = :projectId
+            AND ROLE.ID < :#{#pageable.cursor}
+          ORDER BY ROLE.ID DESC
           LIMIT :#{#pageable.limit}
 
           """,

@@ -20,10 +20,10 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
       value = """
 
           SELECT *
-          FROM ticket
+          FROM TICKET
           WHERE 1 = 1
-            AND ID < :#{#pageable.cursor}
-          ORDER BY id DESC
+            AND TICKET.ID < :#{#pageable.cursor}
+          ORDER BY TICKET.ID DESC
           LIMIT :#{#pageable.limit}
 
           """,

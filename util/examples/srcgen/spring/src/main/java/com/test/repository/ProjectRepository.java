@@ -20,10 +20,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       value = """
 
           SELECT *
-          FROM project
+          FROM PROJECT
           WHERE 1 = 1
-            AND ID < :#{#pageable.cursor}
-          ORDER BY id DESC
+            AND PROJECT.ID < :#{#pageable.cursor}
+            AND (:#{#pageable.query['name']} IS NULL OR PROJECT.NAME = :#{#pageable.query['name']})
+          ORDER BY PROJECT.ID DESC
           LIMIT :#{#pageable.limit}
 
           """,
