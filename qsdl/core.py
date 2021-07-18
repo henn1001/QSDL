@@ -191,6 +191,7 @@ def generate(raw_schema: str, output_path: Path, generator_name: str, config_pat
         # call generator
         logger.info("calling generator")
         Config.generator(Config.schema, Config.output_path, Config.config)  # pylint: disable=not-callable # fmt: skip
+        logger.info("all done!")
 
     except (TextXSyntaxError, TextXSemanticError, Exception):  # pylint: disable=W0703
         traceback.print_exc()

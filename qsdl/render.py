@@ -68,5 +68,5 @@ def render(
     # generate code
     with open(output_file, "w") as file:
         tmp = template.render(context)
-        logger.info("writing file %s", output_file)
+        logger.info("rendering file: %s", output_file)
         file.write(tmp)
