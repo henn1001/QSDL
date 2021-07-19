@@ -22,7 +22,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
           SELECT *
           FROM PROJECT
           WHERE 1 = 1
-            AND PROJECT.ID < :#{#pageable.cursor}
+            AND PROJECT.ID <= :#{#pageable.cursor}
             AND (:#{#pageable.query['name']} IS NULL OR PROJECT.NAME = :#{#pageable.query['name']})
           ORDER BY PROJECT.ID DESC
           LIMIT :#{#pageable.limit}
@@ -30,5 +30,18 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
           """,
       nativeQuery = true)
   public List<Project> findAll(@Param("pageable") ApiPageable pageable);
+
+  @Query(
+      value = """
+
+          SELECT COUNT(*)
+          FROM PROJECT
+          WHERE 1 = 1
+            AND (:#{#pageable.limit} = :#{#pageable.limit})
+            AND (:#{#pageable.query['name']} IS NULL OR PROJECT.NAME = :#{#pageable.query['name']})
+
+          """,
+      nativeQuery = true)
+  public long count(@Param("pageable") ApiPageable pageable);
 
 }

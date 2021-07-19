@@ -166,8 +166,13 @@ class _Operation:
         return ret
 
     def get_repo_find_all_name(self) -> str:
-        ret = "find"
-        ret += "By" + stringcase.pascalcase(self.path_parameters[0].name) if self.domain_parent else "All"
+        ret = "findAll"
+        ret += "By" + stringcase.pascalcase(self.path_parameters[0].name) if self.domain_parent else ""
+        return ret
+
+    def get_repo_count_name(self) -> str:
+        ret = "count"
+        ret += "By" + stringcase.pascalcase(self.path_parameters[0].name) if self.domain_parent else ""
         return ret
 
     def get_repo_find_all_parameters(self) -> str:

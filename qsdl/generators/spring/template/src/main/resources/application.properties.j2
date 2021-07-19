@@ -9,7 +9,7 @@ spring.h2.console.enabled=true
 spring.h2.console.settings.web-allow-others=true
 spring.h2.console.path=/api/h2
 # Datasource
-spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.url=jdbc:h2:mem:h2-db
 # spring.datasource.url=jdbc:h2:file:./db/h2-db
 spring.datasource.username=sa
 spring.datasource.password=
@@ -33,6 +33,9 @@ info.app.java.version=@java.version@
 
 ### Logging
 logging.file.name=logs/spring.log
+# logs the SQL statements
+logging.level.org.hibernate.SQL=DEBUG
+spring.jpa.properties.hibernate.format_sql=true
 
 ### SSL
 server.ssl.enabled=${SPRING_SSL:false}
@@ -40,7 +43,4 @@ server.ssl.key-store-type=${SPRING_SSL_TYPE:pkcs12}
 server.ssl.key-store=${SPRING_SSL_STORE:classpath:keystore.p12}
 server.ssl.key-store-password=${SPRING_SSL_STORE_PASSWORD:password}
 server.ssl.key-alias=${SPRING_SSL_ALIAS:alias}
-
-# logs the SQL statements
-logging.level.org.hibernate.SQL=DEBUG
-spring.jpa.properties.hibernate.format_sql=true
+{{""}}

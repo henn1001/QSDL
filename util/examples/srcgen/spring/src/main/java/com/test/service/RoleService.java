@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 
 import com.test.config.Errors;
@@ -24,10 +25,10 @@ public class RoleService {
 
   private static Logger log = LoggerFactory.getLogger(RoleService.class.getSimpleName());
 
-  @javax.annotation.Resource
+  @Resource
   private ProjectRepository projectRepository;
 
-  @javax.annotation.Resource
+  @Resource
   private RoleRepository roleRepository;
 
   @Autowired
@@ -49,10 +50,10 @@ public class RoleService {
     // confirm existence of parent
     validateProjectId(projectId);
 
-    List<Role> items = roleRepository.findByProjectId(projectId, pageable);
+    List<Role> items = roleRepository.findAllByProjectId(projectId, pageable);
 
-    Long totalCount = pageable.totalCount(roleRepository);
-    String nextCursor = pageable.nextCursor(items);
+    Long totalCount = pageable.count ? roleRepository.countByProjectId(projectId, pageable) : null;
+    String nextCursor = pageable.getNextCursor(items);
 
     ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;

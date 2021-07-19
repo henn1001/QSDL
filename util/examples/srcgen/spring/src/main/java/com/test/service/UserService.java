@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 
 import com.test.config.Errors;
@@ -24,10 +25,10 @@ public class UserService {
 
   private static Logger log = LoggerFactory.getLogger(UserService.class.getSimpleName());
 
-  @javax.annotation.Resource
+  @Resource
   private TicketRepository ticketRepository;
 
-  @javax.annotation.Resource
+  @Resource
   private UserRepository userRepository;
 
   @Autowired
@@ -49,10 +50,10 @@ public class UserService {
     // confirm existence of parent
     validateTicketId(ticketId);
 
-    List<User> items = userRepository.findByTicketId(ticketId, pageable);
+    List<User> items = userRepository.findAllByTicketId(ticketId, pageable);
 
-    Long totalCount = pageable.totalCount(userRepository);
-    String nextCursor = pageable.nextCursor(items);
+    Long totalCount = pageable.count ? userRepository.countByTicketId(ticketId, pageable) : null;
+    String nextCursor = pageable.getNextCursor(items);
 
     ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;
@@ -98,8 +99,8 @@ public class UserService {
 
     List<User> items = userRepository.findAll(pageable);
 
-    Long totalCount = pageable.totalCount(userRepository);
-    String nextCursor = pageable.nextCursor(items);
+    Long totalCount = pageable.count ? userRepository.count(pageable) : null;
+    String nextCursor = pageable.getNextCursor(items);
 
     ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;

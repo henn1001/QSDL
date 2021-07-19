@@ -22,13 +22,25 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
           SELECT *
           FROM ROLE
           WHERE 1 = 1
-            AND ROLE.ID < :#{#pageable.cursor}
+            AND ROLE.ID <= :#{#pageable.cursor}
           ORDER BY ROLE.ID DESC
           LIMIT :#{#pageable.limit}
 
           """,
       nativeQuery = true)
   public List<Role> findAll(@Param("pageable") ApiPageable pageable);
+
+  @Query(
+      value = """
+
+          SELECT COUNT(*)
+          FROM ROLE
+          WHERE 1 = 1
+            AND (:#{#pageable.limit} = :#{#pageable.limit})
+
+          """,
+      nativeQuery = true)
+  public long count(@Param("pageable") ApiPageable pageable);
 
   @Query(
       value = """
@@ -43,7 +55,20 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
           """,
       nativeQuery = true)
-  public List<Role> findByProjectId(@Param("projectId") Long projectId, @Param("pageable") ApiPageable pageable);
+  public List<Role> findAllByProjectId(@Param("projectId") Long projectId, @Param("pageable") ApiPageable pageable);
+
+  @Query(
+      value = """
+
+          SELECT COUNT(*)
+          FROM ROLE
+          WHERE 1 = 1
+            AND PROJECT_ID = :projectId
+            AND (:#{#pageable.limit} = :#{#pageable.limit})
+
+          """,
+      nativeQuery = true)
+  public long countByProjectId(@Param("projectId") Long projectId, @Param("pageable") ApiPageable pageable);
 
   public Optional<Role> findByProjectIdAndId(Long projectId, Long id);
 

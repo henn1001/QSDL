@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 
 import {{base_package}}.config.Errors;
@@ -30,11 +31,11 @@ public class {{api.name}}Service {
 
 {% if database == "hibernate" and api.domain_object %}
 {% for parent in api.domain_parents %}
-  @javax.annotation.Resource
+  @Resource
   private {{parent.name}}Repository {{parent.name|lower}}Repository;
 
 {% endfor %}
-  @javax.annotation.Resource
+  @Resource
   private {{api.name}}Repository {{api.name|lower}}Repository;
 {% endif %}
 

@@ -22,13 +22,25 @@ public interface UserRepository extends JpaRepository<User, Long> {
           SELECT *
           FROM USER
           WHERE 1 = 1
-            AND USER.ID < :#{#pageable.cursor}
+            AND USER.ID <= :#{#pageable.cursor}
           ORDER BY USER.ID DESC
           LIMIT :#{#pageable.limit}
 
           """,
       nativeQuery = true)
   public List<User> findAll(@Param("pageable") ApiPageable pageable);
+
+  @Query(
+      value = """
+
+          SELECT COUNT(*)
+          FROM USER
+          WHERE 1 = 1
+            AND (:#{#pageable.limit} = :#{#pageable.limit})
+
+          """,
+      nativeQuery = true)
+  public long count(@Param("pageable") ApiPageable pageable);
 
   @Query(
       value = """
@@ -45,7 +57,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
           """,
       nativeQuery = true)
-  public List<User> findByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") ApiPageable pageable);
+  public List<User> findAllByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") ApiPageable pageable);
+
+  @Query(
+      value = """
+
+          SELECT COUNT(*)
+          FROM USER
+            INNER JOIN TICKET_TO_USER
+            ON TICKET_TO_USER.USER_ID = USER.ID
+          WHERE 1 = 1
+            AND TICKET_TO_USER.TICKET_ID = :ticketId
+            AND (:#{#pageable.limit} = :#{#pageable.limit})
+
+          """,
+      nativeQuery = true)
+  public long countByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") ApiPageable pageable);
 
   @Modifying
   @Query(

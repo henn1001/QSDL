@@ -5,4 +5,11 @@ package com.test.config;
 
 public class Constants {
 
+  public static final int CURSOR_DEFAULT = 100;
+  public static final int CURSOR_MIN = 1;
+  public static final int CURSOR_MAX = 1000;
+
+  public static final int ASYNC_POOL_SIZE = 1;
+  public static final int SCHEDULER_POOL_SIZE = 1;
+
 }

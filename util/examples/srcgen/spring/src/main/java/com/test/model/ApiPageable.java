@@ -3,12 +3,14 @@
  */
 package com.test.model;
 
+import static com.test.config.Constants.CURSOR_DEFAULT;
+import static com.test.config.Constants.CURSOR_MAX;
+import static com.test.config.Constants.CURSOR_MIN;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.test.util.Json;
 
@@ -25,31 +27,38 @@ public class ApiPageable {
   public ApiPageable(String cursor, Long limit, Boolean count) {
     Long parsedCursor = null;
 
+    // try parsing the cursor
     if (cursor != null) {
       String decodedString = new String(Base64.getDecoder().decode(cursor));
       parsedCursor = Long.parseLong(decodedString);
     }
 
+    // set attributes
     this.cursor = parsedCursor != null && parsedCursor > 0 ? parsedCursor : Long.MAX_VALUE;
-    this.limit = limit != null && limit > 0 ? Math.min(1000l, Math.max(1l, limit)) : 100;
+    this.limit = limit != null && limit > 0 ? Math.min(CURSOR_MAX, Math.max(CURSOR_MIN, limit)) : CURSOR_DEFAULT;
     this.count = count != null ? count : false;
     this.query = new HashMap<>();
+
+    // for paging, we always want to request one extra item
+    // the id of this extra item will be the new cursor
+    this.limit += 1;
   }
 
-  public Long totalCount(JpaRepository<?, Long> repository) {
-    return this.count ? repository.count() : null;
-  }
-
-  public String nextCursor(List<?> items) {
+  public String getNextCursor(List<?> items) {
     int size = items.size();
     String nextCursor = null;
 
     if (size == this.limit) {
+      // fetch last item in list and encode id as cursor
       JsonNode node = Json.serializer().nodeFromObject(items.get(size - 1));
       nextCursor = node.get("id").asText();
-
       nextCursor = Base64.getEncoder().encodeToString(nextCursor.getBytes());
+
+      // very important to remove the last item
+      // it is only used for the paging cursor
+      items.remove(size - 1);
     }
+
     return nextCursor;
   }
 

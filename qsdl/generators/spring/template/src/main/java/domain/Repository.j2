@@ -23,7 +23,7 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
           SELECT *
           FROM {{api.name|upper}}
           WHERE 1 = 1
-            AND {{api.name|upper}}.ID < {{ ":#{#pageable.cursor}" }}
+            AND {{api.name|upper}}.ID <= {{ ":#{#pageable.cursor}" }}
             {{- macro.get_query() | indent(8) }}
           ORDER BY {{api.name|upper}}.ID DESC
           LIMIT {{ ":#{#pageable.limit}" }}
@@ -31,6 +31,19 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
           """,
       nativeQuery = true)
   public List<{{api.name}}> findAll(@Param("pageable") ApiPageable pageable);
+
+  @Query(
+      value = """
+
+          SELECT COUNT(*)
+          FROM {{api.name|upper}}
+          WHERE 1 = 1
+            AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
+            {{- macro.get_query() | indent(8) }}
+
+          """,
+      nativeQuery = true)
+  public long count(@Param("pageable") ApiPageable pageable);
   {% for domain_parent in api.domain_parents %}
 
     {% if util.is_aggregation(api.domain_object, domain_parent) %}
@@ -50,7 +63,23 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
 
           """,
       nativeQuery = true)
-  public List<{{api.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
+  public List<{{api.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
+
+  @Query(
+      value = """
+
+          SELECT COUNT(*)
+          FROM {{api.name|upper}}
+            INNER JOIN {{domain_parent.name|upper}}_TO_{{api.name|upper}}
+            ON {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{api.name|upper}}_ID = {{api.name|upper}}.ID
+          WHERE 1 = 1
+            AND {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent) | camel }}
+            AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
+            {{- macro.get_query() | indent(8) }}
+
+          """,
+      nativeQuery = true)
+  public long countBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
     {% else %}
   @Query(
       value = """
@@ -66,7 +95,21 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
 
           """,
       nativeQuery = true)
-  public List<{{api.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
+  public List<{{api.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
+
+  @Query(
+      value = """
+
+          SELECT COUNT(*)
+          FROM {{api.name|upper}}
+          WHERE 1 = 1
+            AND {{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent) | camel }}
+            AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
+            {{- macro.get_query() | indent(8) }}
+
+          """,
+      nativeQuery = true)
+  public long countBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
 
   public Optional<{{api.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}And{{ util.get_id_for_repo(api.domain_object) }}(Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, Long {{ util.get_id_for_repo(api.domain_object) | camel }});
 
@@ -93,3 +136,4 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
 
   {% endif %}
 }
+{{""}}

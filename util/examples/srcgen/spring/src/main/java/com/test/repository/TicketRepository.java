@@ -22,12 +22,24 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
           SELECT *
           FROM TICKET
           WHERE 1 = 1
-            AND TICKET.ID < :#{#pageable.cursor}
+            AND TICKET.ID <= :#{#pageable.cursor}
           ORDER BY TICKET.ID DESC
           LIMIT :#{#pageable.limit}
 
           """,
       nativeQuery = true)
   public List<Ticket> findAll(@Param("pageable") ApiPageable pageable);
+
+  @Query(
+      value = """
+
+          SELECT COUNT(*)
+          FROM TICKET
+          WHERE 1 = 1
+            AND (:#{#pageable.limit} = :#{#pageable.limit})
+
+          """,
+      nativeQuery = true)
+  public long count(@Param("pageable") ApiPageable pageable);
 
 }

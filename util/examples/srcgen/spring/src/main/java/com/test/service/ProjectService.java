@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 
 import com.test.config.Errors;
@@ -24,7 +25,7 @@ public class ProjectService {
 
   private static Logger log = LoggerFactory.getLogger(ProjectService.class.getSimpleName());
 
-  @javax.annotation.Resource
+  @Resource
   private ProjectRepository projectRepository;
 
   @Autowired
@@ -41,8 +42,8 @@ public class ProjectService {
 
     List<Project> items = projectRepository.findAll(pageable);
 
-    Long totalCount = pageable.totalCount(projectRepository);
-    String nextCursor = pageable.nextCursor(items);
+    Long totalCount = pageable.count ? projectRepository.count(pageable) : null;
+    String nextCursor = pageable.getNextCursor(items);
 
     ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;
