@@ -13,12 +13,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 
 import {{base_package}}.config.Errors;
 import {{base_package}}.exception.ApiException;
-{% if database == "hibernate" and api.domain_object %}
+{% if database == "hibernate" and model %}
 import {{base_package}}.repository.*;
 {% endif %}
 import {{base_package}}.domain.*;
@@ -29,13 +28,13 @@ public class {{api.name}}Service {
 
   private static Logger log = LoggerFactory.getLogger({{api.name}}Service.class.getSimpleName());
 
-{% if database == "hibernate" and api.domain_object %}
-{% for parent in api.domain_parents %}
-  @Resource
+{% if database == "hibernate" and model %}
+{% for parent in model.domain_parents %}
+  @Autowired
   private {{parent.name}}Repository {{parent.name|lower}}Repository;
 
 {% endfor %}
-  @Resource
+  @Autowired
   private {{api.name}}Repository {{api.name|lower}}Repository;
 {% endif %}
 
@@ -46,8 +45,8 @@ public class {{api.name}}Service {
   private void init() {
 
   }
-{% if database == "hibernate" and api.domain_parents %}
-{% for parent in api.domain_parents %}
+{% if database == "hibernate" and model.domain_parents %}
+{% for parent in model.domain_parents %}
 
   private void validate{{parent.name}}Id(Long id) throws Exception {
     if (!{{parent.name|lower}}Repository.existsById(id)) {
@@ -58,12 +57,12 @@ public class {{api.name}}Service {
 {% endif %}
 
 {% for operation in api.operations %}
-  {% if operation.method == "delete" and api.has_aggregation %}
+  {% if operation.method == "delete" and model and model.has_aggregation %}
   @org.springframework.transaction.annotation.Transactional
   {% endif %}
   public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws Exception {
 
-  {% if database == "hibernate" and api.domain_object %}
+  {% if database == "hibernate" and model and model.is_crud %}
   {{- opr_macro.logic(operation) -}}
   {% else %}
   return null;

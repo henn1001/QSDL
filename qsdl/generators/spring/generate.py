@@ -40,6 +40,7 @@ def parse_domain(schema: Schema) -> List[Tuple[Api, Model]]:
         List[Tuple(Api, Model)]: A list of custom API and Model.
     """
     ret = []
+    models = []
 
     entities = xtx.get_children_of_type("Api", schema)
 
@@ -49,8 +50,13 @@ def parse_domain(schema: Schema) -> List[Tuple[Api, Model]]:
 
         if entity.parent._tx_fqn == "entity.Object":
             new_model = Model(entity.parent)
+            models.append(new_model)
 
         ret.append((new_api, new_model))
+
+    # loop again to assign domain parents
+    for model in models:
+        model.domain_parents = util.get_parents(model, models) if model else []
 
     return ret
 
@@ -98,7 +104,7 @@ def remove_ignored_files(output_path: Path, domain_files: list, model_files: lis
 
         # loop over each all files and remove matches
         # note the copy() - we dont want to modify the list directly
-        for src, dest, _, _  in domain_files.copy():
+        for src, dest, _, _ in domain_files.copy():
             if spec.match_file(output_path / dest):
                 domain_files.remove((src, dest, _))
 
@@ -153,8 +159,9 @@ def generate(schema: Schema, output_path: Path, config: Config):
         if model:
             domain_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{base_package}/domain/{model.name}.java", api, model))
 
-        if config.database == "hibernate" and api.domain_object :
-            domain_files.append(("src/main/java/domain/Repository.j2", f"src/main/java/{base_package}/repository/{api.name}Repository.java", api, model))
+        if config.database == "hibernate" and model :
+            domain_files.append(("src/main/java/domain/Repository.j2", f"src/main/java/{base_package}/repository/{model.name}Repository.java", api, model))
+            domain_files.append(("src/test/java/domain/RepositoryTest.j2", f"src/test/java/{base_package}/repository/{model.name}RepositoryTest.java", api, model))
         # fmt: on
 
     # loop and generate model files
@@ -177,12 +184,14 @@ def generate(schema: Schema, output_path: Path, config: Config):
         (".vscode/settings.j2", ".vscode/settings.json"),
         # resources
         ("src/main/resources/application.properties.j2", "src/main/resources/application.properties"),
+        ("src/test/resources/application.properties.j2", "src/test/resources/application.properties"),
         ("src/main/resources/logback-spring.j2", "src/main/resources/logback-spring.xml"),
         ("src/main/resources/public/index.j2", "src/main/resources/public/index.html"),
         ("src/main/resources/public/error/404.j2", "src/main/resources/public/error/404.html"),
         # main
         ("src/main/java/package-info.j2", f"src/main/java/{base_package}/package-info.java"),
         ("src/main/java/SpringBootApp.j2", f"src/main/java/{base_package}/SpringBootApp.java"),
+        ("src/test/java/TestConfig.j2", f"src/test/java/{base_package}/TestConfig.java"),
         # config
         ("src/main/java/config/ApplicationConfig.j2", f"src/main/java/{base_package}/config/ApplicationConfig.java"),
         ("src/main/java/config/ApplicationProperties.j2", f"src/main/java/{base_package}/config/ApplicationProperties.java"),

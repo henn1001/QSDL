@@ -15,7 +15,7 @@ import {{base_package}}.domain.*;
 import {{base_package}}.model.ApiPageable;
 
 @Repository
-public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long> {
+public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, Long> {
 
   @Query(
       value = """
@@ -30,7 +30,7 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
 
           """,
       nativeQuery = true)
-  public List<{{api.name}}> findAll(@Param("pageable") ApiPageable pageable);
+  public List<{{model.name}}> findAll(@Param("pageable") ApiPageable pageable);
 
   @Query(
       value = """
@@ -44,9 +44,9 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
           """,
       nativeQuery = true)
   public long count(@Param("pageable") ApiPageable pageable);
-  {% for domain_parent in api.domain_parents %}
+  {% for domain_parent in model.domain_parents %}
 
-    {% if util.is_aggregation(api.domain_object, domain_parent) %}
+    {% if util.is_aggregation(model._ref, domain_parent._ref) %}
   @Query(
       value = """
 
@@ -55,15 +55,15 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
             INNER JOIN {{domain_parent.name|upper}}_TO_{{api.name|upper}}
             ON {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{api.name|upper}}_ID = {{api.name|upper}}.ID
           WHERE 1 = 1
-            AND {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent) | camel }}
-            AND {{api.name|upper}}.ID < {{ ":#{#pageable.cursor}" }}
+            AND {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}
+            AND {{api.name|upper}}.ID <= {{ ":#{#pageable.cursor}" }}
             {{- macro.get_query() | indent(8) }}
           ORDER BY {{api.name|upper}}.ID DESC
           LIMIT {{ ":#{#pageable.limit}" }}
 
           """,
       nativeQuery = true)
-  public List<{{api.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
+  public List<{{model.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") ApiPageable pageable);
 
   @Query(
       value = """
@@ -73,13 +73,13 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
             INNER JOIN {{domain_parent.name|upper}}_TO_{{api.name|upper}}
             ON {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{api.name|upper}}_ID = {{api.name|upper}}.ID
           WHERE 1 = 1
-            AND {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent) | camel }}
+            AND {{domain_parent.name|upper}}_TO_{{api.name|upper}}.{{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}
             AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
             {{- macro.get_query() | indent(8) }}
 
           """,
       nativeQuery = true)
-  public long countBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
+  public long countBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") ApiPageable pageable);
     {% else %}
   @Query(
       value = """
@@ -87,15 +87,15 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
           SELECT *
           FROM {{api.name|upper}}
           WHERE 1 = 1
-            AND {{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent) | camel }}
-            AND {{api.name|upper}}.ID < {{ ":#{#pageable.cursor}" }}
+            AND {{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}
+            AND {{api.name|upper}}.ID <= {{ ":#{#pageable.cursor}" }}
             {{- macro.get_query() | indent(8) }}
           ORDER BY {{api.name|upper}}.ID DESC
           LIMIT {{ ":#{#pageable.limit}" }}
 
           """,
       nativeQuery = true)
-  public List<{{api.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
+  public List<{{model.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") ApiPageable pageable);
 
   @Query(
       value = """
@@ -103,32 +103,28 @@ public interface {{api.name}}Repository extends JpaRepository<{{api.name}}, Long
           SELECT COUNT(*)
           FROM {{api.name|upper}}
           WHERE 1 = 1
-            AND {{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent) | camel }}
+            AND {{domain_parent.name|upper}}_ID = :{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}
             AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
             {{- macro.get_query() | indent(8) }}
 
           """,
       nativeQuery = true)
-  public long countBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, @Param("pageable") ApiPageable pageable);
+  public long countBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") ApiPageable pageable);
 
-  public Optional<{{api.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}And{{ util.get_id_for_repo(api.domain_object) }}(Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, Long {{ util.get_id_for_repo(api.domain_object) | camel }});
+  public Optional<{{model.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}And{{ util.get_id_for_repo(model._ref) }}(Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, Long {{ util.get_id_for_repo(model._ref) | camel }});
 
-  public Boolean existsBy{{ util.get_parent_id_for_repo(domain_parent) | pascal }}And{{ util.get_id_for_repo(api.domain_object) }}(Long {{ util.get_parent_id_for_repo(domain_parent) | camel }}, Long {{ util.get_id_for_repo(api.domain_object) | camel }});
+  public Boolean existsBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}And{{ util.get_id_for_repo(model._ref) }}(Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, Long {{ util.get_id_for_repo(model._ref) | camel }});
     {% endif %}
   {% endfor %}
 
-  {% if api.has_aggregation %}
+  {% if model.has_aggregation %}
   @Modifying
   @Query(
       value = """
 
-          DELETE
-          FROM
-            {% for domain_parent in api.domain_parents %}
-            {{domain_parent.name|upper}}_TO_{{api.name|upper}}{{ ", " if not loop.last }}
-            {% endfor %}
-          WHERE 1 = 1
-            AND {{api.name|upper}}_ID = :id
+          {% for domain_parent in model.domain_parents %}
+          DELETE FROM {{domain_parent.name|upper}}_TO_{{api.name|upper}} WHERE {{api.name|upper}}_ID = :id ;
+          {% endfor %}
 
           """,
       nativeQuery = true)

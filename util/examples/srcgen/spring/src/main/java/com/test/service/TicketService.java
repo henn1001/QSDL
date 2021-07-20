@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 
 import com.test.config.Errors;
@@ -25,7 +24,7 @@ public class TicketService {
 
   private static Logger log = LoggerFactory.getLogger(TicketService.class.getSimpleName());
 
-  @Resource
+  @Autowired
   private TicketRepository ticketRepository;
 
   @Autowired

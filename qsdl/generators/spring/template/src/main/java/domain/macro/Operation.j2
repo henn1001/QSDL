@@ -165,7 +165,7 @@
       throw new ApiException(Errors.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
     }
 
-    {% if api.has_aggregation %}
+    {% if model.has_aggregation %}
     {{api.name|lower}}Repository.removeRelations({{operation.path_parameters[-1].name}});
     {% endif %}
     {{api.name|lower}}Repository.deleteById({{operation.path_parameters[-1].name}});

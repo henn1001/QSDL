@@ -22,6 +22,7 @@ from textx import model as xtx
 
 if TYPE_CHECKING:
     from qsdl.dsl.models import Base, Enum, Field, Object, Schema
+    from .models import Model
 
 
 # the parsed schema definition.
@@ -63,6 +64,7 @@ def has(
     has_aggregation: bool = False,
     has_relation: bool = False,
     has_relation_not_nested: bool = False,
+    has_query: bool = False,
 ) -> bool:
     """Checks if the Base or Object has various attributes.
 
@@ -120,6 +122,11 @@ def has(
 
             # checks if the Base or Object has a relation that is not nested
             if has_relation_not_nested and ((field.is_composition or field.is_aggregation) and not field.is_nested):
+                ret = True
+                break
+
+            # checks if there is a query attribute
+            if has_query and field.is_query:
                 ret = True
                 break
 
@@ -248,21 +255,27 @@ def get_model_imports(entity):
     return imports
 
 
-def get_parents(obj: Object) -> List[Field]:
-    """Returns all Objects whos Field value is this Object.
+def get_parents(model: Model, models: List[Model]) -> List[Model]:
+    """Returns all Models who are a domain parent of a Model.
 
     Args:
-        schema (Schema): The QSDL schema model.
-        obj (Object): entity.Object
+        model (Model): [description]
+        models (List[Model]): [description]
 
     Returns:
-        List[Field]: [entity.Field]
+        List[Model]: [Model]
     """
     parents = []
+    parent_names = []
 
     fields = xtx.get_children_of_type("Field", schema)
 
-    parents = [x.parent for x in fields if x.value == obj and x.parent._tx_fqn == "entity.Object"]
+    objects = [x.parent for x in fields if x.value == model._ref and x.parent._tx_fqn == "entity.Object"]
+
+    for obj in objects:
+        result = [x for x in models if x._ref == obj and x.name not in parent_names]
+        parents.extend(result)
+        result = [parent_names.append(x.name) for x in result]
 
     return parents
 

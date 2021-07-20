@@ -16,7 +16,7 @@ import {{base_package}}.model.AbstractPersistentObject;
 {% include "Enum.j2" with context %}
 {% else %}
 {{- hibernate.class_annotation() if database == "hibernate" -}}
-public class {{model.name}}{% if not model.is_pagination and not model.is_base %} extends AbstractPersistentObject{% endif %} {
+public class {{model.name}}{% if not model.is_base %} extends AbstractPersistentObject{% endif %} {
 
 {% for attr in model.attributes if not attr.is_id %}
   {# 

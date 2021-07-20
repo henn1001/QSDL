@@ -215,26 +215,14 @@ class Api:
     description: str = None
     operations: List = field(default_factory=list)
 
-    domain_object: Object = None
-    domain_parents: List[Object] = field(default_factory=list)
-    has_aggregation: bool = False
-
     def __post_init__(self):
 
         name = self._ref.parent.name if self._ref.parent._tx_fqn == "entity.Object" else "Default"
-        domain_object = self._ref.parent if self._ref.parent._tx_fqn == "entity.Object" and self._ref.parent.is_crud else None
-        domain_parents = util.get_parents(domain_object) if domain_object else None
 
         # assign values to self
         self.name = name
         self.tag = stringcase.lowercase(self._ref.namespace)
         self.description = self._ref.description
-
-        # skip for custom operations
-        if domain_object:
-            self.domain_object = domain_object
-            self.domain_parents = domain_parents
-            self.has_aggregation = util.has(domain_object, has_aggregation=True)
 
         self._add_operations(self._ref.operations)
 

@@ -49,7 +49,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
           FROM ROLE
           WHERE 1 = 1
             AND PROJECT_ID = :projectId
-            AND ROLE.ID < :#{#pageable.cursor}
+            AND ROLE.ID <= :#{#pageable.cursor}
           ORDER BY ROLE.ID DESC
           LIMIT :#{#pageable.limit}
 

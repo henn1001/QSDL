@@ -119,7 +119,9 @@ class Model:
     is_crud: bool = False
     is_supertype: bool = False
     is_nested: bool = False
-    is_pagination: bool = False
+    has_aggregation: bool = False
+
+    domain_parents: List[Model] = field(default_factory=list)
 
     def __post_init__(self):
 
@@ -150,6 +152,7 @@ class Model:
         self.is_crud = self._ref.is_crud if self.is_object else False
         self.is_supertype = util.is_supertype(self._ref) if self.is_base else False
         self.is_nested = util.is_nested(self._ref)
+        self.has_aggregation = util.has(self._ref, has_aggregation=True)
 
     def _add_attributes(self):
 

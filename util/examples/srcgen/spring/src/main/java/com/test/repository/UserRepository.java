@@ -51,7 +51,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             ON TICKET_TO_USER.USER_ID = USER.ID
           WHERE 1 = 1
             AND TICKET_TO_USER.TICKET_ID = :ticketId
-            AND USER.ID < :#{#pageable.cursor}
+            AND USER.ID <= :#{#pageable.cursor}
           ORDER BY USER.ID DESC
           LIMIT :#{#pageable.limit}
 
@@ -78,11 +78,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Query(
       value = """
 
-          DELETE
-          FROM
-            TICKET_TO_USER
-          WHERE 1 = 1
-            AND USER_ID = :id
+          DELETE FROM TICKET_TO_USER WHERE USER_ID = :id ;
 
           """,
       nativeQuery = true)
