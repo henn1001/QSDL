@@ -181,3 +181,7 @@ MultiLine:
 Comment:
     /\/\/.*$/
 ;
+
+ID:
+    /[^\d\W][\w-]*/
+;

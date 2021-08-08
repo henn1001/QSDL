@@ -56,7 +56,7 @@ class TestArgument:
         """Verify TBD naming convention"""
         inputs = []
 
-        inputs.append('extend Api { field(a-a: String): Void @path(value:"path") } ')
+        inputs.append('extend Api { field(a?a: String): Void @path(value:"path") } ')
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
