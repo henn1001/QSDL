@@ -270,6 +270,8 @@ def get_parents(model: Model, models: List[Model]) -> List[Model]:
 
     fields = xtx.get_children_of_type("Field", schema)
 
+    fields = [x for x in fields if x.is_composition or x.is_aggregation]
+
     objects = [x.parent for x in fields if x.value == model._ref and x.parent._tx_fqn == "entity.Object"]
 
     for obj in objects:
@@ -293,6 +295,8 @@ def get_parent_fields(obj: Object) -> List[Field]:
     fields = []
 
     fields = xtx.get_children_of_type("Field", schema)
+
+    fields = [x for x in fields if x.is_composition or x.is_aggregation]
 
     fields = [x for x in fields if x.value == obj and x.parent._tx_fqn == "entity.Object"]
 
