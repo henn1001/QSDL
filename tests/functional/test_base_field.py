@@ -30,7 +30,7 @@ class TestBaseField:
 
     02. `Field` of `Base` value may be a `Enum`.
 
-    03. `Field` of `Base` value may be a `Base` when marked as `@nested`.
+    03. `Field` of `Base` value may be a `Base`.
 
     04. `Field` of `Base` value may be a `Object`.
 
@@ -112,7 +112,7 @@ class TestBaseField:
             }
 
             base Bar {
-                field: Foo @nested
+                field: Foo
             }
         """
 
@@ -121,20 +121,6 @@ class TestBaseField:
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
 
         assert properties["field"]["$ref"] == "#/components/schemas/Foo"
-
-    def test_field_base_03_negative(self):
-        """Verify base usage"""
-        test_input = """\
-            base Base {
-                field: Int
-            }
-
-            base Type {
-                field: Base
-            }
-        """
-
-        wrapper_generate_failure(test_input)
 
     def test_field_base_04_positive(self):
         """Verify object usage"""
@@ -152,7 +138,7 @@ class TestBaseField:
 
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
 
-        assert properties["field"]["type"] == "integer"
+        assert properties["field"]["$ref"] == "#/components/schemas/Foo"
 
     def test_field_base_05_positive(self):
         """Verify that we can use array types"""

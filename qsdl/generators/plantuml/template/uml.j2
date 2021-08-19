@@ -41,7 +41,7 @@ abstract class {{base.name}} {% if base.supertype %}<extends {{base.supertype.na
 namespace {{object.namespace}} #DDDDDD {
 {% endif %}
 class {{object.name}} {% if object.supertype %}<implements {{object.supertype.name}}> {% endif %}{
-    {% for field in util.get_fields_as_list(object) if util.get_filtered_fields(field) %}
+    {% for field in util.get_fields_as_list(object) if not field.is_composition and not field.is_aggregation %}
     {{field.name}}: {{"[" if field.is_array}}{{field.value.name}}{{"]" if field.is_array}}
     {% endfor %}
 

@@ -6,10 +6,8 @@
 interface {{base.name}} {
     {{ macro.render_fields(base) | indent(2) | trim }}
 }
-{% if util.is_nested(base) %}
 
 input {{base.name}}Input {
     {{ macro.render_input(base) | indent(2) | trim }}
 }
-{% endif %}
 {{""}}

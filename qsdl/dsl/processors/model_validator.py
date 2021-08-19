@@ -174,16 +174,6 @@ def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as query."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-            # verify that references to base are nested
-            if field.value._tx_fqn == "entity.Base" and not field.is_nested:
-                msg = f"The Field {field.name} for {field.parent.name} references a base but is not declared as nested."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-            # verify that nested is used only for Bases and Objects
-            if field.is_nested and not (field.value._tx_fqn == "entity.Base" or field.value._tx_fqn == "entity.Object"):
-                msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as nested."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
-
             # verify that composition is used only on Objects
             if field.is_composition and not field.value._tx_fqn == "entity.Object":
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as composition."

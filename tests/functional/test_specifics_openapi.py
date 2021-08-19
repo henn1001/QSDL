@@ -18,9 +18,59 @@ from tests import wrapper_generate, wrapper_generate_failure
 class TestSpecificsOpenAPI:
     """Test specific OpenAPI functionality.
 
+    01. The usage of a `Base` on any `Field` value creates a nested JSON Object.
+
+    02. The usage of a `Object` on any `Field` value creates a nested JSON Object.
+
     03. `Directive` @namespace must use `PascalCase`.
 
     """
+
+    def test_specifics_01_positive(self):
+        """Verify usage of base reference"""
+        test_input = """\
+            base Foo {
+                field1: Bar
+            }
+
+            base Bar {
+                name: String
+            }
+
+            type Fruit extends Foo {
+                field2: [Bar]
+            }
+        """
+
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Fruit"]["properties"]
+
+        assert properties["field1"]["$ref"]
+        assert properties["field2"]["items"]["$ref"]
+
+    def test_specifics_02_positive(self):
+        """Verify usage of type reference"""
+        test_input = """\
+            base Foo {
+                field1: Bar
+            }
+
+            type Bar {
+                name: String
+            }
+
+            type Fruit extends Foo {
+                field2: [Bar]
+            }
+        """
+
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Fruit"]["properties"]
+
+        assert properties["field1"]["$ref"]
+        assert properties["field2"]["items"]["$ref"]
 
     def test_specifics_03_positive(self):
         """Verify PascalCase naming convention"""

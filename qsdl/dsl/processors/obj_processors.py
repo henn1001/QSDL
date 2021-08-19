@@ -73,7 +73,7 @@ def field_processor(entity: Field):
     Args:
         entity (Field): The field object.
     """
-    _ = entity
+    entity.is_relation = entity.is_composition or entity.is_aggregation
 
 
 def api_processor(entity: Api):

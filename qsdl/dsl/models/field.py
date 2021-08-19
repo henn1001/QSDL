@@ -37,7 +37,6 @@ class Field:
     is_required: bool = False
     # Special directives
     is_query: bool = False
-    is_nested: bool = False
     is_read_only: bool = False
     is_write_only: bool = False
     is_composition: bool = False
@@ -47,3 +46,6 @@ class Field:
 
     # required by textX
     parent: Union[Base, Object, Api] = None
+
+    # addons
+    is_relation: bool = False

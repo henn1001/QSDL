@@ -88,28 +88,3 @@ def get_fields_as_list(entity: object) -> list:
         tmp = tmp.supertype
 
     return fields
-
-
-def get_filtered_fields(field: Field) -> bool:
-    """A filter for fields.
-
-    We only want to include composition or aggregations when they are nested.
-
-    Args:
-        field (Field): entity.Field
-
-    Returns:
-        bool: Returns True for usable fields.
-    """
-    ret = False
-
-    if not (
-        (
-            (field.is_composition and field.value._tx_fqn == "entity.Object")
-            or (field.is_aggregation and field.value._tx_fqn == "entity.Object")
-        )
-        and not field.is_nested
-    ):
-        ret = True
-
-    return ret

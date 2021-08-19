@@ -116,17 +116,7 @@
 
 
 {% macro get_parameter_type(field, response=false) %}
-{% if field.is_object or field.is_base %}
-  {% if field.is_nested %}
-  $ref: '#/components/schemas/{{ field.type }}'
-  {% else %}
-{# assign the objects ID type#}
-  type: {{ config.id_type }}
-    {% if config.id_type_format %}
-  format: {{config.id_type_format}}
-    {% endif %}
-  {% endif %}
-{% elif field.is_enum %}
+{% if field.is_object or field.is_base or field.is_enum %}
   $ref: '#/components/schemas/{{ field.type }}'
 {% else %}
   type: {{ field.type }}

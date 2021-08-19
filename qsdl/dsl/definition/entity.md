@@ -53,7 +53,6 @@ class entity.Field  {
   is_array : optional<BOOL>
   is_required : optional<BOOL>
   is_query : optional<BOOL>
-  is_nested : optional<BOOL>
   is_read_only : optional<BOOL>
   is_write_only : optional<BOOL>
   is_composition : optional<BOOL>
@@ -119,11 +118,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Description |  |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Comment | \\/\\/.*$ |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Description |  |
 end legend
 
 @enduml

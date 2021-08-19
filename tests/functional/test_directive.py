@@ -22,10 +22,6 @@ class TestDirective:
 
     01. `Directive` `@query` may be use on any `Base` or `Object` `Field` to create a query parameter for the get all method.
 
-    02. `Directive` `@nested` may be use on any `Base` or `Object` `Field` when the `Field` value is a `Object`. This creates a nested JSON `Object`.
-
-    03. `Directive` `@nested` must be use on any `Base` or `Object` `Field` when the `Field` value is a `Base`. This creates a nested JSON `Object`.
-
     04. `Directive` `@readOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
 
     05. `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
@@ -65,70 +61,6 @@ class TestDirective:
 
         assert parameter[1]["in"] == "query"
         assert parameter[1]["name"] in ["name", "world"]
-
-    def test_directive_02_positive(self):
-        """Verify usage of @nested"""
-        test_input = """\
-            base Foo {
-                field1: Bar @nested
-            }
-
-            type Bar {
-                name: String
-            }
-
-            type Fruit extends Foo {
-                field2: [Bar] @nested
-            }
-        """
-
-        openapi = wrapper_generate(test_input)
-
-        properties = openapi["components"]["schemas"]["Fruit"]["properties"]
-
-        assert properties["field1"]["$ref"]
-        assert properties["field2"]["items"]["$ref"]
-
-    def test_directive_03_positive(self):
-        """Verify usage of @nested"""
-        test_input = """\
-            base Foo {
-                field1: Bar @nested
-            }
-
-            base Bar {
-                name: String
-            }
-
-            type Fruit extends Foo {
-                field2: [Bar] @nested
-            }
-        """
-
-        openapi = wrapper_generate(test_input)
-
-        properties = openapi["components"]["schemas"]["Fruit"]["properties"]
-
-        assert properties["field1"]["$ref"]
-        assert properties["field2"]["items"]["$ref"]
-
-    def test_directive_03_negative(self):
-        """Verify usage of @nested"""
-        test_input = """\
-            base Base {
-                field1: Nested
-            }
-
-            base Nested {
-                name: String
-            }
-
-            type Test extends Base {
-                field2: [Nested]
-            }
-        """
-
-        wrapper_generate_failure(test_input)
 
     def test_directive_04_positive(self):
         """Verify usage of @readOnly"""

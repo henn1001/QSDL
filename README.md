@@ -205,7 +205,7 @@ Field Rules:
 
 2.  `Field` of `Base` value may be a `Enum`.
 
-3.  `Field` of `Base` value may be a `Base` when marked as `@nested`.
+3.  `Field` of `Base` value may be a `Base`.
 
 4.  `Field` of `Base` value may be a `Object`.
 
@@ -269,7 +269,7 @@ Field Rules:
 
 2.  `Field` of `Object` value may be a `Enum`.
 
-3.  `Field` of `Object` value may be a `Base` when marked as `@nested`.
+3.  `Field` of `Object` value may be a `Base`.
 
 4.  `Field` of `Object` value may be a `Object`.
 
@@ -360,22 +360,18 @@ There are certain builtin directives that can be used to modify the generation b
 
 1.  `Directive` `@query` may be use on any `Base` or `Object` `Field` to create a query parameter for the get all method.
 
-2.  `Directive` `@nested` may be use on any `Base` or `Object` `Field` when the `Field` value is a `Object`. This creates a nested JSON `Object`.
+2.  `Directive` `@readOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
 
-3.  `Directive` `@nested` must be use on any `Base` or `Object` `Field` when the `Field` value is a `Base`. This creates a nested JSON `Object`.
+3.  `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
 
-4.  `Directive` `@readOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
+4.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a `Object`.
 
-5.  `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
+5.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a `Object`.
 
-6.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a `Object`.
+6.  `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
 
-7.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a `Object`.
+7.  `Directive` `@path` may be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
 
-8.  `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
+8.  `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
-9.  `Directive` `@path` may be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
-
-10. `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
-
-11. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
+9.  `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.

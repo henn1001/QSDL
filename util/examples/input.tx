@@ -19,7 +19,7 @@ base Rating {
 
 base Metric {
     likes: Int
-    ratings: [Rating] @nested
+    ratings: [Rating]
 }
 
 base BaseType {
@@ -36,7 +36,7 @@ base BaseType {
 // NameSpace Management
 type Project extends BaseType @namespace(value:"Management") {
     archive: Boolean @writeOnly
-    metrics: [Metric] @nested
+    metrics: [Metric]
     tickets: [Ticket] @composition
     roles: [Role] @composition
     milestones: [Milestone] @composition
@@ -44,7 +44,7 @@ type Project extends BaseType @namespace(value:"Management") {
 
 type Role @namespace(value:"Management"){
     role: Int!
-    users: [User] @aggregation @nested
+    users: [User] @aggregation
 }
 
 type User @namespace(value:"Management"){
@@ -60,7 +60,7 @@ type User @namespace(value:"Management"){
         number: Int!
         title: String
         issuer: User
-        issuer_body: User @nested @readOnly
+        issuer_body: User @readOnly
         body: String
         status: Status
         milestones: [Milestone] @aggregation
@@ -73,7 +73,7 @@ type User @namespace(value:"Management"){
 
     type Sprint @namespace(value:"Incident"){
         name: Int!
-        roles: [Role] @composition @nested
+        roles: [Role] @composition
     }
 
     type Buzzword @namespace(value:"Incident"){

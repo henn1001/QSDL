@@ -88,7 +88,6 @@ Field:
 
     // Special directives
     ( is_query?='@query'
-        is_nested?='@nested'
         is_read_only?='@readOnly'
         is_write_only?='@writeOnly'
         is_composition?='@composition'

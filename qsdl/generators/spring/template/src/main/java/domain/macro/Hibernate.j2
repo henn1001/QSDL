@@ -55,9 +55,9 @@
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="{{attr.type|lower}}_id")
       {% endif %}
-  {% elif attr.is_base and attr.is_nested and attr.is_array %}
+  {% elif attr.is_base and attr.is_array %}
   @ElementCollection
-  {% elif attr.is_base and attr.is_nested and not attr.is_array %}
+  {% elif attr.is_base and not attr.is_array %}
   @Embedded 
   {% endif %}
 {% endmacro %}

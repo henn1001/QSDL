@@ -50,7 +50,6 @@ class _Attribute:
     is_required: bool = False
     is_read_only: bool = False
     is_write_only: bool = False
-    is_nested: bool = False
     is_composition: bool = False
     is_aggregation: bool = False
     is_relation: bool = False
@@ -82,18 +81,12 @@ class _Attribute:
         self.is_write_only = self._ref.is_write_only
 
         # relation model
-        self.is_nested = self._ref.is_nested
         self.is_composition = self._ref.is_composition
         self.is_aggregation = self._ref.is_aggregation
         self.is_relation = self._ref.is_composition or self._ref.is_aggregation
 
         self.getter = "get" + stringcase.capitalcase(self.name)
         self.setter = "set" + stringcase.capitalcase(self.name)
-
-        # special case for id references
-        if self._ref.value._tx_fqn in ["entity.Object"] and not self.is_nested and not self.is_relation:
-            self.type = util.custom_type("ID")
-            self.is_object = False
 
 
 @dataclass

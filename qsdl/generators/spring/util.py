@@ -63,7 +63,6 @@ def has(
     has_required: bool = False,
     has_aggregation: bool = False,
     has_relation: bool = False,
-    has_relation_not_nested: bool = False,
     has_query: bool = False,
 ) -> bool:
     """Checks if the Base or Object has various attributes.
@@ -76,7 +75,6 @@ def has(
         has_required (bool, optional): [description]. Defaults to False.
         has_aggregation (bool, optional): [description]. Defaults to False.
         has_relation (bool, optional): [description]. Defaults to False.
-        has_relation_not_nested (bool, optional): [description]. Defaults to False.
 
     Returns:
         bool:  Returns True on detection.
@@ -120,11 +118,6 @@ def has(
                 ret = True
                 break
 
-            # checks if the Base or Object has a relation that is not nested
-            if has_relation_not_nested and ((field.is_composition or field.is_aggregation) and not field.is_nested):
-                ret = True
-                break
-
             # checks if there is a query attribute
             if has_query and field.is_query:
                 ret = True
@@ -152,11 +145,11 @@ def is_supertype(entity: Union[Base, Object]) -> bool:
     return False
 
 
-def is_nested(entity: object) -> bool:
-    """Checks if the provided object or base is nested.
+def is_nested(entity: Union[Base, Object]) -> bool:
+    """Checks if the provide dBase or Object is nested into another Base or Object.
 
     Args:
-        entity (object): entity.Object or entity.Base
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: [description]
@@ -166,7 +159,7 @@ def is_nested(entity: object) -> bool:
 
     for itr in base_list + object_list:
         for field in itr.fields:
-            if field.value == entity and field.is_nested:
+            if field.value == entity and not field.is_relation:
                 return True
 
     return False
@@ -306,7 +299,7 @@ def get_parent_fields(obj: Object) -> List[Field]:
 def get_filtered_fields_as_list(entity: Object) -> List[Field]:
     """Returns all fields ob a object including its supertype as list.
 
-    We only want to include composition or aggregations when they are nested.
+    Exclude composition or aggregations.
 
     Args:
         entity (object): entity.Object
@@ -317,8 +310,7 @@ def get_filtered_fields_as_list(entity: Object) -> List[Field]:
     fields = []
 
     for field in entity.fields:
-        # filter out all compositions and aggregations that are not nested
-        if not ((field.is_composition or field.is_aggregation) and not field.is_nested):
+        if not field.is_composition and not field.is_aggregation:
             fields.append(field)
 
     return fields

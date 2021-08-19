@@ -28,7 +28,7 @@ public class {{model.name}}{% if not model.is_base %} extends AbstractPersistent
   {# 
     Set @Valid for any container
   #}
-  {% if (attr.is_array or attr.is_base or attr.is_object) and not (attr.is_relation and not attr.is_nested) %}
+  {% if (attr.is_array or attr.is_base or attr.is_object) and not attr.is_relation %}
   @Valid
   {% endif %}
   {# 
@@ -44,7 +44,7 @@ public class {{model.name}}{% if not model.is_base %} extends AbstractPersistent
   {# 
     Set JsonIgnore for relations
   #}
-  {% if attr.is_relation and not attr.is_nested %}
+  {% if attr.is_relation %}
   @JsonIgnore
   {% else %}
   @JsonProperty(value = "{{attr.json_key}}"{% if attr.is_required %}, required = true{% endif %}{% if attr.is_read_only %}, access = JsonProperty.Access.READ_ONLY{% endif %}{% if attr.is_write_only %}, access = JsonProperty.Access.WRITE_ONLY{% endif %})

@@ -1642,8 +1642,7 @@ components:
       type: object
       properties:
         user:
-          type: integer
-          format: int64
+          $ref: '#/components/schemas/User'
         scores:
           type: array
           items:
@@ -1768,10 +1767,6 @@ components:
         role:
           type: integer
           format: int32
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
 
     UserList:
       required:
@@ -1841,8 +1836,7 @@ components:
         title:
           type: string
         issuer:
-          type: integer
-          format: int64
+          $ref: '#/components/schemas/User'
         issuer_body:
           $ref: '#/components/schemas/User'
           readOnly: true
@@ -1908,10 +1902,6 @@ components:
         name:
           type: integer
           format: int32
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/Role'
 
     Buzzword:
       required:

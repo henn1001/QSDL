@@ -99,11 +99,11 @@ def is_supertype(entity: Union[Base, Object]) -> bool:
     return False
 
 
-def is_nested(entity: object) -> bool:
-    """Checks if the provided object or base is nested.
+def is_nested(entity: Union[Base, Object]) -> bool:
+    """Checks if the provided Base or Object is nested into another Base or Object.
 
     Args:
-        entity (object): entity.Object or entity.Base
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: [description]
@@ -113,7 +113,7 @@ def is_nested(entity: object) -> bool:
 
     for itr in base_list + object_list:
         for field in itr.fields:
-            if field.value == entity and field.is_nested:
+            if field.value == entity and not field.is_relation:
                 return True
 
     return False
@@ -136,31 +136,6 @@ def get_enum_values(entity: Enum) -> List[Enum]:
             values.append(value)
 
     return values
-
-
-def get_filtered_fields(field: Field) -> bool:
-    """A filter for fields.
-
-    We only want to include composition or aggregations when they are nested.
-
-    Args:
-        field (Field): entity.Field
-
-    Returns:
-        bool: Returns True for usable fields.
-    """
-    ret = False
-
-    if not (
-        (
-            (field.is_composition and field.value._tx_fqn == "entity.Object")
-            or (field.is_aggregation and field.value._tx_fqn == "entity.Object")
-        )
-        and not field.is_nested
-    ):
-        ret = True
-
-    return ret
 
 
 def is_path_unique(operation_path: str) -> bool:
