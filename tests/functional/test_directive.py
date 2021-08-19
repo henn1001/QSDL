@@ -148,6 +148,8 @@ class TestDirective:
 
     def test_directive_06_negative(self):
         """Verify usage of @composition"""
+        inputs = []
+
         test_input = """\
             type Foo {
                 field: Int
@@ -158,8 +160,21 @@ class TestDirective:
                 field: Int
             }
         """
+        inputs.append(test_input)
 
-        wrapper_generate_failure(test_input)
+        test_input = """\
+            type Foo {
+                field: Int
+            }
+
+            base Bar {
+                field: Foo @composition
+            }
+        """
+        inputs.append(test_input)
+
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
 
     def test_directive_07_positive(self):
         """Verify usage of @aggregation"""
@@ -183,6 +198,8 @@ class TestDirective:
 
     def test_directive_07_negative(self):
         """Verify usage of @aggregation"""
+        inputs = []
+
         test_input = """\
             type Foo {
                 ignored: String @aggregation
@@ -192,8 +209,21 @@ class TestDirective:
                 field: Int
             }
         """
+        inputs.append(test_input)
 
-        wrapper_generate_failure(test_input)
+        test_input = """\
+            type Foo {
+                field: Int
+            }
+
+            base Bar {
+                field: Foo @aggregation
+            }
+        """
+        inputs.append(test_input)
+
+        for test_input in inputs:
+            wrapper_generate_failure(test_input)
 
     def test_directive_08_positive(self):
         """Verify usage of @path"""

@@ -167,6 +167,7 @@ def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
     objects = xtx.get_children_of_type("Object", schema)
 
     for entity in bases + objects:
+        duplicate_relation = []
         for field in entity.fields:
 
             # verify that queries are only used on scalars
@@ -186,6 +187,21 @@ def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
 
             if field.is_aggregation and not field.is_array:
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as aggregation."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+            # verify that we prevent duplicate relations
+            if field.is_aggregation or field.is_composition:
+                flag = (field.value, field.is_aggregation, field.is_composition)
+
+                if flag not in duplicate_relation:
+                    duplicate_relation.append(flag)
+                else:
+                    msg = f"The Field {field.name} for {field.parent.name} creates a duplicate relation."
+                    raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+            # verify that composition/aggregation is used only in Objects
+            if (field.is_composition or field.is_aggregation) and not entity._tx_fqn == "entity.Object":
+                msg = f"The Field {field.name} for {field.parent.name} declares a relation inside a Base."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
