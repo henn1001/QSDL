@@ -50,15 +50,15 @@ public class {{model.name}}{% if not model.is_base %} extends AbstractPersistent
   @JsonProperty(value = "{{attr.json_key}}"{% if attr.is_required %}, required = true{% endif %}{% if attr.is_read_only %}, access = JsonProperty.Access.READ_ONLY{% endif %}{% if attr.is_write_only %}, access = JsonProperty.Access.WRITE_ONLY{% endif %})
   {% endif %}
   {% if attr.is_array and attr.is_relation %}
-  private Set<{{attr.type}}> {{attr.name}} = new LinkedHashSet<>();
+  {{ "private" if encapsulation else "public"}} Set<{{attr.type}}> {{attr.name}} = new LinkedHashSet<>();
   {% elif attr.is_array %}
   {{ "private" if encapsulation else "public"}} List<{{attr.type}}> {{attr.name}} = new ArrayList<>();
   {% else %}
-  {{ "private" if encapsulation or attr.is_relation else "public"}} {{attr.type}} {{attr.name}};
+  {{ "private" if encapsulation else "public"}} {{attr.type}} {{attr.name}};
   {% endif %}
 
 {% endfor %}
-{% for attr in model.attributes if (encapsulation and not attr.is_id) or attr.is_relation %}
+{% for attr in model.attributes if (encapsulation and not attr.is_id) %}
 {% if loop.first %}
 
 

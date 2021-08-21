@@ -38,7 +38,7 @@ public class RoleRepositoryTest {
   public void whenSave_thenFind() {
     // Given
     Role testData = easyRandom.nextObject(Role.class);
-    testData.setProject(null);
+    testData.project = null;
 
     // When
     Role dbData = roleRepository.saveAndFlush(testData);
@@ -55,7 +55,7 @@ public class RoleRepositoryTest {
   public void whenDelete_thenCountZero() {
     // Given
     Role testData = easyRandom.nextObject(Role.class);
-    testData.setProject(null);
+    testData.project = null;
     Role dbData = roleRepository.saveAndFlush(testData);
 
     // When
@@ -70,7 +70,7 @@ public class RoleRepositoryTest {
   public void whenCount_thenUseQuerie() {
     // Given
     List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setProject(null));
+    testData.forEach(x -> x.project = null);
     List<Role> dbData = roleRepository.saveAllAndFlush(testData);
 
     ApiPageable pageable = new ApiPageable(null, null, null);
@@ -86,7 +86,7 @@ public class RoleRepositoryTest {
   public void whenFindAll_thenPaginate() {
     // Given
     List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setProject(null));
+    testData.forEach(x -> x.project = null);
     roleRepository.saveAllAndFlush(testData);
 
     // When
@@ -112,14 +112,14 @@ public class RoleRepositoryTest {
   public void whenCountByProject_thenUseQuerie() {
     // Given
     Project tmp = easyRandom.nextObject(Project.class);
-    tmp.setRoles(null);
+    tmp.roles= null;
     Project testParent = projectRepository.saveAndFlush(tmp);
 
     List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setProject(null));
+    testData.forEach(x -> x.project = null);
     testData = roleRepository.saveAllAndFlush(testData);
 
-    testData.forEach(x -> x.setProject(testParent));
+    testData.forEach(x -> x.project = testParent);
     testData = roleRepository.saveAllAndFlush(testData);
 
     ApiPageable pageable = new ApiPageable(null, null, null);
@@ -135,14 +135,14 @@ public class RoleRepositoryTest {
   public void whenFindAllByProject_thenPaginate() {
     // Given
     Project tmp = easyRandom.nextObject(Project.class);
-    tmp.setRoles(null);
+    tmp.roles = null;
     Project testParent = projectRepository.saveAndFlush(tmp);
 
     List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setProject(null));
+    testData.forEach(x -> x.project = null);
     testData = roleRepository.saveAllAndFlush(testData);
 
-    testData.forEach(x -> x.setProject(testParent));
+    testData.forEach(x -> x.project = testParent);
     testData = roleRepository.saveAllAndFlush(testData);
 
     // When

@@ -42,10 +42,18 @@
     {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
     {{ operation.domain_object.name }} {{ operation.domain_object.name|lower }} = entityManager.getReference({{ operation.domain_object.name }}.class, {{ operation.path_parameters[1].name }});
     
-    {% if operation.path.endswith('/add') %}
+    {% if encapsulation %}
+      {% if operation.path.endswith('/add') %}
     {{ operation.domain_parent.name|lower }}.add{{ operation.domain_object.name }}sItem({{ operation.domain_object.name | lower }});
-    {% elif operation.path.endswith('/remove') %}
+      {% elif operation.path.endswith('/remove') %}
     {{ operation.domain_parent.name|lower }}.remove{{ operation.domain_object.name }}sItem({{ operation.domain_object.name | lower }});
+      {% endif %}
+    {% else %}
+      {% if operation.path.endswith('/add') %}
+    {{ operation.domain_parent.name|lower }}.{{ operation.get_aggregation_parameter() }}.add({{ operation.domain_object.name | lower }});
+      {% elif operation.path.endswith('/remove') %}
+    {{ operation.domain_parent.name|lower }}.{{ operation.get_aggregation_parameter() }}.remove({{ operation.domain_object.name | lower }});
+      {% endif %}
     {% endif %}
 
     {{ operation.domain_parent.name|lower }}Repository.save({{ operation.domain_parent.name|lower }});
@@ -62,7 +70,11 @@
 
     // add parent relation
     {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+    {% if encapsulation %}
     body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
+    {% else %}
+    body.{{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }};
+    {% endif %}
 
     {% endif %}
     {{api.name}} ret = {{api.name|lower}}Repository.save(body);
@@ -97,7 +109,11 @@
 
     // add parent relation
     {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+      {% if encapsulation %}
     body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
+      {% else %}
+    body.{{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }};
+      {% endif %}
 
     {% endif %}
     {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
@@ -130,7 +146,11 @@
 
     // add parent relation
     {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+      {% if encapsulation %}
     body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
+      {% else %}
+    body.{{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }};
+      {% endif %}
 
     {% endif %}
     {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);

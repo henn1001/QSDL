@@ -26,31 +26,7 @@ public class Ticket extends AbstractPersistentObject {
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
   @JsonIgnore
-  private Set<User> users = new LinkedHashSet<>();
-
-
-
-  /**
-   * users
-   */
-  public Set<User> getUsers() {
-    return users;
-  }
-
-  public Ticket setUsers(Set<User> users) {
-    this.users = users;
-    return this;
-  }
-
-  public Ticket addUsersItem(User usersItem) {
-    this.users.add(usersItem);
-    return this;
-  }
-
-  public Ticket removeUsersItem(User usersItem) {
-    this.users.remove(usersItem);
-    return this;
-  }
+  public Set<User> users = new LinkedHashSet<>();
 
 
 

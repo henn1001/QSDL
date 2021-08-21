@@ -48,31 +48,7 @@ public class Project extends AbstractPersistentObject {
 
   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, orphanRemoval = true)
   @JsonIgnore
-  private Set<Role> roles = new LinkedHashSet<>();
-
-
-
-  /**
-   * roles
-   */
-  public Set<Role> getRoles() {
-    return roles;
-  }
-
-  public Project setRoles(Set<Role> roles) {
-    this.roles = roles;
-    return this;
-  }
-
-  public Project addRolesItem(Role rolesItem) {
-    this.roles.add(rolesItem);
-    return this;
-  }
-
-  public Project removeRolesItem(Role rolesItem) {
-    this.roles.remove(rolesItem);
-    return this;
-  }
+  public Set<Role> roles = new LinkedHashSet<>();
 
 
 

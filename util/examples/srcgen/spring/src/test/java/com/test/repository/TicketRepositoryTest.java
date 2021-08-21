@@ -35,7 +35,7 @@ public class TicketRepositoryTest {
   public void whenSave_thenFind() {
     // Given
     Ticket testData = easyRandom.nextObject(Ticket.class);
-    testData.setUsers(null);
+    testData.users = null;
 
     // When
     Ticket dbData = ticketRepository.saveAndFlush(testData);
@@ -52,7 +52,7 @@ public class TicketRepositoryTest {
   public void whenDelete_thenCountZero() {
     // Given
     Ticket testData = easyRandom.nextObject(Ticket.class);
-    testData.setUsers(null);
+    testData.users = null;
     Ticket dbData = ticketRepository.saveAndFlush(testData);
 
     // When
@@ -67,7 +67,7 @@ public class TicketRepositoryTest {
   public void whenCount_thenUseQuerie() {
     // Given
     List<Ticket> testData = easyRandom.objects(Ticket.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setUsers(null));
+    testData.forEach(x -> x.users = null);
     List<Ticket> dbData = ticketRepository.saveAllAndFlush(testData);
 
     ApiPageable pageable = new ApiPageable(null, null, null);
@@ -83,7 +83,7 @@ public class TicketRepositoryTest {
   public void whenFindAll_thenPaginate() {
     // Given
     List<Ticket> testData = easyRandom.objects(Ticket.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setUsers(null));
+    testData.forEach(x -> x.users = null);
     ticketRepository.saveAllAndFlush(testData);
 
     // When

@@ -35,7 +35,7 @@ public class ProjectRepositoryTest {
   public void whenSave_thenFind() {
     // Given
     Project testData = easyRandom.nextObject(Project.class);
-    testData.setRoles(null);
+    testData.roles = null;
 
     // When
     Project dbData = projectRepository.saveAndFlush(testData);
@@ -52,7 +52,7 @@ public class ProjectRepositoryTest {
   public void whenDelete_thenCountZero() {
     // Given
     Project testData = easyRandom.nextObject(Project.class);
-    testData.setRoles(null);
+    testData.roles = null;
     Project dbData = projectRepository.saveAndFlush(testData);
 
     // When
@@ -67,7 +67,7 @@ public class ProjectRepositoryTest {
   public void whenCount_thenUseQuerie() {
     // Given
     List<Project> testData = easyRandom.objects(Project.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setRoles(null));
+    testData.forEach(x -> x.roles = null);
     List<Project> dbData = projectRepository.saveAllAndFlush(testData);
 
     ApiPageable pageable = new ApiPageable(null, null, null);
@@ -84,7 +84,7 @@ public class ProjectRepositoryTest {
   public void whenFindAll_thenPaginate() {
     // Given
     List<Project> testData = easyRandom.objects(Project.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setRoles(null));
+    testData.forEach(x -> x.roles = null);
     projectRepository.saveAllAndFlush(testData);
 
     // When

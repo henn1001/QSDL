@@ -21,13 +21,12 @@ from typing import TYPE_CHECKING, List
 
 import stringcase
 
-from qsdl.dsl.models.object import Object
 
 from .. import util
 
 if TYPE_CHECKING:
     from qsdl.dsl.models import Api as QAPI
-    from qsdl.dsl.models import Operation
+    from qsdl.dsl.models import Operation, Object
 
 
 @dataclass
@@ -134,6 +133,16 @@ class _Operation:
                 param.is_array = False
 
             self.response = param
+
+    def get_aggregation_parameter(self) -> List[str]:
+        ret = "error"
+
+        for param in self.domain_parent.fields:
+            if param.value == self.domain_object:
+                ret = param.name
+                break
+
+        return ret
 
     def get_read_only_parameters(self, encapsulation) -> List[str]:
         ret = []

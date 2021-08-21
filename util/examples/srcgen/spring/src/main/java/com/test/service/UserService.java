@@ -71,7 +71,7 @@ public class UserService {
     Ticket ticket = entityManager.getReference(Ticket.class, ticketId);
     User user = entityManager.getReference(User.class, id);
     
-    ticket.addUsersItem(user);
+    ticket.users.add(user);
 
     ticketRepository.save(ticket);
 
@@ -87,7 +87,7 @@ public class UserService {
     Ticket ticket = entityManager.getReference(Ticket.class, ticketId);
     User user = entityManager.getReference(User.class, id);
     
-    ticket.removeUsersItem(user);
+    ticket.users.remove(user);
 
     ticketRepository.save(ticket);
 

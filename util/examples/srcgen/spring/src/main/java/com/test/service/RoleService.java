@@ -69,7 +69,7 @@ public class RoleService {
 
     // add parent relation
     Project project = entityManager.getReference(Project.class, projectId);
-    body.setProject(project);
+    body.project = project;
 
     Role ret = roleRepository.save(body);
 
@@ -97,7 +97,7 @@ public class RoleService {
 
     // add parent relation
     Project project = entityManager.getReference(Project.class, projectId);
-    body.setProject(project);
+    body.project = project;
 
     Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id).orElse(null);
 
@@ -120,7 +120,7 @@ public class RoleService {
 
     // add parent relation
     Project project = entityManager.getReference(Project.class, projectId);
-    body.setProject(project);
+    body.project = project;
 
     Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id).orElse(null);
 

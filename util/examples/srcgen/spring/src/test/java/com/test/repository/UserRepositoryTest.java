@@ -38,7 +38,7 @@ public class UserRepositoryTest {
   public void whenSave_thenFind() {
     // Given
     User testData = easyRandom.nextObject(User.class);
-    testData.setTickets(null);
+    testData.tickets = null;
 
     // When
     User dbData = userRepository.saveAndFlush(testData);
@@ -55,7 +55,7 @@ public class UserRepositoryTest {
   public void whenDelete_thenCountZero() {
     // Given
     User testData = easyRandom.nextObject(User.class);
-    testData.setTickets(null);
+    testData.tickets = null;
     User dbData = userRepository.saveAndFlush(testData);
 
     // When
@@ -70,7 +70,7 @@ public class UserRepositoryTest {
   public void whenCount_thenUseQuerie() {
     // Given
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setTickets(null));
+    testData.forEach(x -> x.tickets = null);
     List<User> dbData = userRepository.saveAllAndFlush(testData);
 
     ApiPageable pageable = new ApiPageable(null, null, null);
@@ -86,7 +86,7 @@ public class UserRepositoryTest {
   public void whenFindAll_thenPaginate() {
     // Given
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setTickets(null));
+    testData.forEach(x -> x.tickets = null);
     userRepository.saveAllAndFlush(testData);
 
     // When
@@ -112,14 +112,14 @@ public class UserRepositoryTest {
   public void whenCountByTicket_thenUseQuerie() {
     // Given
     Ticket tmp = easyRandom.nextObject(Ticket.class);
-    tmp.setUsers(null);
+    tmp.users= null;
     Ticket testParent = ticketRepository.saveAndFlush(tmp);
 
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setTickets(null));
+    testData.forEach(x -> x.tickets = null);
     testData = userRepository.saveAllAndFlush(testData);
 
-    testParent.setUsers(new HashSet<>(testData));
+    testParent.users = new HashSet<>(testData);
     ticketRepository.saveAndFlush(testParent);
 
     ApiPageable pageable = new ApiPageable(null, null, null);
@@ -135,14 +135,14 @@ public class UserRepositoryTest {
   public void whenFindAllByTicket_thenPaginate() {
     // Given
     Ticket tmp = easyRandom.nextObject(Ticket.class);
-    tmp.setUsers(null);
+    tmp.users = null;
     Ticket testParent = ticketRepository.saveAndFlush(tmp);
 
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setTickets(null));
+    testData.forEach(x -> x.tickets = null);
     testData = userRepository.saveAllAndFlush(testData);
 
-    testParent.setUsers(new HashSet<>(testData));
+    testParent.users = new HashSet<>(testData);
     ticketRepository.saveAndFlush(testParent);
 
     // When
@@ -168,14 +168,14 @@ public class UserRepositoryTest {
   public void whenRemoveRelation_thenLinkRemovedFromTicket() {
     // Given
     Ticket tmp = easyRandom.nextObject(Ticket.class);
-    tmp.setUsers(null);
+    tmp.users = null;
     Ticket testParent = ticketRepository.saveAndFlush(tmp);
 
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.setTickets(null));
+    testData.forEach(x -> x.tickets = null);
     testData = userRepository.saveAllAndFlush(testData);
 
-    testParent.setUsers(new HashSet<>(testData));
+    testParent.users = new HashSet<>(testData);
     ticketRepository.saveAndFlush(testParent);
 
     // When

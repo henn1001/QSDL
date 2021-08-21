@@ -19,31 +19,7 @@ public class User extends AbstractPersistentObject {
 
   @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
   @JsonIgnore
-  private Set<Ticket> tickets = new LinkedHashSet<>();
-
-
-
-  /**
-   * tickets
-   */
-  public Set<Ticket> getTickets() {
-    return tickets;
-  }
-
-  public User setTickets(Set<Ticket> tickets) {
-    this.tickets = tickets;
-    return this;
-  }
-
-  public User addTicketsItem(Ticket ticketsItem) {
-    this.tickets.add(ticketsItem);
-    return this;
-  }
-
-  public User removeTicketsItem(Ticket ticketsItem) {
-    this.tickets.remove(ticketsItem);
-    return this;
-  }
+  public Set<Ticket> tickets = new LinkedHashSet<>();
 
 
 

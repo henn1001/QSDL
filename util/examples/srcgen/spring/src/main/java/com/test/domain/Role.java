@@ -20,21 +20,7 @@ public class Role extends AbstractPersistentObject {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="project_id")
   @JsonIgnore
-  private Project project;
-
-
-
-  /**
-   * project
-   */
-  public Project getProject() {
-    return project;
-  }
-
-  public Role setProject(Project project) {
-    this.project = project;
-    return this;
-  }
+  public Project project;
 
 
 

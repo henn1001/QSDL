@@ -41,7 +41,11 @@ public class {{model.name}}RepositoryTest {
     // Given
     {{model.name}} testData = easyRandom.nextObject({{model.name}}.class);
     {% for attr in model.attributes if attr.is_relation %}
+      {% if encapsulation %}
     testData.set{{attr.name|pascal}}(null);
+      {% else %}
+    testData.{{attr.name}} = null;
+      {% endif %}
     {% endfor %}
 
     // When
@@ -60,7 +64,11 @@ public class {{model.name}}RepositoryTest {
     // Given
     {{model.name}} testData = easyRandom.nextObject({{model.name}}.class);
     {% for attr in model.attributes if attr.is_relation %}
+      {% if encapsulation %}
     testData.set{{attr.name|pascal}}(null);
+      {% else %}
+    testData.{{attr.name}} = null;
+      {% endif %}
     {% endfor %}
     {{model.name}} dbData = {{model.name|lower}}Repository.saveAndFlush(testData);
 
@@ -77,7 +85,11 @@ public class {{model.name}}RepositoryTest {
     // Given
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
     {% for attr in model.attributes if attr.is_relation %}
+      {% if encapsulation %}
     testData.forEach(x -> x.set{{attr.name|pascal}}(null));
+      {% else %}
+    testData.forEach(x -> x.{{attr.name}} = null);
+      {% endif %}
     {% endfor %}
     List<{{model.name}}> dbData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
@@ -98,7 +110,11 @@ public class {{model.name}}RepositoryTest {
     // Given
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
     {% for attr in model.attributes if attr.is_relation %}
+      {% if encapsulation %}
     testData.forEach(x -> x.set{{attr.name|pascal}}(null));
+      {% else %}
+    testData.forEach(x -> x.{{attr.name}} = null);
+      {% endif %}
     {% endfor %}
     {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
@@ -127,24 +143,40 @@ public class {{model.name}}RepositoryTest {
     // Given
     {{domain_parent.name}} tmp = easyRandom.nextObject({{domain_parent.name}}.class);
     {% for attr in domain_parent.attributes if attr.is_relation %}
+      {% if encapsulation %}
     tmp.set{{attr.name|pascal}}(null);
+      {% else %}
+    tmp.{{attr.name}}= null;
+      {% endif %}
     {% endfor %}
     {{domain_parent.name}} testParent = {{domain_parent.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
     {% for attr in model.attributes if attr.is_relation %}
+      {% if encapsulation %}
     testData.forEach(x -> x.set{{attr.name|pascal}}(null));
+      {% else %}
+    testData.forEach(x -> x.{{attr.name}} = null);
+      {% endif %}
     {% endfor %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     {% if util.is_aggregation(model._ref, domain_parent._ref) %}
       {% for attr in domain_parent.attributes if attr.is_relation and attr.type == model._ref.name %}
+        {% if encapsulation %}
     testParent.set{{attr.name|pascal}}(new HashSet<>(testData));
+        {% else %}
+    testParent.{{attr.name}} = new HashSet<>(testData);
+        {% endif %}
     {{domain_parent.name|lower}}Repository.saveAndFlush(testParent);
       {% endfor %}
     {% else %}
       {% for attr in model.attributes if attr.is_relation and attr.type == domain_parent._ref.name %}
+      {% if encapsulation %}
     testData.forEach(x -> x.set{{attr.name|pascal}}(testParent));
+      {% else %}
+    testData.forEach(x -> x.{{attr.name}} = testParent);
+      {% endif %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
       {% endfor %}
     {% endif %}
@@ -163,24 +195,40 @@ public class {{model.name}}RepositoryTest {
     // Given
     {{domain_parent.name}} tmp = easyRandom.nextObject({{domain_parent.name}}.class);
     {% for attr in domain_parent.attributes if attr.is_relation %}
+      {% if encapsulation %}
     tmp.set{{attr.name|pascal}}(null);
+      {% else %}
+    tmp.{{attr.name}} = null;
+      {% endif %}
     {% endfor %}
     {{domain_parent.name}} testParent = {{domain_parent.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
     {% for attr in model.attributes if attr.is_relation %}
+      {% if encapsulation %}
     testData.forEach(x -> x.set{{attr.name|pascal}}(null));
+      {% else %}
+    testData.forEach(x -> x.{{attr.name}} = null);
+      {% endif %}
     {% endfor %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     {% if util.is_aggregation(model._ref, domain_parent._ref) %}
       {% for attr in domain_parent.attributes if attr.is_relation and attr.type == model._ref.name %}
+        {% if encapsulation %}
     testParent.set{{attr.name|pascal}}(new HashSet<>(testData));
+        {% else %}
+    testParent.{{attr.name}} = new HashSet<>(testData);
+        {% endif %}
     {{domain_parent.name|lower}}Repository.saveAndFlush(testParent);
       {% endfor %}
     {% else %}
       {% for attr in model.attributes if attr.is_relation and attr.type == domain_parent._ref.name %}
+      {% if encapsulation %}
     testData.forEach(x -> x.set{{attr.name|pascal}}(testParent));
+      {% else %}
+    testData.forEach(x -> x.{{attr.name}} = testParent);
+      {% endif %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
       {% endfor %}
     {% endif %}
@@ -212,18 +260,30 @@ public class {{model.name}}RepositoryTest {
     // Given
     {{domain_parent.name}} tmp = easyRandom.nextObject({{domain_parent.name}}.class);
     {% for attr in domain_parent.attributes if attr.is_relation %}
+      {% if encapsulation %}
     tmp.set{{attr.name|pascal}}(null);
+      {% else %}
+    tmp.{{attr.name}} = null;
+      {% endif %}
     {% endfor %}
     {{domain_parent.name}} testParent = {{domain_parent.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
     {% for attr in model.attributes if attr.is_relation %}
+      {% if encapsulation %}
     testData.forEach(x -> x.set{{attr.name|pascal}}(null));
+      {% else %}
+    testData.forEach(x -> x.{{attr.name}} = null);
+      {% endif %}
     {% endfor %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     {% for attr in domain_parent.attributes if attr.is_relation and attr.type == model._ref.name %}
+      {% if encapsulation %}
     testParent.set{{attr.name|pascal}}(new HashSet<>(testData));
+      {% else %}
+    testParent.{{attr.name}} = new HashSet<>(testData);
+      {% endif %}
     {{domain_parent.name|lower}}Repository.saveAndFlush(testParent);
     {% endfor %}
 
