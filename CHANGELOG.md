@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://gitlab.com/henn1001/qsdl/compare/v2.2.0...v2.3.0) (2021-09-12)
+
+
+### Features
+
+* **grammar:** remove the nested directive to have a clear separation between relations and nested objects ([6a772e2](https://gitlab.com/henn1001/qsdl/commit/6a772e202ed0e5a3b65984a29ecc021c912108f2))
+* **spring:** added repository test generation ([cd31edb](https://gitlab.com/henn1001/qsdl/commit/cd31edb44f97402116e1f35136aeb9a4326cdf47))
+* **spring:** added test generation for controllers and services ([69913d1](https://gitlab.com/henn1001/qsdl/commit/69913d123596db20046b9c4c3e64eeb442597ccf))
+* **spring:** include relations in the encapsulation parameter ([72195f2](https://gitlab.com/henn1001/qsdl/commit/72195f28de853e8126d5dce07be9cfacd0d4a76b))
+* optimize count request for compositions and aggregations ([57aa44d](https://gitlab.com/henn1001/qsdl/commit/57aa44d8b1f52a236e0a4cddf64f1d96cd312ac5))
+
+
+### Bug Fixes
+
+* **grammar:** allow use of hypens ([fa1eb11](https://gitlab.com/henn1001/qsdl/commit/fa1eb11ab7d08a3b0152f5a48b6f5502bb64a9af))
+* **spring:** resolve a relation parent finding issue ([22cca3b](https://gitlab.com/henn1001/qsdl/commit/22cca3bf4eabfdc77cc635b028f85b78796098ef))
+* **spring:** resolve issue regarding adding/removing aggregations with public fields ([8eb3fcd](https://gitlab.com/henn1001/qsdl/commit/8eb3fcdc185f2225471053937a239b96bf6334c8))
+* **spring:** resolve issues with nested bases and objects ([22109f4](https://gitlab.com/henn1001/qsdl/commit/22109f4a0d1906adbb6aad743e86e9750fcadf2f))
+
 ## [2.2.0](https://gitlab.com/henn1001/qsdl/compare/v2.1.0...v2.2.0) (2021-07-18)
 
 
