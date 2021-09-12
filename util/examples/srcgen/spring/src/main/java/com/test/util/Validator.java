@@ -10,7 +10,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import com.test.config.Errors;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 
 public class Validator {
 
@@ -18,7 +18,7 @@ public class Validator {
 
   private static final String NOT_NULL_MSG = "{javax.validation.constraints.NotNull.message}";
 
-  public static final <T> void validate(T object) throws ApiException {
+  public static final <T> void validate(T object) throws AppException {
 
     Set<ConstraintViolation<T>> violations = validator.validate(object);
 
@@ -30,11 +30,11 @@ public class Validator {
     }
 
     if (!errors.isEmpty()) {
-      throw new ApiException(Errors.BAD_REQEST, errors);
+      throw new AppException(Errors.BAD_REQEST, errors);
     }
   }
 
-  public static final <T> void validateExRequired(T object) throws ApiException {
+  public static final <T> void validateExRequired(T object) throws AppException {
 
     Set<ConstraintViolation<T>> violations = validator.validate(object);
 
@@ -50,7 +50,7 @@ public class Validator {
     }
 
     if (!errors.isEmpty()) {
-      throw new ApiException(Errors.BAD_REQEST, errors);
+      throw new AppException(Errors.BAD_REQEST, errors);
     }
   }
 

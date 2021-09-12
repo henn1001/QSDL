@@ -12,7 +12,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 
 import com.test.config.Errors;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 import com.test.repository.*;
 import com.test.domain.*;
 import com.test.model.*;
@@ -29,7 +29,7 @@ public class ProjectService {
 
   }
 
-  public ObjectList getProjects(String name, ApiPageable pageable) throws ApiException {
+  public ObjectList getProjects(String name, ApiPageable pageable) throws AppException {
 
     pageable.query.put("name", name);
 
@@ -46,25 +46,25 @@ public class ProjectService {
     return ret;
   }
 
-  public Project createProject(Project body) throws ApiException {
+  public Project createProject(Project body) throws AppException {
 
     Project ret = projectRepository.save(body);
 
     return ret;
   }
 
-  public Project getProject(Long id) throws ApiException {
+  public Project getProject(Long id) throws AppException {
 
     Project ret = projectRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(Project.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
 
     return ret;
   }
 
-  public Project replaceProject(Long id, Project body) throws ApiException {
+  public Project replaceProject(Long id, Project body) throws AppException {
 
     Project dbEntity = projectRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(Project.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
@@ -74,10 +74,10 @@ public class ProjectService {
     return ret;
   }
 
-  public Project updateProject(Long id, Project body) throws ApiException {
+  public Project updateProject(Long id, Project body) throws AppException {
 
     Project dbEntity = projectRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(Project.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);
@@ -87,12 +87,12 @@ public class ProjectService {
     return ret;
   }
 
-  public Void deleteProject(Long id) throws ApiException {
+  public Void deleteProject(Long id) throws AppException {
 
     try {
       projectRepository.deleteById(id);
     } catch (Exception e) {
-      throw ApiException.entityNotFound(Project.class, id);
+      throw AppException.entityNotFound(Project.class, id);
     }
 
     return null;

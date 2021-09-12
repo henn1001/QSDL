@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 import {{base_package}}.config.Errors;
 import {{base_package}}.domain.*;
-import {{base_package}}.exception.ApiException;
+import {{base_package}}.exception.AppException;
 import {{base_package}}.model.*;
 import {{base_package}}.repository.*;
 import {{base_package}}.util.Json;
@@ -197,7 +197,7 @@ public class {{model.name}}ServiceTest {
     {% endif %}
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId());
         });
@@ -259,7 +259,7 @@ public class {{model.name}}ServiceTest {
     {% endif %}
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId(), request);
         });
@@ -321,7 +321,7 @@ public class {{model.name}}ServiceTest {
     {% endif %}
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId(), request);
         });
@@ -369,7 +369,7 @@ public class {{model.name}}ServiceTest {
         .when(repository).deleteById(eq(request.getId()));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId());
         });

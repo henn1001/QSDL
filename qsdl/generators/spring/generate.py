@@ -212,7 +212,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/util/IdGenerator.j2", f"src/main/java/{base_package}/util/IdGenerator.java"),
         ("src/main/java/util/NodeConverter.j2", f"src/main/java/{base_package}/util/NodeConverter.java"),
         # exception
-        ("src/main/java/exception/ApiException.j2", f"src/main/java/{base_package}/exception/ApiException.java"),
+        ("src/main/java/exception/AppException.j2", f"src/main/java/{base_package}/exception/AppException.java"),
         ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{base_package}/exception/GlobalExceptionHandler.java"),
         # model
         ("src/main/java/model/ApiError.j2", f"src/main/java/{base_package}/model/ApiError.java"),

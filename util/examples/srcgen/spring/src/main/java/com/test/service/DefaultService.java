@@ -12,7 +12,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 
 import com.test.config.Errors;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 import com.test.domain.*;
 import com.test.model.*;
 
@@ -26,9 +26,7 @@ public class DefaultService {
 
   }
 
-  public ObjectNode submitQury(ObjectNode body) throws ApiException {
-
-    log.info("h");
+  public ObjectNode submitQury(ObjectNode body) throws AppException {
 
   return null;
   }

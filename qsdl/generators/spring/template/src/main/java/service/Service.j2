@@ -14,7 +14,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 
 import {{base_package}}.config.Errors;
-import {{base_package}}.exception.ApiException;
+import {{base_package}}.exception.AppException;
 {% if database == "hibernate" and model %}
 import {{base_package}}.repository.*;
 {% endif %}
@@ -42,9 +42,9 @@ public class {{api.name}}Service {
 {% if database == "hibernate" and model.domain_parents %}
 {% for parent in model.domain_parents %}
 
-  private void validate{{parent.name}}Id(Long id) throws ApiException {
+  private void validate{{parent.name}}Id(Long id) throws AppException {
     if (!{{parent.name|lower}}Repository.existsById(id)) {
-      throw new ApiException(Errors.NOT_FOUND, "{{parent.name}} " + id.toString() + " does not exist");
+      throw new AppException(Errors.NOT_FOUND, "{{parent.name}} " + id.toString() + " does not exist");
     }
   }
 {% endfor %}
@@ -54,7 +54,7 @@ public class {{api.name}}Service {
   {% if operation.method == "delete" and model and model.has_aggregation %}
   @org.springframework.transaction.annotation.Transactional
   {% endif %}
-  public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws ApiException {
+  public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
 
   {% if database == "hibernate" and model and model.is_crud %}
   {{- opr_macro.logic(operation) -}}

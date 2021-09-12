@@ -12,7 +12,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 
 import com.test.config.Errors;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 import com.test.repository.*;
 import com.test.domain.*;
 import com.test.model.*;
@@ -29,7 +29,7 @@ public class TicketService {
 
   }
 
-  public ObjectList getTickets(ApiPageable pageable) throws ApiException {
+  public ObjectList getTickets(ApiPageable pageable) throws AppException {
 
     List<Ticket> items = ticketRepository.findAll(pageable);
 
@@ -44,25 +44,25 @@ public class TicketService {
     return ret;
   }
 
-  public Ticket createTicket(Ticket body) throws ApiException {
+  public Ticket createTicket(Ticket body) throws AppException {
 
     Ticket ret = ticketRepository.save(body);
 
     return ret;
   }
 
-  public Ticket getTicket(Long id) throws ApiException {
+  public Ticket getTicket(Long id) throws AppException {
 
     Ticket ret = ticketRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
 
     return ret;
   }
 
-  public Ticket replaceTicket(Long id, Ticket body) throws ApiException {
+  public Ticket replaceTicket(Long id, Ticket body) throws AppException {
 
     Ticket dbEntity = ticketRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
@@ -72,10 +72,10 @@ public class TicketService {
     return ret;
   }
 
-  public Ticket updateTicket(Long id, Ticket body) throws ApiException {
+  public Ticket updateTicket(Long id, Ticket body) throws AppException {
 
     Ticket dbEntity = ticketRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);
@@ -85,12 +85,12 @@ public class TicketService {
     return ret;
   }
 
-  public Void deleteTicket(Long id) throws ApiException {
+  public Void deleteTicket(Long id) throws AppException {
 
     try {
       ticketRepository.deleteById(id);
     } catch (Exception e) {
-      throw ApiException.entityNotFound(Ticket.class, id);
+      throw AppException.entityNotFound(Ticket.class, id);
     }
 
     return null;

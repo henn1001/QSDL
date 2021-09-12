@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 
 import com.test.config.Errors;
 import com.test.domain.*;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 import com.test.model.*;
 import com.test.repository.*;
 import com.test.util.Json;
@@ -122,7 +122,7 @@ public class ProjectServiceTest {
         .thenReturn(Optional.ofNullable(null));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.getProject(request.getId());
         });
@@ -165,7 +165,7 @@ public class ProjectServiceTest {
         .thenReturn(Optional.ofNullable(null));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.replaceProject(request.getId(), request);
         });
@@ -208,7 +208,7 @@ public class ProjectServiceTest {
         .thenReturn(Optional.ofNullable(null));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.updateProject(request.getId(), request);
         });
@@ -243,7 +243,7 @@ public class ProjectServiceTest {
         .when(repository).deleteById(eq(request.getId()));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.deleteProject(request.getId());
         });

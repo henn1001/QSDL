@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 
 import com.test.config.Errors;
 import com.test.domain.*;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 import com.test.model.*;
 import com.test.repository.*;
 import com.test.util.Json;
@@ -137,7 +137,7 @@ public class RoleServiceTest {
         .thenReturn(Optional.ofNullable(null));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.getRole(1l, request.getId());
         });
@@ -186,7 +186,7 @@ public class RoleServiceTest {
         .thenReturn(Optional.ofNullable(null));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.replaceRole(1l, request.getId(), request);
         });
@@ -235,7 +235,7 @@ public class RoleServiceTest {
         .thenReturn(Optional.ofNullable(null));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.updateRole(1l, request.getId(), request);
         });
@@ -276,7 +276,7 @@ public class RoleServiceTest {
         .when(repository).deleteById(eq(request.getId()));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.deleteRole(1l, request.getId());
         });

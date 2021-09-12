@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.test.config.Errors;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 import com.test.model.*;
 
 /**
@@ -45,7 +45,7 @@ public class ControllerTest {
     // Given
     when(mapper.readValue(anyString(), any(Class.class)))
         .thenAnswer(invocation -> {
-          throw new ApiException(Errors.ENTITY_NOT_FOUND);
+          throw new AppException(Errors.ENTITY_NOT_FOUND);
         });
 
     // When

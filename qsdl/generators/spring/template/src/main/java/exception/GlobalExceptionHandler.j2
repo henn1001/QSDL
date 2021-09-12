@@ -45,8 +45,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   /**
    * Handle our Exceptions.
    */
-  @ExceptionHandler({ApiException.class})
-  protected ResponseEntity<Object> handleApiException(ApiException ex, WebRequest request,
+  @ExceptionHandler({AppException.class})
+  protected ResponseEntity<Object> handleAppException(AppException ex, WebRequest request,
       HttpServletRequest httpRequest) {
 
     return buildResponseEntity(ex.getApiError(), httpRequest);

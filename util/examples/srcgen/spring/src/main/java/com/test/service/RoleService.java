@@ -12,7 +12,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 
 import com.test.config.Errors;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 import com.test.repository.*;
 import com.test.domain.*;
 import com.test.model.*;
@@ -32,13 +32,13 @@ public class RoleService {
 
   }
 
-  private void validateProjectId(Long id) throws ApiException {
+  private void validateProjectId(Long id) throws AppException {
     if (!projectRepository.existsById(id)) {
-      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
+      throw new AppException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
     }
   }
 
-  public ObjectList getRoles(Long projectId, ApiPageable pageable) throws ApiException {
+  public ObjectList getRoles(Long projectId, ApiPageable pageable) throws AppException {
 
     // confirm existence of parent
     validateProjectId(projectId);
@@ -56,7 +56,7 @@ public class RoleService {
     return ret;
   }
 
-  public Role createRole(Long projectId, Role body) throws ApiException {
+  public Role createRole(Long projectId, Role body) throws AppException {
 
     // confirm existence of parent
     validateProjectId(projectId);
@@ -70,18 +70,18 @@ public class RoleService {
     return ret;
   }
 
-  public Role getRole(Long projectId, Long id) throws ApiException {
+  public Role getRole(Long projectId, Long id) throws AppException {
 
     // confirm existence of parent
     validateProjectId(projectId);
 
     Role ret = roleRepository.findByProjectIdAndId(projectId, id)
-        .orElseThrow(() -> ApiException.entityNotFound(Role.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(Role.class, id));
 
     return ret;
   }
 
-  public Role replaceRole(Long projectId, Long id, Role body) throws ApiException {
+  public Role replaceRole(Long projectId, Long id, Role body) throws AppException {
 
     // confirm existence of parent
     validateProjectId(projectId);
@@ -91,7 +91,7 @@ public class RoleService {
     body.project = project;
 
     Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id)
-        .orElseThrow(() -> ApiException.entityNotFound(Role.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(Role.class, id));
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
@@ -101,7 +101,7 @@ public class RoleService {
     return ret;
   }
 
-  public Role updateRole(Long projectId, Long id, Role body) throws ApiException {
+  public Role updateRole(Long projectId, Long id, Role body) throws AppException {
 
     // confirm existence of parent
     validateProjectId(projectId);
@@ -111,7 +111,7 @@ public class RoleService {
     body.project = project;
 
     Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id)
-        .orElseThrow(() -> ApiException.entityNotFound(Role.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(Role.class, id));
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);
@@ -121,7 +121,7 @@ public class RoleService {
     return ret;
   }
 
-  public Void deleteRole(Long projectId, Long id) throws ApiException {
+  public Void deleteRole(Long projectId, Long id) throws AppException {
 
     // confirm existence of parent
     validateProjectId(projectId);
@@ -129,7 +129,7 @@ public class RoleService {
     try {
       roleRepository.deleteById(id);
     } catch (Exception e) {
-      throw ApiException.entityNotFound(Role.class, id);
+      throw AppException.entityNotFound(Role.class, id);
     }
 
     return null;

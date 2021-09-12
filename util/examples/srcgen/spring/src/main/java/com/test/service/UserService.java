@@ -12,7 +12,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 
 import com.test.config.Errors;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 import com.test.repository.*;
 import com.test.domain.*;
 import com.test.model.*;
@@ -32,13 +32,13 @@ public class UserService {
 
   }
 
-  private void validateTicketId(Long id) throws ApiException {
+  private void validateTicketId(Long id) throws AppException {
     if (!ticketRepository.existsById(id)) {
-      throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
+      throw new AppException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
     }
   }
 
-  public ObjectList getUsersForTicket(Long ticketId, ApiPageable pageable) throws ApiException {
+  public ObjectList getUsersForTicket(Long ticketId, ApiPageable pageable) throws AppException {
 
     // confirm existence of parent
     validateTicketId(ticketId);
@@ -56,15 +56,15 @@ public class UserService {
     return ret;
   }
 
-  public Void addUserToTicket(Long ticketId, Long id) throws ApiException {
+  public Void addUserToTicket(Long ticketId, Long id) throws AppException {
 
     // get and confirm existence
     // we are not using getById here because somehow the reference does not work when using a public field
     Ticket ticket = ticketRepository.findById(ticketId)
-        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, ticketId));
+        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, ticketId));
 
     User user = userRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
 
     ticket.users.add(user);
 
@@ -73,15 +73,15 @@ public class UserService {
     return null;
   }
 
-  public Void removeUserFromTicket(Long ticketId, Long id) throws ApiException {
+  public Void removeUserFromTicket(Long ticketId, Long id) throws AppException {
 
     // get and confirm existence
     // we are not using getById here because somehow the reference does not work when using a public field
     Ticket ticket = ticketRepository.findById(ticketId)
-        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, ticketId));
+        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, ticketId));
 
     User user = userRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
 
     ticket.users.remove(user);
 
@@ -90,7 +90,7 @@ public class UserService {
     return null;
   }
 
-  public ObjectList getUsers(ApiPageable pageable) throws ApiException {
+  public ObjectList getUsers(ApiPageable pageable) throws AppException {
 
     List<User> items = userRepository.findAll(pageable);
 
@@ -105,25 +105,25 @@ public class UserService {
     return ret;
   }
 
-  public User createUser(User body) throws ApiException {
+  public User createUser(User body) throws AppException {
 
     User ret = userRepository.save(body);
 
     return ret;
   }
 
-  public User getUser(Long id) throws ApiException {
+  public User getUser(Long id) throws AppException {
 
     User ret = userRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
 
     return ret;
   }
 
-  public User replaceUser(Long id, User body) throws ApiException {
+  public User replaceUser(Long id, User body) throws AppException {
 
     User dbEntity = userRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
@@ -133,10 +133,10 @@ public class UserService {
     return ret;
   }
 
-  public User updateUser(Long id, User body) throws ApiException {
+  public User updateUser(Long id, User body) throws AppException {
 
     User dbEntity = userRepository.findById(id)
-        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
+        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);
@@ -147,13 +147,13 @@ public class UserService {
   }
 
   @org.springframework.transaction.annotation.Transactional
-  public Void deleteUser(Long id) throws ApiException {
+  public Void deleteUser(Long id) throws AppException {
 
     try {
       userRepository.removeRelations(id);
       userRepository.deleteById(id);
     } catch (Exception e) {
-      throw ApiException.entityNotFound(User.class, id);
+      throw AppException.entityNotFound(User.class, id);
     }
 
     return null;

@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 
 import com.test.config.Errors;
 import com.test.domain.*;
-import com.test.exception.ApiException;
+import com.test.exception.AppException;
 import com.test.model.*;
 import com.test.repository.*;
 import com.test.util.Json;
@@ -201,7 +201,7 @@ public class UserServiceTest {
         .thenReturn(Optional.ofNullable(null));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.getUser(request.getId());
         });
@@ -244,7 +244,7 @@ public class UserServiceTest {
         .thenReturn(Optional.ofNullable(null));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.replaceUser(request.getId(), request);
         });
@@ -287,7 +287,7 @@ public class UserServiceTest {
         .thenReturn(Optional.ofNullable(null));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.updateUser(request.getId(), request);
         });
@@ -322,7 +322,7 @@ public class UserServiceTest {
         .when(repository).deleteById(eq(request.getId()));
 
     // When
-    ApiException thrown = assertThrows(ApiException.class,
+    AppException thrown = assertThrows(AppException.class,
         () -> {
           service.deleteUser(request.getId());
         });
