@@ -3,13 +3,13 @@
  */
 package {{base_package}};
 
-import {{base_package}}.config.ApplicationProperties;
+import {{base_package}}.config.AppProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ApplicationProperties.class})
+@EnableConfigurationProperties({AppProperties.class})
 public class SpringBootApp {
 
   public static void main(String[] args) throws Exception {

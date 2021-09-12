@@ -197,8 +197,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/SpringBootApp.j2", f"src/main/java/{base_package}/SpringBootApp.java"),
         ("src/test/java/TestConfig.j2", f"src/test/java/{base_package}/TestConfig.java"),
         # config
-        ("src/main/java/config/ApplicationConfig.j2", f"src/main/java/{base_package}/config/ApplicationConfig.java"),
-        ("src/main/java/config/ApplicationProperties.j2", f"src/main/java/{base_package}/config/ApplicationProperties.java"),
+        ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{base_package}/config/AppConfiguration.java"),
+        ("src/main/java/config/AppProperties.j2", f"src/main/java/{base_package}/config/AppProperties.java"),
         ("src/main/java/config/AsyncConfig.j2", f"src/main/java/{base_package}/config/AsyncConfig.java"),
         ("src/main/java/config/SchedulerConfig.j2", f"src/main/java/{base_package}/config/SchedulerConfig.java"),
         ("src/main/java/config/Errors.j2", f"src/main/java/{base_package}/config/Errors.java"),

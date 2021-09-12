@@ -8,9 +8,9 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConstructorBinding
 @ConfigurationProperties
-public class ApplicationProperties {
+public class AppProperties {
 
-  public ApplicationProperties() {
+  public AppProperties() {
 
   }
 
