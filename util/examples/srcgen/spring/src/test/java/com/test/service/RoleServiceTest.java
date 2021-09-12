@@ -20,7 +20,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,9 +51,6 @@ public class RoleServiceTest {
 
   @InjectMocks
   RoleService service;
-
-  @Mock
-  private EntityManager entityManager;
 
   @Test
   void whenGetRoles_thenOk() throws Exception {
@@ -94,9 +90,6 @@ public class RoleServiceTest {
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
-
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
 
     when(repository.save(eq(request)))
         .thenReturn(request);
@@ -165,9 +158,6 @@ public class RoleServiceTest {
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
-
     when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
 
@@ -191,9 +181,6 @@ public class RoleServiceTest {
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
-
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
 
     when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -220,9 +207,6 @@ public class RoleServiceTest {
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
-
     when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
 
@@ -246,9 +230,6 @@ public class RoleServiceTest {
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
-
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
 
     when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));

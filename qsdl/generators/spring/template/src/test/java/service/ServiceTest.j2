@@ -21,7 +21,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,9 +54,6 @@ public class {{model.name}}ServiceTest {
 {% endfor %}
   @InjectMocks
   {{model.name}}Service service;
-
-  @Mock
-  private EntityManager entityManager;
 
 {% for operation in api.operations %}
   {% if operation.method == "get" and operation.is_pageable %}
@@ -112,14 +108,11 @@ public class {{model.name}}ServiceTest {
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
     {{operation.domain_parent.name}} parent = easyRandom.nextObject({{operation.domain_parent.name}}.class);
 
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(parent.getId())))
-        .thenReturn(true);
+    when({{ operation.domain_parent.name|lower }}Repository.findById(eq(parent.getId())))
+        .thenReturn(Optional.of(parent));
 
-    when(entityManager.getReference(eq({{operation.domain_parent.name}}.class), eq(parent.getId())))
-        .thenReturn(parent);
-
-    when(entityManager.getReference(eq({{model.name}}.class), eq(request.getId())))
-        .thenReturn(request);
+    when(repository.findById(eq(request.getId())))
+        .thenReturn(Optional.of(request));
 
     when({{operation.domain_parent.name|lower}}Repository.save(eq(parent)))
         .thenReturn(null);
@@ -143,9 +136,6 @@ public class {{model.name}}ServiceTest {
     {% if operation.domain_parent %}
     when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
-
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
 
     {% endif %}
     when(repository.save(eq(request)))
@@ -232,9 +222,6 @@ public class {{model.name}}ServiceTest {
     when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
-
     when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
     {% else %}
@@ -263,9 +250,6 @@ public class {{model.name}}ServiceTest {
     {% if operation.domain_parent %}
     when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
-
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
 
     when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -300,9 +284,6 @@ public class {{model.name}}ServiceTest {
     when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
-
     when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
     {% else %}
@@ -331,9 +312,6 @@ public class {{model.name}}ServiceTest {
     {% if operation.domain_parent %}
     when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
-
-    when(entityManager.getReference(any(), any()))
-        .thenReturn(null);
 
     when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));

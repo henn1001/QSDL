@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
 
 import com.test.config.Errors;
 import com.test.exception.ApiException;
@@ -26,9 +25,6 @@ public class ProjectService {
 
   @Autowired
   private ProjectRepository projectRepository;
-
-  @Autowired
-  EntityManager entityManager;
 
   @PostConstruct
   private void init() {

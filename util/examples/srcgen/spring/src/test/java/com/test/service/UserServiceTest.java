@@ -20,7 +20,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,9 +51,6 @@ public class UserServiceTest {
 
   @InjectMocks
   UserService service;
-
-  @Mock
-  private EntityManager entityManager;
 
   @Test
   void whenGetUsersForTicket_thenOk() throws Exception {
@@ -93,14 +89,11 @@ public class UserServiceTest {
     User request = easyRandom.nextObject(User.class);
     Ticket parent = easyRandom.nextObject(Ticket.class);
 
-    when(ticketRepository.existsById(eq(parent.getId())))
-        .thenReturn(true);
+    when(ticketRepository.findById(eq(parent.getId())))
+        .thenReturn(Optional.of(parent));
 
-    when(entityManager.getReference(eq(Ticket.class), eq(parent.getId())))
-        .thenReturn(parent);
-
-    when(entityManager.getReference(eq(User.class), eq(request.getId())))
-        .thenReturn(request);
+    when(repository.findById(eq(request.getId())))
+        .thenReturn(Optional.of(request));
 
     when(ticketRepository.save(eq(parent)))
         .thenReturn(null);
@@ -119,14 +112,11 @@ public class UserServiceTest {
     User request = easyRandom.nextObject(User.class);
     Ticket parent = easyRandom.nextObject(Ticket.class);
 
-    when(ticketRepository.existsById(eq(parent.getId())))
-        .thenReturn(true);
+    when(ticketRepository.findById(eq(parent.getId())))
+        .thenReturn(Optional.of(parent));
 
-    when(entityManager.getReference(eq(Ticket.class), eq(parent.getId())))
-        .thenReturn(parent);
-
-    when(entityManager.getReference(eq(User.class), eq(request.getId())))
-        .thenReturn(request);
+    when(repository.findById(eq(request.getId())))
+        .thenReturn(Optional.of(request));
 
     when(ticketRepository.save(eq(parent)))
         .thenReturn(null);

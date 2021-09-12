@@ -35,13 +35,14 @@
      ########################################################################################
       Create a entity.
     #}
-    // confirm existence of parent
-    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    // get and confirm existence
+    // we are not using getById here because somehow the reference does not work when using a public field
+    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }}Repository.findById({{ operation.path_parameters[0].name }})
+        .orElseThrow(() -> ApiException.entityNotFound({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }}));
 
-    // link to parent
-    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
-    {{ operation.domain_object.name }} {{ operation.domain_object.name|lower }} = entityManager.getReference({{ operation.domain_object.name }}.class, {{ operation.path_parameters[1].name }});
-    
+    {{ operation.domain_object.name }} {{ operation.domain_object.name|lower }} = {{ operation.domain_object.name|lower }}Repository.findById({{ operation.path_parameters[1].name }})
+        .orElseThrow(() -> ApiException.entityNotFound({{ operation.domain_object.name }}.class, {{ operation.path_parameters[1].name }}));
+
     {% if encapsulation %}
       {% if operation.path.endswith('/add') %}
     {{ operation.domain_parent.name|lower }}.add{{ operation.domain_object.name }}sItem({{ operation.domain_object.name | lower }});
@@ -69,7 +70,7 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     // add parent relation
-    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
     {% if encapsulation %}
     body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
     {% else %}
@@ -105,7 +106,7 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     // add parent relation
-    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
       {% if encapsulation %}
     body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
       {% else %}
@@ -132,7 +133,7 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     // add parent relation
-    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = entityManager.getReference({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }});
+    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
       {% if encapsulation %}
     body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
       {% else %}

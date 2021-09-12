@@ -20,7 +20,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,9 +48,6 @@ public class ProjectServiceTest {
 
   @InjectMocks
   ProjectService service;
-
-  @Mock
-  private EntityManager entityManager;
 
   @Test
   void whenGetProjects_thenOk() throws Exception {

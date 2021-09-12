@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
 
 import com.test.config.Errors;
 import com.test.exception.ApiException;
@@ -29,9 +28,6 @@ public class RoleService {
 
   @Autowired
   private RoleRepository roleRepository;
-
-  @Autowired
-  EntityManager entityManager;
 
   @PostConstruct
   private void init() {
@@ -68,7 +64,7 @@ public class RoleService {
     validateProjectId(projectId);
 
     // add parent relation
-    Project project = entityManager.getReference(Project.class, projectId);
+    Project project = projectRepository.getById(projectId);
     body.project = project;
 
     Role ret = roleRepository.save(body);
@@ -93,7 +89,7 @@ public class RoleService {
     validateProjectId(projectId);
 
     // add parent relation
-    Project project = entityManager.getReference(Project.class, projectId);
+    Project project = projectRepository.getById(projectId);
     body.project = project;
 
     Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id)
@@ -113,7 +109,7 @@ public class RoleService {
     validateProjectId(projectId);
 
     // add parent relation
-    Project project = entityManager.getReference(Project.class, projectId);
+    Project project = projectRepository.getById(projectId);
     body.project = project;
 
     Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id)

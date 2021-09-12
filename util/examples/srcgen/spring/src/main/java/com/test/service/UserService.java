@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
 
 import com.test.config.Errors;
 import com.test.exception.ApiException;
@@ -29,9 +28,6 @@ public class UserService {
 
   @Autowired
   private UserRepository userRepository;
-
-  @Autowired
-  EntityManager entityManager;
 
   @PostConstruct
   private void init() {
@@ -64,13 +60,14 @@ public class UserService {
 
   public Void addUserToTicket(Long ticketId, Long id) throws ApiException {
 
-    // confirm existence of parent
-    validateTicketId(ticketId);
+    // get and confirm existence
+    // we are not using getById here because somehow the reference does not work when using a public field
+    Ticket ticket = ticketRepository.findById(ticketId)
+        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, ticketId));
 
-    // link to parent
-    Ticket ticket = entityManager.getReference(Ticket.class, ticketId);
-    User user = entityManager.getReference(User.class, id);
-    
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
+
     ticket.users.add(user);
 
     ticketRepository.save(ticket);
@@ -80,13 +77,14 @@ public class UserService {
 
   public Void removeUserFromTicket(Long ticketId, Long id) throws ApiException {
 
-    // confirm existence of parent
-    validateTicketId(ticketId);
+    // get and confirm existence
+    // we are not using getById here because somehow the reference does not work when using a public field
+    Ticket ticket = ticketRepository.findById(ticketId)
+        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, ticketId));
 
-    // link to parent
-    Ticket ticket = entityManager.getReference(Ticket.class, ticketId);
-    User user = entityManager.getReference(User.class, id);
-    
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
+
     ticket.users.remove(user);
 
     ticketRepository.save(ticket);
