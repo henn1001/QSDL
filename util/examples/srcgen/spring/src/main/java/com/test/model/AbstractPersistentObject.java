@@ -23,23 +23,23 @@ public abstract class AbstractPersistentObject {
   private Long id;
 
   @JsonIgnore
-  private String uuid = IdGenerator.createId();
+  private String _uuid = IdGenerator.createId();
 
   @Version
   @JsonIgnore
-  private Integer version;
+  private Integer _version;
 
 
   public Long getId() {
     return id;
   }
 
-  public String getUUID() {
-    return uuid;
+  public String get_uuid() {
+    return _uuid;
   }
 
-  public Integer getVersion() {
-    return version;
+  public Integer get_version() {
+    return _version;
   }
 
 
@@ -48,8 +48,8 @@ public abstract class AbstractPersistentObject {
    */
   public void copyIdentiy(AbstractPersistentObject o) {
     this.id = o.getId();
-    this.uuid = o.getUUID();
-    this.version = o.getVersion();
+    this._uuid = o.get_uuid();
+    this._version = o.get_version();
   }
 
   /**
@@ -128,17 +128,17 @@ public abstract class AbstractPersistentObject {
     AbstractPersistentObject other = (AbstractPersistentObject) o;
 
     // if the uuid is missing, return false
-    if (uuid == null) {
+    if (_uuid == null) {
       return false;
     }
 
     // equivalence by uuid
-    return uuid.equals(other.getUUID());
+    return _uuid.equals(other.get_uuid());
   }
 
   public int hashCode() {
-    if (uuid != null) {
-      return uuid.hashCode();
+    if (_uuid != null) {
+      return _uuid.hashCode();
     } else {
       return super.hashCode();
     }
