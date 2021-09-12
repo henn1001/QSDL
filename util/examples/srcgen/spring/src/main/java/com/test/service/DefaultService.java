@@ -3,8 +3,7 @@
  */
 package com.test.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -17,10 +16,9 @@ import com.test.exception.ApiException;
 import com.test.domain.*;
 import com.test.model.*;
 
+@Slf4j
 @Service
 public class DefaultService {
-
-  private static Logger log = LoggerFactory.getLogger(DefaultService.class.getSimpleName());
 
 
   @PostConstruct
@@ -29,6 +27,8 @@ public class DefaultService {
   }
 
   public ObjectNode submitQury(ObjectNode body) throws ApiException {
+
+    log.info("h");
 
   return null;
   }

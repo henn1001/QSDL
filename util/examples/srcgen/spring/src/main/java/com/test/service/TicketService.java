@@ -3,8 +3,7 @@
  */
 package com.test.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -18,10 +17,9 @@ import com.test.repository.*;
 import com.test.domain.*;
 import com.test.model.*;
 
+@Slf4j
 @Service
 public class TicketService {
-
-  private static Logger log = LoggerFactory.getLogger(TicketService.class.getSimpleName());
 
   @Autowired
   private TicketRepository ticketRepository;

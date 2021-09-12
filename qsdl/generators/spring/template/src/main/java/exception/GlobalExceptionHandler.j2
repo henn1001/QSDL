@@ -3,11 +3,7 @@
  */
 package {{base_package}}.exception;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +18,18 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import {{base_package}}.config.Errors;
 import {{base_package}}.model.ApiError;
 import {{base_package}}.util.Time;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-  private static Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class.getSimpleName());
 
   private ResponseEntity<Object> buildResponseEntity(ApiError apiError,
       HttpServletRequest httpRequest) {
