@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.test.model.AbstractPersistentObject;
+import com.test.util.Json;
 
 @Entity
 public class Project extends AbstractPersistentObject {
@@ -51,9 +52,8 @@ public class Project extends AbstractPersistentObject {
   public Set<Role> roles = new LinkedHashSet<>();
 
 
-  public static Project fromJson(String json)
-      throws com.test.util.Json.JsonException {
-    return com.test.util.Json.serializer().fromJson(json, Project.class);
+  public static Project fromJson(String json) throws Json.JsonException {
+    return Json.serializer().fromJson(json, Project.class);
   }
 
 }

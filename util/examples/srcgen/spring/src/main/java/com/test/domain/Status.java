@@ -6,6 +6,8 @@ package com.test.domain;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.*;
 
+import com.test.util.Json;
+
 public enum Status {
 
   OPEN("OPEN"),

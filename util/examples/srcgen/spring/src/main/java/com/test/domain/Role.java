@@ -9,6 +9,7 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
 import com.test.model.AbstractPersistentObject;
+import com.test.util.Json;
 
 @Entity
 public class Role extends AbstractPersistentObject {
@@ -23,9 +24,8 @@ public class Role extends AbstractPersistentObject {
   public Project project;
 
 
-  public static Role fromJson(String json)
-      throws com.test.util.Json.JsonException {
-    return com.test.util.Json.serializer().fromJson(json, Role.class);
+  public static Role fromJson(String json) throws Json.JsonException {
+    return Json.serializer().fromJson(json, Role.class);
   }
 
 }

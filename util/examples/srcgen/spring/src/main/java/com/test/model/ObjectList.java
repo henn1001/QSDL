@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.test.util.Json;
 
 public class ObjectList {
 
@@ -24,8 +25,8 @@ public class ObjectList {
   public String toString() {
     String ret = new String();
     try {
-      ret = com.test.util.Json.serializer().toString(this);
-    } catch (com.test.util.Json.JsonException e) {
+      ret = Json.serializer().toString(this);
+    } catch (Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;
@@ -34,8 +35,8 @@ public class ObjectList {
   public String toPrettyString() {
     String ret = new String();
     try {
-      ret = com.test.util.Json.serializer().toPrettyString(this);
-    } catch (com.test.util.Json.JsonException e) {
+      ret = Json.serializer().toPrettyString(this);
+    } catch (Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;

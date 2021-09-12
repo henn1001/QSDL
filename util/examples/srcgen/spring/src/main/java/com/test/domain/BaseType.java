@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.test.util.Json;
+
 @Embeddable
 public class BaseType {
 
@@ -41,9 +43,8 @@ public class BaseType {
   public ObjectNode metaInf;
 
 
-  public static BaseType fromJson(String json)
-      throws com.test.util.Json.JsonException {
-    return com.test.util.Json.serializer().fromJson(json, BaseType.class);
+  public static BaseType fromJson(String json) throws Json.JsonException {
+    return Json.serializer().fromJson(json, BaseType.class);
   }
 
 }

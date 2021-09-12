@@ -7,10 +7,11 @@ package {{base_package}}.domain;
 {% for imp in model.imports %}
 import {{imp}};
 {% endfor %}
-{% if model.is_object %}
 
+{% if model.is_object %}
 import {{base_package}}.model.AbstractPersistentObject;
 {% endif %}
+import {{base_package}}.util.Json;
 
 {% if model.is_enum %}
 {% include "Enum.j2" with context %}
@@ -88,9 +89,8 @@ public class {{model.name}}{% if not model.is_base %} extends AbstractPersistent
 
 {% endfor %}
 
-  public static {{model.name}} fromJson(String json)
-      throws {{base_package}}.util.Json.JsonException {
-    return {{base_package}}.util.Json.serializer().fromJson(json, {{model.name}}.class);
+  public static {{model.name}} fromJson(String json) throws Json.JsonException {
+    return Json.serializer().fromJson(json, {{model.name}}.class);
   }
 
 }

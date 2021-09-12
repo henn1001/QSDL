@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.util.Objects;
 
 import com.test.util.IdGenerator;
+import com.test.util.Json;
 
 @MappedSuperclass
 public abstract class AbstractPersistentObject {
@@ -147,8 +148,8 @@ public abstract class AbstractPersistentObject {
   public String toString() {
     String ret = new String();
     try {
-      ret = com.test.util.Json.serializer().toString(this);
-    } catch (com.test.util.Json.JsonException e) {
+      ret = Json.serializer().toString(this);
+    } catch (Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;
@@ -157,8 +158,8 @@ public abstract class AbstractPersistentObject {
   public String toPrettyString() {
     String ret = new String();
     try {
-      ret = com.test.util.Json.serializer().toPrettyString(this);
-    } catch (com.test.util.Json.JsonException e) {
+      ret = Json.serializer().toPrettyString(this);
+    } catch (Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import {{base_package}}.util.Json;
+
 public class ApiError {
 
   @JsonProperty(value = "code", required = true)
@@ -137,8 +139,8 @@ public class ApiError {
   public String toString() {
     String ret = new String();
     try {
-      ret = {{base_package}}.util.Json.serializer().toString(this);
-    } catch ({{base_package}}.util.Json.JsonException e) {
+      ret = Json.serializer().toString(this);
+    } catch (Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;
@@ -147,16 +149,15 @@ public class ApiError {
   public String toPrettyString() {
     String ret = new String();
     try {
-      ret = {{base_package}}.util.Json.serializer().toPrettyString(this);
-    } catch ({{base_package}}.util.Json.JsonException e) {
+      ret = Json.serializer().toPrettyString(this);
+    } catch (Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;
   }
 
-  public static ApiError fromJson(String json)
-      throws {{base_package}}.util.Json.JsonException {
-    return {{base_package}}.util.Json.serializer().fromJson(json, ApiError.class);
+  public static ApiError fromJson(String json) throws Json.JsonException {
+    return Json.serializer().fromJson(json, ApiError.class);
   }
 
 }

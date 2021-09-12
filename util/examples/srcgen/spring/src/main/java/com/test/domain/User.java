@@ -9,6 +9,7 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
 import com.test.model.AbstractPersistentObject;
+import com.test.util.Json;
 
 @Entity
 public class User extends AbstractPersistentObject {
@@ -22,9 +23,8 @@ public class User extends AbstractPersistentObject {
   public Set<Ticket> tickets = new LinkedHashSet<>();
 
 
-  public static User fromJson(String json)
-      throws com.test.util.Json.JsonException {
-    return com.test.util.Json.serializer().fromJson(json, User.class);
+  public static User fromJson(String json) throws Json.JsonException {
+    return Json.serializer().fromJson(json, User.class);
   }
 
 }
