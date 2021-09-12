@@ -38,13 +38,13 @@ public class UserService {
 
   }
 
-  private void validateTicketId(Long id) throws Exception {
+  private void validateTicketId(Long id) throws ApiException {
     if (!ticketRepository.existsById(id)) {
       throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
     }
   }
 
-  public ObjectList getUsersForTicket(Long ticketId, ApiPageable pageable) throws Exception {
+  public ObjectList getUsersForTicket(Long ticketId, ApiPageable pageable) throws ApiException {
 
     // confirm existence of parent
     validateTicketId(ticketId);
@@ -62,7 +62,7 @@ public class UserService {
     return ret;
   }
 
-  public Void addUserToTicket(Long ticketId, Long id) throws Exception {
+  public Void addUserToTicket(Long ticketId, Long id) throws ApiException {
 
     // confirm existence of parent
     validateTicketId(ticketId);
@@ -78,7 +78,7 @@ public class UserService {
     return null;
   }
 
-  public Void removeUserFromTicket(Long ticketId, Long id) throws Exception {
+  public Void removeUserFromTicket(Long ticketId, Long id) throws ApiException {
 
     // confirm existence of parent
     validateTicketId(ticketId);
@@ -94,7 +94,7 @@ public class UserService {
     return null;
   }
 
-  public ObjectList getUsers(ApiPageable pageable) throws Exception {
+  public ObjectList getUsers(ApiPageable pageable) throws ApiException {
 
     List<User> items = userRepository.findAll(pageable);
 
@@ -109,50 +109,41 @@ public class UserService {
     return ret;
   }
 
-  public User createUser(User body) throws Exception {
+  public User createUser(User body) throws ApiException {
 
     User ret = userRepository.save(body);
 
     return ret;
   }
 
-  public User getUser(Long id) throws Exception {
+  public User getUser(Long id) throws ApiException {
 
-    User ret = userRepository.findById(id).orElse(null);
-
-    if (ret == null) {
-      throw new ApiException(Errors.NOT_FOUND, "User " + id.toString() + " does not exist");
-    }
+    User ret = userRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
 
     return ret;
   }
 
-  public User replaceUser(Long id, User body) throws Exception {
+  public User replaceUser(Long id, User body) throws ApiException {
 
-    User dbEntity = userRepository.findById(id).orElse(null);
+    User dbEntity = userRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
 
-    if (dbEntity == null) {
-      throw new ApiException(Errors.NOT_FOUND, "User " + id.toString() + " does not exist");
-    }
+    // update dbEntity with all writeable fields
+    dbEntity.replace(body);
 
-    // update new object with all readOnly fields from previous entry
-    body.copyIdentiy(dbEntity);
-
-    User ret = userRepository.save(body);
+    User ret = userRepository.save(dbEntity);
 
     return ret;
   }
 
-  public User updateUser(Long id, User body) throws Exception {
+  public User updateUser(Long id, User body) throws ApiException {
 
-    User dbEntity = userRepository.findById(id).orElse(null);
-
-    if (dbEntity == null) {
-      throw new ApiException(Errors.NOT_FOUND, "User " + id.toString() + " does not exist");
-    }
+    User dbEntity = userRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(User.class, id));
 
     // update dbEntity with all writeable fields if present
-    Optional.ofNullable(body.name).ifPresent(v -> dbEntity.name = v);
+    dbEntity.update(body);
 
     User ret = userRepository.save(dbEntity);
 
@@ -160,14 +151,14 @@ public class UserService {
   }
 
   @org.springframework.transaction.annotation.Transactional
-  public Void deleteUser(Long id) throws Exception {
+  public Void deleteUser(Long id) throws ApiException {
 
-    if (!userRepository.existsById(id)) {
-      throw new ApiException(Errors.NOT_FOUND, "User " + id.toString() + " does not exist");
+    try {
+      userRepository.removeRelations(id);
+      userRepository.deleteById(id);
+    } catch (Exception e) {
+      throw ApiException.entityNotFound(User.class, id);
     }
-
-    userRepository.removeRelations(id);
-    userRepository.deleteById(id);
 
     return null;
   }

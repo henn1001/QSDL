@@ -8,12 +8,16 @@ import org.springframework.http.HttpStatus;
 import com.test.model.ApiError;
 
 public enum Errors {
+  // @formatter:off
   // generics
   BAD_REQEST(400, "Bad Request", HttpStatus.BAD_REQUEST),
   UNAUTHORIZED(401, "Unauthorized", HttpStatus.UNAUTHORIZED),
   FORBIDDEN(403, "Forbidden", HttpStatus.FORBIDDEN),
   NOT_FOUND(404, "Not Found", HttpStatus.NOT_FOUND),
   INTERNAL_SERVER_ERROR(500, "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
+  // specifics
+  ENTITY_NOT_FOUND(1000, "Entity not found", HttpStatus.NOT_FOUND),
+  // @formatter:on
   ;
 
   private final int code;
@@ -40,9 +44,9 @@ public enum Errors {
 
   public ApiError getApiError() {
     return new ApiError()
-    .setCode(code)
-    .setMessage(message)
-    .setStatus(status);
+        .setCode(code)
+        .setMessage(message)
+        .setStatus(status);
   }
 
 }

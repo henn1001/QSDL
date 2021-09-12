@@ -32,7 +32,7 @@ public class DefaultService {
 
   }
 
-  public ObjectNode submitQury(ObjectNode body) throws Exception {
+  public ObjectNode submitQury(ObjectNode body) throws ApiException {
 
   return null;
   }

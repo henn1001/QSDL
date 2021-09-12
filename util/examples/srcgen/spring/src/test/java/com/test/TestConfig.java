@@ -4,11 +4,12 @@
 package com.test;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.test.util.Json;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+
+import com.test.util.Json;
 
 @TestConfiguration
 public class TestConfig {

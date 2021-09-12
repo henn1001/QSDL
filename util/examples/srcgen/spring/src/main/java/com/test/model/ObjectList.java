@@ -20,7 +20,6 @@ public class ObjectList {
   public Long totalCount;
 
 
-
   @Override
   public String toString() {
     String ret = new String();
@@ -40,11 +39,6 @@ public class ObjectList {
       e.printStackTrace();
     }
     return ret;
-  }
-
-  public static ObjectList fromJson(String json)
-      throws com.test.util.Json.JsonException {
-    return com.test.util.Json.serializer().fromJson(json, ObjectList.class);
   }
 
 }

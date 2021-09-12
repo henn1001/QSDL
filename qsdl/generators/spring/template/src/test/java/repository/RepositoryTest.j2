@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
 
 import {{base_package}}.domain.*;
 import {{base_package}}.model.ApiPageable;
-import com.test.util.Json;
+import {{base_package}}.util.Json;
 
 @DataJpaTest
 @Import({{base_package}}.TestConfig.class)
@@ -38,15 +38,10 @@ public class {{model.name}}RepositoryTest {
 
   @Test
   public void whenSave_thenFind() {
+
     // Given
     {{model.name}} testData = easyRandom.nextObject({{model.name}}.class);
-    {% for attr in model.attributes if attr.is_relation %}
-      {% if encapsulation %}
-    testData.set{{attr.name|pascal}}(null);
-      {% else %}
-    testData.{{attr.name}} = null;
-      {% endif %}
-    {% endfor %}
+    testData.removeRelations();
 
     // When
     {{model.name}} dbData = {{model.name|lower}}Repository.saveAndFlush(testData);
@@ -61,15 +56,10 @@ public class {{model.name}}RepositoryTest {
 
   @Test
   public void whenDelete_thenCountZero() {
+
     // Given
     {{model.name}} testData = easyRandom.nextObject({{model.name}}.class);
-    {% for attr in model.attributes if attr.is_relation %}
-      {% if encapsulation %}
-    testData.set{{attr.name|pascal}}(null);
-      {% else %}
-    testData.{{attr.name}} = null;
-      {% endif %}
-    {% endfor %}
+    testData.removeRelations();
     {{model.name}} dbData = {{model.name|lower}}Repository.saveAndFlush(testData);
 
     // When
@@ -82,15 +72,10 @@ public class {{model.name}}RepositoryTest {
 
   @Test
   public void whenCount_thenUseQuerie() {
+
     // Given
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    {% for attr in model.attributes if attr.is_relation %}
-      {% if encapsulation %}
-    testData.forEach(x -> x.set{{attr.name|pascal}}(null));
-      {% else %}
-    testData.forEach(x -> x.{{attr.name}} = null);
-      {% endif %}
-    {% endfor %}
+    testData.forEach(x -> x.removeRelations());
     List<{{model.name}}> dbData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     ApiPageable pageable = new ApiPageable(null, null, null);
@@ -107,15 +92,10 @@ public class {{model.name}}RepositoryTest {
 
   @Test
   public void whenFindAll_thenPaginate() {
+
     // Given
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    {% for attr in model.attributes if attr.is_relation %}
-      {% if encapsulation %}
-    testData.forEach(x -> x.set{{attr.name|pascal}}(null));
-      {% else %}
-    testData.forEach(x -> x.{{attr.name}} = null);
-      {% endif %}
-    {% endfor %}
+    testData.forEach(x -> x.removeRelations());
     {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     // When
@@ -140,15 +120,10 @@ public class {{model.name}}RepositoryTest {
   {% for domain_parent in model.domain_parents %}
   @Test
   public void whenCountBy{{domain_parent.name}}_thenUseQuerie() {
+
     // Given
     {{domain_parent.name}} tmp = easyRandom.nextObject({{domain_parent.name}}.class);
-    {% for attr in domain_parent.attributes if attr.is_relation %}
-      {% if encapsulation %}
-    tmp.set{{attr.name|pascal}}(null);
-      {% else %}
-    tmp.{{attr.name}}= null;
-      {% endif %}
-    {% endfor %}
+    tmp.removeRelations();
     {{domain_parent.name}} testParent = {{domain_parent.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
@@ -192,15 +167,10 @@ public class {{model.name}}RepositoryTest {
 
   @Test
   public void whenFindAllBy{{domain_parent.name}}_thenPaginate() {
+
     // Given
     {{domain_parent.name}} tmp = easyRandom.nextObject({{domain_parent.name}}.class);
-    {% for attr in domain_parent.attributes if attr.is_relation %}
-      {% if encapsulation %}
-    tmp.set{{attr.name|pascal}}(null);
-      {% else %}
-    tmp.{{attr.name}} = null;
-      {% endif %}
-    {% endfor %}
+    tmp.removeRelations();
     {{domain_parent.name}} testParent = {{domain_parent.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
@@ -257,15 +227,10 @@ public class {{model.name}}RepositoryTest {
     {% for domain_parent in model.domain_parents if util.is_aggregation(model._ref, domain_parent._ref) %}
   @Test
   public void whenRemoveRelation_thenLinkRemovedFrom{{domain_parent.name}}() {
+
     // Given
     {{domain_parent.name}} tmp = easyRandom.nextObject({{domain_parent.name}}.class);
-    {% for attr in domain_parent.attributes if attr.is_relation %}
-      {% if encapsulation %}
-    tmp.set{{attr.name|pascal}}(null);
-      {% else %}
-    tmp.{{attr.name}} = null;
-      {% endif %}
-    {% endfor %}
+    tmp.removeRelations();
     {{domain_parent.name}} testParent = {{domain_parent.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());

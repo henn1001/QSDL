@@ -230,7 +230,7 @@ public class Json {
     }
   }
 
-  public ArrayNode nodeFromList(List<Object> obj) {
+  public ArrayNode nodeFromList(List<? extends Object> obj) {
     try {
       return (ArrayNode) mapper.readTree(toString(obj));
     } catch (IOException e) {

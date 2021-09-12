@@ -30,7 +30,7 @@ public class TicketController {
   private final NativeWebRequest request;
 
   @Autowired
-  TicketService TicketService;
+  TicketService ticketService;
 
   @Autowired
   public TicketController(NativeWebRequest request) {
@@ -53,7 +53,7 @@ public class TicketController {
     produces = { "application/json" }
   )
   public ResponseEntity<ObjectList> getTickets(ApiPageable pageable) throws Exception {
-    ObjectList response = TicketService.getTickets(pageable);
+    ObjectList response = ticketService.getTickets(pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -70,7 +70,7 @@ public class TicketController {
     consumes = { "application/json" }
   )
   public ResponseEntity<Ticket> createTicket(@Valid @RequestBody Ticket body) throws Exception {
-    Ticket response = TicketService.createTicket(body);
+    Ticket response = ticketService.createTicket(body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -86,7 +86,7 @@ public class TicketController {
     produces = { "application/json" }
   )
   public ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) throws Exception {
-    Ticket response = TicketService.getTicket(id);
+    Ticket response = ticketService.getTicket(id);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -104,7 +104,7 @@ public class TicketController {
     consumes = { "application/json" }
   )
   public ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @Valid @RequestBody Ticket body) throws Exception {
-    Ticket response = TicketService.replaceTicket(id, body);
+    Ticket response = ticketService.replaceTicket(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -123,7 +123,7 @@ public class TicketController {
   )
   public ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) throws Exception {
     Validator.validateExRequired(body);
-    Ticket response = TicketService.updateTicket(id, body);
+    Ticket response = ticketService.updateTicket(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -138,7 +138,7 @@ public class TicketController {
     value = "/tickets/{id}"
   )
   public ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) throws Exception {
-    TicketService.deleteTicket(id);
+    ticketService.deleteTicket(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

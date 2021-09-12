@@ -35,7 +35,7 @@ public class ProjectService {
 
   }
 
-  public ObjectList getProjects(String name, ApiPageable pageable) throws Exception {
+  public ObjectList getProjects(String name, ApiPageable pageable) throws ApiException {
 
     pageable.query.put("name", name);
 
@@ -52,70 +52,54 @@ public class ProjectService {
     return ret;
   }
 
-  public Project createProject(Project body) throws Exception {
+  public Project createProject(Project body) throws ApiException {
 
     Project ret = projectRepository.save(body);
 
     return ret;
   }
 
-  public Project getProject(Long id) throws Exception {
+  public Project getProject(Long id) throws ApiException {
 
-    Project ret = projectRepository.findById(id).orElse(null);
-
-    if (ret == null) {
-      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
-    }
+    Project ret = projectRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(Project.class, id));
 
     return ret;
   }
 
-  public Project replaceProject(Long id, Project body) throws Exception {
+  public Project replaceProject(Long id, Project body) throws ApiException {
 
-    Project dbEntity = projectRepository.findById(id).orElse(null);
+    Project dbEntity = projectRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(Project.class, id));
 
-    if (dbEntity == null) {
-      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
-    }
-
-    // update new object with all readOnly fields from previous entry
-    body.copyIdentiy(dbEntity);
-    body.creationBy = dbEntity.creationBy;
-    body.creationDate = dbEntity.creationDate;
-    body.lastUpdateBy = dbEntity.lastUpdateBy;
-    body.lastUpdateDate = dbEntity.lastUpdateDate;
-
-    Project ret = projectRepository.save(body);
-
-    return ret;
-  }
-
-  public Project updateProject(Long id, Project body) throws Exception {
-
-    Project dbEntity = projectRepository.findById(id).orElse(null);
-
-    if (dbEntity == null) {
-      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
-    }
-
-    // update dbEntity with all writeable fields if present
-    Optional.ofNullable(body.name).ifPresent(v -> dbEntity.name = v);
-    Optional.ofNullable(body.description).ifPresent(v -> dbEntity.description = v);
-    Optional.ofNullable(body.metaInf).ifPresent(v -> dbEntity.metaInf = v);
-    Optional.ofNullable(body.archive).ifPresent(v -> dbEntity.archive = v);
+    // update dbEntity with all writeable fields
+    dbEntity.replace(body);
 
     Project ret = projectRepository.save(dbEntity);
 
     return ret;
   }
 
-  public Void deleteProject(Long id) throws Exception {
+  public Project updateProject(Long id, Project body) throws ApiException {
 
-    if (!projectRepository.existsById(id)) {
-      throw new ApiException(Errors.NOT_FOUND, "Project " + id.toString() + " does not exist");
+    Project dbEntity = projectRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(Project.class, id));
+
+    // update dbEntity with all writeable fields if present
+    dbEntity.update(body);
+
+    Project ret = projectRepository.save(dbEntity);
+
+    return ret;
+  }
+
+  public Void deleteProject(Long id) throws ApiException {
+
+    try {
+      projectRepository.deleteById(id);
+    } catch (Exception e) {
+      throw ApiException.entityNotFound(Project.class, id);
     }
-
-    projectRepository.deleteById(id);
 
     return null;
   }

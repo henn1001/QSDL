@@ -153,15 +153,19 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     for api, model in parse_domain(schema):
         # fmt: off
-        domain_files.append(("src/main/java/domain/Controller.j2", f"src/main/java/{base_package}/controller/{api.name}Controller.java", api, model))
-        domain_files.append(("src/main/java/domain/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api, model))
+        domain_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{base_package}/controller/{api.name}Controller.java", api, model))
+        domain_files.append(("src/main/java/service/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api, model))
 
         if model:
             domain_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{base_package}/domain/{model.name}.java", api, model))
 
+            # tests
+            domain_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{base_package}/controller/{api.name}ControllerTest.java", api, model))
+            domain_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{base_package}/service/{api.name}ServiceTest.java", api, model))
+
         if config.database == "hibernate" and model :
-            domain_files.append(("src/main/java/domain/Repository.j2", f"src/main/java/{base_package}/repository/{model.name}Repository.java", api, model))
-            domain_files.append(("src/test/java/domain/RepositoryTest.j2", f"src/test/java/{base_package}/repository/{model.name}RepositoryTest.java", api, model))
+            domain_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{model.name}Repository.java", api, model))
+            domain_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{base_package}/repository/{model.name}RepositoryTest.java", api, model))
         # fmt: on
 
     # loop and generate model files
@@ -215,6 +219,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/model/ApiPageable.j2", f"src/main/java/{base_package}/model/ApiPageable.java"),
         ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{base_package}/model/AbstractPersistentObject.java"),
         ("src/main/java/model/ObjectList.j2", f"src/main/java/{base_package}/model/ObjectList.java"),
+        # tests
+        ("src/test/java/controller/ControllerTest.j2", f"src/test/java/{base_package}/controller/ControllerTest.java")
     ]
     # fmt: on
 
@@ -237,14 +243,16 @@ def generate(schema: Schema, output_path: Path, config: Config):
     for src, dest in supporting_files:
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
-        render(output_file, context, template_path)
+        macro_path = Path(__file__).parent / "template" / "_macro"
+        render(output_file, context, template_path, macro_path=macro_path)
 
     # generate models
     for src, dest, model in model_files:
         context["model"] = model
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
-        render(output_file, context, template_path)
+        macro_path = Path(__file__).parent / "template" / "_macro"
+        render(output_file, context, template_path, macro_path=macro_path)
 
     # generate apis
     for src, dest, api, model in domain_files:
@@ -252,7 +260,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         context["model"] = model
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
-        render(output_file, context, template_path)
+        macro_path = Path(__file__).parent / "template" / "_macro"
+        render(output_file, context, template_path, macro_path=macro_path)
 
     # run openapi generator to create spec file
     generate_openapi(output_path)

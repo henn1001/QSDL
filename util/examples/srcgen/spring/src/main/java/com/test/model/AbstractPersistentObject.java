@@ -3,12 +3,15 @@
  */
 package com.test.model;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.reflect.FieldUtils;
+
+import javax.persistence.*;
+
+import java.lang.reflect.Field;
+import java.util.Objects;
+
 import com.test.util.IdGenerator;
 
 @MappedSuperclass
@@ -40,11 +43,78 @@ public abstract class AbstractPersistentObject {
   }
 
 
-
+  /**
+   * Copies the id, uuid and version field from another Object.
+   */
   public void copyIdentiy(AbstractPersistentObject o) {
-    id = o.getId();
-    uuid = o.getUUID();
-    version = o.getVersion();
+    this.id = o.getId();
+    this.uuid = o.getUUID();
+    this.version = o.getVersion();
+  }
+
+  /**
+   * Updates all writeable fields.
+   */
+  public <T extends AbstractPersistentObject> void replace(T o) {
+    reflect(o, false);
+  }
+
+  /**
+   * Updates all writeable fields and ignores null values.
+   */
+  public <T extends AbstractPersistentObject> void update(T o) {
+    reflect(o, true);
+  }
+
+  /**
+   * Copy all relevant fields of one object to another utilizing reflection.
+   * 
+   * Ignores fields annotated with @JsonIgnore
+   * Ignores fields annotated with @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+   */
+  private <T extends AbstractPersistentObject> void reflect(T o, boolean skipNull) {
+
+    Field[] fields = o.getClass().getDeclaredFields();
+
+    // copy fields if:
+    // not annotated with JsonIgnore
+    // not annotated with JsonProperty or JsonProperty.Access != READ_ONLY
+    for (Field field : fields) {
+      if (!field.isAnnotationPresent(JsonIgnore.class) &&
+          (!field.isAnnotationPresent(JsonProperty.class) ||
+              field.getAnnotation(JsonProperty.class).access() != JsonProperty.Access.READ_ONLY)) {
+
+        try {
+          if (!skipNull || skipNull && Objects.nonNull(field.get(o))) {
+            FieldUtils.writeField(this, field.getName(), field.get(o), true);
+          }
+        } catch (IllegalAccessException | IllegalArgumentException e) {
+        }
+      }
+    }
+  }
+
+  /**
+   * Removes all relations from a give Object.
+   * 
+   * Affects fields annotated with OneToOne, OneToMany, ManyToOne, ManyToMany
+   */
+  public void removeRelations() {
+
+    Field[] fields = this.getClass().getDeclaredFields();
+
+    // null fields if:
+    // annotated with OneToOne, OneToMany, ManyToOne, ManyToMany
+    for (Field field : fields) {
+      if (field.isAnnotationPresent(OneToOne.class) || field.isAnnotationPresent(OneToMany.class)
+          || field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(ManyToMany.class)) {
+
+        try {
+          FieldUtils.writeField(this, field.getName(), null, true);
+        } catch (IllegalAccessException | IllegalArgumentException e) {
+        }
+      }
+    }
   }
 
   public boolean equals(Object o) {

@@ -75,8 +75,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    */
   @Override
   protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
-      HttpHeaders headers,
-      HttpStatus status, WebRequest request) {
+      HttpHeaders headers, HttpStatus status, WebRequest request) {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 
@@ -92,8 +91,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    */
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-      HttpHeaders headers,
-      HttpStatus status, WebRequest request) {
+      HttpHeaders headers, HttpStatus status, WebRequest request) {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 

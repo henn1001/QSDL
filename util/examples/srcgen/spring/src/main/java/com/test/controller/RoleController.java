@@ -30,7 +30,7 @@ public class RoleController {
   private final NativeWebRequest request;
 
   @Autowired
-  RoleService RoleService;
+  RoleService roleService;
 
   @Autowired
   public RoleController(NativeWebRequest request) {
@@ -53,7 +53,7 @@ public class RoleController {
     produces = { "application/json" }
   )
   public ResponseEntity<ObjectList> getRoles(@PathVariable("project_id") Long projectId, ApiPageable pageable) throws Exception {
-    ObjectList response = RoleService.getRoles(projectId, pageable);
+    ObjectList response = roleService.getRoles(projectId, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -71,7 +71,7 @@ public class RoleController {
     consumes = { "application/json" }
   )
   public ResponseEntity<Role> createRole(@PathVariable("project_id") Long projectId, @Valid @RequestBody Role body) throws Exception {
-    Role response = RoleService.createRole(projectId, body);
+    Role response = roleService.createRole(projectId, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -88,7 +88,7 @@ public class RoleController {
     produces = { "application/json" }
   )
   public ResponseEntity<Role> getRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) throws Exception {
-    Role response = RoleService.getRole(projectId, id);
+    Role response = roleService.getRole(projectId, id);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -107,7 +107,7 @@ public class RoleController {
     consumes = { "application/json" }
   )
   public ResponseEntity<Role> replaceRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @Valid @RequestBody Role body) throws Exception {
-    Role response = RoleService.replaceRole(projectId, id, body);
+    Role response = roleService.replaceRole(projectId, id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -127,7 +127,7 @@ public class RoleController {
   )
   public ResponseEntity<Role> updateRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody Role body) throws Exception {
     Validator.validateExRequired(body);
-    Role response = RoleService.updateRole(projectId, id, body);
+    Role response = roleService.updateRole(projectId, id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -143,7 +143,7 @@ public class RoleController {
     value = "/projects/{project_id}/roles/{id}"
   )
   public ResponseEntity<Void> deleteRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) throws Exception {
-    RoleService.deleteRole(projectId, id);
+    roleService.deleteRole(projectId, id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

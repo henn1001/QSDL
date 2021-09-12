@@ -29,7 +29,6 @@ public class Ticket extends AbstractPersistentObject {
   public Set<User> users = new LinkedHashSet<>();
 
 
-
   public static Ticket fromJson(String json)
       throws com.test.util.Json.JsonException {
     return com.test.util.Json.serializer().fromJson(json, Ticket.class);

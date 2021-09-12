@@ -30,7 +30,7 @@ public class ProjectController {
   private final NativeWebRequest request;
 
   @Autowired
-  ProjectService ProjectService;
+  ProjectService projectService;
 
   @Autowired
   public ProjectController(NativeWebRequest request) {
@@ -53,7 +53,7 @@ public class ProjectController {
     produces = { "application/json" }
   )
   public ResponseEntity<ObjectList> getProjects(@Valid @RequestParam(value = "name", required = false) String name, ApiPageable pageable) throws Exception {
-    ObjectList response = ProjectService.getProjects(name, pageable);
+    ObjectList response = projectService.getProjects(name, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -70,7 +70,7 @@ public class ProjectController {
     consumes = { "application/json" }
   )
   public ResponseEntity<Project> createProject(@Valid @RequestBody Project body) throws Exception {
-    Project response = ProjectService.createProject(body);
+    Project response = projectService.createProject(body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -86,7 +86,7 @@ public class ProjectController {
     produces = { "application/json" }
   )
   public ResponseEntity<Project> getProject(@PathVariable("id") Long id) throws Exception {
-    Project response = ProjectService.getProject(id);
+    Project response = projectService.getProject(id);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -104,7 +104,7 @@ public class ProjectController {
     consumes = { "application/json" }
   )
   public ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @Valid @RequestBody Project body) throws Exception {
-    Project response = ProjectService.replaceProject(id, body);
+    Project response = projectService.replaceProject(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -123,7 +123,7 @@ public class ProjectController {
   )
   public ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) throws Exception {
     Validator.validateExRequired(body);
-    Project response = ProjectService.updateProject(id, body);
+    Project response = projectService.updateProject(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -138,7 +138,7 @@ public class ProjectController {
     value = "/projects/{id}"
   )
   public ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) throws Exception {
-    ProjectService.deleteProject(id);
+    projectService.deleteProject(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

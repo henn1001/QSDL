@@ -51,7 +51,6 @@ public class Project extends AbstractPersistentObject {
   public Set<Role> roles = new LinkedHashSet<>();
 
 
-
   public static Project fromJson(String json)
       throws com.test.util.Json.JsonException {
     return com.test.util.Json.serializer().fromJson(json, Project.class);

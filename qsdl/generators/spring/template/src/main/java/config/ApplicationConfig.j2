@@ -4,6 +4,7 @@
 package {{base_package}}.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,11 @@ public class ApplicationConfig {
   }
 
   @Bean
+  public YAMLMapper yamlMapper() {
+    return new YAMLMapper();
+  }
+
+  @Bean
   public RestTemplate restTemplate() {
     // required to support HttpMethod.PATCH
     return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
@@ -55,7 +61,8 @@ public class ApplicationConfig {
 
       @Override
       public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/api/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.38.0/");
+        registry.addResourceHandler("/api/swagger-ui/**")
+            .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.38.0/");
       }
 
     };

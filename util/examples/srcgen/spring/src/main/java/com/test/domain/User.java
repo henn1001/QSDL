@@ -22,7 +22,6 @@ public class User extends AbstractPersistentObject {
   public Set<Ticket> tickets = new LinkedHashSet<>();
 
 
-
   public static User fromJson(String json)
       throws com.test.util.Json.JsonException {
     return com.test.util.Json.serializer().fromJson(json, User.class);

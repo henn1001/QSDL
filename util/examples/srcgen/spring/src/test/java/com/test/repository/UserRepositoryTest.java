@@ -36,9 +36,10 @@ public class UserRepositoryTest {
 
   @Test
   public void whenSave_thenFind() {
+
     // Given
     User testData = easyRandom.nextObject(User.class);
-    testData.tickets = null;
+    testData.removeRelations();
 
     // When
     User dbData = userRepository.saveAndFlush(testData);
@@ -53,9 +54,10 @@ public class UserRepositoryTest {
 
   @Test
   public void whenDelete_thenCountZero() {
+
     // Given
     User testData = easyRandom.nextObject(User.class);
-    testData.tickets = null;
+    testData.removeRelations();
     User dbData = userRepository.saveAndFlush(testData);
 
     // When
@@ -68,9 +70,10 @@ public class UserRepositoryTest {
 
   @Test
   public void whenCount_thenUseQuerie() {
+
     // Given
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.tickets = null);
+    testData.forEach(x -> x.removeRelations());
     List<User> dbData = userRepository.saveAllAndFlush(testData);
 
     ApiPageable pageable = new ApiPageable(null, null, null);
@@ -84,9 +87,10 @@ public class UserRepositoryTest {
 
   @Test
   public void whenFindAll_thenPaginate() {
+
     // Given
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.tickets = null);
+    testData.forEach(x -> x.removeRelations());
     userRepository.saveAllAndFlush(testData);
 
     // When
@@ -110,9 +114,10 @@ public class UserRepositoryTest {
 
   @Test
   public void whenCountByTicket_thenUseQuerie() {
+
     // Given
     Ticket tmp = easyRandom.nextObject(Ticket.class);
-    tmp.users= null;
+    tmp.removeRelations();
     Ticket testParent = ticketRepository.saveAndFlush(tmp);
 
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
@@ -133,9 +138,10 @@ public class UserRepositoryTest {
 
   @Test
   public void whenFindAllByTicket_thenPaginate() {
+
     // Given
     Ticket tmp = easyRandom.nextObject(Ticket.class);
-    tmp.users = null;
+    tmp.removeRelations();
     Ticket testParent = ticketRepository.saveAndFlush(tmp);
 
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
@@ -166,9 +172,10 @@ public class UserRepositoryTest {
 
   @Test
   public void whenRemoveRelation_thenLinkRemovedFromTicket() {
+
     // Given
     Ticket tmp = easyRandom.nextObject(Ticket.class);
-    tmp.users = null;
+    tmp.removeRelations();
     Ticket testParent = ticketRepository.saveAndFlush(tmp);
 
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());

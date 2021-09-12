@@ -14,53 +14,32 @@
 
 """Filter functions"""
 
+import re
+
 import inflect
 import stringcase
 
 
 def pluralize(word: str) -> str:
-    """Returns the plural form of a word using inflect.
-
-    Args:
-        word (str): A word.
-
-    Returns:
-        str: Plural form of the word.
-    """
+    """Returns the plural form of a word using inflect"""
     return inflect.engine().plural(word)
 
 
 def singularize(word: str) -> str:
-    """Returns the singular form of a word using inflect.
-
-    Args:
-        word (str): A word.
-
-    Returns:
-        str: Plural form of the word.
-    """
+    """Returns the singular form of a word using inflect"""
     return inflect.engine().singular_noun(word) or word
 
 
 def pascalcase(word: str) -> str:
-    """Returns the Pascalcase form of a word using stringcase.
-
-    Args:
-        word (str): A word.
-
-    Returns:
-        str: Pascalcase form of the word.
-    """
+    """Returns the Pascalcase form of a word using stringcase"""
     return stringcase.pascalcase(word)
 
 
 def camelcase(word: str) -> str:
-    """Returns the Camelcase form of a word using stringcase.
-
-    Args:
-        word (str): A word.
-
-    Returns:
-        str: Camelcase form of the word.
-    """
+    """Returns the Camelcase form of a word using stringcase"""
     return stringcase.camelcase(word)
+
+
+def regex_replace(s, find, replace):
+    """Applies re.sub to a given string"""
+    return re.sub(find, replace, s)

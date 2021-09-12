@@ -23,7 +23,6 @@ public class Role extends AbstractPersistentObject {
   public Project project;
 
 
-
   public static Role fromJson(String json)
       throws com.test.util.Json.JsonException {
     return com.test.util.Json.serializer().fromJson(json, Role.class);

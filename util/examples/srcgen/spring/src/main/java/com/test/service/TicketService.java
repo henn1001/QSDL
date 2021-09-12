@@ -35,7 +35,7 @@ public class TicketService {
 
   }
 
-  public ObjectList getTickets(ApiPageable pageable) throws Exception {
+  public ObjectList getTickets(ApiPageable pageable) throws ApiException {
 
     List<Ticket> items = ticketRepository.findAll(pageable);
 
@@ -50,65 +50,54 @@ public class TicketService {
     return ret;
   }
 
-  public Ticket createTicket(Ticket body) throws Exception {
+  public Ticket createTicket(Ticket body) throws ApiException {
 
     Ticket ret = ticketRepository.save(body);
 
     return ret;
   }
 
-  public Ticket getTicket(Long id) throws Exception {
+  public Ticket getTicket(Long id) throws ApiException {
 
-    Ticket ret = ticketRepository.findById(id).orElse(null);
-
-    if (ret == null) {
-      throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
-    }
+    Ticket ret = ticketRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, id));
 
     return ret;
   }
 
-  public Ticket replaceTicket(Long id, Ticket body) throws Exception {
+  public Ticket replaceTicket(Long id, Ticket body) throws ApiException {
 
-    Ticket dbEntity = ticketRepository.findById(id).orElse(null);
+    Ticket dbEntity = ticketRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, id));
 
-    if (dbEntity == null) {
-      throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
-    }
-
-    // update new object with all readOnly fields from previous entry
-    body.copyIdentiy(dbEntity);
-
-    Ticket ret = ticketRepository.save(body);
-
-    return ret;
-  }
-
-  public Ticket updateTicket(Long id, Ticket body) throws Exception {
-
-    Ticket dbEntity = ticketRepository.findById(id).orElse(null);
-
-    if (dbEntity == null) {
-      throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
-    }
-
-    // update dbEntity with all writeable fields if present
-    Optional.ofNullable(body.title).ifPresent(v -> dbEntity.title = v);
-    Optional.ofNullable(body.body).ifPresent(v -> dbEntity.body = v);
-    Optional.ofNullable(body.status).ifPresent(v -> dbEntity.status = v);
+    // update dbEntity with all writeable fields
+    dbEntity.replace(body);
 
     Ticket ret = ticketRepository.save(dbEntity);
 
     return ret;
   }
 
-  public Void deleteTicket(Long id) throws Exception {
+  public Ticket updateTicket(Long id, Ticket body) throws ApiException {
 
-    if (!ticketRepository.existsById(id)) {
-      throw new ApiException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
+    Ticket dbEntity = ticketRepository.findById(id)
+        .orElseThrow(() -> ApiException.entityNotFound(Ticket.class, id));
+
+    // update dbEntity with all writeable fields if present
+    dbEntity.update(body);
+
+    Ticket ret = ticketRepository.save(dbEntity);
+
+    return ret;
+  }
+
+  public Void deleteTicket(Long id) throws ApiException {
+
+    try {
+      ticketRepository.deleteById(id);
+    } catch (Exception e) {
+      throw ApiException.entityNotFound(Ticket.class, id);
     }
-
-    ticketRepository.deleteById(id);
 
     return null;
   }

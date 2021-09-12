@@ -41,7 +41,6 @@ public class BaseType {
   public ObjectNode metaInf;
 
 
-
   public static BaseType fromJson(String json)
       throws com.test.util.Json.JsonException {
     return com.test.util.Json.serializer().fromJson(json, BaseType.class);

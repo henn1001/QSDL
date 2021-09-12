@@ -30,7 +30,7 @@ public class UserController {
   private final NativeWebRequest request;
 
   @Autowired
-  UserService UserService;
+  UserService userService;
 
   @Autowired
   public UserController(NativeWebRequest request) {
@@ -53,7 +53,7 @@ public class UserController {
     produces = { "application/json" }
   )
   public ResponseEntity<ObjectList> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, ApiPageable pageable) throws Exception {
-    ObjectList response = UserService.getUsersForTicket(ticketId, pageable);
+    ObjectList response = userService.getUsersForTicket(ticketId, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -69,7 +69,7 @@ public class UserController {
     value = "/tickets/{ticket_id}/users/{id}/add"
   )
   public ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
-    UserService.addUserToTicket(ticketId, id);
+    userService.addUserToTicket(ticketId, id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
@@ -85,7 +85,7 @@ public class UserController {
     value = "/tickets/{ticket_id}/users/{id}/remove"
   )
   public ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
-    UserService.removeUserFromTicket(ticketId, id);
+    userService.removeUserFromTicket(ticketId, id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
@@ -101,7 +101,7 @@ public class UserController {
     produces = { "application/json" }
   )
   public ResponseEntity<ObjectList> getUsers(ApiPageable pageable) throws Exception {
-    ObjectList response = UserService.getUsers(pageable);
+    ObjectList response = userService.getUsers(pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -118,7 +118,7 @@ public class UserController {
     consumes = { "application/json" }
   )
   public ResponseEntity<User> createUser(@Valid @RequestBody User body) throws Exception {
-    User response = UserService.createUser(body);
+    User response = userService.createUser(body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -134,7 +134,7 @@ public class UserController {
     produces = { "application/json" }
   )
   public ResponseEntity<User> getUser(@PathVariable("id") Long id) throws Exception {
-    User response = UserService.getUser(id);
+    User response = userService.getUser(id);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -152,7 +152,7 @@ public class UserController {
     consumes = { "application/json" }
   )
   public ResponseEntity<User> replaceUser(@PathVariable("id") Long id, @Valid @RequestBody User body) throws Exception {
-    User response = UserService.replaceUser(id, body);
+    User response = userService.replaceUser(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -171,7 +171,7 @@ public class UserController {
   )
   public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User body) throws Exception {
     Validator.validateExRequired(body);
-    User response = UserService.updateUser(id, body);
+    User response = userService.updateUser(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -186,7 +186,7 @@ public class UserController {
     value = "/users/{id}"
   )
   public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) throws Exception {
-    UserService.deleteUser(id);
+    userService.deleteUser(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

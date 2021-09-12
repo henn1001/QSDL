@@ -20,7 +20,6 @@ public class ObjectList {
   public Long totalCount;
 
 
-
   @Override
   public String toString() {
     String ret = new String();
@@ -42,9 +41,5 @@ public class ObjectList {
     return ret;
   }
 
-  public static ObjectList fromJson(String json)
-      throws {{base_package}}.util.Json.JsonException {
-    return {{base_package}}.util.Json.serializer().fromJson(json, ObjectList.class);
-  }
-
 }
+{{""}}

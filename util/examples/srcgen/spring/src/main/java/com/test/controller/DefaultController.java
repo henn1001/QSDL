@@ -30,7 +30,7 @@ public class DefaultController {
   private final NativeWebRequest request;
 
   @Autowired
-  DefaultService DefaultService;
+  DefaultService defaultService;
 
   @Autowired
   public DefaultController(NativeWebRequest request) {
@@ -55,7 +55,7 @@ public class DefaultController {
     consumes = { "application/json" }
   )
   public ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode body) throws Exception {
-    ObjectNode response = DefaultService.submitQury(body);
+    ObjectNode response = defaultService.submitQury(body);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 public class ApplicationProperties {
 
   public ApplicationProperties() {
+
   }
 
 }

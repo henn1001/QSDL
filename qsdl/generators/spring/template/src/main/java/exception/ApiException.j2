@@ -31,6 +31,12 @@ public class ApiException extends Exception {
     this.apiError.setDetails(details);
   }
 
+  public static ApiException entityNotFound(Class<?> cls, Long id) {
+    return new ApiException(Errors.ENTITY_NOT_FOUND,
+        "No %s entity with id %s exists!"
+            .formatted(cls.getSimpleName(), id));
+  }
+
   public ApiError getApiError() {
     return apiError;
   }

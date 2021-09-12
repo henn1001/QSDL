@@ -19,7 +19,7 @@ from pathlib import Path
 
 import jinja2
 
-from qsdl.filter import pluralize, singularize, pascalcase, camelcase
+from qsdl.filter import pluralize, singularize, pascalcase, camelcase, regex_replace
 
 logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(name)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -29,6 +29,7 @@ def render(
     output_file: Path,
     context: dict,
     template_path: Path,
+    macro_path: Path = None,
     type_name: str = None,
     type_def: object = None,
 ):
@@ -38,14 +39,21 @@ def render(
         output_file (Path): The output path.
         context (dict): The context for jinja template.
         template_path (Path): The path to the jinja template.
+        macro_path (Path, optional): [description]. Defaults to None.
         type_name (str, optional): [description]. Defaults to None.
         type_def (object, optional): [description]. Defaults to None.
     """
 
     # initialize the template engine.
-    template_folder = template_path.parent
+    loaders = []
 
-    loader = jinja2.FileSystemLoader(template_folder)
+    loaders.append(jinja2.FileSystemLoader(template_path.parent))
+
+    if macro_path:
+        loaders.append(jinja2.FileSystemLoader(macro_path.parent))
+
+    loader = jinja2.ChoiceLoader(loaders)
+
     jinja_env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
 
     # register the filter for mapping Entity type names to type defs.
@@ -56,6 +64,7 @@ def render(
     jinja_env.filters["singularize"] = singularize
     jinja_env.filters["pascal"] = pascalcase
     jinja_env.filters["camel"] = camelcase
+    jinja_env.filters["regex_replace"] = regex_replace
 
     # load the template
     template = jinja_env.get_template(template_path.name)

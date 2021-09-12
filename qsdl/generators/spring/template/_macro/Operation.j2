@@ -91,11 +91,8 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     {% endif %}
-    {{api.name}} ret = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
-
-    if (ret == null) {
-      throw new ApiException(Errors.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
-    }
+    {{api.name}} ret = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }})
+        .orElseThrow(() -> ApiException.entityNotFound({{api.name}}.class, id));
 
     return ret;
   {% elif operation.method == "put" %}
@@ -116,23 +113,13 @@
       {% endif %}
 
     {% endif %}
-    {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
+    {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }})
+        .orElseThrow(() -> ApiException.entityNotFound({{api.name}}.class, id));
 
-    if (dbEntity == null) {
-      throw new ApiException(Errors.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
-    }
+    // update dbEntity with all writeable fields
+    dbEntity.replace(body);
 
-    // update new object with all readOnly fields from previous entry
-    body.copyIdentiy(dbEntity);
-    {% for p in operation.get_read_only_parameters(encapsulation) %}
-      {% if encapsulation %}
-    body.set{{p}}(dbEntity.get{{p}}());
-      {% else %}
-    body.{{p}} = dbEntity.{{p}};
-      {% endif %}
-    {% endfor %}
-
-    {{api.name}} ret = {{api.name|lower}}Repository.save(body);
+    {{api.name}} ret = {{api.name|lower}}Repository.save(dbEntity);
 
     return ret;
   {% elif operation.method == "patch" %}
@@ -153,20 +140,11 @@
       {% endif %}
 
     {% endif %}
-    {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }}).orElse(null);
-
-    if (dbEntity == null) {
-      throw new ApiException(Errors.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
-    }
+    {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }})
+        .orElseThrow(() -> ApiException.entityNotFound({{api.name}}.class, id));
 
     // update dbEntity with all writeable fields if present
-    {% for p in operation.get_writable_parameters(encapsulation) %}
-      {% if encapsulation %}
-    Optional.ofNullable(body.get{{p}}()).ifPresent(v -> dbEntity.set{{p}}(v));
-      {% else %}
-    Optional.ofNullable(body.{{p}}).ifPresent(v -> dbEntity.{{p}} = v);
-      {% endif %}
-    {% endfor %}
+    dbEntity.update(body);
 
     {{api.name}} ret = {{api.name|lower}}Repository.save(dbEntity);
 
@@ -181,14 +159,14 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     {% endif %}
-    if (!{{api.name|lower}}Repository.exists{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }})) {
-      throw new ApiException(Errors.NOT_FOUND, "{{api.name}} " + {{operation.path_parameters[-1].name}}.toString() + " does not exist");
+    try {
+      {% if model.has_aggregation %}
+      {{api.name|lower}}Repository.removeRelations({{operation.path_parameters[-1].name}});
+      {% endif %}
+      {{api.name|lower}}Repository.deleteById({{operation.path_parameters[-1].name}});
+    } catch (Exception e) {
+      throw ApiException.entityNotFound({{api.name}}.class, id);
     }
-
-    {% if model.has_aggregation %}
-    {{api.name|lower}}Repository.removeRelations({{operation.path_parameters[-1].name}});
-    {% endif %}
-    {{api.name|lower}}Repository.deleteById({{operation.path_parameters[-1].name}});
 
     return null;
   {% endif %}
