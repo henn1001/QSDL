@@ -17,17 +17,10 @@
     Long totalCount = pageable.count ? {{api.name|lower}}Repository.{{ operation.get_repo_count_name() }}({{ operation.get_repo_find_all_parameters() }}) : null;
     String nextCursor = pageable.getNextCursor(items);
 
-    {% if encapsulation %}
-    ObjectList ret = new ObjectList()
-        .setTotalCount(totalCount)
-        .setNextCursor(nextCursor)
-        .setItems(items);
-    {% else %}
     ObjectList ret = new ObjectList();
     ret.totalCount = totalCount;
     ret.nextCursor = nextCursor;
     ret.items = items;
-    {% endif %}
 
     return ret;
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
@@ -45,9 +38,9 @@
 
     {% if encapsulation %}
       {% if operation.path.endswith('/add') %}
-    {{ operation.domain_parent.name|lower }}.add{{ operation.domain_object.name }}sItem({{ operation.domain_object.name | lower }});
+    {{ operation.domain_parent.name|lower }}.get{{ operation.get_aggregation_parameter() | pascal }}().add({{ operation.domain_object.name | lower }});
       {% elif operation.path.endswith('/remove') %}
-    {{ operation.domain_parent.name|lower }}.remove{{ operation.domain_object.name }}sItem({{ operation.domain_object.name | lower }});
+    {{ operation.domain_parent.name|lower }}.get{{ operation.get_aggregation_parameter() | pascal }}().remove({{ operation.domain_object.name | lower }});
       {% endif %}
     {% else %}
       {% if operation.path.endswith('/add') %}

@@ -26,6 +26,7 @@ class Config:
     group_id: str = "com.test"
     artifact_id: str = "app"
     database: List[str] = field(default_factory=lambda: ["no", "hibernate"])
+    encapsulation: bool = False
 
     # used to change the OpenAPI type for ID between "String" and "Long"
     id_type: str = "Long"

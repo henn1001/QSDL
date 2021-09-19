@@ -76,7 +76,7 @@ public class {{model.name}}RepositoryTest {
 
     AppPageable pageable = new AppPageable(null, null, null);
     {% for attr in model.attributes if attr._ref.is_query %}
-    pageable.query.put("{{attr.name}}", dbData.get(0).{{attr.name}});
+    pageable.query.put("{{attr.name}}", dbData.get(0).{{ "get" + attr.name|pascal + "()" if encapsulation else attr.name}});
     {% endfor %}
 
     // When

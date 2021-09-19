@@ -7,6 +7,10 @@ package {{base_package}}.domain;
 {% for imp in model.imports %}
 import {{imp}};
 {% endfor %}
+{% if encapsulation %}
+import lombok.Getter;
+import lombok.Setter;
+{% endif %}
 
 {% if model.is_object %}
 import {{base_package}}.model.AbstractPersistentObject;
@@ -16,6 +20,7 @@ import {{base_package}}.util.Json;
 {% if model.is_enum %}
 {% include "Enum.j2" with context %}
 {% else %}
+{{ "@Getter @Setter\n" if encapsulation }}
 {{- hibernate.class_annotation() if database == "hibernate" -}}
 public class {{model.name}}{% if not model.is_base %} extends AbstractPersistentObject{% endif %} {
 
@@ -56,35 +61,6 @@ public class {{model.name}}{% if not model.is_base %} extends AbstractPersistent
   {{ "private" if encapsulation else "public"}} List<{{attr.type}}> {{attr.name}} = new ArrayList<>();
   {% else %}
   {{ "private" if encapsulation else "public"}} {{attr.type}} {{attr.name}};
-  {% endif %}
-
-{% endfor %}
-{% for attr in model.attributes if (encapsulation and not attr.is_id) %}
-{% if loop.first %}
-
-{% endif %}
-  /**
-   * {{attr.name}}
-   */
-  public {% if attr.is_array and attr.is_relation %}Set<{% elif attr.is_array %}List<{% endif %}{{attr.type}}{% if attr.is_array %}>{% endif %} {{attr.getter}}() {
-    return {{attr.name}};
-  }
-
-  public {{model.name}} {{attr.setter}}({% if attr.is_array and attr.is_relation %}Set<{% elif attr.is_array %}List<{% endif %}{{attr.type}}{% if attr.is_array %}>{% endif %} {{attr.name}}) {
-    this.{{attr.name}} = {{attr.name}};
-    return this;
-  }
-  {% if attr.is_array %}
-
-  public {{model.name}} add{{attr.name|capitalize}}Item({{attr.type}} {{attr.name}}Item) {
-    this.{{attr.name}}.add({{attr.name}}Item);
-    return this;
-  }
-
-  public {{model.name}} remove{{attr.name|capitalize}}Item({{attr.type}} {{attr.name}}Item) {
-    this.{{attr.name}}.remove({{attr.name}}Item);
-    return this;
-  }
   {% endif %}
 
 {% endfor %}
