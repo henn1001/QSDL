@@ -61,7 +61,7 @@ def validate_server_url(schema: Schema, metamodel: TextXMetaModel):
             msg = f"The server {server} must start with /api"
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-        if  server.endswith("/"):
+        if server.endswith("/"):
             msg = f"The server {server} must not end with /"
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
@@ -252,3 +252,15 @@ def validate_operations(schema: Schema):
     if len(paths) != len(set(paths)):
         msg = "Duplicate operation paths found."
         raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+    if len(paths) != len(set(paths)):
+        msg = "Duplicate operation paths found."
+        raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+    # validate that path arguments do not clash with query/body arguments
+    for operation in operations:
+        arg_names = [x.name for x in operation.arguments]
+
+        if len(arg_names) != len(set(arg_names)):
+            msg = f"The Operation {operation.name} contains duplicated argument names."
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
