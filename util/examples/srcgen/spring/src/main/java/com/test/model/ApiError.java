@@ -3,157 +3,65 @@
  */
 package com.test.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.test.util.Json;
+import com.test.util.Time;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import com.test.util.Json;
 
 public class ApiError {
 
   @JsonProperty(value = "code", required = true)
-  private Integer code;
+  public Integer code;
 
   @JsonProperty(value = "message", required = true)
-  private String message;
+  public String message;
 
   @JsonProperty(value = "status")
-  private Integer status;
+  public Integer status;
 
   @JsonProperty(value = "path")
-  private String path;
+  public String path;
 
   @JsonProperty(value = "timestamp")
-  private OffsetDateTime timestamp;
+  private OffsetDateTime timestamp = Time.now();
 
   @JsonProperty(value = "details")
-  private List<String> details;
+  public List<String> details = new ArrayList<>();
 
 
-  /**
-   * code
-   */
-  public Integer getCode() {
-    return code;
-  }
+  public ApiError() {}
 
-  public ApiError setCode(Integer code) {
+  public ApiError(Integer code, String message, Integer status) {
     this.code = code;
-    return this;
-  }
-
-  /**
-   * message
-   */
-  public String getMessage() {
-    return message;
-  }
-
-  public ApiError setMessage(String message) {
     this.message = message;
-    return this;
-  }
-
-  /**
-   * status
-   */
-  public Integer getStatus() {
-    return status;
-  }
-
-  public ApiError setStatus(Integer status) {
     this.status = status;
-    return this;
   }
 
-  /**
-   * path
-   */
-  public String getPath() {
-    return path;
+  public ApiError(Integer code, String message, Integer status, String detail) {
+    this.code = code;
+    this.message = message;
+    this.status = status;
+    this.details.add(detail);
   }
 
-  public ApiError setPath(String path) {
-    this.path = path;
-    return this;
-  }
-
-  /**
-   * timestamp
-   */
-  public OffsetDateTime getTimestamp() {
-    return timestamp;
-  }
-
-  public ApiError setTimestamp(OffsetDateTime timestamp) {
-    this.timestamp = timestamp;
-    return this;
-  }
-
-  /**
-   * details
-   */
-  public List<String> getDetails() {
-    return details;
-  }
-
-  public ApiError setDetails(List<String> details) {
+  public ApiError(Integer code, String message, Integer status, List<String> details) {
+    this.code = code;
+    this.message = message;
+    this.status = status;
     this.details = details;
-    return this;
-  }
-
-  public ApiError addDetailsItem(String detailsItem) {
-    if (this.details == null) {
-      this.details = new ArrayList<>();
-    }
-    this.details.add(detailsItem);
-    return this;
   }
 
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ApiError apierror = (ApiError) o;
-    return Objects.equals(this.code, apierror.code) &&
-        Objects.equals(this.message, apierror.message) &&
-        Objects.equals(this.status, apierror.status) &&
-        Objects.equals(this.path, apierror.path) &&
-        Objects.equals(this.timestamp, apierror.timestamp) &&
-        Objects.equals(this.details, apierror.details);
+  public String toString() throws Json.JsonException {
+    return Json.serializer().toString(this);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(code, message, status, path, timestamp, details);
-  }
-
-  @Override
-  public String toString() {
-    String ret = new String();
-    try {
-      ret = Json.serializer().toString(this);
-    } catch (Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
-  }
-
-  public String toPrettyString() {
-    String ret = new String();
-    try {
-      ret = Json.serializer().toPrettyString(this);
-    } catch (Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
+  public String toPrettyString() throws Json.JsonException {
+    return Json.serializer().toPrettyString(this);
   }
 
   public static ApiError fromJson(String json) throws Json.JsonException {

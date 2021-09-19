@@ -129,9 +129,9 @@ public class TicketServiceTest {
 
     // Then
     ApiError error = thrown.getApiError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.getCode(), error.getCode());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getMessage(), error.getMessage());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getStatus(), error.getStatus());
+    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -172,9 +172,9 @@ public class TicketServiceTest {
 
     // Then
     ApiError error = thrown.getApiError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.getCode(), error.getCode());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getMessage(), error.getMessage());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getStatus(), error.getStatus());
+    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -215,9 +215,9 @@ public class TicketServiceTest {
 
     // Then
     ApiError error = thrown.getApiError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.getCode(), error.getCode());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getMessage(), error.getMessage());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getStatus(), error.getStatus());
+    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -250,9 +250,9 @@ public class TicketServiceTest {
 
     // Then
     ApiError error = thrown.getApiError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.getCode(), error.getCode());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getMessage(), error.getMessage());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getStatus(), error.getStatus());
+    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
   }
 
 }

@@ -3,9 +3,11 @@
  */
 package {{base_package}}.config;
 
+import {{base_package}}.model.ApiError;
 import org.springframework.http.HttpStatus;
 
-import {{base_package}}.model.ApiError;
+import java.util.List;
+import java.util.Objects;
 
 public enum Errors {
   // @formatter:off
@@ -20,33 +22,38 @@ public enum Errors {
   // @formatter:on
   ;
 
-  private final int code;
+  private final Integer code;
   private final String message;
-  private final int status;
+  private final Integer status;
 
   private Errors(Integer code, String message, HttpStatus status) {
     this.code = code;
     this.message = message;
-    this.status = status.value();
+    this.status = Objects.nonNull(status) ? status.value() : null;
   }
 
-  public int getCode() {
+  public Integer code() {
     return code;
   }
 
-  public String getMessage() {
+  public String message() {
     return message;
   }
 
-  public int getStatus() {
+  public Integer status() {
     return status;
   }
 
-  public ApiError getApiError() {
-    return new ApiError()
-        .setCode(code)
-        .setMessage(message)
-        .setStatus(status);
+  public ApiError toAppError() {
+    return new ApiError(this.code, this.message, this.status);
+  }
+
+  public ApiError toAppError(String detail) {
+    return new ApiError(this.code, this.message, this.status, detail);
+  }
+
+  public ApiError toAppError(List<String> details) {
+    return new ApiError(this.code, this.message, this.status, details);
   }
 
 }

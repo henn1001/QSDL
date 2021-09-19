@@ -137,9 +137,9 @@ public class {{model.name}}ControllerTest {
 
     // Then
     ApiError error = ApiError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.getCode(), error.getCode());
-    assertEquals(Errors.BAD_REQEST.getMessage(), error.getMessage());
-    assertEquals(Errors.BAD_REQEST.getStatus(), error.getStatus());
+    assertEquals(Errors.BAD_REQEST.code(), error.code);
+    assertEquals(Errors.BAD_REQEST.message(), error.message);
+    assertEquals(Errors.BAD_REQEST.status(), error.status);
   }
   {% elif operation.method == "get" %}
   {# 
@@ -208,9 +208,9 @@ public class {{model.name}}ControllerTest {
 
     // Then
     ApiError error = ApiError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.getCode(), error.getCode());
-    assertEquals(Errors.BAD_REQEST.getMessage(), error.getMessage());
-    assertEquals(Errors.BAD_REQEST.getStatus(), error.getStatus());
+    assertEquals(Errors.BAD_REQEST.code(), error.code);
+    assertEquals(Errors.BAD_REQEST.message(), error.message);
+    assertEquals(Errors.BAD_REQEST.status(), error.status);
   }
   {% elif operation.method == "patch" %}
   {# 
@@ -256,9 +256,9 @@ public class {{model.name}}ControllerTest {
 
     // Then
     ApiError error = ApiError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.getCode(), error.getCode());
-    assertEquals(Errors.BAD_REQEST.getMessage(), error.getMessage());
-    assertEquals(Errors.BAD_REQEST.getStatus(), error.getStatus());
+    assertEquals(Errors.BAD_REQEST.code(), error.code);
+    assertEquals(Errors.BAD_REQEST.message(), error.message);
+    assertEquals(Errors.BAD_REQEST.status(), error.status);
   }
   {% elif operation.method == "delete" %}
   {# 

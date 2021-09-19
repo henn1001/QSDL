@@ -55,9 +55,9 @@ public class ControllerTest {
 
     // Then
     ApiError error = ApiError.fromJson(response);
-    assertEquals(Errors.ENTITY_NOT_FOUND.getCode(), error.getCode());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getMessage(), error.getMessage());
-    assertEquals(Errors.ENTITY_NOT_FOUND.getStatus(), error.getStatus());
+    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -72,9 +72,9 @@ public class ControllerTest {
 
     // Then
     ApiError error = ApiError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.getCode(), error.getCode());
-    assertEquals(Errors.BAD_REQEST.getMessage(), error.getMessage());
-    assertEquals(Errors.BAD_REQEST.getStatus(), error.getStatus());
+    assertEquals(Errors.BAD_REQEST.code(), error.code);
+    assertEquals(Errors.BAD_REQEST.message(), error.message);
+    assertEquals(Errors.BAD_REQEST.status(), error.status);
   }
 
 }

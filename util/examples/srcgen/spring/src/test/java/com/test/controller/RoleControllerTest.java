@@ -112,9 +112,9 @@ public class RoleControllerTest {
 
     // Then
     ApiError error = ApiError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.getCode(), error.getCode());
-    assertEquals(Errors.BAD_REQEST.getMessage(), error.getMessage());
-    assertEquals(Errors.BAD_REQEST.getStatus(), error.getStatus());
+    assertEquals(Errors.BAD_REQEST.code(), error.code);
+    assertEquals(Errors.BAD_REQEST.message(), error.message);
+    assertEquals(Errors.BAD_REQEST.status(), error.status);
   }
 
   @Test
@@ -177,9 +177,9 @@ public class RoleControllerTest {
 
     // Then
     ApiError error = ApiError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.getCode(), error.getCode());
-    assertEquals(Errors.BAD_REQEST.getMessage(), error.getMessage());
-    assertEquals(Errors.BAD_REQEST.getStatus(), error.getStatus());
+    assertEquals(Errors.BAD_REQEST.code(), error.code);
+    assertEquals(Errors.BAD_REQEST.message(), error.message);
+    assertEquals(Errors.BAD_REQEST.status(), error.status);
   }
 
   @Test
@@ -222,9 +222,9 @@ public class RoleControllerTest {
 
     // Then
     ApiError error = ApiError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.getCode(), error.getCode());
-    assertEquals(Errors.BAD_REQEST.getMessage(), error.getMessage());
-    assertEquals(Errors.BAD_REQEST.getStatus(), error.getStatus());
+    assertEquals(Errors.BAD_REQEST.code(), error.code);
+    assertEquals(Errors.BAD_REQEST.message(), error.message);
+    assertEquals(Errors.BAD_REQEST.status(), error.status);
   }
 
   @Test
