@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.test.domain.*;
-import com.test.model.ApiPageable;
+import com.test.model.AppPageable;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
@@ -28,7 +28,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
           """,
       nativeQuery = true)
-  public List<Ticket> findAll(@Param("pageable") ApiPageable pageable);
+  public List<Ticket> findAll(@Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -40,6 +40,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
           """,
       nativeQuery = true)
-  public long count(@Param("pageable") ApiPageable pageable);
+  public long count(@Param("pageable") AppPageable pageable);
 
 }

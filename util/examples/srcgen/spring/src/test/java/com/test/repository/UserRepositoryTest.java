@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import com.test.domain.*;
-import com.test.model.ApiPageable;
+import com.test.model.AppPageable;
 import com.test.util.Json;
 
 @DataJpaTest
@@ -72,7 +72,7 @@ public class UserRepositoryTest {
     testData.forEach(x -> x.removeRelations());
     List<User> dbData = userRepository.saveAllAndFlush(testData);
 
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
 
     // When
     long count = userRepository.count(pageable);
@@ -94,7 +94,7 @@ public class UserRepositoryTest {
     int idx = 0;
 
     do {
-      ApiPageable pageable = new ApiPageable(cursor, 1l, null);
+      AppPageable pageable = new AppPageable(cursor, 1l, null);
       List<User> findData = userRepository.findAll(pageable);
 
       cursor = pageable.getNextCursor(findData);
@@ -123,7 +123,7 @@ public class UserRepositoryTest {
     testParent.users = new HashSet<>(testData);
     ticketRepository.saveAndFlush(testParent);
 
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
 
     // When
     long count = userRepository.countByTicketId(testParent.getId(), pageable);
@@ -152,7 +152,7 @@ public class UserRepositoryTest {
     int idx = 0;
 
     do {
-      ApiPageable pageable = new ApiPageable(cursor, 1l, null);
+      AppPageable pageable = new AppPageable(cursor, 1l, null);
       List<User> findData = userRepository.findAllByTicketId(testParent.getId(), pageable);
 
       cursor = pageable.getNextCursor(findData);
@@ -185,7 +185,7 @@ public class UserRepositoryTest {
     userRepository.removeRelations(testData.get(0).getId());
 
     // Then
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
     List<User> findData = userRepository.findAllByTicketId(testParent.getId(), pageable);
 
     assertEquals(4, findData.size());

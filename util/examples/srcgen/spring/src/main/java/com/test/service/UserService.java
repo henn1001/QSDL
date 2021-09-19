@@ -38,7 +38,7 @@ public class UserService {
     }
   }
 
-  public ObjectList getUsersForTicket(Long ticketId, ApiPageable pageable) throws AppException {
+  public ObjectList getUsersForTicket(Long ticketId, AppPageable pageable) throws AppException {
 
     // confirm existence of parent
     validateTicketId(ticketId);
@@ -90,7 +90,7 @@ public class UserService {
     return null;
   }
 
-  public ObjectList getUsers(ApiPageable pageable) throws AppException {
+  public ObjectList getUsers(AppPageable pageable) throws AppException {
 
     List<User> items = userRepository.findAll(pageable);
 

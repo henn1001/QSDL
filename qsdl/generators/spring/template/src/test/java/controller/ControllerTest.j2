@@ -54,7 +54,7 @@ public class ControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    ApiError error = ApiError.fromJson(response);
+    AppError error = AppError.fromJson(response);
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -71,7 +71,7 @@ public class ControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    ApiError error = ApiError.fromJson(response);
+    AppError error = AppError.fromJson(response);
     assertEquals(Errors.BAD_REQEST.code(), error.code);
     assertEquals(Errors.BAD_REQEST.message(), error.message);
     assertEquals(Errors.BAD_REQEST.status(), error.status);

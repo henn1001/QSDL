@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import {{base_package}}.domain.*;
-import {{base_package}}.model.ApiPageable;
+import {{base_package}}.model.AppPageable;
 
 @Repository
 public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, Long> {
@@ -30,7 +30,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
 
           """,
       nativeQuery = true)
-  public List<{{model.name}}> findAll(@Param("pageable") ApiPageable pageable);
+  public List<{{model.name}}> findAll(@Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -43,7 +43,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
 
           """,
       nativeQuery = true)
-  public long count(@Param("pageable") ApiPageable pageable);
+  public long count(@Param("pageable") AppPageable pageable);
   {% for domain_parent in model.domain_parents %}
 
     {% if util.is_aggregation(model._ref, domain_parent._ref) %}
@@ -63,7 +63,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
 
           """,
       nativeQuery = true)
-  public List<{{model.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") ApiPageable pageable);
+  public List<{{model.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -79,7 +79,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
 
           """,
       nativeQuery = true)
-  public long countBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") ApiPageable pageable);
+  public long countBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") AppPageable pageable);
     {% else %}
   @Query(
       value = """
@@ -95,7 +95,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
 
           """,
       nativeQuery = true)
-  public List<{{model.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") ApiPageable pageable);
+  public List<{{model.name}}> findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -109,7 +109,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
 
           """,
       nativeQuery = true)
-  public long countBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") ApiPageable pageable);
+  public long countBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}") Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, @Param("pageable") AppPageable pageable);
 
   public Optional<{{model.name}}> findBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}And{{ util.get_id_for_repo(model._ref) }}(Long {{ util.get_parent_id_for_repo(domain_parent._ref) | camel }}, Long {{ util.get_id_for_repo(model._ref) | camel }});
 

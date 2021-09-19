@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import com.test.domain.*;
-import com.test.model.ApiPageable;
+import com.test.model.AppPageable;
 import com.test.util.Json;
 
 @DataJpaTest
@@ -72,7 +72,7 @@ public class RoleRepositoryTest {
     testData.forEach(x -> x.removeRelations());
     List<Role> dbData = roleRepository.saveAllAndFlush(testData);
 
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
 
     // When
     long count = roleRepository.count(pageable);
@@ -94,7 +94,7 @@ public class RoleRepositoryTest {
     int idx = 0;
 
     do {
-      ApiPageable pageable = new ApiPageable(cursor, 1l, null);
+      AppPageable pageable = new AppPageable(cursor, 1l, null);
       List<Role> findData = roleRepository.findAll(pageable);
 
       cursor = pageable.getNextCursor(findData);
@@ -123,7 +123,7 @@ public class RoleRepositoryTest {
     testData.forEach(x -> x.project = testParent);
     testData = roleRepository.saveAllAndFlush(testData);
 
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
 
     // When
     long count = roleRepository.countByProjectId(testParent.getId(), pageable);
@@ -152,7 +152,7 @@ public class RoleRepositoryTest {
     int idx = 0;
 
     do {
-      ApiPageable pageable = new ApiPageable(cursor, 1l, null);
+      AppPageable pageable = new AppPageable(cursor, 1l, null);
       List<Role> findData = roleRepository.findAllByProjectId(testParent.getId(), pageable);
 
       cursor = pageable.getNextCursor(findData);

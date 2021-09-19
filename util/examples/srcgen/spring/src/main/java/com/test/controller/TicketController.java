@@ -52,7 +52,7 @@ public class TicketController {
     value = "/tickets",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getTickets(ApiPageable pageable) throws Exception {
+  public ResponseEntity<ObjectList> getTickets(AppPageable pageable) throws Exception {
     ObjectList response = ticketService.getTickets(pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

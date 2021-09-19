@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.test.domain.*;
-import com.test.model.ApiPageable;
+import com.test.model.AppPageable;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -28,7 +28,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
           """,
       nativeQuery = true)
-  public List<User> findAll(@Param("pageable") ApiPageable pageable);
+  public List<User> findAll(@Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -40,7 +40,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
           """,
       nativeQuery = true)
-  public long count(@Param("pageable") ApiPageable pageable);
+  public long count(@Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -57,7 +57,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
           """,
       nativeQuery = true)
-  public List<User> findAllByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") ApiPageable pageable);
+  public List<User> findAllByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -72,7 +72,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
           """,
       nativeQuery = true)
-  public long countByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") ApiPageable pageable);
+  public long countByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") AppPageable pageable);
 
   @Modifying
   @Query(

@@ -4,7 +4,7 @@
 package com.test.exception;
 
 import com.test.config.Errors;
-import com.test.model.ApiError;
+import com.test.model.AppError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,14 +29,14 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-  private ResponseEntity<Object> buildResponseEntity(ApiError apiError,
+  private ResponseEntity<Object> buildResponseEntity(AppError AppError,
       HttpServletRequest httpRequest) {
 
-    apiError.path = httpRequest.getRequestURI();
+    AppError.path = httpRequest.getRequestURI();
 
-    log.warn(apiError.toString());
+    log.warn(AppError.toString());
 
-    return new ResponseEntity<>(apiError, HttpStatus.valueOf(apiError.status));
+    return new ResponseEntity<>(AppError, HttpStatus.valueOf(AppError.status));
   }
 
   /**
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleAppException(AppException ex, WebRequest request,
       HttpServletRequest httpRequest) {
 
-    return buildResponseEntity(ex.getApiError(), httpRequest);
+    return buildResponseEntity(ex.getAppError(), httpRequest);
   }
 
   /**
@@ -60,9 +60,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     log.error("Caught unhandeled exception:", ex);
 
-    ApiError apiError = Errors.INTERNAL_SERVER_ERROR.toAppError(ex.toString());
+    AppError AppError = Errors.INTERNAL_SERVER_ERROR.toAppError(ex.toString());
 
-    return buildResponseEntity(apiError, httpRequest);
+    return buildResponseEntity(AppError, httpRequest);
   }
 
   /**
@@ -74,9 +74,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 
-    ApiError apiError = Errors.BAD_REQEST.toAppError(ex.toString());
+    AppError AppError = Errors.BAD_REQEST.toAppError(ex.toString());
 
-    return buildResponseEntity(apiError, httpRequest);
+    return buildResponseEntity(AppError, httpRequest);
   }
 
   /**
@@ -97,9 +97,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
     }
 
-    ApiError apiError = Errors.BAD_REQEST.toAppError(errors);
+    AppError AppError = Errors.BAD_REQEST.toAppError(errors);
 
-    return buildResponseEntity(apiError, httpRequest);
+    return buildResponseEntity(AppError, httpRequest);
   }
 
   /**

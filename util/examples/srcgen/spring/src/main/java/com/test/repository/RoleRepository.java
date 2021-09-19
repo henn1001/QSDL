@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.test.domain.*;
-import com.test.model.ApiPageable;
+import com.test.model.AppPageable;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
@@ -28,7 +28,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
           """,
       nativeQuery = true)
-  public List<Role> findAll(@Param("pageable") ApiPageable pageable);
+  public List<Role> findAll(@Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -40,7 +40,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
           """,
       nativeQuery = true)
-  public long count(@Param("pageable") ApiPageable pageable);
+  public long count(@Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -55,7 +55,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
           """,
       nativeQuery = true)
-  public List<Role> findAllByProjectId(@Param("projectId") Long projectId, @Param("pageable") ApiPageable pageable);
+  public List<Role> findAllByProjectId(@Param("projectId") Long projectId, @Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -68,7 +68,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
           """,
       nativeQuery = true)
-  public long countByProjectId(@Param("projectId") Long projectId, @Param("pageable") ApiPageable pageable);
+  public long countByProjectId(@Param("projectId") Long projectId, @Param("pageable") AppPageable pageable);
 
   public Optional<Role> findByProjectIdAndId(Long projectId, Long id);
 

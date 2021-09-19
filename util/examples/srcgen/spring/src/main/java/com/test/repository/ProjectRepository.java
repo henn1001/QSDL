@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.test.domain.*;
-import com.test.model.ApiPageable;
+import com.test.model.AppPageable;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
@@ -29,7 +29,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
           """,
       nativeQuery = true)
-  public List<Project> findAll(@Param("pageable") ApiPageable pageable);
+  public List<Project> findAll(@Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
@@ -42,6 +42,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
           """,
       nativeQuery = true)
-  public long count(@Param("pageable") ApiPageable pageable);
+  public long count(@Param("pageable") AppPageable pageable);
 
 }

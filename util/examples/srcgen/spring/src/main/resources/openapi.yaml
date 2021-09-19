@@ -755,7 +755,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ApiError'
+            $ref: '#/components/schemas/AppError'
 
   schemas:
     Status:
@@ -927,7 +927,7 @@ components:
         status:
           $ref: '#/components/schemas/Status'
 
-    ApiError:
+    AppError:
       required:
         - code
         - message

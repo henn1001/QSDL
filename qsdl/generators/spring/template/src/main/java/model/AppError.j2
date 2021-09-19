@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApiError {
+public class AppError {
 
   @JsonProperty(value = "code", required = true)
   public Integer code;
@@ -32,22 +32,22 @@ public class ApiError {
   public List<String> details = new ArrayList<>();
 
 
-  public ApiError() {}
+  public AppError() {}
 
-  public ApiError(Integer code, String message, Integer status) {
+  public AppError(Integer code, String message, Integer status) {
     this.code = code;
     this.message = message;
     this.status = status;
   }
 
-  public ApiError(Integer code, String message, Integer status, String detail) {
+  public AppError(Integer code, String message, Integer status, String detail) {
     this.code = code;
     this.message = message;
     this.status = status;
     this.details.add(detail);
   }
 
-  public ApiError(Integer code, String message, Integer status, List<String> details) {
+  public AppError(Integer code, String message, Integer status, List<String> details) {
     this.code = code;
     this.message = message;
     this.status = status;
@@ -64,8 +64,8 @@ public class ApiError {
     return Json.serializer().toPrettyString(this);
   }
 
-  public static ApiError fromJson(String json) throws Json.JsonException {
-    return Json.serializer().fromJson(json, ApiError.class);
+  public static AppError fromJson(String json) throws Json.JsonException {
+    return Json.serializer().fromJson(json, AppError.class);
   }
 
 }

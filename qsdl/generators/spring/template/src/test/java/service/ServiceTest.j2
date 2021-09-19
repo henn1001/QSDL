@@ -73,16 +73,16 @@ public class {{model.name}}ServiceTest {
     when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findAllBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}(eq(1l), any(ApiPageable.class)))
+    when(repository.findAllBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}(eq(1l), any(AppPageable.class)))
         .thenReturn(request);
 
-    when(repository.countBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}(eq(1l), any(ApiPageable.class)))
+    when(repository.countBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}(eq(1l), any(AppPageable.class)))
         .thenReturn(5l);
     {% else %}
-    when(repository.findAll(any(ApiPageable.class)))
+    when(repository.findAll(any(AppPageable.class)))
         .thenReturn(request);
 
-    when(repository.count(any(ApiPageable.class)))
+    when(repository.count(any(AppPageable.class)))
         .thenReturn(5l);
     {% endif %}
 
@@ -203,7 +203,7 @@ public class {{model.name}}ServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -265,7 +265,7 @@ public class {{model.name}}ServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -327,7 +327,7 @@ public class {{model.name}}ServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -375,7 +375,7 @@ public class {{model.name}}ServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);

@@ -79,7 +79,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ApiError'
+            $ref: '#/components/schemas/AppError'
 
   schemas:
 {% for model in models %}
@@ -113,7 +113,7 @@ components:
 
   {% endif %}
 {% endfor %}
-    ApiError:
+    AppError:
       required:
         - code
         - message

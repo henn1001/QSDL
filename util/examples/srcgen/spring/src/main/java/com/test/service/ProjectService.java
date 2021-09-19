@@ -29,7 +29,7 @@ public class ProjectService {
 
   }
 
-  public ObjectList getProjects(String name, ApiPageable pageable) throws AppException {
+  public ObjectList getProjects(String name, AppPageable pageable) throws AppException {
 
     pageable.query.put("name", name);
 

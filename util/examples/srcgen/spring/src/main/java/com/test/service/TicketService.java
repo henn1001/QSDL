@@ -29,7 +29,7 @@ public class TicketService {
 
   }
 
-  public ObjectList getTickets(ApiPageable pageable) throws AppException {
+  public ObjectList getTickets(AppPageable pageable) throws AppException {
 
     List<Ticket> items = ticketRepository.findAll(pageable);
 

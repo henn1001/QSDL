@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import {{base_package}}.domain.*;
-import {{base_package}}.model.ApiPageable;
+import {{base_package}}.model.AppPageable;
 import {{base_package}}.util.Json;
 
 @DataJpaTest
@@ -74,7 +74,7 @@ public class {{model.name}}RepositoryTest {
     testData.forEach(x -> x.removeRelations());
     List<{{model.name}}> dbData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
     {% for attr in model.attributes if attr._ref.is_query %}
     pageable.query.put("{{attr.name}}", dbData.get(0).{{attr.name}});
     {% endfor %}
@@ -99,7 +99,7 @@ public class {{model.name}}RepositoryTest {
     int idx = 0;
 
     do {
-      ApiPageable pageable = new ApiPageable(cursor, 1l, null);
+      AppPageable pageable = new AppPageable(cursor, 1l, null);
       List<{{model.name}}> findData = {{model.name|lower}}Repository.findAll(pageable);
 
       cursor = pageable.getNextCursor(findData);
@@ -152,7 +152,7 @@ public class {{model.name}}RepositoryTest {
       {% endfor %}
     {% endif %}
 
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
 
     // When
     long count = {{model.name|lower}}Repository.countBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(testParent.getId(), pageable);
@@ -204,7 +204,7 @@ public class {{model.name}}RepositoryTest {
     int idx = 0;
 
     do {
-      ApiPageable pageable = new ApiPageable(cursor, 1l, null);
+      AppPageable pageable = new AppPageable(cursor, 1l, null);
       List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(testParent.getId(), pageable);
 
       cursor = pageable.getNextCursor(findData);
@@ -252,7 +252,7 @@ public class {{model.name}}RepositoryTest {
     {{model.name|lower}}Repository.removeRelations(testData.get(0).getId());
 
     // Then
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
     List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(testParent.getId(), pageable);
 
     assertEquals(4, findData.size());

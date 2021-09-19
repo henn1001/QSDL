@@ -38,7 +38,7 @@ public class RoleService {
     }
   }
 
-  public ObjectList getRoles(Long projectId, ApiPageable pageable) throws AppException {
+  public ObjectList getRoles(Long projectId, AppPageable pageable) throws AppException {
 
     // confirm existence of parent
     validateProjectId(projectId);

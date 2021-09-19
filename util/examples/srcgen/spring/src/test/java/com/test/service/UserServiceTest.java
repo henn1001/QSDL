@@ -64,14 +64,14 @@ public class UserServiceTest {
     when(ticketRepository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findAllByTicketId(eq(1l), any(ApiPageable.class)))
+    when(repository.findAllByTicketId(eq(1l), any(AppPageable.class)))
         .thenReturn(request);
 
-    when(repository.countByTicketId(eq(1l), any(ApiPageable.class)))
+    when(repository.countByTicketId(eq(1l), any(AppPageable.class)))
         .thenReturn(5l);
 
     // When
-    ObjectList response = service.getUsersForTicket(1l, new ApiPageable(null, 5l, true));
+    ObjectList response = service.getUsersForTicket(1l, new AppPageable(null, 5l, true));
 
     // Then
     assertEquals(expectedCursor, new String(Base64.getDecoder().decode(response.nextCursor)));
@@ -137,14 +137,14 @@ public class UserServiceTest {
 
     String expectedCursor = request.get(5).getId().toString();
 
-    when(repository.findAll(any(ApiPageable.class)))
+    when(repository.findAll(any(AppPageable.class)))
         .thenReturn(request);
 
-    when(repository.count(any(ApiPageable.class)))
+    when(repository.count(any(AppPageable.class)))
         .thenReturn(5l);
 
     // When
-    ObjectList response = service.getUsers(new ApiPageable(null, 5l, true));
+    ObjectList response = service.getUsers(new AppPageable(null, 5l, true));
 
     // Then
     assertEquals(expectedCursor, new String(Base64.getDecoder().decode(response.nextCursor)));
@@ -207,7 +207,7 @@ public class UserServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -250,7 +250,7 @@ public class UserServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -293,7 +293,7 @@ public class UserServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -328,7 +328,7 @@ public class UserServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);

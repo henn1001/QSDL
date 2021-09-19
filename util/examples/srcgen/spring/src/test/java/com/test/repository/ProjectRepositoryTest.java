@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import com.test.domain.*;
-import com.test.model.ApiPageable;
+import com.test.model.AppPageable;
 import com.test.util.Json;
 
 @DataJpaTest
@@ -69,7 +69,7 @@ public class ProjectRepositoryTest {
     testData.forEach(x -> x.removeRelations());
     List<Project> dbData = projectRepository.saveAllAndFlush(testData);
 
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
     pageable.query.put("name", dbData.get(0).name);
 
     // When
@@ -92,7 +92,7 @@ public class ProjectRepositoryTest {
     int idx = 0;
 
     do {
-      ApiPageable pageable = new ApiPageable(cursor, 1l, null);
+      AppPageable pageable = new AppPageable(cursor, 1l, null);
       List<Project> findData = projectRepository.findAll(pageable);
 
       cursor = pageable.getNextCursor(findData);

@@ -52,7 +52,7 @@ public class ProjectController {
     value = "/projects",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getProjects(@Valid @RequestParam(value = "name", required = false) String name, ApiPageable pageable) throws Exception {
+  public ResponseEntity<ObjectList> getProjects(@Valid @RequestParam(value = "name", required = false) String name, AppPageable pageable) throws Exception {
     ObjectList response = projectService.getProjects(name, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

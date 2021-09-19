@@ -25,7 +25,7 @@
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      ApiPageable pageable
+      AppPageable pageable
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
@@ -53,7 +53,7 @@
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      ApiPageable pageable
+      AppPageable pageable
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
@@ -75,7 +75,7 @@
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      ApiPageable pageable
+      AppPageable pageable
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
@@ -138,7 +138,7 @@
       null{{ ", " }}
   {%- endfor -%}
 
-  new ApiPageable(null, 5l, true)
+  new AppPageable(null, 5l, true)
 
 {%- endmacro %}
 

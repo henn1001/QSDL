@@ -215,8 +215,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/exception/AppException.j2", f"src/main/java/{base_package}/exception/AppException.java"),
         ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{base_package}/exception/GlobalExceptionHandler.java"),
         # model
-        ("src/main/java/model/ApiError.j2", f"src/main/java/{base_package}/model/ApiError.java"),
-        ("src/main/java/model/ApiPageable.j2", f"src/main/java/{base_package}/model/ApiPageable.java"),
+        ("src/main/java/model/AppError.j2", f"src/main/java/{base_package}/model/AppError.java"),
+        ("src/main/java/model/AppPageable.j2", f"src/main/java/{base_package}/model/AppPageable.java"),
         ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{base_package}/model/AbstractPersistentObject.java"),
         ("src/main/java/model/ObjectList.j2", f"src/main/java/{base_package}/model/ObjectList.java"),
         # tests

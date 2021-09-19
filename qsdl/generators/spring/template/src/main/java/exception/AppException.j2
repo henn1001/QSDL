@@ -4,7 +4,7 @@
 package {{base_package}}.exception;
 
 import {{base_package}}.config.Errors;
-import {{base_package}}.model.ApiError;
+import {{base_package}}.model.AppError;
 
 import java.util.List;
 
@@ -12,25 +12,25 @@ public class AppException extends Exception {
 
   static final long serialVersionUID = 1L;
 
-  private final ApiError apiError;
+  private final AppError AppError;
 
   public AppException(Errors error) {
     super(error.message());
-    this.apiError = error.toAppError();
+    this.AppError = error.toAppError();
   }
 
   public AppException(Errors error, String detail) {
     super(error.message());
-    this.apiError = error.toAppError(detail);
+    this.AppError = error.toAppError(detail);
   }
 
   public AppException(Errors error, List<String> details) {
     super(error.message());
-    this.apiError = error.toAppError(details);
+    this.AppError = error.toAppError(details);
   }
 
-  public ApiError getApiError() {
-    return apiError;
+  public AppError getAppError() {
+    return AppError;
   }
 
 

@@ -58,14 +58,14 @@ public class ProjectServiceTest {
 
     String expectedCursor = request.get(5).getId().toString();
 
-    when(repository.findAll(any(ApiPageable.class)))
+    when(repository.findAll(any(AppPageable.class)))
         .thenReturn(request);
 
-    when(repository.count(any(ApiPageable.class)))
+    when(repository.count(any(AppPageable.class)))
         .thenReturn(5l);
 
     // When
-    ObjectList response = service.getProjects(null, new ApiPageable(null, 5l, true));
+    ObjectList response = service.getProjects(null, new AppPageable(null, 5l, true));
 
     // Then
     assertEquals(expectedCursor, new String(Base64.getDecoder().decode(response.nextCursor)));
@@ -128,7 +128,7 @@ public class ProjectServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -171,7 +171,7 @@ public class ProjectServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -214,7 +214,7 @@ public class ProjectServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
@@ -249,7 +249,7 @@ public class ProjectServiceTest {
         });
 
     // Then
-    ApiError error = thrown.getApiError();
+    AppError error = thrown.getAppError();
     assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);

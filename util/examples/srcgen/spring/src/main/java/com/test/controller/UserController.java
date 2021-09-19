@@ -52,7 +52,7 @@ public class UserController {
     value = "/tickets/{ticket_id}/users",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, ApiPageable pageable) throws Exception {
+  public ResponseEntity<ObjectList> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, AppPageable pageable) throws Exception {
     ObjectList response = userService.getUsersForTicket(ticketId, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -100,7 +100,7 @@ public class UserController {
     value = "/users",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getUsers(ApiPageable pageable) throws Exception {
+  public ResponseEntity<ObjectList> getUsers(AppPageable pageable) throws Exception {
     ObjectList response = userService.getUsers(pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

@@ -3,7 +3,7 @@
  */
 package {{base_package}}.config;
 
-import {{base_package}}.model.ApiError;
+import {{base_package}}.model.AppError;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -44,16 +44,16 @@ public enum Errors {
     return status;
   }
 
-  public ApiError toAppError() {
-    return new ApiError(this.code, this.message, this.status);
+  public AppError toAppError() {
+    return new AppError(this.code, this.message, this.status);
   }
 
-  public ApiError toAppError(String detail) {
-    return new ApiError(this.code, this.message, this.status, detail);
+  public AppError toAppError(String detail) {
+    return new AppError(this.code, this.message, this.status, detail);
   }
 
-  public ApiError toAppError(List<String> details) {
-    return new ApiError(this.code, this.message, this.status, details);
+  public AppError toAppError(List<String> details) {
+    return new AppError(this.code, this.message, this.status, details);
   }
 
 }

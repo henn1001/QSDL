@@ -52,7 +52,7 @@ public class RoleController {
     value = "/projects/{project_id}/roles",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getRoles(@PathVariable("project_id") Long projectId, ApiPageable pageable) throws Exception {
+  public ResponseEntity<ObjectList> getRoles(@PathVariable("project_id") Long projectId, AppPageable pageable) throws Exception {
     ObjectList response = roleService.getRoles(projectId, pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

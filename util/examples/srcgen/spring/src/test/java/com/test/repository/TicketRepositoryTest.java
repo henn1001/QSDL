@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import com.test.domain.*;
-import com.test.model.ApiPageable;
+import com.test.model.AppPageable;
 import com.test.util.Json;
 
 @DataJpaTest
@@ -69,7 +69,7 @@ public class TicketRepositoryTest {
     testData.forEach(x -> x.removeRelations());
     List<Ticket> dbData = ticketRepository.saveAllAndFlush(testData);
 
-    ApiPageable pageable = new ApiPageable(null, null, null);
+    AppPageable pageable = new AppPageable(null, null, null);
 
     // When
     long count = ticketRepository.count(pageable);
@@ -91,7 +91,7 @@ public class TicketRepositoryTest {
     int idx = 0;
 
     do {
-      ApiPageable pageable = new ApiPageable(cursor, 1l, null);
+      AppPageable pageable = new AppPageable(cursor, 1l, null);
       List<Ticket> findData = ticketRepository.findAll(pageable);
 
       cursor = pageable.getNextCursor(findData);
