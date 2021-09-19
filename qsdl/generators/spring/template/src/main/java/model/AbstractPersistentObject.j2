@@ -35,11 +35,11 @@ public abstract class AbstractPersistentObject {
     return id;
   }
 
-  public String get_uuid() {
+  public String _uuid() {
     return _uuid;
   }
 
-  public Integer get_version() {
+  public Integer _version() {
     return _version;
   }
 
@@ -49,8 +49,8 @@ public abstract class AbstractPersistentObject {
    */
   public void copyIdentiy(AbstractPersistentObject o) {
     this.id = o.getId();
-    this._uuid = o.get_uuid();
-    this._version = o.get_version();
+    this._uuid = o._uuid();
+    this._version = o._version();
   }
 
   /**
@@ -134,7 +134,7 @@ public abstract class AbstractPersistentObject {
     }
 
     // equivalence by uuid
-    return _uuid.equals(other.get_uuid());
+    return _uuid.equals(other._uuid());
   }
 
   public int hashCode() {
