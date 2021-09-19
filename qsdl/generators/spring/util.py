@@ -61,6 +61,7 @@ def has(
     has_list: bool = False,
     has_model: bool = False,
     has_required: bool = False,
+    has_required_ignore_id: bool = False,
     has_aggregation: bool = False,
     has_relation: bool = False,
     has_query: bool = False,
@@ -105,6 +106,10 @@ def has(
 
             # checks if there is a required attribute
             if has_required and field.is_required:
+                ret = True
+                break
+
+            if has_required_ignore_id and field.name != "id" and field.is_required:
                 ret = True
                 break
 

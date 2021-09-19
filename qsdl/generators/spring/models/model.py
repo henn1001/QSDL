@@ -113,6 +113,7 @@ class Model:
     is_supertype: bool = False
     is_nested: bool = False
     has_aggregation: bool = False
+    has_required: bool = False
 
     domain_parents: List[Model] = field(default_factory=list)
 
@@ -146,6 +147,7 @@ class Model:
         self.is_supertype = util.is_supertype(self._ref) if self.is_base else False
         self.is_nested = util.is_nested(self._ref)
         self.has_aggregation = util.has(self._ref, has_aggregation=True)
+        self.has_required = util.has(self._ref, has_required_ignore_id=True)
 
     def _add_attributes(self):
 

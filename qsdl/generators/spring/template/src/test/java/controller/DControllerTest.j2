@@ -130,7 +130,7 @@ public class {{model.name}}ControllerTest {
 
     // When
     String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-        .content("{}")
+        .content("{{ "{}" if model.has_required else "" }}")
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andReturn().getResponse().getContentAsString();
@@ -201,7 +201,7 @@ public class {{model.name}}ControllerTest {
 
     // When
     String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-        .content("{}")
+        .content("{{ "{}" if model.has_required else "" }}")
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andReturn().getResponse().getContentAsString();
@@ -249,7 +249,7 @@ public class {{model.name}}ControllerTest {
 
     // When
     String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-        .content("{}")
+        .content("{{ "{}" if model.has_required else "" }}")
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andReturn().getResponse().getContentAsString();

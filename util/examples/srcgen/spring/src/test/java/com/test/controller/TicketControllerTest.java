@@ -105,7 +105,7 @@ public class TicketControllerTest {
 
     // When
     String response = mockMvc.perform(post(basePath + "/tickets")
-        .content("{}")
+        .content("")
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andReturn().getResponse().getContentAsString();
@@ -170,7 +170,7 @@ public class TicketControllerTest {
 
     // When
     String response = mockMvc.perform(put(basePath + "/tickets/1")
-        .content("{}")
+        .content("")
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andReturn().getResponse().getContentAsString();
@@ -215,7 +215,7 @@ public class TicketControllerTest {
 
     // When
     String response = mockMvc.perform(put(basePath + "/tickets/1")
-        .content("{}")
+        .content("")
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andReturn().getResponse().getContentAsString();
