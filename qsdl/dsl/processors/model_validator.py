@@ -38,10 +38,32 @@ def validate(schema: Schema, metamodel: TextXMetaModel):
     Raises:
         TextXSemanticError: Exception for logical errors.
     """
+    validate_server_url(schema, metamodel)
     validate_type_names(schema, metamodel)
     validate_arguments(schema, metamodel)
     validate_custom_operations_path(schema, metamodel)
     validate_field_directives(schema, metamodel)
+
+def validate_server_url(schema: Schema, metamodel: TextXMetaModel):
+    """Validate the naming convention for servers.
+
+    Args:
+        schema (Schema): The parsed schema definition.
+        metamodel (TextXMetaModel): The metamodel.
+
+    Raises:
+        TextXSemanticError: Exception for logical errors.
+    """
+    _ = metamodel
+
+    for server in schema.servers:
+        if not server.startswith("/api"):
+            msg = f"The server {server} must start with /api"
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+        if  server.endswith("/"):
+            msg = f"The server {server} must not end with /"
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
 def validate_type_names(schema: Schema, metamodel: TextXMetaModel):

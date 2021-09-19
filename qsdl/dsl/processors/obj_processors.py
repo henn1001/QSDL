@@ -30,6 +30,9 @@ def schema_processor(entity: Schema):
     """
     _ = entity
 
+    if not entity.servers:
+        entity.servers = ["/api/v1"]
+
 
 def scalar_processor(entity: Scalar):
     """The scalar post-processor.

@@ -233,7 +233,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "group_id": config.group_id,
         "artifact_id": config.artifact_id,
         "base_package": config.group_id,
-        "basePath": "/v1",
+        "basePath": schema.servers[0] if schema.servers else "/api/v1",
         "database": config.database,
         "util": util,
         "encapsulation": config.encapsulation,

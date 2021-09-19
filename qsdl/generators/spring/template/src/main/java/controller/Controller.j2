@@ -24,7 +24,7 @@ import {{base_package}}.util.Validator;
 
 
 @Validated
-@RequestMapping("${server.base-path:/}")
+@RequestMapping("${server.base-path:{{basePath}}}")
 @Controller
 public class {{api.name}}Controller {
 

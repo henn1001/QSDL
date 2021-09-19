@@ -23,7 +23,7 @@ import com.test.util.Validator;
 
 
 @Validated
-@RequestMapping("${server.base-path:/}")
+@RequestMapping("${server.base-path:/api/v1}")
 @Controller
 public class RoleController {
 
