@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://gitlab.com/henn1001/qsdl/compare/v2.3.0...v2.4.0) (2021-09-23)
+
+
+### Features
+
+* add server path rules and a sane default value which connects to the spring generator ([6af2481](https://gitlab.com/henn1001/qsdl/commit/6af2481d43d628ca431ef289033cdd0667d2f991))
+* prevent argument name clashes for operations ([0c61d80](https://gitlab.com/henn1001/qsdl/commit/0c61d802912d2a5443c2978089ecdcc8cc60f45e))
+* **spring:** prepend an underscore to the internal uuid and version field for entities ([682db0f](https://gitlab.com/henn1001/qsdl/commit/682db0fa6a6fc19ebc11656823bb9e36e90acb86))
+* **spring:** use lombok for logging ([7c52ffb](https://gitlab.com/henn1001/qsdl/commit/7c52ffb8376abb7a4188c18be65b7e6f3138b7b4))
+* **spring:** utilize lombok for generating getter/setters and add a flag to config to enable this ([76be7df](https://gitlab.com/henn1001/qsdl/commit/76be7dfe231f2b5152fae4b512225af58baba4a7))
+
+
+### Bug Fixes
+
+* **spring:** resolve issue with delete exceptions wrongly marked as entity not found ([273ba68](https://gitlab.com/henn1001/qsdl/commit/273ba68e59271eaaeeeaf8524ec5d30b919141df))
+* **spring:** resolve issue with failed payload test when object has no required fields ([a2f4a98](https://gitlab.com/henn1001/qsdl/commit/a2f4a980ba5476ed502ce150078361fb95799c50))
+
 ## [2.3.0](https://gitlab.com/henn1001/qsdl/compare/v2.2.0...v2.3.0) (2021-09-12)
 
 
