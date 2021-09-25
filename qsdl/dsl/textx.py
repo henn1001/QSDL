@@ -14,20 +14,18 @@
 
 """Core generation"""
 
-import logging
 from pathlib import Path
 
 from textx import metamodel_from_file
 from textx.export import PlantUmlRenderer, metamodel_export
 from textx.metamodel import TextXMetaModel
 
-from qsdl import __folder__
+from qsdl import __folder__, logger
 from qsdl.dsl.models import Scalar, Schema, all_dsl_models
 from qsdl.dsl.processors.model_processor import model_processor
 from qsdl.dsl.processors.obj_processors import obj_processors
 
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(name)s - %(message)s")
-logger = logging.getLogger(__name__)
+log = logger.getLogger(__name__)
 
 
 def draw_metamodel(metamodel: TextXMetaModel):
@@ -100,11 +98,11 @@ def parse_schema(raw_schema: str) -> Schema:
         schema (Schema): The parsed schema definition.
     """
     # export model with plantuml
-    logger.info("loading metamodel...")
+    log.info("loading metamodel...")
     metamodel = get_metamodel()
 
     # build a model from schema definition file
-    logger.info("generating schema...")
+    log.info("generating schema...")
     schema = metamodel.model_from_str(raw_schema)
 
     return schema

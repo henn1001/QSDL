@@ -15,7 +15,6 @@
 """Core generation"""
 
 import json
-import logging
 import traceback
 from pathlib import Path
 from typing import Tuple
@@ -25,12 +24,12 @@ from pyfiglet import Figlet
 from PyInquirer import prompt
 from textx.exceptions import TextXSemanticError, TextXSyntaxError
 
+from qsdl import logger
 from qsdl.config import Config
 from qsdl.dsl.textx import parse_schema
 from qsdl.generators import ConfigType, GeneratorType, get_config, get_generator
 
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(name)s - %(message)s")
-logger = logging.getLogger(__name__)
+log = logger.getLogger(__name__)
 
 
 class Color:
@@ -154,8 +153,8 @@ def init(generator_name: str, config_path: Path = None) -> Tuple[GeneratorType, 
         # prompt mode
         generator, config = prompt_user()
 
-    logger.info("QSDL Generator: %s", generator_name)
-    logger.info("QSDL Config: %s", config)
+    log.info("QSDL Generator: %s", generator_name)
+    log.info("QSDL Config: %s", config)
 
     return generator, config
 
@@ -189,9 +188,9 @@ def generate(raw_schema: str, output_path: Path, generator_name: str, config_pat
         output_path.mkdir(exist_ok=True, parents=True)
 
         # call generator
-        logger.info("calling generator")
+        log.info("calling generator")
         Config.generator(Config.schema, Config.output_path, Config.config)  # pylint: disable=not-callable # fmt: skip
-        logger.info("all done!")
+        log.info("all done!")
 
     except (TextXSyntaxError, TextXSemanticError, Exception):  # pylint: disable=W0703
         traceback.print_exc()

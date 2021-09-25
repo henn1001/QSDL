@@ -14,15 +14,14 @@
 
 """Jinja2 render unit"""
 
-import logging
 from pathlib import Path
 
 import jinja2
 
-from qsdl.filter import pluralize, singularize, pascalcase, camelcase, regex_replace
+from qsdl import logger
+from qsdl.filter import camelcase, pascalcase, pluralize, regex_replace, singularize
 
-logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(name)s - %(message)s")
-logger = logging.getLogger(__name__)
+log = logger.getLogger(__name__)
 
 
 def render(
@@ -77,5 +76,5 @@ def render(
     # generate code
     with open(output_file, "w") as file:
         tmp = template.render(context)
-        logger.info("rendering file: %s", output_file)
+        log.info("rendering file: %s", output_file)
         file.write(tmp)
