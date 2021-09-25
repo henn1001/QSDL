@@ -18,8 +18,8 @@ from pathlib import Path
 from typing import List, Tuple
 
 import pathspec
-from textx import model as xtx
 
+import qsdl.dsl.textx as xtx
 from qsdl.dsl.models import Schema
 from qsdl.render import render
 
@@ -42,7 +42,7 @@ def parse_domain(schema: Schema) -> List[Tuple[Api, Model]]:
     ret = []
     models = []
 
-    entities = xtx.get_children_of_type("Api", schema)
+    entities = xtx.get_children_of_api(schema)
 
     for entity in entities:
         new_api = Api(entity)
@@ -71,8 +71,8 @@ def parse_models(schema: Schema) -> List[Model]:
     """
     models = []
 
-    enum_list = xtx.get_children_of_type("Enum", schema)
-    base_list = xtx.get_children_of_type("Base", schema)
+    enum_list = xtx.get_children_of_enum(schema)
+    base_list = xtx.get_children_of_base(schema)
 
     for obj in enum_list + base_list:
         model = Model(obj)

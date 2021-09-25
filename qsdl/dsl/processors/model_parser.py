@@ -17,10 +17,8 @@
 import re
 from typing import List, Union
 
-from textx import model as xtx
-
-from qsdl.dsl.models import Api, Argument, Field, Object, Scalar, Schema
-from qsdl.dsl.models.operation import Operation
+import qsdl.dsl.textx as xtx
+from qsdl.dsl.models import Api, Argument, Field, Object, Scalar, Schema, Operation
 from qsdl.filter import pluralize
 
 
@@ -76,7 +74,7 @@ def get_parents(schema: Schema, obj: Object) -> List[Field]:
     """
     parents = []
 
-    fields = xtx.get_children_of_type("Field", schema)
+    fields = xtx.get_children_of_field(schema)
 
     fltr = filter(lambda x: x.value == obj, fields)
     parents = list(fltr)
@@ -519,11 +517,11 @@ def parse_objects(schema: Schema):
     Args:
         schema (Schema): The QSDL schema model.
     """
-    objects = xtx.get_children_of_type("Object", schema)
-    bases = xtx.get_children_of_type("Base", schema)
+    objects = xtx.get_children_of_object(schema)
+    bases = xtx.get_children_of_base(schema)
 
     # inherit all fields of parent objects
-    for entity in bases+ objects:
+    for entity in bases + objects:
         entity.fields = get_all_fields_as_list(entity)
 
     # add id fields for all objects
@@ -567,7 +565,7 @@ def parse_operations(schema: Schema):
     Args:
         schema (Schema): The QSDL schema model.
     """
-    apis = xtx.get_children_of_type("Api", schema)
+    apis = xtx.get_children_of_api(schema)
 
     # loop over user defined APIs
     for api in apis:

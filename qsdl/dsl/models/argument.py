@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Field
+    from qsdl.dsl.models import Operation
 
 
 @dataclass
@@ -35,10 +35,10 @@ class Argument:
     value: object = None
     is_required: bool = False
 
-    # custom
+    # required by textX
+    parent: Operation = None
+
+    # addons
     is_path: bool = False
     is_query: bool = False
     is_body: bool = False
-
-    # required by textX
-    parent: Field = None

@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Field, Object, Api
+    from qsdl.dsl.models import Base, Field, Object, Api, Operation
 
 
 @dataclass
@@ -31,4 +31,4 @@ class Directive:
     value: str = None
 
     # required by textX
-    parent: Union[Base, Api, Object, Field, Object] = None
+    parent: Union[Base, Api, Object, Field, Operation] = None

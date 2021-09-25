@@ -14,8 +14,6 @@
 
 """GraphQL Generator Utility functions"""
 
-from textx import model as xtx
-
 from qsdl.dsl.models import Schema
 
 # the parsed schema definition.

@@ -19,12 +19,12 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
-from textx import model as xtx
 from textx.exceptions import TextXSemanticError
+
+import qsdl.dsl.textx as xtx
 
 if TYPE_CHECKING:
     from textx.metamodel import TextXMetaModel
-
     from qsdl.dsl.models import Schema
 
 
@@ -85,10 +85,10 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
 
     entities = []
 
-    entities.extend(xtx.get_children_of_type("Scalar", schema))
-    entities.extend(xtx.get_children_of_type("Enum", schema))
-    entities.extend(xtx.get_children_of_type("Base", schema))
-    entities.extend(xtx.get_children_of_type("Object", schema))
+    entities.extend(xtx.get_children_of_scalar(schema))
+    entities.extend(xtx.get_children_of_enum(schema))
+    entities.extend(xtx.get_children_of_base(schema))
+    entities.extend(xtx.get_children_of_object(schema))
 
     for entity in entities:
         if not re.match(r"^[A-Z][a-zA-Z]*$", entity.name):
@@ -109,8 +109,8 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
 
     entities = []
 
-    entities.extend(xtx.get_children_of_type("Field", schema))
-    entities.extend(xtx.get_children_of_type("Argument", schema))
+    entities.extend(xtx.get_children_of_field(schema))
+    entities.extend(xtx.get_children_of_argument(schema))
 
     for entity in entities:
 
@@ -132,7 +132,7 @@ def validate_arguments(schema: Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
     # loop for custom operations
-    operations = xtx.get_children_of_type("Operation", schema)
+    operations = xtx.get_children_of_operation(schema)
 
     for operation in operations:
         count = 0
@@ -165,7 +165,7 @@ def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
     # loop for custom operations
-    operations = xtx.get_children_of_type("Operation", schema)
+    operations = xtx.get_children_of_operation(schema)
 
     for operation in operations:
         if not operation.path:
@@ -185,8 +185,8 @@ def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
     """
     _ = metamodel
 
-    bases = xtx.get_children_of_type("Base", schema)
-    objects = xtx.get_children_of_type("Object", schema)
+    bases = xtx.get_children_of_base(schema)
+    objects = xtx.get_children_of_object(schema)
 
     for entity in bases + objects:
         duplicate_relation = []
@@ -239,7 +239,7 @@ def validate_operations(schema: Schema):
     names = []
     paths = []
 
-    operations = xtx.get_children_of_type("Operation", schema)
+    operations = xtx.get_children_of_operation(schema)
 
     for operation in operations:
         names.append(operation.name)

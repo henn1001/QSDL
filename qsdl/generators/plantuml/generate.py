@@ -17,7 +17,7 @@
 from pathlib import Path
 
 import plantuml
-from textx import model as xtx
+import textx.model
 
 from qsdl.dsl.models import Schema
 from qsdl.render import render
@@ -82,7 +82,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
     # build the render arguments
     context = {
         "schema": schema,
-        "xtx": xtx,
+        "xtx": textx.model,
         "util": util,
         "config": config,
     }

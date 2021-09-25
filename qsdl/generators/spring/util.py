@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Union
 
-from textx import model as xtx
+import qsdl.dsl.textx as xtx
 
 if TYPE_CHECKING:
     from qsdl.dsl.models import Base, Enum, Field, Object, Schema
@@ -140,8 +140,8 @@ def is_supertype(entity: Union[Base, Object]) -> bool:
     Returns:
         bool: Returns True on detection.
     """
-    base_list = xtx.get_children_of_type("Base", schema)
-    object_list = xtx.get_children_of_type("Object", schema)
+    base_list = xtx.get_children_of_base(schema)
+    object_list = xtx.get_children_of_object(schema)
 
     for itr in base_list + object_list:
         if entity == itr.supertype:
@@ -159,8 +159,8 @@ def is_nested(entity: Union[Base, Object]) -> bool:
     Returns:
         bool: [description]
     """
-    base_list = xtx.get_children_of_type("Base", schema)
-    object_list = xtx.get_children_of_type("Object", schema)
+    base_list = xtx.get_children_of_base(schema)
+    object_list = xtx.get_children_of_object(schema)
 
     for itr in base_list + object_list:
         for field in itr.fields:
@@ -266,7 +266,7 @@ def get_parents(model: Model, models: List[Model]) -> List[Model]:
     parents = []
     parent_names = []
 
-    fields = xtx.get_children_of_type("Field", schema)
+    fields = xtx.get_children_of_field(schema)
 
     fields = [x for x in fields if x.is_composition or x.is_aggregation]
 
@@ -292,7 +292,7 @@ def get_parent_fields(obj: Object) -> List[Field]:
     """
     fields = []
 
-    fields = xtx.get_children_of_type("Field", schema)
+    fields = xtx.get_children_of_field(schema)
 
     fields = [x for x in fields if x.is_composition or x.is_aggregation]
 

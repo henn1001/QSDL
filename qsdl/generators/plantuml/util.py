@@ -14,8 +14,7 @@
 
 """PlantUML Generator Utility functions"""
 
-from textx import model as xtx
-
+import qsdl.dsl.textx as xtx
 from qsdl.dsl.models import Field, Schema
 
 # the parsed schema definition.
@@ -33,7 +32,7 @@ def get_compositions(obj: object) -> list:
     """
     comp_fields = []
 
-    fields = xtx.get_children_of_type("Field", schema)
+    fields = xtx.get_children_of_field(schema)
     parents = list(filter(lambda x: x.value == obj, fields))
 
     comp_fields = list(
@@ -54,7 +53,7 @@ def get_aggregation(obj: object) -> list:
     """
     agg_fields = []
 
-    fields = xtx.get_children_of_type("Field", schema)
+    fields = xtx.get_children_of_field(schema)
     parents = list(filter(lambda x: x.value == obj, fields))
 
     agg_fields = list(

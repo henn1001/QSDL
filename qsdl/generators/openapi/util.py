@@ -18,10 +18,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Union
 
-from textx import model as xtx
+import qsdl.dsl.textx as xtx
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Object, Schema, Field
+    from qsdl.dsl.models import Base, Enum, Field, Object, Schema
 
 
 # the parsed schema definition.
@@ -89,8 +89,8 @@ def is_supertype(entity: Union[Base, Object]) -> bool:
     Returns:
         bool: Returns True on detection.
     """
-    base_list = xtx.get_children_of_type("Base", schema)
-    object_list = xtx.get_children_of_type("Object", schema)
+    base_list = xtx.get_children_of_base(schema)
+    object_list = xtx.get_children_of_object(schema)
 
     for itr in base_list + object_list:
         if entity == itr.supertype:
@@ -108,8 +108,8 @@ def is_nested(entity: Union[Base, Object]) -> bool:
     Returns:
         bool: [description]
     """
-    base_list = xtx.get_children_of_type("Base", schema)
-    object_list = xtx.get_children_of_type("Object", schema)
+    base_list = xtx.get_children_of_base(schema)
+    object_list = xtx.get_children_of_object(schema)
 
     for itr in base_list + object_list:
         for field in itr.fields:
@@ -164,7 +164,7 @@ def get_namespaces() -> list:
     """
     namespaces = []
 
-    for api in xtx.get_children_of_type("Api", schema):
+    for api in xtx.get_children_of_api(schema):
         if api.namespace and api.namespace not in namespaces:
             namespaces.append(api.namespace)
 

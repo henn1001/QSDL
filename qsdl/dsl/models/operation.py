@@ -42,7 +42,10 @@ class Operation:
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
 
-    # custom
+    # required by textX
+    parent: Union[Base, Object, Api] = None
+
+    # addons
     summary: str = None
     is_pageable: bool = False
     is_aggregation: bool = False
@@ -52,6 +55,3 @@ class Operation:
 
     domain_object: Object = None
     domain_parent: Object = None
-
-    # required by textX
-    parent: Union[Base, Object, Api] = None

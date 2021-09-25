@@ -15,13 +15,15 @@
 """Core generation"""
 
 from pathlib import Path
+from typing import List
 
+import textx.model
 from textx import metamodel_from_file
 from textx.export import PlantUmlRenderer, metamodel_export
 from textx.metamodel import TextXMetaModel
 
 from qsdl import __folder__, logger
-from qsdl.dsl.models import Scalar, Schema, all_dsl_models
+from qsdl.dsl.models import *
 from qsdl.dsl.processors.model_processor import model_processor
 from qsdl.dsl.processors.obj_processors import obj_processors
 
@@ -106,3 +108,49 @@ def parse_schema(raw_schema: str) -> Schema:
     schema = metamodel.model_from_str(raw_schema)
 
     return schema
+
+
+def get_children_of_api(schema: Schema) -> List[Api]:
+    """Proxy method for typing support"""
+    return textx.model.get_children_of_type("Api", schema)
+
+
+def get_children_of_argument(schema: Schema) -> List[Argument]:
+    """Proxy method for typing support"""
+    return textx.model.get_children_of_type("Argument", schema)
+
+
+def get_children_of_base(schema: Schema) -> List[Base]:
+    """Proxy method for typing support"""
+    return textx.model.get_children_of_type("Base", schema)
+
+
+def get_children_of_directive(schema: Schema) -> List[Directive]:
+    """Proxy method for typing support"""
+    return textx.model.get_children_of_type("Directive", schema)
+
+
+def get_children_of_enum(schema: Schema) -> List[Enum]:
+    """Proxy method for typing support"""
+    return textx.model.get_children_of_type("Enum", schema)
+
+
+def get_children_of_field(schema: Schema) -> List[Field]:
+    """Proxy method for typing support"""
+    return textx.model.get_children_of_type("Field", schema)
+
+
+def get_children_of_object(schema: Schema) -> List[Object]:
+    """Proxy method for typing support"""
+    return textx.model.get_children_of_type("Object", schema)
+
+
+def get_children_of_operation(schema: Schema) -> List[Operation]:
+    """Proxy method for typing support"""
+    return textx.model.get_children_of_type("Operation", schema)
+
+
+
+def get_children_of_scalar(schema: Schema) -> List[Scalar]:
+    """Proxy method for typing support"""
+    return textx.model.get_children_of_type("Scalar", schema)
