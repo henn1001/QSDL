@@ -87,19 +87,19 @@ public class UserServiceTest {
 
     // Given
     User request = easyRandom.nextObject(User.class);
-    Ticket parent = easyRandom.nextObject(Ticket.class);
+    Ticket testParent = easyRandom.nextObject(Ticket.class);
 
-    when(ticketRepository.findById(eq(parent.getId())))
-        .thenReturn(Optional.of(parent));
+    when(ticketRepository.findById(eq(testParent.getId())))
+        .thenReturn(Optional.of(testParent));
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
 
-    when(ticketRepository.save(eq(parent)))
+    when(ticketRepository.save(eq(testParent)))
         .thenReturn(null);
 
     // When
-    service.addUserToTicket(parent.getId(), request.getId());
+    service.addUserToTicket(testParent.getId(), request.getId());
 
     // Then
 
@@ -110,19 +110,19 @@ public class UserServiceTest {
 
     // Given
     User request = easyRandom.nextObject(User.class);
-    Ticket parent = easyRandom.nextObject(Ticket.class);
+    Ticket testParent = easyRandom.nextObject(Ticket.class);
 
-    when(ticketRepository.findById(eq(parent.getId())))
-        .thenReturn(Optional.of(parent));
+    when(ticketRepository.findById(eq(testParent.getId())))
+        .thenReturn(Optional.of(testParent));
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
 
-    when(ticketRepository.save(eq(parent)))
+    when(ticketRepository.save(eq(testParent)))
         .thenReturn(null);
 
     // When
-    service.removeUserFromTicket(parent.getId(), request.getId());
+    service.removeUserFromTicket(testParent.getId(), request.getId());
 
     // Then
 

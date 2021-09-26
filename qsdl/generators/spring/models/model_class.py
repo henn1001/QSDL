@@ -27,8 +27,20 @@ from .. import util
 
 
 @dataclass
+class Parent:
+    """Contains the ModelClass and specifies the relation type"""
+
+    model: ModelClass
+    is_aggregation: bool
+    is_composition: bool = False
+
+    def __post_init__(self):
+        self.is_composition = not self.is_aggregation
+
+
+@dataclass
 class ModelField:
-    """Custom dataclass"""
+    """The field of a Java Model"""
 
     # the textx object
     _ref: dsl.Field
@@ -92,7 +104,7 @@ class ModelField:
 
 @dataclass
 class ModelClass:
-    """Custom dataclass"""
+    """The Java Model"""
 
     # the textx object
     _ref: Union[dsl.Enum, dsl.Base, dsl.Object]
@@ -119,7 +131,7 @@ class ModelClass:
     has_aggregation: bool = False
     has_required: bool = False
 
-    parents: List[ModelClass] = field(default_factory=list)
+    parents: List[Parent] = field(default_factory=list)
 
     def __post_init__(self):
         """Init our dataclass by reading information from _ref"""

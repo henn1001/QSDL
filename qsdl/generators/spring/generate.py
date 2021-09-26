@@ -27,7 +27,7 @@ from qsdl.render import render
 
 from . import util
 from .config import Config
-from .models import ApiClass, ModelClass
+from .models import ApiClass, ModelClass, Parent
 
 
 def parse_domain(schema: Schema) -> List[Tuple[ApiClass, ModelClass]]:
@@ -80,6 +80,8 @@ def parse_model_parents(models: List[ModelClass]):
             # search in provided models list for a match to the current obj and filter duplicates
             result = [x for x in models if x._ref == obj and x.name not in parent_names]
             _ = [parent_names.append(x.name) for x in result]
+
+            result = [Parent(x, util.is_aggregation(model._ref, obj)) for x in result]
 
             parents.extend(result)
 

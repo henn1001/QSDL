@@ -49,7 +49,7 @@ public class {{model.name}}ServiceTest {
 
 {% for parent in model.parents %}
   @Mock
-  private {{parent.name}}Repository {{parent.name|lower}}Repository;
+  private {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
 
 {% endfor %}
   @InjectMocks
@@ -106,19 +106,19 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
-    {{operation.domain_parent.name}} parent = easyRandom.nextObject({{operation.domain_parent.name}}.class);
+    {{operation.domain_parent.name}} testParent = easyRandom.nextObject({{operation.domain_parent.name}}.class);
 
-    when({{ operation.domain_parent.name|lower }}Repository.findById(eq(parent.getId())))
-        .thenReturn(Optional.of(parent));
+    when({{ operation.domain_parent.name|lower }}Repository.findById(eq(testParent.getId())))
+        .thenReturn(Optional.of(testParent));
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
 
-    when({{operation.domain_parent.name|lower}}Repository.save(eq(parent)))
+    when({{operation.domain_parent.name|lower}}Repository.save(eq(testParent)))
         .thenReturn(null);
 
     // When
-    service.{{operation.name}}(parent.getId(), request.getId());
+    service.{{operation.name}}(testParent.getId(), request.getId());
 
     // Then
 

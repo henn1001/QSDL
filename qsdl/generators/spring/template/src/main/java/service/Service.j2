@@ -29,7 +29,7 @@ public class {{api.name}}Service {
 {% if database == "hibernate" and model %}
 {% for parent in model.parents %}
   @Autowired
-  private {{parent.name}}Repository {{parent.name|lower}}Repository;
+  private {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
 
 {% endfor %}
   @Autowired
@@ -43,9 +43,9 @@ public class {{api.name}}Service {
 {% if database == "hibernate" and model.parents %}
 {% for parent in model.parents %}
 
-  private void validate{{parent.name}}Id(Long id) throws AppException {
-    if (!{{parent.name|lower}}Repository.existsById(id)) {
-      throw new AppException(Errors.NOT_FOUND, "{{parent.name}} " + id.toString() + " does not exist");
+  private void validate{{parent.model.name}}Id(Long id) throws AppException {
+    if (!{{parent.model.name|lower}}Repository.existsById(id)) {
+      throw new AppException(Errors.NOT_FOUND, "{{parent.model.name}} " + id.toString() + " does not exist");
     }
   }
 {% endfor %}
