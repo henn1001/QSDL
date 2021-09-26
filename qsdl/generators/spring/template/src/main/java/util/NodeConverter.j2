@@ -12,12 +12,13 @@ public class NodeConverter implements AttributeConverter<ObjectNode, String> {
 
   @Override
   public String convertToDatabaseColumn(ObjectNode data) {
-    return Json.serializer().toString(data);
+    return data != null ? Json.serializer().toString(data) : null;
   }
 
   @Override
   public ObjectNode convertToEntityAttribute(String data) {
-    return Json.serializer().nodeFromJson(data);
+    return data != null ? Json.serializer().nodeFromJson(data) : null;
   }
 
 }
+{{""}}
