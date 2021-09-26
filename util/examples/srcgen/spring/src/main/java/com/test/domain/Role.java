@@ -19,7 +19,7 @@ public class Role extends AbstractPersistentObject {
   public String name;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="project_id")
+  @JoinColumn(name = "project_id")
   @JsonIgnore
   public Project project;
 

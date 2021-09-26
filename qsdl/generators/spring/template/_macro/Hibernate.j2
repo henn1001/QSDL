@@ -36,7 +36,7 @@
   @JoinTable(name = "{{model.name|lower}}_to_{{attr.type|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{attr.type|lower}}_id"))
       {% elif attr.is_aggregation and not attr.is_array %}
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="{{attr.type|lower}}_id")
+  @JoinColumn(name = "{{attr.type|lower}}_id")
       {% elif attr.is_composition and attr.is_array %}
   @OneToMany(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, orphanRemoval = true)
       {% elif attr.is_composition and not attr.is_array %}
@@ -50,10 +50,10 @@
   @OneToMany(mappedBy = "{{attr.foreign_key_name}}", fetch = FetchType.LAZY)
       {% elif attr.is_composition and attr.foreign_key_is_array %}
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="{{attr.type|lower}}_id")
+  @JoinColumn(name = "{{attr.type|lower}}_id")
       {% elif attr.is_composition and not attr.foreign_key_is_array %}
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="{{attr.type|lower}}_id")
+  @JoinColumn(name = "{{attr.type|lower}}_id")
       {% endif %}
   {#
     Nested Objects
