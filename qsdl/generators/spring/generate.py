@@ -138,15 +138,16 @@ def generate(schema: Schema, output_path: Path, config: Config):
     if config.id_type not in ["Long", "String"]:
         raise ValueError("id_type must be `Long` or `String`")
 
-    # sets the id type and schema
-    util.custom_types["ID"] = config.id_type
-    util.schema = schema
-
-    base_package = config.group_id.replace(".", "/")
-
     # for development
     if isinstance(config.database, list):
         config.database = "hibernate"
+
+    # sets the id type and schema
+    util.custom_types["ID"] = config.id_type
+    util.schema = schema
+    util.config = config
+
+    base_package = config.group_id.replace(".", "/")
 
     # loop and generate domain files
     domain_files = []

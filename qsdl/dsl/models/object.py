@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Directive, Field, Api, Schema
+    from qsdl.dsl.models import Api, Base, Directive, Field, Schema
 
 
 @dataclass

@@ -41,6 +41,7 @@ class _Attribute:
     json_key: str = None
     description: str = None
     type: str = None
+
     is_array: bool = False
     is_enum: bool = False
     is_base: bool = False
@@ -50,11 +51,13 @@ class _Attribute:
     is_required: bool = False
     is_read_only: bool = False
     is_write_only: bool = False
+
     is_composition: bool = False
     is_aggregation: bool = False
     is_relation: bool = False
-
-    forgein_key_field: Field = None
+    is_relation_owner: bool = False
+    foreign_key_name: str = None
+    foreign_key_is_array: bool = False
 
     getter: str = None
     setter: str = None
@@ -99,10 +102,13 @@ class Model:
     # computed attributes
     name: str = None
     description: str = None
+
     is_enum: bool = False
     is_base: bool = False
     is_object: bool = False
+
     extends: str = None
+
     attributes: List[_Attribute] = field(default_factory=list)
     constants: List[str] = field(default_factory=list)
 
@@ -132,12 +138,11 @@ class Model:
         if not self.is_enum and self._ref.supertype:
             self.extends = stringcase.pascalcase(self._ref.supertype.name)
 
-        # attributes
-        if not self.is_enum:
-            self._add_attributes()
-            self._add_foreign_keys()
-        else:
-            self.constants = util.get_enum_values(self._ref)
+        # add attributes
+        self._add_attributes()
+        self._add_constants()
+        self._add_relations()
+        self._add_foreign_keys()
 
         # collect imports
         self.imports = util.get_model_imports(self._ref)
@@ -151,16 +156,43 @@ class Model:
 
     def _add_attributes(self):
 
-        if self._ref._tx_fqn not in ["entity.Base", "entity.Object"]:
-            raise ValueError
+        # filter only base and object
+        if not (self.is_base or self.is_object):
+            return
 
-        for entity_field in self._ref.fields:
+        # filter only non relations
+        fields = [x for x in self._ref.fields if not x.is_relation]
+
+        for entity_field in fields:
             attribute = _Attribute(entity_field)
+            self.attributes.append(attribute)
+
+    def _add_constants(self):
+
+        # filter only enum
+        if not self.is_enum:
+            return
+
+        for value in self._ref.values:
+            self.constants.append(value)
+
+    def _add_relations(self):
+
+        # filter only object with relation
+        if not self.is_object:
+            return
+
+        # filter only relations
+        fields = [x for x in self._ref.fields if x.is_relation]
+
+        for entity_field in fields:
+            attribute = _Attribute(entity_field)
+
             self.attributes.append(attribute)
 
     def _add_foreign_keys(self):
 
-        # we only care about object relations
+        # filter on object
         if not self.is_object:
             return
 
@@ -185,5 +217,8 @@ class Model:
             fk_field.is_composition = p_field.is_composition
 
             attribute = _Attribute(fk_field)
-            attribute.forgein_key_field = p_field
+            attribute.is_relation_owner = True
+            attribute.foreign_key_name = p_field.name
+            attribute.foreign_key_is_array = p_field.is_array
+
             self.attributes.append(attribute)

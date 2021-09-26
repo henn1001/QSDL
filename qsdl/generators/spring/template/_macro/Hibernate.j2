@@ -29,7 +29,7 @@
   {#
     Relations
   #}
-  {% if attr.is_relation and not attr.forgein_key_field %}
+  {% if attr.is_relation and not attr.is_relation_owner %}
       {# the parent side of the relation  #}
       {% if attr.is_aggregation and attr.is_array %}
   @ManyToMany(fetch = FetchType.LAZY)
@@ -42,16 +42,16 @@
       {% elif attr.is_composition and not attr.is_array %}
   @OneToOne(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, orphanRemoval = true)
       {% endif %}
-  {% elif attr.is_relation and attr.forgein_key_field %}
+  {% elif attr.is_relation and attr.is_relation_owner %}
       {# the child side of the relation  #}
-      {% if attr.is_aggregation and attr.forgein_key_field.is_array %}
-  @ManyToMany(mappedBy = "{{attr.forgein_key_field.name}}", fetch = FetchType.LAZY)
-      {% elif attr.is_aggregation and not attr.forgein_key_field.is_array  %}
-  @OneToMany(mappedBy = "{{attr.forgein_key_field.name}}", fetch = FetchType.LAZY)
-      {% elif attr.is_composition and attr.forgein_key_field.is_array %}
+      {% if attr.is_aggregation and attr.foreign_key_is_array %}
+  @ManyToMany(mappedBy = "{{attr.foreign_key_name}}", fetch = FetchType.LAZY)
+      {% elif attr.is_aggregation and not attr.foreign_key_is_array  %}
+  @OneToMany(mappedBy = "{{attr.foreign_key_name}}", fetch = FetchType.LAZY)
+      {% elif attr.is_composition and attr.foreign_key_is_array %}
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="{{attr.type|lower}}_id")
-      {% elif attr.is_composition and not attr.forgein_key_field.is_array %}
+      {% elif attr.is_composition and not attr.foreign_key_is_array %}
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="{{attr.type|lower}}_id")
       {% endif %}

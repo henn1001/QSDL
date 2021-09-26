@@ -83,7 +83,7 @@ class _Operation:
 
         # special for aggregations
         # we want to move them to the parent namespace
-        if self._ref.is_aggregation:
+        if self._ref.is_aggregated:
             self.tag = self._ref.domain_parent.namespace
 
         self._add_parameters()

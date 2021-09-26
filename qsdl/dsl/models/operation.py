@@ -48,7 +48,7 @@ class Operation:
     # addons
     summary: str = None
     is_pageable: bool = False
-    is_aggregation: bool = False
+    is_aggregated: bool = False
     path_parameters: List[Argument] = field(default_factory=list)
     query_parameters: List[Argument] = field(default_factory=list)
     body_parameters: List[Argument] = field(default_factory=list)

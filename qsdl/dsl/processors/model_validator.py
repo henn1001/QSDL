@@ -226,6 +226,11 @@ def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
                 msg = f"The Field {field.name} for {field.parent.name} declares a relation inside a Base."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
+            # verify that the relation is not self referencing
+            if field.value == entity:
+                msg = f"The Field {field.name} for {field.parent.name} references itself."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+
 
 def validate_operations(schema: Schema):
     """Checks if we have any duplicate operation names or paths.

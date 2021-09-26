@@ -23,10 +23,12 @@ import qsdl.dsl.textx as xtx
 if TYPE_CHECKING:
     from qsdl.dsl.models import Base, Enum, Field, Object, Schema
     from .models import Model
+    from.config import Config
 
 
 # the parsed schema definition.
 schema: Schema = None
+config: Config = None
 
 
 custom_types = {
@@ -193,25 +195,6 @@ def is_aggregation(entity: Object, parent: Object) -> bool:
     return ret
 
 
-def get_enum_values(entity: Enum) -> List[Enum]:
-    """Returns all enum values.
-
-    Args:
-        entity (Enum): entity.Enum
-
-    Returns:
-        List[Enum]: All enum values.
-    """
-    values = []
-
-    if entity._tx_fqn in ["entity.Enum"]:
-
-        for value in entity.values:
-            values.append(value)
-
-    return values
-
-
 def get_model_imports(entity):
     """Returns all imports for this model."""
     imports = []
@@ -266,16 +249,13 @@ def get_parents(model: Model, models: List[Model]) -> List[Model]:
     parents = []
     parent_names = []
 
-    fields = xtx.get_children_of_field(schema)
-
-    fields = [x for x in fields if x.is_composition or x.is_aggregation]
-
-    objects = [x.parent for x in fields if x.value == model._ref and x.parent._tx_fqn == "entity.Object"]
+    parent_fields = get_parent_fields(model._ref)
+    objects = [x.parent for x in parent_fields]
 
     for obj in objects:
         result = [x for x in models if x._ref == obj and x.name not in parent_names]
         parents.extend(result)
-        result = [parent_names.append(x.name) for x in result]
+        _ = [parent_names.append(x.name) for x in result]
 
     return parents
 
