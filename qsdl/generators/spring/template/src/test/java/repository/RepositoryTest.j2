@@ -24,7 +24,7 @@ public class {{model.name}}RepositoryTest {
   @Autowired
   private EasyRandom easyRandom;
 
-{% for parent in model.domain_parents %}
+{% for parent in model.parents %}
   @Autowired
   private {{parent.name}}Repository {{parent.name|lower}}Repository;
 
@@ -75,8 +75,8 @@ public class {{model.name}}RepositoryTest {
     List<{{model.name}}> dbData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     AppPageable pageable = new AppPageable(null, null, null);
-    {% for attr in model.attributes if attr._ref.is_query %}
-    pageable.query.put("{{attr.name}}", dbData.get(0).{{ "get" + attr.name|pascal + "()" if encapsulation else attr.name}});
+    {% for field in model.fields if field._ref.is_query %}
+    pageable.query.put("{{field.name}}", dbData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}});
     {% endfor %}
 
     // When
@@ -113,40 +113,40 @@ public class {{model.name}}RepositoryTest {
     assertEquals(5, idx);
   }
 
-  {% for domain_parent in model.domain_parents %}
+  {% for parent in model.parents %}
   @Test
-  public void whenCountBy{{domain_parent.name}}_thenUseQuerie() {
+  public void whenCountBy{{parent.name}}_thenUseQuerie() {
 
     // Given
-    {{domain_parent.name}} tmp = easyRandom.nextObject({{domain_parent.name}}.class);
+    {{parent.name}} tmp = easyRandom.nextObject({{parent.name}}.class);
     tmp.removeRelations();
-    {{domain_parent.name}} testParent = {{domain_parent.name|lower}}Repository.saveAndFlush(tmp);
+    {{parent.name}} testParent = {{parent.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    {% for attr in model.attributes if attr.is_relation %}
+    {% for field in model.fields if field.is_relation %}
       {% if encapsulation %}
-    testData.forEach(x -> x.set{{attr.name|pascal}}(null));
+    testData.forEach(x -> x.set{{field.name|pascal}}(null));
       {% else %}
-    testData.forEach(x -> x.{{attr.name}} = null);
+    testData.forEach(x -> x.{{field.name}} = null);
       {% endif %}
     {% endfor %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
-    {% if util.is_aggregation(model._ref, domain_parent._ref) %}
-      {% for attr in domain_parent.attributes if attr.is_relation and attr.type == model._ref.name %}
+    {% if util.is_aggregation(model._ref, parent._ref) %}
+      {% for field in parent.fields if field.is_relation and field.type == model._ref.name %}
         {% if encapsulation %}
-    testParent.set{{attr.name|pascal}}(new HashSet<>(testData));
+    testParent.set{{field.name|pascal}}(new HashSet<>(testData));
         {% else %}
-    testParent.{{attr.name}} = new HashSet<>(testData);
+    testParent.{{field.name}} = new HashSet<>(testData);
         {% endif %}
-    {{domain_parent.name|lower}}Repository.saveAndFlush(testParent);
+    {{parent.name|lower}}Repository.saveAndFlush(testParent);
       {% endfor %}
     {% else %}
-      {% for attr in model.attributes if attr.is_relation and attr.type == domain_parent._ref.name %}
+      {% for field in model.fields if field.is_relation and field.type == parent._ref.name %}
       {% if encapsulation %}
-    testData.forEach(x -> x.set{{attr.name|pascal}}(testParent));
+    testData.forEach(x -> x.set{{field.name|pascal}}(testParent));
       {% else %}
-    testData.forEach(x -> x.{{attr.name}} = testParent);
+    testData.forEach(x -> x.{{field.name}} = testParent);
       {% endif %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
       {% endfor %}
@@ -155,45 +155,45 @@ public class {{model.name}}RepositoryTest {
     AppPageable pageable = new AppPageable(null, null, null);
 
     // When
-    long count = {{model.name|lower}}Repository.countBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(testParent.getId(), pageable);
+    long count = {{model.name|lower}}Repository.countBy{{ util.get_parent_id_for_repo(parent._ref) | pascal }}(testParent.getId(), pageable);
 
     // Then
     assertEquals({{ "1" if util.has(model._ref, has_query=True) else "5" }}, count);
   }
 
   @Test
-  public void whenFindAllBy{{domain_parent.name}}_thenPaginate() {
+  public void whenFindAllBy{{parent.name}}_thenPaginate() {
 
     // Given
-    {{domain_parent.name}} tmp = easyRandom.nextObject({{domain_parent.name}}.class);
+    {{parent.name}} tmp = easyRandom.nextObject({{parent.name}}.class);
     tmp.removeRelations();
-    {{domain_parent.name}} testParent = {{domain_parent.name|lower}}Repository.saveAndFlush(tmp);
+    {{parent.name}} testParent = {{parent.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    {% for attr in model.attributes if attr.is_relation %}
+    {% for field in model.fields if field.is_relation %}
       {% if encapsulation %}
-    testData.forEach(x -> x.set{{attr.name|pascal}}(null));
+    testData.forEach(x -> x.set{{field.name|pascal}}(null));
       {% else %}
-    testData.forEach(x -> x.{{attr.name}} = null);
+    testData.forEach(x -> x.{{field.name}} = null);
       {% endif %}
     {% endfor %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
-    {% if util.is_aggregation(model._ref, domain_parent._ref) %}
-      {% for attr in domain_parent.attributes if attr.is_relation and attr.type == model._ref.name %}
+    {% if util.is_aggregation(model._ref, parent._ref) %}
+      {% for field in parent.fields if field.is_relation and field.type == model._ref.name %}
         {% if encapsulation %}
-    testParent.set{{attr.name|pascal}}(new HashSet<>(testData));
+    testParent.set{{field.name|pascal}}(new HashSet<>(testData));
         {% else %}
-    testParent.{{attr.name}} = new HashSet<>(testData);
+    testParent.{{field.name}} = new HashSet<>(testData);
         {% endif %}
-    {{domain_parent.name|lower}}Repository.saveAndFlush(testParent);
+    {{parent.name|lower}}Repository.saveAndFlush(testParent);
       {% endfor %}
     {% else %}
-      {% for attr in model.attributes if attr.is_relation and attr.type == domain_parent._ref.name %}
+      {% for field in model.fields if field.is_relation and field.type == parent._ref.name %}
       {% if encapsulation %}
-    testData.forEach(x -> x.set{{attr.name|pascal}}(testParent));
+    testData.forEach(x -> x.set{{field.name|pascal}}(testParent));
       {% else %}
-    testData.forEach(x -> x.{{attr.name}} = testParent);
+    testData.forEach(x -> x.{{field.name}} = testParent);
       {% endif %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
       {% endfor %}
@@ -205,7 +205,7 @@ public class {{model.name}}RepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(testParent.getId(), pageable);
+      List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{ util.get_parent_id_for_repo(parent._ref) | pascal }}(testParent.getId(), pageable);
 
       cursor = pageable.getNextCursor(findData);
 
@@ -220,32 +220,32 @@ public class {{model.name}}RepositoryTest {
 
   {% endfor %}
   {% if model.has_aggregation %}
-    {% for domain_parent in model.domain_parents if util.is_aggregation(model._ref, domain_parent._ref) %}
+    {% for parent in model.parents if util.is_aggregation(model._ref, parent._ref) %}
   @Test
-  public void whenRemoveRelation_thenLinkRemovedFrom{{domain_parent.name}}() {
+  public void whenRemoveRelation_thenLinkRemovedFrom{{parent.name}}() {
 
     // Given
-    {{domain_parent.name}} tmp = easyRandom.nextObject({{domain_parent.name}}.class);
+    {{parent.name}} tmp = easyRandom.nextObject({{parent.name}}.class);
     tmp.removeRelations();
-    {{domain_parent.name}} testParent = {{domain_parent.name|lower}}Repository.saveAndFlush(tmp);
+    {{parent.name}} testParent = {{parent.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    {% for attr in model.attributes if attr.is_relation %}
+    {% for field in model.fields if field.is_relation %}
       {% if encapsulation %}
-    testData.forEach(x -> x.set{{attr.name|pascal}}(null));
+    testData.forEach(x -> x.set{{field.name|pascal}}(null));
       {% else %}
-    testData.forEach(x -> x.{{attr.name}} = null);
+    testData.forEach(x -> x.{{field.name}} = null);
       {% endif %}
     {% endfor %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
-    {% for attr in domain_parent.attributes if attr.is_relation and attr.type == model._ref.name %}
+    {% for field in parent.fields if field.is_relation and field.type == model._ref.name %}
       {% if encapsulation %}
-    testParent.set{{attr.name|pascal}}(new HashSet<>(testData));
+    testParent.set{{field.name|pascal}}(new HashSet<>(testData));
       {% else %}
-    testParent.{{attr.name}} = new HashSet<>(testData);
+    testParent.{{field.name}} = new HashSet<>(testData);
       {% endif %}
-    {{domain_parent.name|lower}}Repository.saveAndFlush(testParent);
+    {{parent.name|lower}}Repository.saveAndFlush(testParent);
     {% endfor %}
 
     // When
@@ -253,7 +253,7 @@ public class {{model.name}}RepositoryTest {
 
     // Then
     AppPageable pageable = new AppPageable(null, null, null);
-    List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{ util.get_parent_id_for_repo(domain_parent._ref) | pascal }}(testParent.getId(), pageable);
+    List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{ util.get_parent_id_for_repo(parent._ref) | pascal }}(testParent.getId(), pageable);
 
     assertEquals(4, findData.size());
   }

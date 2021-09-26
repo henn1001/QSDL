@@ -16,18 +16,16 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Union
+from typing import List, Union
 
+import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Field, Object, Schema
-    from .models import Model
-    from.config import Config
-
+from .config import Config
+from .models import ModelClass
 
 # the parsed schema definition.
-schema: Schema = None
+schema: dsl.Schema = None
 config: Config = None
 
 
@@ -58,7 +56,7 @@ def custom_type(input_type: str) -> str:
 
 
 def has(
-    entity: Union[Base, Object],
+    entity: Union[dsl.Base, dsl.Object],
     has_type: List = None,
     has_list: bool = False,
     has_model: bool = False,
@@ -133,7 +131,7 @@ def has(
     return ret
 
 
-def is_supertype(entity: Union[Base, Object]) -> bool:
+def is_supertype(entity: Union[dsl.Base, dsl.Object]) -> bool:
     """Checks if the Base or Object is used somewhere as a supertype.
 
     Args:
@@ -152,7 +150,7 @@ def is_supertype(entity: Union[Base, Object]) -> bool:
     return False
 
 
-def is_nested(entity: Union[Base, Object]) -> bool:
+def is_nested(entity: Union[dsl.Base, dsl.Object]) -> bool:
     """Checks if the provide dBase or Object is nested into another Base or Object.
 
     Args:
@@ -172,7 +170,7 @@ def is_nested(entity: Union[Base, Object]) -> bool:
     return False
 
 
-def is_aggregation(entity: Object, parent: Object) -> bool:
+def is_aggregation(entity: dsl.Object, parent: dsl.Object) -> bool:
     """Checks if the first Object is aggregated in the second Object.
 
     Args:
@@ -236,31 +234,7 @@ def get_model_imports(entity):
     return imports
 
 
-def get_parents(model: Model, models: List[Model]) -> List[Model]:
-    """Returns all Models who are a domain parent of a Model.
-
-    Args:
-        model (Model): [description]
-        models (List[Model]): [description]
-
-    Returns:
-        List[Model]: [Model]
-    """
-    parents = []
-    parent_names = []
-
-    parent_fields = get_parent_fields(model._ref)
-    objects = [x.parent for x in parent_fields]
-
-    for obj in objects:
-        result = [x for x in models if x._ref == obj and x.name not in parent_names]
-        parents.extend(result)
-        _ = [parent_names.append(x.name) for x in result]
-
-    return parents
-
-
-def get_parent_fields(obj: Object) -> List[Field]:
+def get_parent_fields(obj: dsl.Object) -> List[dsl.Field]:
     """Returns all Objects whos Field value is this Object.
 
     Args:
@@ -281,7 +255,7 @@ def get_parent_fields(obj: Object) -> List[Field]:
     return fields
 
 
-def get_filtered_fields_as_list(entity: Object) -> List[Field]:
+def get_filtered_fields_as_list(entity: dsl.Object) -> List[dsl.Field]:
     """Returns all fields ob a object including its supertype as list.
 
     Exclude composition or aggregations.
@@ -301,7 +275,7 @@ def get_filtered_fields_as_list(entity: Object) -> List[Field]:
     return fields
 
 
-def get_id_for_repo(entity: Object) -> str:
+def get_id_for_repo(entity: dsl.Object) -> str:
     """Returns the ID name of a API Object.
 
     If no ID is found, we return ID regardless because that is
@@ -334,7 +308,7 @@ def get_id_for_repo(entity: Object) -> str:
     return ret.capitalize()
 
 
-def get_parent_id_for_repo(entity: Object) -> str:
+def get_parent_id_for_repo(entity: dsl.Object) -> str:
     """Returns the ID name of a API Object.
 
     If no ID is found, we return ID regardless because that is

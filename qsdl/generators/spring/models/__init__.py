@@ -1,3 +1,3 @@
 """Spring Generator Models"""
-from .api import Api
-from .model import Model
+from .api_class import ApiClass
+from .model_class import ModelClass

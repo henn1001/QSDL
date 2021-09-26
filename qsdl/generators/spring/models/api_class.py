@@ -17,20 +17,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List
+from typing import List
 
 import stringcase
 
+import qsdl.dsl.models as dsl
 
 from .. import util
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Api as QAPI
-    from qsdl.dsl.models import Operation, Object
-
 
 @dataclass
-class _Parameter:
+class Parameter:
     """Custom dataclass"""
 
     name: str = None
@@ -46,11 +43,11 @@ class _Parameter:
 
 
 @dataclass
-class _Operation:
+class Method:
     """Custom dataclass"""
 
     # the textx object
-    _ref: Operation
+    _ref: dsl.Operation
 
     # computed attributes
     name: str = None
@@ -63,14 +60,14 @@ class _Operation:
     is_crud: bool = False
     is_pageable: bool = False
 
-    domain_object: Object = None
-    domain_parent: Object = None
+    domain_object: dsl.Object = None
+    domain_parent: dsl.Object = None
 
-    parameters: List[_Parameter] = field(default_factory=list)
-    path_parameters: List[_Parameter] = field(default_factory=list)
-    query_parameters: List[_Parameter] = field(default_factory=list)
-    body_parameters: List[_Parameter] = field(default_factory=list)
-    response: _Parameter = None
+    parameters: List[Parameter] = field(default_factory=list)
+    path_parameters: List[Parameter] = field(default_factory=list)
+    query_parameters: List[Parameter] = field(default_factory=list)
+    body_parameters: List[Parameter] = field(default_factory=list)
+    response: Parameter = None
 
     def __post_init__(self):
 
@@ -94,7 +91,7 @@ class _Operation:
     def _add_parameters(self):
 
         for argument in self._ref.arguments:
-            param = _Parameter()
+            param = Parameter()
             param.name = stringcase.camelcase(argument.name)
             param.json_key = argument.name
             param.is_required = argument.is_required
@@ -118,7 +115,7 @@ class _Operation:
 
         # response
         if self._ref.value:
-            param = _Parameter()
+            param = Parameter()
             param.name = stringcase.camelcase(self._ref.value.name)
             param.json_key = self._ref.value.name
             param.is_required = False
@@ -213,10 +210,10 @@ class _Operation:
 
 
 @dataclass
-class Api:
+class ApiClass:
     """Custom dataclass"""
 
-    _ref: QAPI
+    _ref: dsl.Api
 
     # computed attributes
     name: str = None
@@ -238,5 +235,5 @@ class Api:
     def _add_operations(self, operations):
 
         for operation in operations:
-            new_operation = _Operation(operation)
+            new_operation = Method(operation)
             self.operations.append(new_operation)

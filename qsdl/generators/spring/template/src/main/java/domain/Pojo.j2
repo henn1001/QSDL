@@ -24,43 +24,43 @@ import {{base_package}}.util.Json;
 {{- hibernate.class_annotation() if database == "hibernate" -}}
 public class {{model.name}}{% if not model.is_base %} extends AbstractPersistentObject{% endif %} {
 
-{% for attr in model.attributes if not attr.is_id %}
+{% for field in model.fields if not field.is_id %}
   {# 
-    Required attributes
+    Required fields
   #}
-  {% if attr.is_required and not attr.is_read_only%}
+  {% if field.is_required and not field.is_read_only%}
   @NotNull
   {% endif %}
   {# 
     Set @Valid for any container
   #}
-  {% if (attr.is_array or attr.is_base or attr.is_object) and not attr.is_relation %}
+  {% if (field.is_array or field.is_base or field.is_object) and not field.is_relation %}
   @Valid
   {% endif %}
   {# 
     Date format
   #}
-  {% if attr.is_date %}
+  {% if field.is_date %}
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   {% endif %}
   {# 
     Hibernate
   #}
-  {{- hibernate.attribute_annotation(attr) if database == "hibernate" -}}
+  {{- hibernate.attribute_annotation(field) if database == "hibernate" -}}
   {# 
     Set JsonIgnore for relations
   #}
-  {% if attr.is_relation %}
+  {% if field.is_relation %}
   @JsonIgnore
   {% else %}
-  @JsonProperty(value = "{{attr.json_key}}"{% if attr.is_required %}, required = true{% endif %}{% if attr.is_read_only %}, access = JsonProperty.Access.READ_ONLY{% endif %}{% if attr.is_write_only %}, access = JsonProperty.Access.WRITE_ONLY{% endif %})
+  @JsonProperty(value = "{{field.json_key}}"{% if field.is_required %}, required = true{% endif %}{% if field.is_read_only %}, access = JsonProperty.Access.READ_ONLY{% endif %}{% if field.is_write_only %}, access = JsonProperty.Access.WRITE_ONLY{% endif %})
   {% endif %}
-  {% if attr.is_array and attr.is_relation %}
-  {{ "private" if encapsulation else "public"}} Set<{{attr.type}}> {{attr.name}} = new LinkedHashSet<>();
-  {% elif attr.is_array %}
-  {{ "private" if encapsulation else "public"}} List<{{attr.type}}> {{attr.name}} = new ArrayList<>();
+  {% if field.is_array and field.is_relation %}
+  {{ "private" if encapsulation else "public"}} Set<{{field.type}}> {{field.name}} = new LinkedHashSet<>();
+  {% elif field.is_array %}
+  {{ "private" if encapsulation else "public"}} List<{{field.type}}> {{field.name}} = new ArrayList<>();
   {% else %}
-  {{ "private" if encapsulation else "public"}} {{attr.type}} {{attr.name}};
+  {{ "private" if encapsulation else "public"}} {{field.type}} {{field.name}};
   {% endif %}
 
 {% endfor %}

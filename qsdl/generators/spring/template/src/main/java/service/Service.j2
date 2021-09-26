@@ -27,7 +27,7 @@ import {{base_package}}.model.*;
 public class {{api.name}}Service {
 
 {% if database == "hibernate" and model %}
-{% for parent in model.domain_parents %}
+{% for parent in model.parents %}
   @Autowired
   private {{parent.name}}Repository {{parent.name|lower}}Repository;
 
@@ -40,8 +40,8 @@ public class {{api.name}}Service {
   private void init() {
 
   }
-{% if database == "hibernate" and model.domain_parents %}
-{% for parent in model.domain_parents %}
+{% if database == "hibernate" and model.parents %}
+{% for parent in model.parents %}
 
   private void validate{{parent.name}}Id(Long id) throws AppException {
     if (!{{parent.name|lower}}Repository.existsById(id)) {

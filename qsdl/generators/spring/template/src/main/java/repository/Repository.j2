@@ -44,7 +44,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
           """,
       nativeQuery = true)
   public long count(@Param("pageable") AppPageable pageable);
-  {% for domain_parent in model.domain_parents %}
+  {% for domain_parent in model.parents %}
 
     {% if util.is_aggregation(model._ref, domain_parent._ref) %}
   @Query(
@@ -122,7 +122,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
   @Query(
       value = """
 
-          {% for domain_parent in model.domain_parents %}
+          {% for domain_parent in model.parents %}
           DELETE FROM {{domain_parent.name|upper}}_TO_{{api.name|upper}} WHERE {{api.name|upper}}_ID = :id ;
           {% endfor %}
 

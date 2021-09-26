@@ -14,6 +14,8 @@
 
 """Spring Generator"""
 
+from __future__ import annotations
+
 from pathlib import Path
 from typing import List, Tuple
 
@@ -25,10 +27,10 @@ from qsdl.render import render
 
 from . import util
 from .config import Config
-from .models import Api, Model
+from .models import ApiClass, ModelClass
 
 
-def parse_domain(schema: Schema) -> List[Tuple[Api, Model]]:
+def parse_domain(schema: Schema) -> List[Tuple[ApiClass, ModelClass]]:
     """Parse QSDL schema into custom API and Model.
 
     Returns both the Api and (if present) the Model object.
@@ -37,7 +39,7 @@ def parse_domain(schema: Schema) -> List[Tuple[Api, Model]]:
         schema (Schema): The QSDL schema model.
 
     Returns:
-        List[Tuple(Api, Model)]: A list of custom API and Model.
+        List[Tuple(ApiClass, ModelClass)]: A list of custom API and Model.
     """
     ret = []
     models = []
@@ -45,23 +47,46 @@ def parse_domain(schema: Schema) -> List[Tuple[Api, Model]]:
     entities = xtx.get_children_of_api(schema)
 
     for entity in entities:
-        new_api = Api(entity)
+        new_api = ApiClass(entity)
         new_model = None
 
         if entity.parent._tx_fqn == "entity.Object":
-            new_model = Model(entity.parent)
+            new_model = ModelClass(entity.parent)
             models.append(new_model)
 
         ret.append((new_api, new_model))
 
-    # loop again to assign domain parents
-    for model in models:
-        model.domain_parents = util.get_parents(model, models) if model else []
+    # add domain parents for each model
+    parse_model_parents(models)
 
     return ret
 
 
-def parse_models(schema: Schema) -> List[Model]:
+def parse_model_parents(models: List[ModelClass]):
+    """Add all Models who are a domain parent to a Model.
+
+    Args:
+        models (List[ModelClass]): The list of all available models.
+    """
+    for model in models:
+
+        parents = []
+        parent_names = []
+
+        parent_fields = util.get_parent_fields(model._ref)
+        parent_objects = [x.parent for x in parent_fields]
+
+        for obj in parent_objects:
+            # search in provided models list for a match to the current obj and filter duplicates
+            result = [x for x in models if x._ref == obj and x.name not in parent_names]
+            _ = [parent_names.append(x.name) for x in result]
+
+            parents.extend(result)
+
+        model.parents = parents
+
+
+def parse_models(schema: Schema) -> List[ModelClass]:
     """Parse QSDL schema into custom models.
 
     Args:
@@ -75,7 +100,7 @@ def parse_models(schema: Schema) -> List[Model]:
     base_list = xtx.get_children_of_base(schema)
 
     for obj in enum_list + base_list:
-        model = Model(obj)
+        model = ModelClass(obj)
         models.append(model)
 
     return models

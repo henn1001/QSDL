@@ -17,24 +17,21 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List, Union
+from typing import List, Union
 
 import stringcase
 
-from qsdl.dsl.models import Field
+import qsdl.dsl.models as dsl
 
 from .. import util
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Object
-
 
 @dataclass
-class _Attribute:
+class ModelField:
     """Custom dataclass"""
 
     # the textx object
-    _ref: Field
+    _ref: dsl.Field
 
     # computed attributes
     name: str = None
@@ -63,6 +60,7 @@ class _Attribute:
     setter: str = None
 
     def __post_init__(self):
+        """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention
         self.name = stringcase.camelcase(self._ref.name)
@@ -86,18 +84,18 @@ class _Attribute:
         # relation model
         self.is_composition = self._ref.is_composition
         self.is_aggregation = self._ref.is_aggregation
-        self.is_relation = self._ref.is_composition or self._ref.is_aggregation
+        self.is_relation = self.is_composition or self.is_aggregation
 
         self.getter = "get" + stringcase.capitalcase(self.name)
         self.setter = "set" + stringcase.capitalcase(self.name)
 
 
 @dataclass
-class Model:
+class ModelClass:
     """Custom dataclass"""
 
     # the textx object
-    _ref: Union[Enum, Base, Object]
+    _ref: Union[dsl.Enum, dsl.Base, dsl.Object]
 
     # computed attributes
     name: str = None
@@ -109,7 +107,7 @@ class Model:
 
     extends: str = None
 
-    attributes: List[_Attribute] = field(default_factory=list)
+    fields: List[ModelField] = field(default_factory=list)
     constants: List[str] = field(default_factory=list)
 
     imports: List[str] = field(default_factory=list)
@@ -121,9 +119,10 @@ class Model:
     has_aggregation: bool = False
     has_required: bool = False
 
-    domain_parents: List[Model] = field(default_factory=list)
+    parents: List[ModelClass] = field(default_factory=list)
 
     def __post_init__(self):
+        """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention
         self.name = stringcase.pascalcase(self._ref.name)
@@ -161,11 +160,12 @@ class Model:
             return
 
         # filter only non relations
-        fields = [x for x in self._ref.fields if not x.is_relation]
+        dsl_fields = [x for x in self._ref.fields if not x.is_relation]
 
-        for entity_field in fields:
-            attribute = _Attribute(entity_field)
-            self.attributes.append(attribute)
+        for dsl_field in dsl_fields:
+            new_model_field = ModelField(dsl_field)
+
+            self.fields.append(new_model_field)
 
     def _add_constants(self):
 
@@ -183,12 +183,12 @@ class Model:
             return
 
         # filter only relations
-        fields = [x for x in self._ref.fields if x.is_relation]
+        dsl_fields = [x for x in self._ref.fields if x.is_relation]
 
-        for entity_field in fields:
-            attribute = _Attribute(entity_field)
+        for dsl_field in dsl_fields:
+            new_model_field = ModelField(dsl_field)
 
-            self.attributes.append(attribute)
+            self.fields.append(new_model_field)
 
     def _add_foreign_keys(self):
 
@@ -198,27 +198,27 @@ class Model:
 
         # get the fields of all parents that
         # use self as aggregation or composition
-        fields = util.get_parent_fields(self._ref)
+        dsl_fields = util.get_parent_fields(self._ref)
 
-        for p_field in fields:
-            parent = p_field.parent
+        for dsl_field in dsl_fields:
+            parent = dsl_field.parent
 
             # create a new field for self that represents the other side
             # of the reference
-            fk_field = Field()
+            fk_field = dsl.Field()
 
             # aggregations
             fk_field.name = stringcase.snakecase(parent.name)
-            fk_field.name = fk_field.name + "s" if p_field.is_aggregation else fk_field.name
+            fk_field.name = fk_field.name + "s" if dsl_field.is_aggregation else fk_field.name
 
             fk_field.value = parent
-            fk_field.is_array = p_field.is_aggregation
-            fk_field.is_aggregation = p_field.is_aggregation
-            fk_field.is_composition = p_field.is_composition
+            fk_field.is_array = dsl_field.is_aggregation
+            fk_field.is_aggregation = dsl_field.is_aggregation
+            fk_field.is_composition = dsl_field.is_composition
 
-            attribute = _Attribute(fk_field)
-            attribute.is_relation_owner = True
-            attribute.foreign_key_name = p_field.name
-            attribute.foreign_key_is_array = p_field.is_array
+            new_model_field = ModelField(fk_field)
+            new_model_field.is_relation_owner = True
+            new_model_field.foreign_key_name = dsl_field.name
+            new_model_field.foreign_key_is_array = dsl_field.is_array
 
-            self.attributes.append(attribute)
+            self.fields.append(new_model_field)

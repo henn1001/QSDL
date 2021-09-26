@@ -47,7 +47,7 @@ public class {{model.name}}ServiceTest {
   @Mock
   private {{model.name}}Repository repository;
 
-{% for parent in model.domain_parents %}
+{% for parent in model.parents %}
   @Mock
   private {{parent.name}}Repository {{parent.name|lower}}Repository;
 
