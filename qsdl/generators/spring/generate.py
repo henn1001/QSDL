@@ -59,6 +59,9 @@ def parse_domain(schema: Schema) -> List[Tuple[ApiClass, ModelClass]]:
     # add domain parents for each model
     parse_model_parents(models)
 
+    # add hibernate related info to model and fields
+    util.add_hibernate_info(models)
+
     return ret
 
 

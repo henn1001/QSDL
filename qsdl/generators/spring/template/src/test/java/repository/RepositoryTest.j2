@@ -75,7 +75,7 @@ public class {{model.name}}RepositoryTest {
     List<{{model.name}}> dbData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     AppPageable pageable = new AppPageable(null, null, null);
-    {% for field in model.fields if field._ref.is_query %}
+    {% for field in model.fields if field.is_query %}
     pageable.query.put("{{field.name}}", dbData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}});
     {% endfor %}
 
@@ -83,7 +83,7 @@ public class {{model.name}}RepositoryTest {
     long count = {{model.name|lower}}Repository.count(pageable);
 
     // Then
-    assertEquals({{ "1" if util.has(model._ref, has_query=True) else "5" }}, count);
+    assertEquals({{ "1" if model.has_query else "5" }}, count);
   }
 
   @Test
@@ -133,7 +133,7 @@ public class {{model.name}}RepositoryTest {
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     {% if parent.is_aggregation %}
-      {% for field in parent.model.fields if field.is_relation and field.type == model._ref.name %}
+      {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
         {% if encapsulation %}
     testParent.set{{field.name|pascal}}(new HashSet<>(testData));
         {% else %}
@@ -142,7 +142,7 @@ public class {{model.name}}RepositoryTest {
     {{parent.model.name|lower}}Repository.saveAndFlush(testParent);
       {% endfor %}
     {% else %}
-      {% for field in model.fields if field.is_relation and field.type == parent.model._ref.name %}
+      {% for field in model.fields if field.is_relation and field.type == parent.model.name %}
       {% if encapsulation %}
     testData.forEach(x -> x.set{{field.name|pascal}}(testParent));
       {% else %}
@@ -155,10 +155,10 @@ public class {{model.name}}RepositoryTest {
     AppPageable pageable = new AppPageable(null, null, null);
 
     // When
-    long count = {{model.name|lower}}Repository.countBy{{ util.get_parent_id_for_repo(parent.model._ref) | pascal }}(testParent.getId(), pageable);
+    long count = {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(testParent.getId(), pageable);
 
     // Then
-    assertEquals({{ "1" if util.has(model._ref, has_query=True) else "5" }}, count);
+    assertEquals({{ "1" if model.has_query else "5" }}, count);
   }
 
   @Test
@@ -180,7 +180,7 @@ public class {{model.name}}RepositoryTest {
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     {% if parent.is_aggregation %}
-      {% for field in parent.model.fields if field.is_relation and field.type == model._ref.name %}
+      {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
         {% if encapsulation %}
     testParent.set{{field.name|pascal}}(new HashSet<>(testData));
         {% else %}
@@ -189,7 +189,7 @@ public class {{model.name}}RepositoryTest {
     {{parent.model.name|lower}}Repository.saveAndFlush(testParent);
       {% endfor %}
     {% else %}
-      {% for field in model.fields if field.is_relation and field.type == parent.model._ref.name %}
+      {% for field in model.fields if field.is_relation and field.type == parent.model.name %}
       {% if encapsulation %}
     testData.forEach(x -> x.set{{field.name|pascal}}(testParent));
       {% else %}
@@ -205,7 +205,7 @@ public class {{model.name}}RepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{ util.get_parent_id_for_repo(parent.model._ref) | pascal }}(testParent.getId(), pageable);
+      List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{parent.model.hibernate.method_joined_id}}(testParent.getId(), pageable);
 
       cursor = pageable.getNextCursor(findData);
 
@@ -239,7 +239,7 @@ public class {{model.name}}RepositoryTest {
     {% endfor %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
-    {% for field in parent.model.fields if field.is_relation and field.type == model._ref.name %}
+    {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
       {% if encapsulation %}
     testParent.set{{field.name|pascal}}(new HashSet<>(testData));
       {% else %}
@@ -253,7 +253,7 @@ public class {{model.name}}RepositoryTest {
 
     // Then
     AppPageable pageable = new AppPageable(null, null, null);
-    List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{ util.get_parent_id_for_repo(parent.model._ref) | pascal }}(testParent.getId(), pageable);
+    List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{parent.model.hibernate.method_joined_id}}(testParent.getId(), pageable);
 
     assertEquals(4, findData.size());
   }

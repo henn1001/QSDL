@@ -21,11 +21,11 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
       value = """
 
           SELECT *
-          FROM {{api.name|upper}}
+          FROM {{model.hibernate.table_name}}
           WHERE 1 = 1
-            AND {{api.name|upper}}.ID <= {{ ":#{#pageable.cursor}" }}
+            AND {{model.hibernate.table_id_assessor}} <= {{ ":#{#pageable.cursor}" }}
             {{- macro.get_query() | indent(8) }}
-          ORDER BY {{api.name|upper}}.ID DESC
+          ORDER BY {{model.hibernate.table_id_assessor}} DESC
           LIMIT {{ ":#{#pageable.limit}" }}
 
           """,
@@ -36,7 +36,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
       value = """
 
           SELECT COUNT(*)
-          FROM {{api.name|upper}}
+          FROM {{model.hibernate.table_name}}
           WHERE 1 = 1
             AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
             {{- macro.get_query() | indent(8) }}
@@ -51,69 +51,69 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
       value = """
 
           SELECT *
-          FROM {{api.name|upper}}
-            INNER JOIN {{parent.model.name|upper}}_TO_{{api.name|upper}}
-            ON {{parent.model.name|upper}}_TO_{{api.name|upper}}.{{api.name|upper}}_ID = {{api.name|upper}}.ID
+          FROM {{model.hibernate.table_name}}
+            INNER JOIN {{parent.hibernate.join_table_name}}
+            ON {{parent.hibernate.join_table_name}}.{{model.hibernate.table_joined_id}} = {{model.hibernate.table_id_assessor}}
           WHERE 1 = 1
-            AND {{parent.model.name|upper}}_TO_{{api.name|upper}}.{{parent.model.name|upper}}_ID = :{{ util.get_parent_id_for_repo(parent.model._ref) | camel }}
-            AND {{api.name|upper}}.ID <= {{ ":#{#pageable.cursor}" }}
+            AND {{parent.hibernate.join_table_name}}.{{parent.model.hibernate.table_joined_id}} = :{{parent.model.hibernate.parameter_joined_id}}
+            AND {{model.hibernate.table_id_assessor}} <= {{ ":#{#pageable.cursor}" }}
             {{- macro.get_query() | indent(8) }}
-          ORDER BY {{api.name|upper}}.ID DESC
+          ORDER BY {{model.hibernate.table_id_assessor}} DESC
           LIMIT {{ ":#{#pageable.limit}" }}
 
           """,
       nativeQuery = true)
-  public List<{{model.name}}> findAllBy{{ util.get_parent_id_for_repo(parent.model._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(parent.model._ref) | camel }}") Long {{ util.get_parent_id_for_repo(parent.model._ref) | camel }}, @Param("pageable") AppPageable pageable);
+  public List<{{model.name}}> findAllBy{{parent.model.hibernate.method_joined_id}}(@Param("{{parent.model.hibernate.parameter_joined_id}}") Long {{parent.model.hibernate.parameter_joined_id}}, @Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
 
           SELECT COUNT(*)
-          FROM {{api.name|upper}}
-            INNER JOIN {{parent.model.name|upper}}_TO_{{api.name|upper}}
-            ON {{parent.model.name|upper}}_TO_{{api.name|upper}}.{{api.name|upper}}_ID = {{api.name|upper}}.ID
+          FROM {{model.hibernate.table_name}}
+            INNER JOIN {{parent.hibernate.join_table_name}}
+            ON {{parent.hibernate.join_table_name}}.{{model.hibernate.table_joined_id}} = {{model.hibernate.table_id_assessor}}
           WHERE 1 = 1
-            AND {{parent.model.name|upper}}_TO_{{api.name|upper}}.{{parent.model.name|upper}}_ID = :{{ util.get_parent_id_for_repo(parent.model._ref) | camel }}
+            AND {{parent.hibernate.join_table_name}}.{{parent.model.hibernate.table_joined_id}} = :{{parent.model.hibernate.parameter_joined_id}}
             AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
             {{- macro.get_query() | indent(8) }}
 
           """,
       nativeQuery = true)
-  public long countBy{{ util.get_parent_id_for_repo(parent.model._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(parent.model._ref) | camel }}") Long {{ util.get_parent_id_for_repo(parent.model._ref) | camel }}, @Param("pageable") AppPageable pageable);
+  public long countBy{{parent.model.hibernate.method_joined_id}}(@Param("{{parent.model.hibernate.parameter_joined_id}}") Long {{parent.model.hibernate.parameter_joined_id}}, @Param("pageable") AppPageable pageable);
     {% else %}
   @Query(
       value = """
 
           SELECT *
-          FROM {{api.name|upper}}
+          FROM {{model.hibernate.table_name}}
           WHERE 1 = 1
-            AND {{parent.model.name|upper}}_ID = :{{ util.get_parent_id_for_repo(parent.model._ref) | camel }}
-            AND {{api.name|upper}}.ID <= {{ ":#{#pageable.cursor}" }}
+            AND {{parent.model.hibernate.table_joined_id}} = :{{parent.model.hibernate.parameter_joined_id}}
+            AND {{model.hibernate.table_name}}.ID <= {{ ":#{#pageable.cursor}" }}
             {{- macro.get_query() | indent(8) }}
-          ORDER BY {{api.name|upper}}.ID DESC
+          ORDER BY {{model.hibernate.table_name}}.ID DESC
           LIMIT {{ ":#{#pageable.limit}" }}
 
           """,
       nativeQuery = true)
-  public List<{{model.name}}> findAllBy{{ util.get_parent_id_for_repo(parent.model._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(parent.model._ref) | camel }}") Long {{ util.get_parent_id_for_repo(parent.model._ref) | camel }}, @Param("pageable") AppPageable pageable);
+  public List<{{model.name}}> findAllBy{{parent.model.hibernate.method_joined_id}}(@Param("{{parent.model.hibernate.parameter_joined_id}}") Long {{parent.model.hibernate.parameter_joined_id}}, @Param("pageable") AppPageable pageable);
 
   @Query(
       value = """
 
           SELECT COUNT(*)
-          FROM {{api.name|upper}}
+          FROM {{model.hibernate.table_name}}
           WHERE 1 = 1
-            AND {{parent.model.name|upper}}_ID = :{{ util.get_parent_id_for_repo(parent.model._ref) | camel }}
+            AND {{parent.model.hibernate.table_joined_id}} = :{{parent.model.hibernate.parameter_joined_id}}
             AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
             {{- macro.get_query() | indent(8) }}
 
           """,
       nativeQuery = true)
-  public long countBy{{ util.get_parent_id_for_repo(parent.model._ref) | pascal }}(@Param("{{ util.get_parent_id_for_repo(parent.model._ref) | camel }}") Long {{ util.get_parent_id_for_repo(parent.model._ref) | camel }}, @Param("pageable") AppPageable pageable);
+  public long countBy{{parent.model.hibernate.method_joined_id}}(@Param("{{parent.model.hibernate.parameter_joined_id}}") Long {{parent.model.hibernate.parameter_joined_id}}, @Param("pageable") AppPageable pageable);
 
-  public Optional<{{model.name}}> findBy{{ util.get_parent_id_for_repo(parent.model._ref) | pascal }}And{{ util.get_id_for_repo(model._ref) }}(Long {{ util.get_parent_id_for_repo(parent.model._ref) | camel }}, Long {{ util.get_id_for_repo(model._ref) | camel }});
+  public Optional<{{model.name}}> findBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
 
-  public Boolean existsBy{{ util.get_parent_id_for_repo(parent.model._ref) | pascal }}And{{ util.get_id_for_repo(model._ref) }}(Long {{ util.get_parent_id_for_repo(parent.model._ref) | camel }}, Long {{ util.get_id_for_repo(model._ref) | camel }});
+  public Boolean existsBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
     {% endif %}
   {% endfor %}
 
@@ -123,7 +123,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
       value = """
 
           {% for parent in model.parents %}
-          DELETE FROM {{parent.model.name|upper}}_TO_{{api.name|upper}} WHERE {{api.name|upper}}_ID = :id ;
+          DELETE FROM {{parent.hibernate.join_table_name}} WHERE {{model.hibernate.table_joined_id}} = :id ;
           {% endfor %}
 
           """,

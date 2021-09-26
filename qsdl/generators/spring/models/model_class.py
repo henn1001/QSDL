@@ -17,13 +17,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Union
+from typing import TYPE_CHECKING, List, Union
 
 import stringcase
 
 import qsdl.dsl.models as dsl
 
 from .. import util
+
+if TYPE_CHECKING:
+    from . import HibernateFieldInfo, HibernateModelInfo
 
 
 @dataclass
@@ -33,6 +36,7 @@ class Parent:
     model: ModelClass
     is_aggregation: bool
     is_composition: bool = False
+    hibernate: HibernateFieldInfo = None
 
     def __post_init__(self):
         self.is_composition = not self.is_aggregation
@@ -60,6 +64,7 @@ class ModelField:
     is_required: bool = False
     is_read_only: bool = False
     is_write_only: bool = False
+    is_query: bool = False
 
     is_composition: bool = False
     is_aggregation: bool = False
@@ -67,6 +72,8 @@ class ModelField:
     is_relation_owner: bool = False
     foreign_key_name: str = None
     foreign_key_is_array: bool = False
+
+    hibernate: HibernateModelInfo = None
 
     getter: str = None
     setter: str = None
@@ -93,13 +100,15 @@ class ModelField:
         self.is_read_only = self._ref.is_read_only
         self.is_write_only = self._ref.is_write_only
 
+        self.is_query = self._ref.is_query
+
         # relation model
         self.is_composition = self._ref.is_composition
         self.is_aggregation = self._ref.is_aggregation
         self.is_relation = self.is_composition or self.is_aggregation
 
-        self.getter = "get" + stringcase.capitalcase(self.name)
-        self.setter = "set" + stringcase.capitalcase(self.name)
+        self.getter = "get" + stringcase.pascalcase(self.name)
+        self.setter = "set" + stringcase.pascalcase(self.name)
 
 
 @dataclass
@@ -130,6 +139,9 @@ class ModelClass:
     is_nested: bool = False
     has_aggregation: bool = False
     has_required: bool = False
+    has_query: bool = False
+
+    hibernate = None
 
     parents: List[Parent] = field(default_factory=list)
 
@@ -137,7 +149,7 @@ class ModelClass:
         """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention
-        self.name = stringcase.pascalcase(self._ref.name)
+        self.name = self._ref.name
 
         self.description = self._ref.description
 
@@ -164,6 +176,7 @@ class ModelClass:
         self.is_nested = util.is_nested(self._ref)
         self.has_aggregation = util.has(self._ref, has_aggregation=True)
         self.has_required = util.has(self._ref, has_required_ignore_id=True)
+        self.has_query = util.has(self._ref, has_query=True)
 
     def _add_attributes(self):
 

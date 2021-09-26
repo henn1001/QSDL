@@ -1,3 +1,4 @@
 """Spring Generator Models"""
 from .api_class import ApiClass
-from .model_class import ModelClass, Parent
+from .hibernate import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo
+from .model_class import ModelClass, ModelField, Parent

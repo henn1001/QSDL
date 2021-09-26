@@ -22,7 +22,7 @@ import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 
 from .config import Config
-from .models import ModelClass
+from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass
 
 # the parsed schema definition.
 schema: dsl.Schema = None
@@ -193,7 +193,7 @@ def is_aggregation(entity: dsl.Object, parent: dsl.Object) -> bool:
     return ret
 
 
-def get_model_imports(entity):
+def get_model_imports(entity: Union[dsl.Enum, dsl.Base, dsl.Object]):
     """Returns all imports for this model."""
     imports = []
 
@@ -232,6 +232,25 @@ def get_model_imports(entity):
         imports.extend(_import)
 
     return imports
+
+
+def add_hibernate_info(models: List[ModelClass]):
+    """Add hibernate related info to model and fields"""
+
+    if not config.database == "hibernate":
+        return
+
+    for model in models:
+        model_info = HibernateModelInfo(model)
+        model.hibernate = model_info
+
+        for field in model.fields:
+            field_info = HibernateFieldInfo(field)
+            field.hibernate = field_info
+
+        for parent in model.parents:
+            parent_info = HibernateParentInfo(model, parent.model)
+            parent.hibernate = parent_info
 
 
 def get_parent_fields(obj: dsl.Object) -> List[dsl.Field]:
