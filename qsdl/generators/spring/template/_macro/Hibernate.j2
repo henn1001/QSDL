@@ -30,7 +30,9 @@
     Relations
   #}
   {% if attr.is_relation and not attr.is_relation_owner %}
-      {# the parent side of the relation  #}
+      {# 
+        the parent side of the relation  
+      #}
       {% if attr.is_aggregation and attr.is_array %}
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "{{model.name|lower}}_to_{{attr.type|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{attr.type|lower}}_id"))
@@ -43,7 +45,9 @@
   @OneToOne(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, orphanRemoval = true)
       {% endif %}
   {% elif attr.is_relation and attr.is_relation_owner %}
-      {# the child side of the relation  #}
+      {#
+        The child/owning side of the relation.
+      #}
       {% if attr.is_aggregation and attr.foreign_key_is_array %}
   @ManyToMany(mappedBy = "{{attr.foreign_key_name}}", fetch = FetchType.LAZY)
       {% elif attr.is_aggregation and not attr.foreign_key_is_array  %}
@@ -81,3 +85,19 @@
       @AttributeOverride(name = "{{field.name}}", column = @Column(name = "{{attr.name}}_{{field.name}}")),
   {% endfor %}
 {% endmacro %}
+
+{# 
+  Returns 
+#}
+{%- macro get_query() -%}
+{%- for operation in api.operations %}
+
+  {%- if operation.method == "get" and operation.is_pageable and operation.query_parameters %}
+
+    {% for parameter in operation.query_parameters %}
+    AND ({{ ":#{#pageable.query['" + parameter.name + "']}" }} IS NULL OR {{ api.name | upper + "." + parameter.name | upper}} = {{ ":#{#pageable.query['" + parameter.name + "']}" }}){{ "\n" if not loop.last }}
+    {%- endfor %}
+
+  {%- endif %}
+{%- endfor %}
+{%- endmacro %}

@@ -131,11 +131,11 @@ def has(
     return ret
 
 
-def is_supertype(entity: Union[dsl.Base, dsl.Object]) -> bool:
-    """Checks if the Base or Object is used somewhere as a supertype.
+def is_supertype(entity: dsl.Base) -> bool:
+    """Checks if the provided Base is used somewhere as a supertype.
 
     Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
+        entity (Base): entity.Base.
 
     Returns:
         bool: Returns True on detection.
@@ -170,7 +170,7 @@ def is_nested(entity: Union[dsl.Base, dsl.Object]) -> bool:
     return False
 
 
-def is_aggregation(entity: dsl.Object, parent: dsl.Object) -> bool:
+def is_aggregated(entity: dsl.Object, parent: dsl.Object) -> bool:
     """Checks if the first Object is aggregated in the second Object.
 
     Args:
@@ -249,23 +249,23 @@ def add_hibernate_info(models: List[ModelClass]):
             parent.hibernate = parent_info
 
 
-def get_parent_fields(obj: dsl.Object) -> List[dsl.Field]:
+def get_parent_fields(obj: dsl.Object, filter_relations=True) -> List[dsl.Field]:
     """Returns all Objects whos Field value is this Object.
 
     Args:
-        schema (Schema): The QSDL schema model.
-        obj (Object): entity.Object
+        obj (dsl.Object): The Object which value the fields should have.
+        filter_relations (bool, optional): Include only relation fields. Defaults to True.
 
     Returns:
-        List[Field]: [entity.Field]
+        List[dsl.Field]: The list of Fields.
     """
     fields = []
 
     fields = xtx.get_children_of_field(schema)
 
-    fields = [x for x in fields if x.is_composition or x.is_aggregation]
+    fields = [x for x in fields if x.parent._tx_fqn == "entity.Object" and x.value == obj]
 
-    fields = [x for x in fields if x.value == obj and x.parent._tx_fqn == "entity.Object"]
+    fields = [x for x in fields if x.is_relation] if filter_relations else fields
 
     return fields
 
@@ -290,7 +290,7 @@ def get_filtered_fields_as_list(entity: dsl.Object) -> List[dsl.Field]:
     return fields
 
 
-def get_id_for_repo(entity: dsl.Object) -> str:
+def get_id_for_repo(entity: dsl.Object) -> str:  # TODO: REMOVE ME
     """Returns the ID name of a API Object.
 
     If no ID is found, we return ID regardless because that is
@@ -323,7 +323,7 @@ def get_id_for_repo(entity: dsl.Object) -> str:
     return ret.capitalize()
 
 
-def get_parent_id_for_repo(entity: dsl.Object) -> str:
+def get_parent_id_for_repo(entity: dsl.Object) -> str:  # TODO: REMOVE ME
     """Returns the ID name of a API Object.
 
     If no ID is found, we return ID regardless because that is

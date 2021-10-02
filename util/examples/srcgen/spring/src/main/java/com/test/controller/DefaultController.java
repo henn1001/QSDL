@@ -43,11 +43,6 @@ public class DefaultController {
 
   /**
    * POST /query : submitQury
-   *
-   * @param arg1
-   * @param arg2
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PostMapping(
     value = "/query",

@@ -43,10 +43,6 @@ public class TicketController {
 
   /**
    * GET /tickets : List Tickets
-   *
-
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @GetMapping(
     value = "/tickets",
@@ -59,10 +55,6 @@ public class TicketController {
 
   /**
    * POST /tickets : Create a Ticket
-   *
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PostMapping(
     value = "/tickets",
@@ -76,10 +68,6 @@ public class TicketController {
 
   /**
    * GET /tickets/{id} : Read the specified Ticket
-   *
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @GetMapping(
     value = "/tickets/{id}",
@@ -92,11 +80,6 @@ public class TicketController {
 
   /**
    * PUT /tickets/{id} : Replace the specified Ticket
-   *
-   * @param id (required)
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PutMapping(
     value = "/tickets/{id}",
@@ -110,11 +93,6 @@ public class TicketController {
 
   /**
    * PATCH /tickets/{id} : Update the specified Ticket
-   *
-   * @param id (required)
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PatchMapping(
     value = "/tickets/{id}",
@@ -129,10 +107,6 @@ public class TicketController {
 
   /**
    * DELETE /tickets/{id} : Delete the specified Ticket
-   *
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @DeleteMapping(
     value = "/tickets/{id}"

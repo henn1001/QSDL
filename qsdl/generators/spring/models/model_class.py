@@ -26,7 +26,7 @@ import qsdl.dsl.models as dsl
 from .. import util
 
 if TYPE_CHECKING:
-    from . import HibernateFieldInfo, HibernateModelInfo
+    from . import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo
 
 
 @dataclass
@@ -36,7 +36,7 @@ class Parent:
     model: ModelClass
     is_aggregation: bool
     is_composition: bool = False
-    hibernate: HibernateFieldInfo = None
+    hibernate: HibernateParentInfo = None
 
     def __post_init__(self):
         self.is_composition = not self.is_aggregation
@@ -53,18 +53,20 @@ class ModelField:
     name: str = None
     json_key: str = None
     description: str = None
-    type: str = None
 
+    type: str = None
     is_array: bool = False
+
+    is_required: bool = False
+    is_read_only: bool = False
+    is_write_only: bool = False
+    is_query: bool = False
+
     is_enum: bool = False
     is_base: bool = False
     is_object: bool = False
     is_id: bool = False
     is_date: bool = False
-    is_required: bool = False
-    is_read_only: bool = False
-    is_write_only: bool = False
-    is_query: bool = False
 
     is_composition: bool = False
     is_aggregation: bool = False
@@ -73,7 +75,7 @@ class ModelField:
     foreign_key_name: str = None
     foreign_key_is_array: bool = False
 
-    hibernate: HibernateModelInfo = None
+    hibernate: HibernateFieldInfo = None
 
     getter: str = None
     setter: str = None
@@ -87,20 +89,18 @@ class ModelField:
         self.description = self._ref.description
 
         self.type = util.custom_type(self._ref.value.name)
-
         self.is_array = self._ref.is_array
+
+        self.is_required = self._ref.is_required
+        self.is_read_only = self._ref.is_read_only
+        self.is_write_only = self._ref.is_write_only
+        self.is_query = self._ref.is_query
+
         self.is_enum = self._ref.value._tx_fqn in ["entity.Enum"]
         self.is_base = self._ref.value._tx_fqn in ["entity.Base"]
         self.is_object = self._ref.value._tx_fqn in ["entity.Object"]
         self.is_id = self._ref.value.name == "ID"
         self.is_date = self._ref.value.name == "Date"
-
-        self.is_required = self._ref.is_required
-
-        self.is_read_only = self._ref.is_read_only
-        self.is_write_only = self._ref.is_write_only
-
-        self.is_query = self._ref.is_query
 
         # relation model
         self.is_composition = self._ref.is_composition
@@ -113,7 +113,7 @@ class ModelField:
 
 @dataclass
 class ModelClass:
-    """The Java Model"""
+    """The Java Model for the Domain Class Object"""
 
     # the textx object
     _ref: Union[dsl.Enum, dsl.Base, dsl.Object]
@@ -125,8 +125,6 @@ class ModelClass:
     is_enum: bool = False
     is_base: bool = False
     is_object: bool = False
-
-    extends: str = None
 
     fields: List[ModelField] = field(default_factory=list)
     constants: List[str] = field(default_factory=list)
@@ -141,7 +139,7 @@ class ModelClass:
     has_required: bool = False
     has_query: bool = False
 
-    hibernate = None
+    hibernate: HibernateModelInfo = None
 
     parents: List[Parent] = field(default_factory=list)
 
@@ -157,9 +155,6 @@ class ModelClass:
         self.is_enum = self._ref._tx_fqn in ["entity.Enum"]
         self.is_base = self._ref._tx_fqn in ["entity.Base"]
         self.is_object = self._ref._tx_fqn in ["entity.Object"]
-
-        if not self.is_enum and self._ref.supertype:
-            self.extends = stringcase.pascalcase(self._ref.supertype.name)
 
         # add attributes
         self._add_attributes()
@@ -179,8 +174,9 @@ class ModelClass:
         self.has_query = util.has(self._ref, has_query=True)
 
     def _add_attributes(self):
+        """Creates and adds all visible attributes to a ModelClass"""
 
-        # filter only base and object
+        # filter on base and object
         if not (self.is_base or self.is_object):
             return
 
@@ -193,6 +189,7 @@ class ModelClass:
             self.fields.append(new_model_field)
 
     def _add_constants(self):
+        """Adds all values for Enums"""
 
         # filter only enum
         if not self.is_enum:
@@ -202,8 +199,9 @@ class ModelClass:
             self.constants.append(value)
 
     def _add_relations(self):
+        """Creates and adds all explicit relation attributes to a ModelClass"""
 
-        # filter only object with relation
+        # filter on object
         if not self.is_object:
             return
 
@@ -212,10 +210,12 @@ class ModelClass:
 
         for dsl_field in dsl_fields:
             new_model_field = ModelField(dsl_field)
+            # TODO: rename new_model_field name
 
             self.fields.append(new_model_field)
 
     def _add_foreign_keys(self):
+        """Creates and adds all implicit relation attributes to a ModelClass"""
 
         # filter on object
         if not self.is_object:
@@ -223,6 +223,7 @@ class ModelClass:
 
         # get the fields of all parents that
         # use self as aggregation or composition
+        # TODO: add nested Objects
         dsl_fields = util.get_parent_fields(self._ref)
 
         for dsl_field in dsl_fields:

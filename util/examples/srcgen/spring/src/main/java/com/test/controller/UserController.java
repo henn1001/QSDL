@@ -43,10 +43,6 @@ public class UserController {
 
   /**
    * GET /tickets/{ticket_id}/users : List Users
-   *
-   * @param ticketId (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @GetMapping(
     value = "/tickets/{ticket_id}/users",
@@ -59,11 +55,6 @@ public class UserController {
 
   /**
    * POST /tickets/{ticket_id}/users/{id}/add : Add User
-   *
-   * @param ticketId (required)
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PostMapping(
     value = "/tickets/{ticket_id}/users/{id}/add"
@@ -75,11 +66,6 @@ public class UserController {
 
   /**
    * POST /tickets/{ticket_id}/users/{id}/remove : Remove User
-   *
-   * @param ticketId (required)
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PostMapping(
     value = "/tickets/{ticket_id}/users/{id}/remove"
@@ -91,10 +77,6 @@ public class UserController {
 
   /**
    * GET /users : List Users
-   *
-
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @GetMapping(
     value = "/users",
@@ -107,10 +89,6 @@ public class UserController {
 
   /**
    * POST /users : Create a User
-   *
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PostMapping(
     value = "/users",
@@ -124,10 +102,6 @@ public class UserController {
 
   /**
    * GET /users/{id} : Read the specified User
-   *
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @GetMapping(
     value = "/users/{id}",
@@ -140,11 +114,6 @@ public class UserController {
 
   /**
    * PUT /users/{id} : Replace the specified User
-   *
-   * @param id (required)
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PutMapping(
     value = "/users/{id}",
@@ -158,11 +127,6 @@ public class UserController {
 
   /**
    * PATCH /users/{id} : Update the specified User
-   *
-   * @param id (required)
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PatchMapping(
     value = "/users/{id}",
@@ -177,10 +141,6 @@ public class UserController {
 
   /**
    * DELETE /users/{id} : Delete the specified User
-   *
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @DeleteMapping(
     value = "/users/{id}"

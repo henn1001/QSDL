@@ -17,10 +17,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Operation
+    from qsdl.dsl.models import Base, Enum, Object, Operation, Scalar
 
 
 @dataclass
@@ -32,7 +32,7 @@ class Argument:
     name: str = None
     # RHS
     is_array: bool = False
-    value: object = None
+    value: Union[Scalar, Base, Object, Enum] = None
     is_required: bool = False
 
     # required by textX

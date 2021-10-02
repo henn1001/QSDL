@@ -28,34 +28,48 @@ from .. import util
 
 @dataclass
 class Parameter:
-    """Custom dataclass"""
+    """Method parameters and return value."""
 
     name: str = None
     json_key: str = None
-    description: str = None
+
     type: str = None
     is_array: bool = False
-    is_required: bool = False
 
+    is_required: bool = False
     is_query: bool = False
     is_path: bool = False
     is_body: bool = False
 
+    def build(self, _ref: dsl.Argument) -> Parameter:
+        """Builds self from dsl.Argument"""
+
+        self.name = stringcase.camelcase(_ref.name)
+        self.json_key = _ref.name
+
+        self.type = util.custom_type(_ref.value.name)
+        self.is_array = _ref.is_array
+
+        self.is_required = _ref.is_required
+        self.is_path = _ref.is_path
+        self.is_query = _ref.is_query
+        self.is_body = _ref.is_body
+
+        return self
+
 
 @dataclass
-class Method:
-    """Custom dataclass"""
+class Operation:
+    """The Operation/Methods for a Api"""
 
-    # the textx object
-    _ref: dsl.Operation
-
-    # computed attributes
     name: str = None
     tag: str = None
     summary: str = None
     description: str = None
+
     path: str = None
     method: str = None
+
     is_deprecated: bool = False
     is_crud: bool = False
     is_pageable: bool = False
@@ -67,69 +81,65 @@ class Method:
     path_parameters: List[Parameter] = field(default_factory=list)
     query_parameters: List[Parameter] = field(default_factory=list)
     body_parameters: List[Parameter] = field(default_factory=list)
+
     response: Parameter = None
 
-    def __post_init__(self):
+    def build(self, _ref: dsl.Operation) -> Operation:
+        """Builds self from dsl.Operation"""
 
-        is_crud = self._ref.parent.parent.is_crud if self._ref.parent.parent._tx_fqn == "entity.Object" else False
+        self.name = _ref.name
+        self.tag = _ref.parent.namespace
+        self.summary = _ref.summary
+        self.description = _ref.description
 
-        # assign values to self
-        self.name = self._ref.name
-        self.tag = self._ref.parent.namespace
-        self.summary = self._ref.summary
-        self.description = self._ref.description
-        self.path = self._ref.path
-        self.method = self._ref.method.lower()
-        self.is_crud = is_crud
-        self.is_pageable = self._ref.is_pageable
+        self.path = _ref.path
+        self.method = _ref.method.lower()
 
-        self.domain_object = self._ref.domain_object
-        self.domain_parent = self._ref.domain_parent
+        self.is_deprecated = False
+        self.is_crud = _ref.parent.parent.is_crud if _ref.parent.parent._tx_fqn == "entity.Object" else False
+        self.is_pageable = _ref.is_pageable
 
-        self._add_parameters()
+        self.domain_object = _ref.domain_object
+        self.domain_parent = _ref.domain_parent
 
-    def _add_parameters(self):
+        self._add_parameters(_ref)
+        self._add_response(_ref)
 
-        for argument in self._ref.arguments:
-            param = Parameter()
-            param.name = stringcase.camelcase(argument.name)
-            param.json_key = argument.name
-            param.is_required = argument.is_required
-            param.is_array = argument.is_array
+        return self
 
-            param.type = util.custom_type(argument.value.name)
+    def _add_parameters(self, _ref: dsl.Operation):
+        """Creates and adds all parameters to a Operation"""
 
-            param.is_path = argument.is_path
-            param.is_query = argument.is_query
-            param.is_body = argument.is_body
+        for argument in _ref.arguments:
+            new_param = Parameter().build(argument)
 
-            if param.is_path:
-                self.path_parameters.append(param)
-                self.parameters.append(param)
-            if param.is_query:
-                self.query_parameters.append(param)
-                self.parameters.append(param)
-            if param.is_body and not self._ref.method == "DELETE":
-                self.body_parameters.append(param)
-                self.parameters.append(param)
+            self.parameters.append(new_param)
 
-        # response
-        if self._ref.value:
-            param = Parameter()
-            param.name = stringcase.camelcase(self._ref.value.name)
-            param.json_key = self._ref.value.name
-            param.is_required = False
-            param.is_array = self._ref.is_array
+            if new_param.is_path:
+                self.path_parameters.append(new_param)
+            elif new_param.is_query:
+                self.query_parameters.append(new_param)
+            elif new_param.is_body and not _ref.method == "DELETE":
+                self.body_parameters.append(new_param)
 
-            param.type = util.custom_type(self._ref.value.name)
+    def _add_response(self, _ref: dsl.Operation):
+        """Creates and adds a response parameter to a Operation"""
 
-            if self._ref.is_pageable:
-                param.name = "ObjectList"
-                param.json_key = "ObjectList"
-                param.type = "ObjectList"
-                param.is_array = False
+        if _ref.value:
+            new_param = Parameter()
+            new_param.name = stringcase.camelcase(_ref.value.name)
+            new_param.json_key = _ref.value.name
+            new_param.is_array = _ref.is_array
 
-            self.response = param
+            new_param.type = util.custom_type(_ref.value.name)
+
+            if _ref.is_pageable:
+                new_param.name = "ObjectList"
+                new_param.json_key = "ObjectList"
+                new_param.type = "ObjectList"
+                new_param.is_array = False
+
+            self.response = new_param
 
     def get_aggregation_parameter(self) -> List[str]:
         ret = "error"
@@ -211,29 +221,31 @@ class Method:
 
 @dataclass
 class ApiClass:
-    """Custom dataclass"""
+    """The Java Model for the Controller and Service Class"""
 
-    _ref: dsl.Api
-
-    # computed attributes
     name: str = None
     tag: str = None
     description: str = None
-    operations: List = field(default_factory=list)
 
-    def __post_init__(self):
+    operations: List[Operation] = field(default_factory=list)
 
-        name = self._ref.parent.name if self._ref.parent._tx_fqn == "entity.Object" else "Default"
+    def build(self, _ref: dsl.Api) -> ApiClass:
+        """Builds self from dsl.Api"""
 
-        # assign values to self
-        self.name = name
-        self.tag = stringcase.lowercase(self._ref.namespace)
-        self.description = self._ref.description
+        # The api name equals the object name to unless it is not part of a object
+        self.name = _ref.parent.name if _ref.parent._tx_fqn == "entity.Object" else "Default"
+        self.tag = stringcase.lowercase(_ref.namespace)
+        self.description = _ref.description
 
-        self._add_operations(self._ref.operations)
+        # add methods
+        self._add_operations(_ref)
 
-    def _add_operations(self, operations):
+        return self
 
-        for operation in operations:
-            new_operation = Method(operation)
+    def _add_operations(self, _ref: dsl.Api):
+        """Creates and adds all Operations to a ApiClass"""
+
+        for operation in _ref.operations:
+            new_operation = Operation().build(operation)
+
             self.operations.append(new_operation)

@@ -45,20 +45,6 @@ public class {{api.name}}Controller {
 {% for operation in api.operations %}
   /**
    * {{operation.method|upper}} {{operation.path}}{% if operation.summary %} : {{operation.summary + "\n"}}{% endif %}
-  {% if operation.description %}
-   * {{operation.description | indent(5)}}
-   *
-  {% endif %}
-  {% if operation.isDeprecated %}
-   * @deprecated
-   *
-  {% endif %}
-   *
-  {% for parameter in operation.parameters %}
-   * @param {{parameter.name}}{% if parameter.is_required %} (required){% endif %}{% if not loop.last %}{{"\n"}}{% endif %}
-  {% endfor %}{{""}}
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @{{operation.method|capitalize}}Mapping(
     value = "{{operation.path}}"

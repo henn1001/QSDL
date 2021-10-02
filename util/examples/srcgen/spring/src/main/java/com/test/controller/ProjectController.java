@@ -43,10 +43,6 @@ public class ProjectController {
 
   /**
    * GET /projects : List Projects
-   *
-   * @param name
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @GetMapping(
     value = "/projects",
@@ -59,10 +55,6 @@ public class ProjectController {
 
   /**
    * POST /projects : Create a Project
-   *
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PostMapping(
     value = "/projects",
@@ -76,10 +68,6 @@ public class ProjectController {
 
   /**
    * GET /projects/{id} : Read the specified Project
-   *
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @GetMapping(
     value = "/projects/{id}",
@@ -92,11 +80,6 @@ public class ProjectController {
 
   /**
    * PUT /projects/{id} : Replace the specified Project
-   *
-   * @param id (required)
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PutMapping(
     value = "/projects/{id}",
@@ -110,11 +93,6 @@ public class ProjectController {
 
   /**
    * PATCH /projects/{id} : Update the specified Project
-   *
-   * @param id (required)
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PatchMapping(
     value = "/projects/{id}",
@@ -129,10 +107,6 @@ public class ProjectController {
 
   /**
    * DELETE /projects/{id} : Delete the specified Project
-   *
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @DeleteMapping(
     value = "/projects/{id}"

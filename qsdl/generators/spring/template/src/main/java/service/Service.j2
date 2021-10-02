@@ -40,7 +40,7 @@ public class {{api.name}}Service {
   private void init() {
 
   }
-{% if database == "hibernate" and model.parents %}
+{% if database == "hibernate" and model and model.parents %}
 {% for parent in model.parents %}
 
   private void validate{{parent.model.name}}Id(Long id) throws AppException {

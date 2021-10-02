@@ -47,7 +47,7 @@ def parse_domain(schema: Schema) -> List[Tuple[ApiClass, ModelClass]]:
     entities = xtx.get_children_of_api(schema)
 
     for entity in entities:
-        new_api = ApiClass(entity)
+        new_api = ApiClass().build(entity)
         new_model = None
 
         if entity.parent._tx_fqn == "entity.Object":
@@ -84,7 +84,7 @@ def parse_model_parents(models: List[ModelClass]):
             result = [x for x in models if x._ref == obj and x.name not in parent_names]
             _ = [parent_names.append(x.name) for x in result]
 
-            result = [Parent(x, util.is_aggregation(model._ref, obj)) for x in result]
+            result = [Parent(x, util.is_aggregated(model._ref, obj)) for x in result]
 
             parents.extend(result)
 

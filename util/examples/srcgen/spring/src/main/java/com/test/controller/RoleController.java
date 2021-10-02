@@ -43,10 +43,6 @@ public class RoleController {
 
   /**
    * GET /projects/{project_id}/roles : List Roles
-   *
-   * @param projectId (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @GetMapping(
     value = "/projects/{project_id}/roles",
@@ -59,11 +55,6 @@ public class RoleController {
 
   /**
    * POST /projects/{project_id}/roles : Create a Role
-   *
-   * @param projectId (required)
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PostMapping(
     value = "/projects/{project_id}/roles",
@@ -77,11 +68,6 @@ public class RoleController {
 
   /**
    * GET /projects/{project_id}/roles/{id} : Read the specified Role
-   *
-   * @param projectId (required)
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @GetMapping(
     value = "/projects/{project_id}/roles/{id}",
@@ -94,12 +80,6 @@ public class RoleController {
 
   /**
    * PUT /projects/{project_id}/roles/{id} : Replace the specified Role
-   *
-   * @param projectId (required)
-   * @param id (required)
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PutMapping(
     value = "/projects/{project_id}/roles/{id}",
@@ -113,12 +93,6 @@ public class RoleController {
 
   /**
    * PATCH /projects/{project_id}/roles/{id} : Update the specified Role
-   *
-   * @param projectId (required)
-   * @param id (required)
-   * @param body
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @PatchMapping(
     value = "/projects/{project_id}/roles/{id}",
@@ -133,11 +107,6 @@ public class RoleController {
 
   /**
    * DELETE /projects/{project_id}/roles/{id} : Delete the specified Role
-   *
-   * @param projectId (required)
-   * @param id (required)
-   * @return OK (status code 200)
-   *         or Unexpected error (status code default)
    */
   @DeleteMapping(
     value = "/projects/{project_id}/roles/{id}"
