@@ -17,13 +17,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List
+from typing import TYPE_CHECKING, List
 
 import stringcase
 
 import qsdl.dsl.models as dsl
 
 from .. import util
+
+if TYPE_CHECKING:
+    from . import ModelClass, Parent
 
 
 @dataclass
@@ -74,8 +77,7 @@ class Operation:
     is_crud: bool = False
     is_pageable: bool = False
 
-    domain_object: dsl.Object = None
-    domain_parent: dsl.Object = None
+    parent: Parent = None
 
     parameters: List[Parameter] = field(default_factory=list)
     path_parameters: List[Parameter] = field(default_factory=list)
@@ -99,8 +101,8 @@ class Operation:
         self.is_crud = _ref.parent.parent.is_crud if _ref.parent.parent._tx_fqn == "entity.Object" else False
         self.is_pageable = _ref.is_pageable
 
-        self.domain_object = _ref.domain_object
-        self.domain_parent = _ref.domain_parent
+        if _ref.domain_object and _ref.domain_parent:
+            self.parent = util.get_parent_for(_ref.domain_object.name, _ref.domain_parent.name)
 
         self._add_parameters(_ref)
         self._add_response(_ref)
@@ -141,54 +143,14 @@ class Operation:
 
             self.response = new_param
 
-    def get_aggregation_parameter(self) -> List[str]:
-        ret = "error"
-
-        for param in self.domain_parent.fields:
-            if param.value == self.domain_object:
-                ret = param.name
-                break
-
-        return ret
-
-    def get_read_only_parameters(self, encapsulation) -> List[str]:
-        ret = []
-
-        # first get all fields
-        filtered_fields = util.get_filtered_fields_as_list(self.domain_object)
-
-        # get read only fields
-        field_names = [x.name for x in filtered_fields if x.is_read_only and x.name.lower() != "id"]
-
-        for name in field_names:
-            getter = stringcase.pascalcase(name) if encapsulation else stringcase.camelcase(name)
-            ret.append(getter)
-
-        return ret
-
-    def get_writable_parameters(self, encapsulation) -> List[str]:
-        ret = []
-
-        # first get all fields
-        filtered_fields = util.get_filtered_fields_as_list(self.domain_object)
-
-        # get read only fields
-        field_names = [x.name for x in filtered_fields if not x.is_read_only]
-
-        for name in field_names:
-            getter = stringcase.pascalcase(name) if encapsulation else stringcase.camelcase(name)
-            ret.append(getter)
-
-        return ret
-
     def get_repo_find_all_name(self) -> str:
         ret = "findAll"
-        ret += "By" + stringcase.pascalcase(self.path_parameters[0].name) if self.domain_parent else ""
+        ret += "By" + self.parent.model.hibernate.method_joined_id if self.parent else ""
         return ret
 
     def get_repo_count_name(self) -> str:
         ret = "count"
-        ret += "By" + stringcase.pascalcase(self.path_parameters[0].name) if self.domain_parent else ""
+        ret += "By" + self.parent.model.hibernate.method_joined_id if self.parent else ""
         return ret
 
     def get_repo_find_all_parameters(self) -> str:
@@ -227,6 +189,8 @@ class ApiClass:
     tag: str = None
     description: str = None
 
+    model: ModelClass = None
+
     operations: List[Operation] = field(default_factory=list)
 
     def build(self, _ref: dsl.Api) -> ApiClass:
@@ -236,6 +200,10 @@ class ApiClass:
         self.name = _ref.parent.name if _ref.parent._tx_fqn == "entity.Object" else "Default"
         self.tag = stringcase.lowercase(_ref.namespace)
         self.description = _ref.description
+
+        # add model
+        if _ref.parent._tx_fqn == "entity.Object":
+            self.model = util.get_model_for(_ref.parent.name)
 
         # add methods
         self._add_operations(_ref)

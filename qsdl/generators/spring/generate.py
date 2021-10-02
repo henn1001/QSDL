@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 import pathspec
 
@@ -27,68 +27,7 @@ from qsdl.render import render
 
 from . import util
 from .config import Config
-from .models import ApiClass, ModelClass, Parent
-
-
-def parse_domain(schema: Schema) -> List[Tuple[ApiClass, ModelClass]]:
-    """Parse QSDL schema into custom API and Model.
-
-    Returns both the Api and (if present) the Model object.
-
-    Args:
-        schema (Schema): The QSDL schema model.
-
-    Returns:
-        List[Tuple(ApiClass, ModelClass)]: A list of custom API and Model.
-    """
-    ret = []
-    models = []
-
-    entities = xtx.get_children_of_api(schema)
-
-    for entity in entities:
-        new_api = ApiClass().build(entity)
-        new_model = None
-
-        if entity.parent._tx_fqn == "entity.Object":
-            new_model = ModelClass(entity.parent)
-            models.append(new_model)
-
-        ret.append((new_api, new_model))
-
-    # add domain parents for each model
-    parse_model_parents(models)
-
-    # add hibernate related info to model and fields
-    util.add_hibernate_info(models)
-
-    return ret
-
-
-def parse_model_parents(models: List[ModelClass]):
-    """Add all Models who are a domain parent to a Model.
-
-    Args:
-        models (List[ModelClass]): The list of all available models.
-    """
-    for model in models:
-
-        parents = []
-        parent_names = []
-
-        parent_fields = util.get_parent_fields(model._ref)
-        parent_objects = [x.parent for x in parent_fields]
-
-        for obj in parent_objects:
-            # search in provided models list for a match to the current obj and filter duplicates
-            result = [x for x in models if x._ref == obj and x.name not in parent_names]
-            _ = [parent_names.append(x.name) for x in result]
-
-            result = [Parent(x, util.is_aggregated(model._ref, obj)) for x in result]
-
-            parents.extend(result)
-
-        model.parents = parents
+from .models import ApiClass, ModelClass
 
 
 def parse_models(schema: Schema) -> List[ModelClass]:
@@ -97,21 +36,48 @@ def parse_models(schema: Schema) -> List[ModelClass]:
     Args:
         schema (Schema): The QSDL schema model.
     Returns:
-        List[Model]: The parsed models.
+        List[ModelClass]: The parsed models.
     """
     models = []
 
     enum_list = xtx.get_children_of_enum(schema)
     base_list = xtx.get_children_of_base(schema)
+    obj_list = xtx.get_children_of_object(schema)
 
-    for obj in enum_list + base_list:
-        model = ModelClass(obj)
-        models.append(model)
+    for entity in enum_list + base_list + obj_list:
+        new_model = ModelClass().build(entity)
+        models.append(new_model)
+
+    # add domain parents for each model
+    util.add_parents_to_model(models)
+
+    # add hibernate related info to model and fields
+    util.add_hibernate_info(models)
 
     return models
 
 
-def remove_ignored_files(output_path: Path, domain_files: list, model_files: list, supporting_files: list):
+def parse_apis(schema: Schema) -> List[ApiClass]:
+    """Parse QSDL schema into custom apis.
+
+    Args:
+        schema (Schema): The QSDL schema model.
+
+    Returns:
+        List[ApiClass]: The parsed apis.
+    """
+    apis = []
+
+    api_list = xtx.get_children_of_api(schema)
+
+    for entity in api_list:
+        new_api = ApiClass().build(entity)
+        apis.append(new_api)
+
+    return apis
+
+
+def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list):
     """Removes all generated files mentioned in .qsdl-ignore.
 
     Utilizes the pathspec python package.
@@ -134,9 +100,9 @@ def remove_ignored_files(output_path: Path, domain_files: list, model_files: lis
 
         # loop over each all files and remove matches
         # note the copy() - we dont want to modify the list directly
-        for src, dest, _, _ in domain_files.copy():
+        for src, dest, _ in api_files.copy():
             if spec.match_file(output_path / dest):
-                domain_files.remove((src, dest, _))
+                api_files.remove((src, dest, _))
 
         for src, dest, _ in model_files.copy():
             if spec.match_file(output_path / dest):
@@ -174,35 +140,36 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     # sets the id type and schema
     util.custom_types["ID"] = config.id_type
-    util.schema = schema
-    util.config = config
+    util.Store.schema = schema
+    util.Store.config = config
 
     base_package = config.group_id.replace(".", "/")
 
+    # parse models and apis
+    util.Store.models = models = parse_models(schema)
+    apis = parse_apis(schema)
+
     # loop and generate domain files
-    domain_files = []
+    api_files = []
 
-    for api, model in parse_domain(schema):
+    for api in apis:
         # fmt: off
-        domain_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{base_package}/controller/{api.name}Controller.java", api, model))
-        domain_files.append(("src/main/java/service/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api, model))
+        api_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{base_package}/controller/{api.name}Controller.java", api))
+        api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api))
 
-        if model:
-            domain_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{base_package}/domain/{model.name}.java", api, model))
+        if api.model:
+            api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{base_package}/controller/{api.name}ControllerTest.java", api))
+            api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{base_package}/service/{api.name}ServiceTest.java", api))
 
-            # tests
-            domain_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{base_package}/controller/{api.name}ControllerTest.java", api, model))
-            domain_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{base_package}/service/{api.name}ServiceTest.java", api, model))
-
-        if config.database == "hibernate" and model :
-            domain_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{model.name}Repository.java", api, model))
-            domain_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{base_package}/repository/{model.name}RepositoryTest.java", api, model))
+        if api.model and config.database == "hibernate":
+            api_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{api.name}Repository.java", api))
+            api_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{base_package}/repository/{api.name}RepositoryTest.java", api))
         # fmt: on
 
     # loop and generate model files
     model_files = []
 
-    for model in parse_models(schema):
+    for model in models:
         # fmt: off
         model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{base_package}/domain/{model.name}.java", model))
         # fmt: on
@@ -256,7 +223,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
     # fmt: on
 
     # remove ignored files from generator
-    remove_ignored_files(output_path, domain_files, model_files, supporting_files)
+    remove_ignored_files(output_path, api_files, model_files, supporting_files)
 
     # build the render arguments
     context = {
@@ -266,7 +233,6 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "base_package": config.group_id,
         "basePath": schema.servers[0] if schema.servers else "/api/v1",
         "database": config.database,
-        "util": util,
         "encapsulation": config.encapsulation,
     }
 
@@ -286,9 +252,9 @@ def generate(schema: Schema, output_path: Path, config: Config):
         render(output_file, context, template_path, macro_path=macro_path)
 
     # generate apis
-    for src, dest, api, model in domain_files:
+    for src, dest, api in api_files:
         context["api"] = api
-        context["model"] = model
+        context["model"] = api.model
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
         macro_path = Path(__file__).parent / "template" / "_macro"

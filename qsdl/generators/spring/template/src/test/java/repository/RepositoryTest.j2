@@ -132,7 +132,7 @@ public class {{model.name}}RepositoryTest {
     {% endfor %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
-    {% if parent.is_aggregation %}
+    {% if parent.field.is_aggregation %}
       {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
         {% if encapsulation %}
     testParent.set{{field.name|pascal}}(new HashSet<>(testData));
@@ -179,7 +179,7 @@ public class {{model.name}}RepositoryTest {
     {% endfor %}
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
-    {% if parent.is_aggregation %}
+    {% if parent.field.is_aggregation %}
       {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
         {% if encapsulation %}
     testParent.set{{field.name|pascal}}(new HashSet<>(testData));
@@ -220,7 +220,7 @@ public class {{model.name}}RepositoryTest {
 
   {% endfor %}
   {% if model.has_aggregation %}
-    {% for parent in model.parents if parent.is_aggregation %}
+    {% for parent in model.parents if parent.field.is_aggregation %}
   @Test
   public void whenRemoveRelation_thenLinkRemovedFrom{{parent.model.name}}() {
 

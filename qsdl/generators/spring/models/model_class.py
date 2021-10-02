@@ -26,30 +26,13 @@ import qsdl.dsl.models as dsl
 from .. import util
 
 if TYPE_CHECKING:
-    from . import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo
-
-
-@dataclass
-class Parent:
-    """Contains the ModelClass and specifies the relation type"""
-
-    model: ModelClass
-    is_aggregation: bool
-    is_composition: bool = False
-    hibernate: HibernateParentInfo = None
-
-    def __post_init__(self):
-        self.is_composition = not self.is_aggregation
+    from . import HibernateFieldInfo, HibernateModelInfo, Parent
 
 
 @dataclass
 class ModelField:
     """The field of a Java Model"""
 
-    # the textx object
-    _ref: dsl.Field
-
-    # computed attributes
     name: str = None
     json_key: str = None
     description: str = None
@@ -80,45 +63,49 @@ class ModelField:
     getter: str = None
     setter: str = None
 
-    def __post_init__(self):
+    embedded_fields: List[str] = field(default_factory=list)
+
+    def build(self, _ref: dsl.Field) -> ModelField:
         """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention
-        self.name = stringcase.camelcase(self._ref.name)
-        self.json_key = self._ref.name
-        self.description = self._ref.description
+        self.name = stringcase.camelcase(_ref.name)
+        self.json_key = _ref.name
+        self.description = _ref.description
 
-        self.type = util.custom_type(self._ref.value.name)
-        self.is_array = self._ref.is_array
+        self.type = util.custom_type(_ref.value.name)
+        self.is_array = _ref.is_array
 
-        self.is_required = self._ref.is_required
-        self.is_read_only = self._ref.is_read_only
-        self.is_write_only = self._ref.is_write_only
-        self.is_query = self._ref.is_query
+        self.is_required = _ref.is_required
+        self.is_read_only = _ref.is_read_only
+        self.is_write_only = _ref.is_write_only
+        self.is_query = _ref.is_query
 
-        self.is_enum = self._ref.value._tx_fqn in ["entity.Enum"]
-        self.is_base = self._ref.value._tx_fqn in ["entity.Base"]
-        self.is_object = self._ref.value._tx_fqn in ["entity.Object"]
-        self.is_id = self._ref.value.name == "ID"
-        self.is_date = self._ref.value.name == "Date"
+        self.is_enum = _ref.value._tx_fqn in ["entity.Enum"]
+        self.is_base = _ref.value._tx_fqn in ["entity.Base"]
+        self.is_object = _ref.value._tx_fqn in ["entity.Object"]
+        self.is_id = _ref.value.name == "ID"
+        self.is_date = _ref.value.name == "Date"
 
         # relation model
-        self.is_composition = self._ref.is_composition
-        self.is_aggregation = self._ref.is_aggregation
+        self.is_composition = _ref.is_composition
+        self.is_aggregation = _ref.is_aggregation
         self.is_relation = self.is_composition or self.is_aggregation
 
         self.getter = "get" + stringcase.pascalcase(self.name)
         self.setter = "set" + stringcase.pascalcase(self.name)
+
+        if self.is_base:
+            for base_field in _ref.value.fields:
+                self.embedded_fields.append(base_field.name)
+
+        return self
 
 
 @dataclass
 class ModelClass:
     """The Java Model for the Domain Class Object"""
 
-    # the textx object
-    _ref: Union[dsl.Enum, dsl.Base, dsl.Object]
-
-    # computed attributes
     name: str = None
     description: str = None
 
@@ -143,37 +130,39 @@ class ModelClass:
 
     parents: List[Parent] = field(default_factory=list)
 
-    def __post_init__(self):
+    def build(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]) -> ModelClass:
         """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention
-        self.name = self._ref.name
+        self.name = _ref.name
 
-        self.description = self._ref.description
+        self.description = _ref.description
 
         # identify type
-        self.is_enum = self._ref._tx_fqn in ["entity.Enum"]
-        self.is_base = self._ref._tx_fqn in ["entity.Base"]
-        self.is_object = self._ref._tx_fqn in ["entity.Object"]
+        self.is_enum = _ref._tx_fqn in ["entity.Enum"]
+        self.is_base = _ref._tx_fqn in ["entity.Base"]
+        self.is_object = _ref._tx_fqn in ["entity.Object"]
 
         # add attributes
-        self._add_attributes()
-        self._add_constants()
-        self._add_relations()
-        self._add_foreign_keys()
+        self._add_attributes(_ref)
+        self._add_constants(_ref)
+        self._add_relations(_ref)
+        self._add_foreign_keys(_ref)
 
         # collect imports
-        self.imports = util.get_model_imports(self._ref)
+        self.imports = util.get_model_imports(_ref)
 
         # addons
-        self.is_crud = self._ref.is_crud if self.is_object else False
-        self.is_supertype = util.is_supertype(self._ref) if self.is_base else False
-        self.is_nested = util.is_nested(self._ref)
-        self.has_aggregation = util.has(self._ref, has_aggregation=True)
-        self.has_required = util.has(self._ref, has_required_ignore_id=True)
-        self.has_query = util.has(self._ref, has_query=True)
+        self.is_crud = _ref.is_crud if self.is_object else False
+        self.is_supertype = util.is_supertype(_ref) if self.is_base else False
+        self.is_nested = util.is_nested(_ref)
+        self.has_aggregation = util.has(_ref, has_aggregation=True)
+        self.has_required = util.has(_ref, has_required_ignore_id=True)
+        self.has_query = util.has(_ref, has_query=True)
 
-    def _add_attributes(self):
+        return self
+
+    def _add_attributes(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
         """Creates and adds all visible attributes to a ModelClass"""
 
         # filter on base and object
@@ -181,24 +170,24 @@ class ModelClass:
             return
 
         # filter only non relations
-        dsl_fields = [x for x in self._ref.fields if not x.is_relation]
+        dsl_fields = [x for x in _ref.fields if not x.is_relation]
 
         for dsl_field in dsl_fields:
-            new_model_field = ModelField(dsl_field)
+            new_model_field = ModelField().build(dsl_field)
 
             self.fields.append(new_model_field)
 
-    def _add_constants(self):
+    def _add_constants(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
         """Adds all values for Enums"""
 
         # filter only enum
         if not self.is_enum:
             return
 
-        for value in self._ref.values:
+        for value in _ref.values:
             self.constants.append(value)
 
-    def _add_relations(self):
+    def _add_relations(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
         """Creates and adds all explicit relation attributes to a ModelClass"""
 
         # filter on object
@@ -206,15 +195,15 @@ class ModelClass:
             return
 
         # filter only relations
-        dsl_fields = [x for x in self._ref.fields if x.is_relation]
+        dsl_fields = [x for x in _ref.fields if x.is_relation]
 
         for dsl_field in dsl_fields:
-            new_model_field = ModelField(dsl_field)
+            new_model_field = ModelField().build(dsl_field)
             # TODO: rename new_model_field name
 
             self.fields.append(new_model_field)
 
-    def _add_foreign_keys(self):
+    def _add_foreign_keys(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
         """Creates and adds all implicit relation attributes to a ModelClass"""
 
         # filter on object
@@ -224,7 +213,7 @@ class ModelClass:
         # get the fields of all parents that
         # use self as aggregation or composition
         # TODO: add nested Objects
-        dsl_fields = util.get_parent_fields(self._ref)
+        dsl_fields = util.get_parent_fields(self.name)
 
         for dsl_field in dsl_fields:
             parent = dsl_field.parent
@@ -242,7 +231,7 @@ class ModelClass:
             fk_field.is_aggregation = dsl_field.is_aggregation
             fk_field.is_composition = dsl_field.is_composition
 
-            new_model_field = ModelField(fk_field)
+            new_model_field = ModelField().build(fk_field)
             new_model_field.is_relation_owner = True
             new_model_field.foreign_key_name = dsl_field.name
             new_model_field.foreign_key_is_array = dsl_field.is_array

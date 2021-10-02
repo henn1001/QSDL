@@ -46,7 +46,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
   public long count(@Param("pageable") AppPageable pageable);
   {% for parent in model.parents %}
 
-    {% if parent.is_aggregation %}
+    {% if parent.field.is_aggregation %}
   @Query(
       value = """
 

@@ -4,7 +4,7 @@
      ########################################################################################
       Get all entities.
     #}
-    {% if operation.domain_parent %}
+    {% if operation.parent %}
     // confirm existence of parent
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
@@ -30,27 +30,27 @@
     #}
     // get and confirm existence
     // we are not using getById here because somehow the reference does not work when using a public field
-    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }}Repository.findById({{ operation.path_parameters[0].name }})
-        .orElseThrow(() -> AppException.entityNotFound({{ operation.domain_parent.name }}.class, {{ operation.path_parameters[0].name }}));
+    {{ operation.parent.model.name }} {{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }}Repository.findById({{ operation.path_parameters[0].name }})
+        .orElseThrow(() -> AppException.entityNotFound({{ operation.parent.model.name }}.class, {{ operation.path_parameters[0].name }}));
 
-    {{ operation.domain_object.name }} {{ operation.domain_object.name|lower }} = {{ operation.domain_object.name|lower }}Repository.findById({{ operation.path_parameters[1].name }})
-        .orElseThrow(() -> AppException.entityNotFound({{ operation.domain_object.name }}.class, {{ operation.path_parameters[1].name }}));
+    {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.findById({{ operation.path_parameters[1].name }})
+        .orElseThrow(() -> AppException.entityNotFound({{ model.name }}.class, {{ operation.path_parameters[1].name }}));
 
     {% if encapsulation %}
       {% if operation.path.endswith('/add') %}
-    {{ operation.domain_parent.name|lower }}.get{{ operation.get_aggregation_parameter() | pascal }}().add({{ operation.domain_object.name | lower }});
+    {{ operation.parent.model.name|lower }}.{{operation.parent.field.getter}}().add({{ model.name | lower }});
       {% elif operation.path.endswith('/remove') %}
-    {{ operation.domain_parent.name|lower }}.get{{ operation.get_aggregation_parameter() | pascal }}().remove({{ operation.domain_object.name | lower }});
+    {{ operation.parent.model.name|lower }}.{{operation.parent.field.getter}}().remove({{ model.name | lower }});
       {% endif %}
     {% else %}
       {% if operation.path.endswith('/add') %}
-    {{ operation.domain_parent.name|lower }}.{{ operation.get_aggregation_parameter() }}.add({{ operation.domain_object.name | lower }});
+    {{ operation.parent.model.name|lower }}.{{operation.parent.field.name}}.add({{ model.name | lower }});
       {% elif operation.path.endswith('/remove') %}
-    {{ operation.domain_parent.name|lower }}.{{ operation.get_aggregation_parameter() }}.remove({{ operation.domain_object.name | lower }});
+    {{ operation.parent.model.name|lower }}.{{operation.parent.field.name}}.remove({{ model.name | lower }});
       {% endif %}
     {% endif %}
 
-    {{ operation.domain_parent.name|lower }}Repository.save({{ operation.domain_parent.name|lower }});
+    {{ operation.parent.model.name|lower }}Repository.save({{ operation.parent.model.name|lower }});
 
     return null;
   {% elif operation.method == "post" %}
@@ -58,16 +58,16 @@
      ########################################################################################
       Create a entity.
     #}
-    {% if operation.domain_parent %}
+    {% if operation.parent %}
     // confirm existence of parent
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     // add parent relation
-    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
+    {{ operation.parent.model.name }} {{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
     {% if encapsulation %}
-    body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
+    body.set{{ operation.parent.model.name }}({{ operation.parent.model.name|lower }});
     {% else %}
-    body.{{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }};
+    body.{{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }};
     {% endif %}
 
     {% endif %}
@@ -80,7 +80,7 @@
       Get a entity.
 
     #}
-    {% if operation.domain_parent %}
+    {% if operation.parent %}
     // confirm existence of parent
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
@@ -94,16 +94,16 @@
      ########################################################################################
       Replace entities.
     #}
-    {% if operation.domain_parent %}
+    {% if operation.parent %}
     // confirm existence of parent
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     // add parent relation
-    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
+    {{ operation.parent.model.name }} {{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
       {% if encapsulation %}
-    body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
+    body.set{{ operation.parent.model.name }}({{ operation.parent.model.name|lower }});
       {% else %}
-    body.{{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }};
+    body.{{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }};
       {% endif %}
 
     {% endif %}
@@ -121,16 +121,16 @@
      ########################################################################################
       Patch entities.
     #}
-    {% if operation.domain_parent %}
+    {% if operation.parent %}
     // confirm existence of parent
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     // add parent relation
-    {{ operation.domain_parent.name }} {{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
+    {{ operation.parent.model.name }} {{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
       {% if encapsulation %}
-    body.set{{ operation.domain_parent.name }}({{ operation.domain_parent.name|lower }});
+    body.set{{ operation.parent.model.name }}({{ operation.parent.model.name|lower }});
       {% else %}
-    body.{{ operation.domain_parent.name|lower }} = {{ operation.domain_parent.name|lower }};
+    body.{{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }};
       {% endif %}
 
     {% endif %}
@@ -148,7 +148,7 @@
      ########################################################################################
       Delete entities.
     #}
-    {% if operation.domain_parent %}
+    {% if operation.parent %}
     // confirm existence of parent
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 

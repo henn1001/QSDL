@@ -69,14 +69,14 @@ public class {{model.name}}ServiceTest {
 
     String expectedCursor = request.get(5).getId().toString();
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findAllBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}(eq(1l), any(AppPageable.class)))
+    when(repository.findAllBy{{ operation.parent.model.hibernate.method_joined_id }}(eq(1l), any(AppPageable.class)))
         .thenReturn(request);
 
-    when(repository.countBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}(eq(1l), any(AppPageable.class)))
+    when(repository.countBy{{operation.parent.model.hibernate.method_joined_id}}(eq(1l), any(AppPageable.class)))
         .thenReturn(5l);
     {% else %}
     when(repository.findAll(any(AppPageable.class)))
@@ -106,15 +106,15 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
-    {{operation.domain_parent.name}} testParent = easyRandom.nextObject({{operation.domain_parent.name}}.class);
+    {{operation.parent.model.name}} testParent = easyRandom.nextObject({{operation.parent.model.name}}.class);
 
-    when({{ operation.domain_parent.name|lower }}Repository.findById(eq(testParent.getId())))
+    when({{ operation.parent.model.name|lower }}Repository.findById(eq(testParent.getId())))
         .thenReturn(Optional.of(testParent));
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
 
-    when({{operation.domain_parent.name|lower}}Repository.save(eq(testParent)))
+    when({{operation.parent.model.name|lower}}Repository.save(eq(testParent)))
         .thenReturn(null);
 
     // When
@@ -133,8 +133,8 @@ public class {{model.name}}ServiceTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
     {% endif %}
@@ -142,7 +142,7 @@ public class {{model.name}}ServiceTest {
         .thenReturn(request);
 
     // When
-    {{model.name}} response = service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request);
+    {{model.name}} response = service.{{operation.name}}({{ "1l, " if operation.parent }}request);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -159,11 +159,11 @@ public class {{model.name}}ServiceTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -171,7 +171,7 @@ public class {{model.name}}ServiceTest {
     {% endif %}
 
     // When
-    {{model.name}} response = service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId());
+    {{model.name}} response = service.{{operation.name}}({{ "1l, " if operation.parent }}request.getId());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -185,11 +185,11 @@ public class {{model.name}}ServiceTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -199,7 +199,7 @@ public class {{model.name}}ServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId());
+          service.{{operation.name}}({{ "1l, " if operation.parent }}request.getId());
         });
 
     // Then
@@ -218,11 +218,11 @@ public class {{model.name}}ServiceTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -233,7 +233,7 @@ public class {{model.name}}ServiceTest {
         .thenReturn(request);
 
     // When
-    {{model.name}} response = service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId(), request);
+    {{model.name}} response = service.{{operation.name}}({{ "1l, " if operation.parent }}request.getId(), request);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -247,11 +247,11 @@ public class {{model.name}}ServiceTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -261,7 +261,7 @@ public class {{model.name}}ServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId(), request);
+          service.{{operation.name}}({{ "1l, " if operation.parent }}request.getId(), request);
         });
 
     // Then
@@ -280,11 +280,11 @@ public class {{model.name}}ServiceTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -295,7 +295,7 @@ public class {{model.name}}ServiceTest {
         .thenReturn(request);
 
     // When
-    {{model.name}} response = service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId(), request);
+    {{model.name}} response = service.{{operation.name}}({{ "1l, " if operation.parent }}request.getId(), request);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -309,11 +309,11 @@ public class {{model.name}}ServiceTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{ util.get_parent_id_for_repo(operation.domain_parent) | pascal }}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -323,7 +323,7 @@ public class {{model.name}}ServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId(), request);
+          service.{{operation.name}}({{ "1l, " if operation.parent }}request.getId(), request);
         });
 
     // Then
@@ -342,13 +342,13 @@ public class {{model.name}}ServiceTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
     {% endif %}
     // When
-    service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId());
+    service.{{operation.name}}({{ "1l, " if operation.parent }}request.getId());
 
     // Then
 
@@ -360,8 +360,8 @@ public class {{model.name}}ServiceTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    {% if operation.domain_parent %}
-    when({{operation.domain_parent.name|lower}}Repository.existsById(eq(1l)))
+    {% if operation.parent %}
+    when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
     {% endif %}
@@ -371,7 +371,7 @@ public class {{model.name}}ServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.{{operation.name}}({{ "1l, " if operation.domain_parent }}request.getId());
+          service.{{operation.name}}({{ "1l, " if operation.parent }}request.getId());
         });
 
     // Then

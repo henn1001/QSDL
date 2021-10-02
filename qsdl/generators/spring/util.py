@@ -22,11 +22,15 @@ import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 
 from .config import Config
-from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass
+from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass, Parent
 
-# the parsed schema definition.
-schema: dsl.Schema = None
-config: Config = None
+
+class Store:
+    """Parsed data storage class"""
+
+    schema: dsl.Schema = None
+    config: Config = None
+    models: List[ModelClass] = []
 
 
 custom_types = {
@@ -85,7 +89,7 @@ def has(
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
 
         # for the aggregation check - we want to search the parent fields
-        fields = entity.fields if not has_aggregation else get_parent_fields(entity)
+        fields = entity.fields if not has_aggregation else get_parent_fields(entity.name)
 
         for field in fields:
 
@@ -140,8 +144,8 @@ def is_supertype(entity: dsl.Base) -> bool:
     Returns:
         bool: Returns True on detection.
     """
-    base_list = xtx.get_children_of_base(schema)
-    object_list = xtx.get_children_of_object(schema)
+    base_list = xtx.get_children_of_base(Store.schema)
+    object_list = xtx.get_children_of_object(Store.schema)
 
     for itr in base_list + object_list:
         if entity == itr.supertype:
@@ -159,8 +163,8 @@ def is_nested(entity: Union[dsl.Base, dsl.Object]) -> bool:
     Returns:
         bool: [description]
     """
-    base_list = xtx.get_children_of_base(schema)
-    object_list = xtx.get_children_of_object(schema)
+    base_list = xtx.get_children_of_base(Store.schema)
+    object_list = xtx.get_children_of_object(Store.schema)
 
     for itr in base_list + object_list:
         for field in itr.fields:
@@ -230,13 +234,45 @@ def get_model_imports(entity: Union[dsl.Enum, dsl.Base, dsl.Object]):
     return imports
 
 
+def add_parents_to_model(models: List[ModelClass]):
+    """Add all Models who are a domain parent to a Model.
+
+    Args:
+        models (List[ModelClass]): The list of all available models.
+    """
+    for model in models:
+
+        if not model.is_object:
+            continue
+
+        parents = []
+        parent_names = []
+
+        parent_fields = get_parent_fields(model.name)
+        parent_objects = [x.parent for x in parent_fields]
+
+        for obj in parent_objects:
+            # search in provided models list for a match to the current obj and filter duplicates
+            result = [x for x in models if x.name == obj.name and x.name not in parent_names]
+            _ = [parent_names.append(x.name) for x in result]
+
+            result = [Parent().build(x, model) for x in result]
+
+            parents.extend(result)
+
+        model.parents = parents
+
+
 def add_hibernate_info(models: List[ModelClass]):
     """Add hibernate related info to model and fields"""
-
-    if not config.database == "hibernate":
+    if not Store.config.database == "hibernate":
         return
 
     for model in models:
+
+        if not model.is_object:
+            continue
+
         model_info = HibernateModelInfo(model)
         model.hibernate = model_info
 
@@ -249,11 +285,49 @@ def add_hibernate_info(models: List[ModelClass]):
             parent.hibernate = parent_info
 
 
-def get_parent_fields(obj: dsl.Object, filter_relations=True) -> List[dsl.Field]:
+def get_model_for(obj_name: dsl.Object.name) -> ModelClass:
+    """Returns the ModelClass for a given Object name.
+
+    Args:
+        obj_name (dsl.Object.name): Name of dsl.Object
+
+    Returns:
+        ModelClass: The matching ModelClass
+    """
+    ret = None
+
+    for model in Store.models:
+        if obj_name == model.name:
+            ret = model
+
+    return ret
+
+
+def get_parent_for(obj_name: dsl.Object.name, parent_name: dsl.Object.name) -> Parent:
+    """Returns the Parent object for the given child - parent Object names.
+
+    Args:
+        obj_name (dsl.Object.name): Name of dsl.Object
+
+    Returns:
+        ModelClass: The matching ModelClass
+    """
+    ret = None
+
+    for model in Store.models:
+        if obj_name == model.name:
+
+            for parent in model.parents:
+                if parent_name == parent.model.name:
+                    ret = parent
+    return ret
+
+
+def get_parent_fields(obj_name: dsl.Object.name, filter_relations=True) -> List[dsl.Field]:
     """Returns all Objects whos Field value is this Object.
 
     Args:
-        obj (dsl.Object): The Object which value the fields should have.
+        obj_name (dsl.Object.name): The Object which value the fields should have.
         filter_relations (bool, optional): Include only relation fields. Defaults to True.
 
     Returns:
@@ -261,95 +335,10 @@ def get_parent_fields(obj: dsl.Object, filter_relations=True) -> List[dsl.Field]
     """
     fields = []
 
-    fields = xtx.get_children_of_field(schema)
+    fields = xtx.get_children_of_field(Store.schema)
 
-    fields = [x for x in fields if x.parent._tx_fqn == "entity.Object" and x.value == obj]
+    fields = [x for x in fields if x.parent._tx_fqn == "entity.Object" and x.value.name == obj_name]
 
     fields = [x for x in fields if x.is_relation] if filter_relations else fields
 
     return fields
-
-
-def get_filtered_fields_as_list(entity: dsl.Object) -> List[dsl.Field]:
-    """Returns all fields ob a object including its supertype as list.
-
-    Exclude composition or aggregations.
-
-    Args:
-        entity (object): entity.Object
-
-    Returns:
-        list: [entity.Field]
-    """
-    fields = []
-
-    for field in entity.fields:
-        if not field.is_composition and not field.is_aggregation:
-            fields.append(field)
-
-    return fields
-
-
-def get_id_for_repo(entity: dsl.Object) -> str:  # TODO: REMOVE ME
-    """Returns the ID name of a API Object.
-
-    If no ID is found, we return ID regardless because that is
-    the default internal id.
-
-    Args:
-        entity (Object): entity.Object.
-
-    Returns:
-        str: Returns ID name for the query
-    """
-    ret = None
-    tmp = entity
-
-    while True:
-        for field in tmp.fields:
-
-            if field.value.name == "ID":
-                ret = field.name
-                break
-
-        if not tmp.supertype:
-            break
-
-        tmp = tmp.supertype
-
-    if not ret:
-        ret = "ID"
-
-    return ret.capitalize()
-
-
-def get_parent_id_for_repo(entity: dsl.Object) -> str:  # TODO: REMOVE ME
-    """Returns the ID name of a API Object.
-
-    If no ID is found, we return ID regardless because that is
-    the default internal id.
-
-    Args:
-        entity (Object): entity.Object.
-
-    Returns:
-        str: Returns ID name for the query
-    """
-    ret = None
-    tmp = entity
-
-    while True:
-        for field in tmp.fields:
-
-            if field.value.name == "ID":
-                ret = field.name
-                break
-
-        if not tmp.supertype:
-            break
-
-        tmp = tmp.supertype
-
-    ret = entity.name.lower() + ret.capitalize()
-
-    return ret

@@ -81,7 +81,7 @@
   Returns the class annotation
 #}
 {% macro attribute_overrides(attr) %}
-  {% for field in attr._ref.value.fields %}
+  {% for field in attr.embedded_fields %}
       @AttributeOverride(name = "{{field.name}}", column = @Column(name = "{{attr.name}}_{{field.name}}")),
   {% endfor %}
 {% endmacro %}

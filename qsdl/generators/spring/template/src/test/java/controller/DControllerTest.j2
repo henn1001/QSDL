@@ -103,7 +103,7 @@ public class {{model.name}}ControllerTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(1l), any()" if operation.domain_parent else "any()" }}))
+    when(service.{{operation.name}}({{ "eq(1l), any()" if operation.parent else "any()" }}))
         .thenReturn(request);
 
     // When
@@ -125,7 +125,7 @@ public class {{model.name}}ControllerTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(1l), any()" if operation.domain_parent else "any()" }}))
+    when(service.{{operation.name}}({{ "eq(1l), any()" if operation.parent else "any()" }}))
         .thenReturn(request);
 
     // When
@@ -151,7 +151,7 @@ public class {{model.name}}ControllerTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(1l), eq(1l)" if operation.domain_parent else "eq(1l)" }}))
+    when(service.{{operation.name}}({{ "eq(1l), eq(1l)" if operation.parent else "eq(1l)" }}))
         .thenReturn(request);
 
     // When
@@ -174,7 +174,7 @@ public class {{model.name}}ControllerTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(1l), eq(1l), any()" if operation.domain_parent else "eq(1l), any()" }}))
+    when(service.{{operation.name}}({{ "eq(1l), eq(1l), any()" if operation.parent else "eq(1l), any()" }}))
         .thenReturn(request);
 
     // When
@@ -196,7 +196,7 @@ public class {{model.name}}ControllerTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(1l), eq(1l), any()" if operation.domain_parent else "eq(1l), any()" }}))
+    when(service.{{operation.name}}({{ "eq(1l), eq(1l), any()" if operation.parent else "eq(1l), any()" }}))
         .thenReturn(request);
 
     // When
@@ -222,7 +222,7 @@ public class {{model.name}}ControllerTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(1l), eq(1l), any()" if operation.domain_parent else "eq(1l), any()" }}))
+    when(service.{{operation.name}}({{ "eq(1l), eq(1l), any()" if operation.parent else "eq(1l), any()" }}))
         .thenReturn(request);
 
     // When
@@ -244,7 +244,7 @@ public class {{model.name}}ControllerTest {
     // Given
     {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(1l), eq(1l), any()" if operation.domain_parent else "eq(1l), any()" }}))
+    when(service.{{operation.name}}({{ "eq(1l), eq(1l), any()" if operation.parent else "eq(1l), any()" }}))
         .thenReturn(request);
 
     // When
