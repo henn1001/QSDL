@@ -115,7 +115,7 @@ class ModelClass:
     # addons
     is_crud: bool = False
     is_supertype: bool = False
-    is_nested: bool = False
+    is_used: bool = False
     has_aggregation: bool = False
     has_required: bool = False
     has_query: bool = False
@@ -149,7 +149,7 @@ class ModelClass:
         # addons
         self.is_crud = _ref.is_crud if self.is_object else False
         self.is_supertype = util.is_supertype(_ref) if self.is_base else False
-        self.is_nested = util.is_nested(_ref)
+        self.is_used = util.is_used(_ref)
         self.has_aggregation = util.has(_ref, has_aggregation=True)
         self.has_required = util.has(_ref, has_required_ignore_id=True)
         self.has_query = util.has(_ref, has_query=True)

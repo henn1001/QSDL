@@ -46,7 +46,10 @@ def parse_models(schema: Schema) -> List[ModelClass]:
 
     for entity in enum_list + base_list + obj_list:
         new_model = ModelClass().build(entity)
-        models.append(new_model)
+
+        # filter unused models
+        if new_model.is_used:
+            models.append(new_model)
 
     # add domain parents for each model
     util.add_parents_to_model(models)

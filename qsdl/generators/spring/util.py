@@ -154,8 +154,8 @@ def is_supertype(entity: dsl.Base) -> bool:
     return False
 
 
-def is_nested(entity: Union[dsl.Base, dsl.Object]) -> bool:
-    """Checks if the provide dBase or Object is nested into another Base or Object.
+def is_used(entity: Union[dsl.Base, dsl.Object]) -> bool:
+    """Checks if the provided Base or Object is used anywhere.
 
     Args:
         entity (Union[Base, Object]): Either entity.Base or entity.Object.
@@ -163,13 +163,13 @@ def is_nested(entity: Union[dsl.Base, dsl.Object]) -> bool:
     Returns:
         bool: [description]
     """
-    base_list = xtx.get_children_of_base(Store.schema)
-    object_list = xtx.get_children_of_object(Store.schema)
+    field_list = xtx.get_children_of_field(Store.schema)
+    opr_list = xtx.get_children_of_operation(Store.schema)
+    arg_list = xtx.get_children_of_argument(Store.schema)
 
-    for itr in base_list + object_list:
-        for field in itr.fields:
-            if field.value == entity and not field.is_relation:
-                return True
+    for itr in field_list + opr_list + arg_list:
+        if itr.value == entity:
+            return True
 
     return False
 
