@@ -3,7 +3,7 @@
 #}
 {% macro class_annotation() %}
   {{- "@Entity" if (model.is_object and model.is_crud) }}
-  {{- "@Embeddable" if model.is_base }}
+  {{- "@Entity" if model.is_base }}
 {% endmacro %}
 
 {# 
@@ -62,32 +62,17 @@
   {#
     Nested Objects
   #}
-  {% elif attr.is_object and attr.is_array %}
+  {% elif attr.is_array and (attr.is_object or attr.is_base) %}
   @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
-  @JoinTable(name = "{{model.name|lower}}_to_{{attr.type|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{attr.type|lower}}_id"))
-  {% elif attr.is_object and not attr.is_array %}
+  @JoinColumn(name = "{{model.name|lower}}_id")
+  {% elif not attr.is_array and (attr.is_object or attr.is_base) %}
   @OneToOne(cascade=CascadeType.ALL, orphanRemoval = true)
-  {% elif attr.is_base and attr.is_array %}
-  @ElementCollection
-  {% elif attr.is_base and not attr.is_array %}
-  @Embedded 
-  @AttributeOverrides({
-      {{attribute_overrides(attr) | trim }}
-  })
+  @JoinColumn(name = "{{model.name|lower}}_id")
   {% endif %}
 {% endmacro %}
 
 {# 
-  Returns the class annotation
-#}
-{% macro attribute_overrides(attr) %}
-  {% for field in attr.embedded_fields %}
-      @AttributeOverride(name = "{{field.name}}", column = @Column(name = "{{attr.name}}_{{field.name}}")),
-  {% endfor %}
-{% endmacro %}
-
-{# 
-  Returns 
+  Returns Queries
 #}
 {%- macro get_query() -%}
 {%- for operation in api.operations %}

@@ -33,15 +33,14 @@ class TestSpecificsSpring:
     def test_specifics_01(self):
         """Test nested Base"""
         test_input = """\
+            base Fruit {
+                field1: String!
+            }
+
             base Bar {
-                field1: Int
-                field2: Long
-                field3: Float
-                field4: Double
-                field5: String
-                field6: Boolean
-                field7: Date
-                field8: Object
+                field1: String!
+                field2: Fruit
+                field3: [Fruit]
             }
 
             type Foo {
@@ -63,20 +62,16 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     def test_specifics_02(self):
-        """Test nested Object
-
-        TODO:: - Resolve issues with updates/deletion/orphanremoval
-        """
+        """Test nested Object"""
         test_input = """\
+            type Fruit {
+                field1: String!
+            }
+
             type Bar {
-                field1: Int
-                field2: Long
-                field3: Float
-                field4: Double
-                field5: String
-                field6: Boolean
-                field7: Date
-                field8: Object
+                field1: String!
+                field2: Fruit
+                field3: [Fruit]
             }
 
             type Foo {

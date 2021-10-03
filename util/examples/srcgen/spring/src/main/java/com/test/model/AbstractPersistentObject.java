@@ -5,16 +5,21 @@ package com.test.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import javax.persistence.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 import com.test.util.IdGenerator;
 import com.test.util.Json;
 
+@Slf4j
 @MappedSuperclass
 public abstract class AbstractPersistentObject {
 
@@ -30,7 +35,6 @@ public abstract class AbstractPersistentObject {
   @JsonIgnore
   private Integer _version;
 
-
   public Long getId() {
     return id;
   }
@@ -42,7 +46,6 @@ public abstract class AbstractPersistentObject {
   public Integer _version() {
     return _version;
   }
-
 
   /**
    * Copies the id, uuid and version field from another Object.
@@ -87,9 +90,26 @@ public abstract class AbstractPersistentObject {
 
         try {
           if (!skipNull || skipNull && Objects.nonNull(field.get(o))) {
-            FieldUtils.writeField(this, field.getName(), field.get(o), true);
+            // Special case for writeable Entity Collections
+            // Once Hibernate starts tracking a collection, we can not simply set new values
+            // we have to add or remove them
+            // otherwise it will throw a Exception
+            // > A collection with cascade=”all-delete-orphan” was no longer referenced by
+            // the owning entity instance
+            if (field.getType() == Set.class) {
+              Method clear = Set.class.getDeclaredMethod("clear");
+              Method addAll = Set.class.getDeclaredMethod("addAll", Collection.class);
+
+              Object f = this.getClass().getField(field.getName()).get(this);
+
+              clear.invoke(f);
+              addAll.invoke(f, field.get(o));
+            } else {
+              FieldUtils.writeField(this, field.getName(), field.get(o), true);
+            }
           }
-        } catch (IllegalAccessException | IllegalArgumentException e) {
+        } catch (Exception e) {
+          log.error("Caught unhandeled exception:", e);
         }
       }
     }
@@ -111,8 +131,17 @@ public abstract class AbstractPersistentObject {
           || field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(ManyToMany.class)) {
 
         try {
-          FieldUtils.writeField(this, field.getName(), null, true);
-        } catch (IllegalAccessException | IllegalArgumentException e) {
+          if (field.getType() == Set.class) {
+            Method clear = Set.class.getDeclaredMethod("clear");
+
+            Object f = this.getClass().getField(field.getName()).get(this);
+
+            clear.invoke(f);
+          } else {
+            FieldUtils.writeField(this, field.getName(), null, true);
+          }
+        } catch (Exception e) {
+          log.error("Caught unhandeled exception:", e);
         }
       }
     }
@@ -150,7 +179,7 @@ public abstract class AbstractPersistentObject {
     try {
       ret = Json.serializer().toString(this);
     } catch (Json.JsonException e) {
-      e.printStackTrace();
+      log.error("Caught unhandeled exception:", e);
     }
     return ret;
   }
@@ -160,7 +189,7 @@ public abstract class AbstractPersistentObject {
     try {
       ret = Json.serializer().toPrettyString(this);
     } catch (Json.JsonException e) {
-      e.printStackTrace();
+      log.error("Caught unhandeled exception:", e);
     }
     return ret;
   }

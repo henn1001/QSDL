@@ -12,9 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 {% endif %}
 
-{% if model.is_object %}
-import {{base_package}}.model.AbstractPersistentObject;
-{% endif %}
+import {{base_package}}.model.*;
 import {{base_package}}.util.Json;
 
 {% if model.is_enum %}
@@ -22,7 +20,7 @@ import {{base_package}}.util.Json;
 {% else %}
 {{ "@Getter @Setter" + "\n" if encapsulation -}}
 {{ hibernate.class_annotation() if database == "hibernate" -}}
-public class {{model.name}}{% if not model.is_base %} extends AbstractPersistentObject{% endif %} {
+public class {{model.name}}{% if model.is_object %} extends AbstractPersistentObject{% elif model.is_base %} extends AbstractPersistentBase{% endif %} {
 
 {% for field in model.fields if not field.is_id %}
   {# 
@@ -55,10 +53,8 @@ public class {{model.name}}{% if not model.is_base %} extends AbstractPersistent
   {# 
     Set the Field definition
   #}
-  {% if field.is_array and field.is_relation %}
+  {% if field.is_array %}
   {{ "private" if encapsulation else "public"}} Set<{{field.type}}> {{field.name}} = new LinkedHashSet<>();
-  {% elif field.is_array %}
-  {{ "private" if encapsulation else "public"}} List<{{field.type}}> {{field.name}} = new ArrayList<>();
   {% else %}
   {{ "private" if encapsulation else "public"}} {{field.type}} {{field.name}};
   {% endif %}

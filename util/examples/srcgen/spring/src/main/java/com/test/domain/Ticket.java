@@ -9,7 +9,7 @@ import javax.validation.*;
 import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 
-import com.test.model.AbstractPersistentObject;
+import com.test.model.*;
 import com.test.util.Json;
 
 @Entity

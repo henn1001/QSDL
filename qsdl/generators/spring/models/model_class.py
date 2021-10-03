@@ -63,8 +63,6 @@ class ModelField:
     getter: str = None
     setter: str = None
 
-    embedded_fields: List[str] = field(default_factory=list)
-
     def build(self, _ref: dsl.Field) -> ModelField:
         """Init our dataclass by reading information from _ref"""
 
@@ -94,10 +92,6 @@ class ModelField:
 
         self.getter = "get" + stringcase.pascalcase(self.name)
         self.setter = "set" + stringcase.pascalcase(self.name)
-
-        if self.is_base:
-            for base_field in _ref.value.fields:
-                self.embedded_fields.append(base_field.name)
 
         return self
 

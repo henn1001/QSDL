@@ -216,6 +216,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/model/AppError.j2", f"src/main/java/{base_package}/model/AppError.java"),
         ("src/main/java/model/AppPageable.j2", f"src/main/java/{base_package}/model/AppPageable.java"),
         ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{base_package}/model/AbstractPersistentObject.java"),
+        ("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{base_package}/model/AbstractPersistentBase.java"),
         ("src/main/java/model/ObjectList.j2", f"src/main/java/{base_package}/model/ObjectList.java"),
         # tests
         ("src/test/java/controller/ControllerTest.j2", f"src/test/java/{base_package}/controller/ControllerTest.java")

@@ -10,10 +10,11 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import com.test.model.*;
 import com.test.util.Json;
 
-@Embeddable
-public class BaseType {
+@Entity
+public class BaseType extends AbstractPersistentBase {
 
   @NotNull
   @JsonProperty(value = "name", required = true)
