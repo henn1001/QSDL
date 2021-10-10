@@ -47,6 +47,7 @@ class TestSpecificsSpring:
                 field1: String!
                 field2: Bar
                 field3: [Bar]
+                field4: [String]
             }
         """
 
@@ -78,6 +79,7 @@ class TestSpecificsSpring:
                 field1: String!
                 field2: Bar
                 field3: [Bar]
+                field4: [String]
             }
         """
 

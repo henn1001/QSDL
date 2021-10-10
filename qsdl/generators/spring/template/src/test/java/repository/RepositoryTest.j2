@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import {{base_package}}.TestConfig;
 import {{base_package}}.domain.*;
 import {{base_package}}.model.AppPageable;
 import {{base_package}}.util.Json;
 
 @DataJpaTest
-@Import({{base_package}}.TestConfig.class)
+@Import(TestConfig.class)
 public class {{model.name}}RepositoryTest {
 
   @Autowired
@@ -33,7 +34,7 @@ public class {{model.name}}RepositoryTest {
   private {{model.name}}Repository {{model.name|lower}}Repository;
 
   @Test
-  public void whenSave_thenFind() {
+  public void whenSave_thenFind() throws Exception {
 
     // Given
     {{model.name}} testData = easyRandom.nextObject({{model.name}}.class);
@@ -42,7 +43,8 @@ public class {{model.name}}RepositoryTest {
     // When
     {{model.name}} dbData = {{model.name|lower}}Repository.saveAndFlush(testData);
     {{model.name}} findData = {{model.name|lower}}Repository.findById(dbData.getId()).orElse(null);
-    testData.copyIdentiy(findData);
+
+    TestConfig.copyAllIdentities(testData, findData);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(testData);
@@ -51,7 +53,7 @@ public class {{model.name}}RepositoryTest {
   }
 
   @Test
-  public void whenDelete_thenCountZero() {
+  public void whenDelete_thenCountZero() throws Exception {
 
     // Given
     {{model.name}} testData = easyRandom.nextObject({{model.name}}.class);
@@ -67,7 +69,7 @@ public class {{model.name}}RepositoryTest {
   }
 
   @Test
-  public void whenCount_thenUseQuerie() {
+  public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
@@ -87,7 +89,7 @@ public class {{model.name}}RepositoryTest {
   }
 
   @Test
-  public void whenFindAll_thenPaginate() {
+  public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
@@ -115,7 +117,7 @@ public class {{model.name}}RepositoryTest {
 
   {% for parent in model.parents %}
   @Test
-  public void whenCountBy{{parent.model.name}}_thenUseQuerie() {
+  public void whenCountBy{{parent.model.name}}_thenUseQuerie() throws Exception {
 
     // Given
     {{parent.model.name}} tmp = easyRandom.nextObject({{parent.model.name}}.class);
@@ -123,21 +125,15 @@ public class {{model.name}}RepositoryTest {
     {{parent.model.name}} testParent = {{parent.model.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    {% for field in model.fields if field.is_relation %}
-      {% if encapsulation %}
-    testData.forEach(x -> x.set{{field.name|pascal}}(null));
-      {% else %}
-    testData.forEach(x -> x.{{field.name}} = null);
-      {% endif %}
-    {% endfor %}
+    testData.forEach(x -> x.removeRelations());
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     {% if parent.field.is_aggregation %}
       {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
         {% if encapsulation %}
-    testParent.set{{field.name|pascal}}(new HashSet<>(testData));
+    testParent.get{{field.name|pascal}}.addAll(testData);
         {% else %}
-    testParent.{{field.name}} = new HashSet<>(testData);
+    testParent.{{field.name}}.addAll(testData);
         {% endif %}
     {{parent.model.name|lower}}Repository.saveAndFlush(testParent);
       {% endfor %}
@@ -162,7 +158,7 @@ public class {{model.name}}RepositoryTest {
   }
 
   @Test
-  public void whenFindAllBy{{parent.model.name}}_thenPaginate() {
+  public void whenFindAllBy{{parent.model.name}}_thenPaginate() throws Exception {
 
     // Given
     {{parent.model.name}} tmp = easyRandom.nextObject({{parent.model.name}}.class);
@@ -170,21 +166,15 @@ public class {{model.name}}RepositoryTest {
     {{parent.model.name}} testParent = {{parent.model.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    {% for field in model.fields if field.is_relation %}
-      {% if encapsulation %}
-    testData.forEach(x -> x.set{{field.name|pascal}}(null));
-      {% else %}
-    testData.forEach(x -> x.{{field.name}} = null);
-      {% endif %}
-    {% endfor %}
+    testData.forEach(x -> x.removeRelations());
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     {% if parent.field.is_aggregation %}
       {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
         {% if encapsulation %}
-    testParent.set{{field.name|pascal}}(new HashSet<>(testData));
+    testParent.get{{field.name|pascal}}.addAll(testData);
         {% else %}
-    testParent.{{field.name}} = new HashSet<>(testData);
+    testParent.{{field.name}}.addAll(testData);
         {% endif %}
     {{parent.model.name|lower}}Repository.saveAndFlush(testParent);
       {% endfor %}
@@ -222,7 +212,7 @@ public class {{model.name}}RepositoryTest {
   {% if model.has_aggregation %}
     {% for parent in model.parents if parent.field.is_aggregation %}
   @Test
-  public void whenRemoveRelation_thenLinkRemovedFrom{{parent.model.name}}() {
+  public void whenRemoveRelation_thenLinkRemovedFrom{{parent.model.name}}() throws Exception {
 
     // Given
     {{parent.model.name}} tmp = easyRandom.nextObject({{parent.model.name}}.class);
@@ -230,20 +220,14 @@ public class {{model.name}}RepositoryTest {
     {{parent.model.name}} testParent = {{parent.model.name|lower}}Repository.saveAndFlush(tmp);
 
     List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    {% for field in model.fields if field.is_relation %}
-      {% if encapsulation %}
-    testData.forEach(x -> x.set{{field.name|pascal}}(null));
-      {% else %}
-    testData.forEach(x -> x.{{field.name}} = null);
-      {% endif %}
-    {% endfor %}
+    testData.forEach(x -> x.removeRelations());
     testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
 
     {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
       {% if encapsulation %}
-    testParent.set{{field.name|pascal}}(new HashSet<>(testData));
+    testParent.get{{field.name|pascal}}.addAll(testData);
       {% else %}
-    testParent.{{field.name}} = new HashSet<>(testData);
+    testParent.{{field.name}}.addAll(testData);
       {% endif %}
     {{parent.model.name|lower}}Repository.saveAndFlush(testParent);
     {% endfor %}

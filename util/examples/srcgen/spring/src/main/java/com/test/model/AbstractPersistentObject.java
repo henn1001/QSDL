@@ -125,10 +125,11 @@ public abstract class AbstractPersistentObject {
     Field[] fields = this.getClass().getDeclaredFields();
 
     // null fields if:
-    // annotated with OneToOne, OneToMany, ManyToOne, ManyToMany
+    // annotated with JsonIgnore and either of OneToOne, OneToMany, ManyToOne, ManyToMany
     for (Field field : fields) {
-      if (field.isAnnotationPresent(OneToOne.class) || field.isAnnotationPresent(OneToMany.class)
-          || field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(ManyToMany.class)) {
+      if (field.isAnnotationPresent(JsonIgnore.class) &&
+          (field.isAnnotationPresent(OneToOne.class) || field.isAnnotationPresent(OneToMany.class) ||
+              field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(ManyToMany.class))) {
 
         try {
           if (field.getType() == Set.class) {

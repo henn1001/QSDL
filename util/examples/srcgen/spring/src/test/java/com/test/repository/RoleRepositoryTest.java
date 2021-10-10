@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import com.test.TestConfig;
 import com.test.domain.*;
 import com.test.model.AppPageable;
 import com.test.util.Json;
 
 @DataJpaTest
-@Import(com.test.TestConfig.class)
+@Import(TestConfig.class)
 public class RoleRepositoryTest {
 
   @Autowired
@@ -31,7 +32,7 @@ public class RoleRepositoryTest {
   private RoleRepository roleRepository;
 
   @Test
-  public void whenSave_thenFind() {
+  public void whenSave_thenFind() throws Exception {
 
     // Given
     Role testData = easyRandom.nextObject(Role.class);
@@ -40,7 +41,8 @@ public class RoleRepositoryTest {
     // When
     Role dbData = roleRepository.saveAndFlush(testData);
     Role findData = roleRepository.findById(dbData.getId()).orElse(null);
-    testData.copyIdentiy(findData);
+
+    TestConfig.copyAllIdentities(testData, findData);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(testData);
@@ -49,7 +51,7 @@ public class RoleRepositoryTest {
   }
 
   @Test
-  public void whenDelete_thenCountZero() {
+  public void whenDelete_thenCountZero() throws Exception {
 
     // Given
     Role testData = easyRandom.nextObject(Role.class);
@@ -65,7 +67,7 @@ public class RoleRepositoryTest {
   }
 
   @Test
-  public void whenCount_thenUseQuerie() {
+  public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
     List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
@@ -82,7 +84,7 @@ public class RoleRepositoryTest {
   }
 
   @Test
-  public void whenFindAll_thenPaginate() {
+  public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
     List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
@@ -109,7 +111,7 @@ public class RoleRepositoryTest {
   }
 
   @Test
-  public void whenCountByProject_thenUseQuerie() {
+  public void whenCountByProject_thenUseQuerie() throws Exception {
 
     // Given
     Project tmp = easyRandom.nextObject(Project.class);
@@ -117,7 +119,7 @@ public class RoleRepositoryTest {
     Project testParent = projectRepository.saveAndFlush(tmp);
 
     List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.project = null);
+    testData.forEach(x -> x.removeRelations());
     testData = roleRepository.saveAllAndFlush(testData);
 
     testData.forEach(x -> x.project = testParent);
@@ -133,7 +135,7 @@ public class RoleRepositoryTest {
   }
 
   @Test
-  public void whenFindAllByProject_thenPaginate() {
+  public void whenFindAllByProject_thenPaginate() throws Exception {
 
     // Given
     Project tmp = easyRandom.nextObject(Project.class);
@@ -141,7 +143,7 @@ public class RoleRepositoryTest {
     Project testParent = projectRepository.saveAndFlush(tmp);
 
     List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.project = null);
+    testData.forEach(x -> x.removeRelations());
     testData = roleRepository.saveAllAndFlush(testData);
 
     testData.forEach(x -> x.project = testParent);

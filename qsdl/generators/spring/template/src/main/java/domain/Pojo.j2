@@ -53,8 +53,10 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
   {# 
     Set the Field definition
   #}
-  {% if field.is_array %}
-  {{ "private" if encapsulation else "public"}} Set<{{field.type}}> {{field.name}} = new LinkedHashSet<>();
+  {% if field.is_array and field.is_relation %}
+  {{ "private" if encapsulation else "public"}} final Set<{{field.type}}> {{field.name}} = new LinkedHashSet<>();
+  {% elif field.is_array %}
+  {{ "private" if encapsulation else "public"}} Set<{{field.type}}> {{field.name}};
   {% else %}
   {{ "private" if encapsulation else "public"}} {{field.type}} {{field.name}};
   {% endif %}

@@ -20,7 +20,7 @@ public class User extends AbstractPersistentObject {
 
   @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
   @JsonIgnore
-  public Set<Ticket> tickets = new LinkedHashSet<>();
+  public final Set<Ticket> tickets = new LinkedHashSet<>();
 
 
   public static User fromJson(String json) throws Json.JsonException {

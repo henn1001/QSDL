@@ -68,6 +68,8 @@
   {% elif not attr.is_array and (attr.is_object or attr.is_base) %}
   @OneToOne(cascade=CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "{{model.name|lower}}_id")
+  {% elif attr.is_array %}
+  @ElementCollection
   {% endif %}
 {% endmacro %}
 

@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import com.test.TestConfig;
 import com.test.domain.*;
 import com.test.model.AppPageable;
 import com.test.util.Json;
 
 @DataJpaTest
-@Import(com.test.TestConfig.class)
+@Import(TestConfig.class)
 public class UserRepositoryTest {
 
   @Autowired
@@ -31,7 +32,7 @@ public class UserRepositoryTest {
   private UserRepository userRepository;
 
   @Test
-  public void whenSave_thenFind() {
+  public void whenSave_thenFind() throws Exception {
 
     // Given
     User testData = easyRandom.nextObject(User.class);
@@ -40,7 +41,8 @@ public class UserRepositoryTest {
     // When
     User dbData = userRepository.saveAndFlush(testData);
     User findData = userRepository.findById(dbData.getId()).orElse(null);
-    testData.copyIdentiy(findData);
+
+    TestConfig.copyAllIdentities(testData, findData);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(testData);
@@ -49,7 +51,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void whenDelete_thenCountZero() {
+  public void whenDelete_thenCountZero() throws Exception {
 
     // Given
     User testData = easyRandom.nextObject(User.class);
@@ -65,7 +67,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void whenCount_thenUseQuerie() {
+  public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
@@ -82,7 +84,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void whenFindAll_thenPaginate() {
+  public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
@@ -109,7 +111,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void whenCountByTicket_thenUseQuerie() {
+  public void whenCountByTicket_thenUseQuerie() throws Exception {
 
     // Given
     Ticket tmp = easyRandom.nextObject(Ticket.class);
@@ -117,10 +119,10 @@ public class UserRepositoryTest {
     Ticket testParent = ticketRepository.saveAndFlush(tmp);
 
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.tickets = null);
+    testData.forEach(x -> x.removeRelations());
     testData = userRepository.saveAllAndFlush(testData);
 
-    testParent.users = new HashSet<>(testData);
+    testParent.users.addAll(testData);
     ticketRepository.saveAndFlush(testParent);
 
     AppPageable pageable = new AppPageable(null, null, null);
@@ -133,7 +135,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void whenFindAllByTicket_thenPaginate() {
+  public void whenFindAllByTicket_thenPaginate() throws Exception {
 
     // Given
     Ticket tmp = easyRandom.nextObject(Ticket.class);
@@ -141,10 +143,10 @@ public class UserRepositoryTest {
     Ticket testParent = ticketRepository.saveAndFlush(tmp);
 
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.tickets = null);
+    testData.forEach(x -> x.removeRelations());
     testData = userRepository.saveAllAndFlush(testData);
 
-    testParent.users = new HashSet<>(testData);
+    testParent.users.addAll(testData);
     ticketRepository.saveAndFlush(testParent);
 
     // When
@@ -167,7 +169,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void whenRemoveRelation_thenLinkRemovedFromTicket() {
+  public void whenRemoveRelation_thenLinkRemovedFromTicket() throws Exception {
 
     // Given
     Ticket tmp = easyRandom.nextObject(Ticket.class);
@@ -175,10 +177,10 @@ public class UserRepositoryTest {
     Ticket testParent = ticketRepository.saveAndFlush(tmp);
 
     List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.tickets = null);
+    testData.forEach(x -> x.removeRelations());
     testData = userRepository.saveAllAndFlush(testData);
 
-    testParent.users = new HashSet<>(testData);
+    testParent.users.addAll(testData);
     ticketRepository.saveAndFlush(testParent);
 
     // When

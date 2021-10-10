@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import {{base_package}}.TestConfig;
 import {{base_package}}.config.Errors;
 import {{base_package}}.domain.*;
 import {{base_package}}.model.*;
@@ -35,7 +36,7 @@ import {{base_package}}.service.*;
 import {{base_package}}.util.Json;
 
 @WebMvcTest({{model.name}}Controller.class)
-@Import({{base_package}}.TestConfig.class)
+@Import(TestConfig.class)
 public class {{model.name}}ControllerTest {
 
   @Autowired

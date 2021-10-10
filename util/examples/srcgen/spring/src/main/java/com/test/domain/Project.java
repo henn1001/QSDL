@@ -46,7 +46,7 @@ public class Project extends AbstractPersistentObject {
 
   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, orphanRemoval = true)
   @JsonIgnore
-  public Set<Role> roles = new LinkedHashSet<>();
+  public final Set<Role> roles = new LinkedHashSet<>();
 
 
   public static Project fromJson(String json) throws Json.JsonException {

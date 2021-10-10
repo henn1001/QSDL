@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
+import com.test.TestConfig;
 import com.test.config.Errors;
 import com.test.domain.*;
 import com.test.exception.AppException;
@@ -37,7 +38,7 @@ import com.test.util.Json;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-@Import(com.test.TestConfig.class)
+@Import(TestConfig.class)
 public class RoleServiceTest {
 
   @Autowired
@@ -57,7 +58,6 @@ public class RoleServiceTest {
 
     // Given
     List<Role> request = easyRandom.objects(Role.class, 6).collect(Collectors.toList());
-    request.forEach(x -> x.removeRelations());
 
     String expectedCursor = request.get(5).getId().toString();
 

@@ -27,7 +27,7 @@ public class Ticket extends AbstractPersistentObject {
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
   @JsonIgnore
-  public Set<User> users = new LinkedHashSet<>();
+  public final Set<User> users = new LinkedHashSet<>();
 
 
   public static Ticket fromJson(String json) throws Json.JsonException {

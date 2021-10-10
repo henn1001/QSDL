@@ -3,13 +3,18 @@
  */
 package com.test;
 
+import com.test.util.Json;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.test.model.AbstractPersistentBase;
+import com.test.model.AbstractPersistentObject;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-import com.test.util.Json;
+import java.lang.reflect.Field;
+import java.util.Set;
 
 @TestConfiguration
 public class TestConfig {
@@ -20,6 +25,58 @@ public class TestConfig {
         .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}"));
 
     return new EasyRandom(parameters);
+  }
+
+  /**
+   * A helper-method to deep-copy idenities for nested objects.
+   * 
+   * Needed when testing repositories, as these modify the identity.
+   * We assume that object a and b are equal in size/structure.
+   */
+  public static void copyAllIdentities(Object a, Object b) throws Exception {
+
+    // we only care about AbstractPersistentObject and AbstractPersistentBase types
+    // evoke copyIdentity, otherwise return silently
+    if (a instanceof AbstractPersistentObject && b instanceof AbstractPersistentObject) {
+      var copyIdentiy = AbstractPersistentObject.class.getDeclaredMethod("copyIdentiy", AbstractPersistentObject.class);
+      copyIdentiy.invoke(a, b);
+    } else if (a instanceof AbstractPersistentBase && b instanceof AbstractPersistentBase) {
+      var copyIdentiy = AbstractPersistentBase.class.getDeclaredMethod("copyIdentiy", AbstractPersistentBase.class);
+      copyIdentiy.invoke(a, b);
+    } else {
+      return;
+    }
+
+    // loop over all fields to check for nested objects
+    for (Field field : a.getClass().getDeclaredFields()) {
+
+      // ignore hibernate relations
+      if (field.isAnnotationPresent(JsonIgnore.class)) {
+        continue;
+      }
+      // for sets, we call self for each item
+      else if (field.getType() == Set.class) {
+
+        Set<Object> setA = (Set) field.get(a);
+        Set<Object> setB = (Set) field.get(b);
+
+        for (int i = 0; i < setA.size(); i++) {
+
+          Object f1 = setA.toArray()[i];
+          Object f2 = setB.toArray()[i];
+
+          copyAllIdentities(f1, f2);
+        }
+      }
+      // for nested objects, we can call self directly
+      else if (field.get(a) instanceof AbstractPersistentObject || field.get(a) instanceof AbstractPersistentBase) {
+
+        Object f1 = field.get(a);
+        Object f2 = field.get(b);
+
+        copyAllIdentities(f1, f2);
+      }
+    }
   }
 
 }

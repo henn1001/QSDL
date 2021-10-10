@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import {{base_package}}.TestConfig;
 import {{base_package}}.config.Errors;
 import {{base_package}}.exception.AppException;
 import {{base_package}}.model.*;
@@ -28,7 +29,7 @@ import {{base_package}}.model.*;
  * For this, it's enough to target a simple ping endpoint.
  */
 @WebMvcTest(HomeController.class)
-@Import({{base_package}}.TestConfig.class)
+@Import(TestConfig.class)
 public class ControllerTest {
 
   String basePath = "/api/ping";

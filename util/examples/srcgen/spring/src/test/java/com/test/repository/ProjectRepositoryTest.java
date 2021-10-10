@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import com.test.TestConfig;
 import com.test.domain.*;
 import com.test.model.AppPageable;
 import com.test.util.Json;
 
 @DataJpaTest
-@Import(com.test.TestConfig.class)
+@Import(TestConfig.class)
 public class ProjectRepositoryTest {
 
   @Autowired
@@ -28,7 +29,7 @@ public class ProjectRepositoryTest {
   private ProjectRepository projectRepository;
 
   @Test
-  public void whenSave_thenFind() {
+  public void whenSave_thenFind() throws Exception {
 
     // Given
     Project testData = easyRandom.nextObject(Project.class);
@@ -37,7 +38,8 @@ public class ProjectRepositoryTest {
     // When
     Project dbData = projectRepository.saveAndFlush(testData);
     Project findData = projectRepository.findById(dbData.getId()).orElse(null);
-    testData.copyIdentiy(findData);
+
+    TestConfig.copyAllIdentities(testData, findData);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(testData);
@@ -46,7 +48,7 @@ public class ProjectRepositoryTest {
   }
 
   @Test
-  public void whenDelete_thenCountZero() {
+  public void whenDelete_thenCountZero() throws Exception {
 
     // Given
     Project testData = easyRandom.nextObject(Project.class);
@@ -62,7 +64,7 @@ public class ProjectRepositoryTest {
   }
 
   @Test
-  public void whenCount_thenUseQuerie() {
+  public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
     List<Project> testData = easyRandom.objects(Project.class, 5).collect(Collectors.toList());
@@ -80,7 +82,7 @@ public class ProjectRepositoryTest {
   }
 
   @Test
-  public void whenFindAll_thenPaginate() {
+  public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
     List<Project> testData = easyRandom.objects(Project.class, 5).collect(Collectors.toList());
