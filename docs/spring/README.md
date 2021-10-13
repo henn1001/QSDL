@@ -27,3 +27,21 @@ public Integer testerId;
 @JsonProperty(value = "tester", access = JsonProperty.Access.READ_ONLY)
 public Tester tester;
 ```
+
+## Non-Array Composition/Aggregation
+
+Given the following example:
+
+```
+type Bar {
+    field1: String!
+}
+
+type Foo {
+    field1: String!
+    field2: Bar @composition
+    field3: Bar @aggregation
+}
+```
+
+This is currently not supported.

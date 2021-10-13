@@ -207,8 +207,8 @@ def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as aggregation."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-            if field.is_aggregation and not field.is_array:
-                msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as aggregation."
+            if (field.is_composition or field.is_aggregation) and not field.is_array:
+                msg = f"The Field {field.name} for {field.parent.name} declares a non-array as composition/aggregation."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
             # verify that we prevent duplicate relations

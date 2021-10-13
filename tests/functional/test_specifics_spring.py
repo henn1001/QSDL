@@ -95,25 +95,49 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     def test_specifics_03(self):
-        """Test single Composition
-
-        Note:
-        """
+        """Test Composition"""
         test_input = """\
+            type Fruit {
+                field1: String!
+            }
+
             type Bar {
-                field1: Int
-                field2: Long
-                field3: Float
-                field4: Double
-                field5: String
-                field6: Boolean
-                field7: Date
-                field8: Object
+                field1: String!
+                field2: [Fruit] @composition
             }
 
             type Foo {
                 field1: String!
-                field2: Bar @composition
+                field2: [Bar] @composition
+            }
+        """
+
+        test_input = textwrap.dedent(test_input)
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+
+        # generate
+        assert generate(test_input, test_output, "spring") == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_04(self):
+        """Test Aggregation"""
+        test_input = """\
+            type Fruit {
+                field1: String!
+            }
+
+            type Bar {
+                field1: String!
+                field2: [Fruit] @aggregation
+            }
+
+            type Foo {
+                field1: String!
+                field2: [Bar] @aggregation
             }
         """
 
