@@ -209,7 +209,7 @@ public class {{model.name}}RepositoryTest {
   }
 
   {% endfor %}
-  {% if model.has_aggregation %}
+  {% if model.is_aggregated %}
     {% for parent in model.parents if parent.field.is_aggregation %}
   @Test
   public void whenRemoveRelation_thenLinkRemovedFrom{{parent.model.name}}() throws Exception {

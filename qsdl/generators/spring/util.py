@@ -66,7 +66,7 @@ def has(
     has_model: bool = False,
     has_required: bool = False,
     has_required_ignore_id: bool = False,
-    has_aggregation: bool = False,
+    is_aggregated: bool = False,
     has_relation: bool = False,
     has_query: bool = False,
 ) -> bool:
@@ -78,7 +78,7 @@ def has(
         has_list (bool, optional): [description]. Defaults to False.
         has_model (bool, optional): [description]. Defaults to False.
         has_required (bool, optional): [description]. Defaults to False.
-        has_aggregation (bool, optional): [description]. Defaults to False.
+        is_aggregated (bool, optional): [description]. Defaults to False.
         has_relation (bool, optional): [description]. Defaults to False.
 
     Returns:
@@ -89,7 +89,7 @@ def has(
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
 
         # for the aggregation check - we want to search the parent fields
-        fields = entity.fields if not has_aggregation else get_parent_fields(entity.name)
+        fields = entity.fields if not is_aggregated else get_parent_fields(entity.name)
 
         for field in fields:
 
@@ -118,7 +118,7 @@ def has(
                 break
 
             # checks if the Object is aggregated somewhere
-            if has_aggregation and field.is_aggregation:
+            if is_aggregated and field.is_aggregation:
                 ret = True
                 break
 

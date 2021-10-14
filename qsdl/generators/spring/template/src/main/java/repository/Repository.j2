@@ -117,7 +117,7 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
     {% endif %}
   {% endfor %}
 
-  {% if model.has_aggregation %}
+  {% if model.is_aggregated %}
   @Modifying
   @Query(
       value = """

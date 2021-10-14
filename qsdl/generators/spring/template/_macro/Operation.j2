@@ -154,7 +154,7 @@
 
     {% endif %}
     try {
-      {% if model.has_aggregation %}
+      {% if model.is_aggregated %}
       {{api.name|lower}}Repository.removeRelations({{operation.path_parameters[-1].name}});
       {% endif %}
       {{api.name|lower}}Repository.deleteById({{operation.path_parameters[-1].name}});

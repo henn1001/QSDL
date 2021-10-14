@@ -52,7 +52,7 @@ public class {{api.name}}Service {
 {% endif %}
 
 {% for operation in api.operations %}
-  {% if operation.method == "delete" and model and model.has_aggregation %}
+  {% if operation.method == "delete" and model and model.is_aggregated %}
   @org.springframework.transaction.annotation.Transactional
   {% endif %}
   public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
