@@ -15,7 +15,7 @@
 """PlantUML Generator Utility functions"""
 
 import qsdl.dsl.textx as xtx
-from qsdl.dsl.models import Field, Schema
+from qsdl.dsl.models import Schema
 
 # the parsed schema definition.
 schema: Schema = None

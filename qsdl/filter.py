@@ -40,6 +40,6 @@ def camelcase(word: str) -> str:
     return stringcase.camelcase(word)
 
 
-def regex_replace(s, find, replace):
+def regex_replace(txt, find, replace):
     """Applies re.sub to a given string"""
-    return re.sub(find, replace, s)
+    return re.sub(find, replace, txt)
