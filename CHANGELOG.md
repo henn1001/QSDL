@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://gitlab.com/henn1001/qsdl/compare/v2.4.0...v2.5.0) (2021-10-17)
+
+
+### Features
+
+* add global logger module ([b0d687e](https://gitlab.com/henn1001/qsdl/commit/b0d687e43f87949780aa9178a61020ef007b99b7))
+* **spring:** bump version for spring to 2.5.5 and java to 17 ([1eaa87f](https://gitlab.com/henn1001/qsdl/commit/1eaa87fc0c70c4649206bf50f7af4d97470884b8))
+* **spring:** prevent generation of unused entities ([38a9b97](https://gitlab.com/henn1001/qsdl/commit/38a9b976c50ae9884810a50473d707dbc9c9051b))
+* **spring:** repository tests now consider nested objects ([f4cb566](https://gitlab.com/henn1001/qsdl/commit/f4cb56650e7294200992b5e513fff54b6df6eb1e))
+* **spring:** rework and improve repository tests by changing the ownerside for aggregations ([2b7aa13](https://gitlab.com/henn1001/qsdl/commit/2b7aa13b2914394136670b7a42f3c0355339ea91))
+
+
+### Bug Fixes
+
+* prevent non-array compositions ([6b0485c](https://gitlab.com/henn1001/qsdl/commit/6b0485c87770bf711fae27957f3ae51bc1641184))
+* **spring:** resolve issue with writing a "null" string into the database instead of null for objects ([746804d](https://gitlab.com/henn1001/qsdl/commit/746804dbc0fba367187cf55fb046cb252e0d8c60))
+* **spring:** resolve issues with nested base & objects by switching from elementcollection to OneToX ([2abd45a](https://gitlab.com/henn1001/qsdl/commit/2abd45a6838f7de15f0124e3aefaadc67c23e4c3))
+
 ## [2.4.0](https://gitlab.com/henn1001/qsdl/compare/v2.3.0...v2.4.0) (2021-09-23)
 
 
