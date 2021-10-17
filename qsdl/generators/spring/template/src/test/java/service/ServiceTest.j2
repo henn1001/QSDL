@@ -51,7 +51,7 @@ public class {{model.name}}ServiceTest {
   @InjectMocks
   {{model.name}}Service service;
 
-{% for operation in api.operations %}
+{% for operation in api.operations if model.is_crud %}
   {% if operation.method == "get" and operation.is_pageable %}
   {# 
   ########################################################################################

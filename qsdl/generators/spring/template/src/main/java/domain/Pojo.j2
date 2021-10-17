@@ -18,8 +18,8 @@ import {{base_package}}.util.Json;
 {% if model.is_enum %}
 {% include "Enum.j2" with context %}
 {% else %}
-{{ "@Getter @Setter" + "\n" if encapsulation -}}
-{{ hibernate.class_annotation() if database == "hibernate" -}}
+{% if encapsulation %}@Getter @Setter{{"\n"}}{% endif %}
+{% if database == "hibernate" %}@Entity{{"\n"}}{% endif %}
 public class {{model.name}}{% if model.is_object %} extends AbstractPersistentObject{% elif model.is_base %} extends AbstractPersistentBase{% endif %} {
 
 {% for field in model.fields if not field.is_id %}

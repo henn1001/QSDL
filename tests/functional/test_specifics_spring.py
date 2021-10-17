@@ -180,3 +180,88 @@ class TestSpecificsSpring:
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_06(self):
+        """Test custom operations with composition"""
+        test_input = """\
+            type Bar {
+                field1: String!
+
+                extend Api {
+                    createBar(body: Bar): Bar @path(value:"/foos/{foo_id}/bars") @method(value: POST)
+                    editBar(body: Bar): Bar @path(value:"/foos/{foo_id}/bars/{id}") @method(value: POST)
+                }
+
+            }
+
+            type Foo {
+                field1: String!
+                field2: [Bar] @composition
+            }
+        """
+
+        test_input = textwrap.dedent(test_input)
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+
+        # generate
+        assert generate(test_input, test_output, "spring") == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_07(self):
+        """Test custom operations with aggregation"""
+        test_input = """\
+            type Bar {
+                field1: String!
+
+                extend Api {
+                    createBar(body: Bar): Bar @path(value:"/foos/{foo_id}/bars") @method(value: POST)
+                    editBar(body: Bar): Bar @path(value:"/foos/{foo_id}/bars/{id}") @method(value: POST)
+                }
+
+            }
+
+            type Foo {
+                field1: String!
+                field2: [Bar] @aggregation
+            }
+        """
+
+        test_input = textwrap.dedent(test_input)
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+
+        # generate
+        assert generate(test_input, test_output, "spring") == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_08(self):
+        """Test custom operations"""
+        test_input = """\
+
+            base Bar {
+                field1: String!
+            }
+
+            extend Api {
+                createBar(body: Bar): Bar @path(value:"/bars") @method(value: POST)
+                editBar(body: Bar): Bar @path(value:"/bars/{id}") @method(value: POST)
+            }
+        """
+
+        test_input = textwrap.dedent(test_input)
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+
+        # generate
+        assert generate(test_input, test_output, "spring") == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
