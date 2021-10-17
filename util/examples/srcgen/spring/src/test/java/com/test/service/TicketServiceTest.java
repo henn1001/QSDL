@@ -5,7 +5,6 @@ package com.test.service;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,9 +39,6 @@ import com.test.util.Json;
 @Import(TestConfig.class)
 public class TicketServiceTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
   @Mock
   private TicketRepository repository;
 
@@ -54,7 +49,7 @@ public class TicketServiceTest {
   void whenGetTickets_thenOk() throws Exception {
 
     // Given
-    List<Ticket> request = easyRandom.objects(Ticket.class, 6).collect(Collectors.toList());
+    List<Ticket> request = TestConfig.getRandom(Ticket.class, 6);
 
     String expectedCursor = request.get(5).getId().toString();
 
@@ -80,7 +75,7 @@ public class TicketServiceTest {
   void whenCreateTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(repository.save(eq(request)))
         .thenReturn(request);
@@ -98,7 +93,7 @@ public class TicketServiceTest {
   void whenGetTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
@@ -116,7 +111,7 @@ public class TicketServiceTest {
   public void whenGetTicketWithInvalidId_thenError() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -138,7 +133,7 @@ public class TicketServiceTest {
   void whenReplaceTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
@@ -159,7 +154,7 @@ public class TicketServiceTest {
   public void whenReplaceTicketWithInvalidId_thenError() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -181,7 +176,7 @@ public class TicketServiceTest {
   void whenUpdateTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
@@ -202,7 +197,7 @@ public class TicketServiceTest {
   public void whenUpdateTicketWithInvalidId_thenError() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -224,7 +219,7 @@ public class TicketServiceTest {
   void whenDeleteTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     // When
     service.deleteTicket(request.getId());
@@ -237,7 +232,7 @@ public class TicketServiceTest {
   public void whenDeleteTicketWithInvalidId_thenError() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     doThrow(new EmptyResultDataAccessException(1))
         .when(repository).deleteById(eq(request.getId()));

@@ -5,7 +5,6 @@ package com.test.repository;
 
 import java.util.*;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -73,15 +72,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
           """,
       nativeQuery = true)
   public long countByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") AppPageable pageable);
-
-  @Modifying
-  @Query(
-      value = """
-
-          DELETE FROM TICKET_TO_USER WHERE USER_ID = :id ;
-
-          """,
-      nativeQuery = true)
-  public void removeRelations(@Param("id") Long id);
 
 }

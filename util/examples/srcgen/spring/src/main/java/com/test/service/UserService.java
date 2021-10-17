@@ -67,9 +67,9 @@ public class UserService {
     User user = userRepository.findById(id)
         .orElseThrow(() -> AppException.entityNotFound(User.class, id));
 
-    ticket.users.add(user);
+    user.addToTickets(ticket);
 
-    ticketRepository.save(ticket);
+    userRepository.save(user);
 
     return null;
   }
@@ -84,9 +84,9 @@ public class UserService {
     User user = userRepository.findById(id)
         .orElseThrow(() -> AppException.entityNotFound(User.class, id));
 
-    ticket.users.remove(user);
+    user.removeFromTickets(ticket);
 
-    ticketRepository.save(ticket);
+    userRepository.save(user);
 
     return null;
   }
@@ -147,11 +147,9 @@ public class UserService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
   public Void deleteUser(Long id) throws AppException {
 
     try {
-      userRepository.removeRelations(id);
       userRepository.deleteById(id);
     } catch (DataRetrievalFailureException e) {
       throw AppException.entityNotFound(User.class, id);

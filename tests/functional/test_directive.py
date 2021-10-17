@@ -131,7 +131,7 @@ class TestDirective:
         test_input = """\
             type Foo {
                 field: Int
-                composition: Bar @composition
+                composition: [Bar] @composition
             }
 
             type Bar {

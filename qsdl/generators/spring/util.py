@@ -174,29 +174,6 @@ def is_used(entity: Union[dsl.Base, dsl.Object]) -> bool:
     return False
 
 
-def is_aggregated(entity: dsl.Object, parent: dsl.Object) -> bool:
-    """Checks if the first Object is aggregated in the second Object.
-
-    Args:
-        entity (Object): entity.Object.
-        parent (Object): entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    ret = False
-
-    if entity._tx_fqn in ["entity.Object"] and parent._tx_fqn in ["entity.Object"]:
-
-        for field in parent.fields:
-
-            if field.is_aggregation and field.value == entity:
-                ret = True
-                break
-
-    return ret
-
-
 def get_model_imports(entity: Union[dsl.Enum, dsl.Base, dsl.Object]):
     """Returns all imports for this model."""
     imports = []

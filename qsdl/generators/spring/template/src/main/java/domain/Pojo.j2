@@ -54,12 +54,40 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
     Set the Field definition
   #}
   {% if field.is_array and field.is_relation %}
-  {{ "private" if encapsulation else "public"}} final Set<{{field.type}}> {{field.name}} = new LinkedHashSet<>();
+  public final Set<{{field.type}}> {{field.name}} = new LinkedHashSet<>();
   {% elif field.is_array %}
-  {{ "private" if encapsulation else "public"}} Set<{{field.type}}> {{field.name}};
+  {{ "private" if encapsulation else "public"}} List<{{field.type}}> {{field.name}};
   {% else %}
   {{ "private" if encapsulation else "public"}} {{field.type}} {{field.name}};
   {% endif %}
+
+{% endfor %}
+
+  @PreRemove
+  private void preRemoveHook() {
+    {% for field in model.fields if field.is_aggregation and not field.is_relation_owner %}
+    new LinkedHashSet<>(this.{{field.name}}).forEach(o -> o.removeFrom{{model.name}}s(this));
+    {% endfor %}
+  }
+
+{% for field in model.fields if field.is_relation and field.is_array %}
+  public void addTo{{field.type}}s({{field.type}} o) {
+    {% if field.is_composition  %}
+    o.{{model.name|camel}} = this;
+    {% else %}
+    o.{{model.name|camel}}s.add(this);
+    {% endif %}
+    this.{{field.name}}.add(o);
+  }
+
+  public void removeFrom{{field.type}}s({{field.type}} o) {
+    {% if field.is_composition  %}
+    o.{{model.name|camel}} = null;
+    {% else %}
+    o.{{model.name|camel}}s.remove(this);
+    {% endif %}
+    this.{{field.name}}.remove(o);
+  }
 
 {% endfor %}
 

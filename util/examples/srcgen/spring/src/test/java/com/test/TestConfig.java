@@ -11,20 +11,34 @@ import com.test.model.AbstractPersistentObject;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @TestConfiguration
 public class TestConfig {
 
-  @Bean
-  public EasyRandom easyRandom() {
+  public static EasyRandom easyRandom;
+
+  TestConfig() {
     EasyRandomParameters parameters = new EasyRandomParameters()
         .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}"));
 
-    return new EasyRandom(parameters);
+    easyRandom = new EasyRandom(parameters);
+  }
+
+  public static <T extends AbstractPersistentObject> T getRandom(Class<T> cls) {
+    T o = easyRandom.nextObject(cls);
+    o.removeRelations();
+    return o;
+  }
+
+  public static <T extends AbstractPersistentObject> List<T> getRandom(Class<T> cls, int count) {
+    List<T> oList = easyRandom.objects(cls, count).collect(Collectors.toList());
+    oList.forEach(o -> o.removeRelations());
+    return oList;
   }
 
   /**

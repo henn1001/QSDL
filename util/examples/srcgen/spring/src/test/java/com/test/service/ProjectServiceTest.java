@@ -5,7 +5,6 @@ package com.test.service;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,9 +39,6 @@ import com.test.util.Json;
 @Import(TestConfig.class)
 public class ProjectServiceTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
   @Mock
   private ProjectRepository repository;
 
@@ -54,7 +49,7 @@ public class ProjectServiceTest {
   void whenGetProjects_thenOk() throws Exception {
 
     // Given
-    List<Project> request = easyRandom.objects(Project.class, 6).collect(Collectors.toList());
+    List<Project> request = TestConfig.getRandom(Project.class, 6);
 
     String expectedCursor = request.get(5).getId().toString();
 
@@ -80,7 +75,7 @@ public class ProjectServiceTest {
   void whenCreateProject_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(repository.save(eq(request)))
         .thenReturn(request);
@@ -98,7 +93,7 @@ public class ProjectServiceTest {
   void whenGetProject_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
@@ -116,7 +111,7 @@ public class ProjectServiceTest {
   public void whenGetProjectWithInvalidId_thenError() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -138,7 +133,7 @@ public class ProjectServiceTest {
   void whenReplaceProject_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
@@ -159,7 +154,7 @@ public class ProjectServiceTest {
   public void whenReplaceProjectWithInvalidId_thenError() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -181,7 +176,7 @@ public class ProjectServiceTest {
   void whenUpdateProject_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
@@ -202,7 +197,7 @@ public class ProjectServiceTest {
   public void whenUpdateProjectWithInvalidId_thenError() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -224,7 +219,7 @@ public class ProjectServiceTest {
   void whenDeleteProject_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     // When
     service.deleteProject(request.getId());
@@ -237,7 +232,7 @@ public class ProjectServiceTest {
   public void whenDeleteProjectWithInvalidId_thenError() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     doThrow(new EmptyResultDataAccessException(1))
         .when(repository).deleteById(eq(request.getId()));

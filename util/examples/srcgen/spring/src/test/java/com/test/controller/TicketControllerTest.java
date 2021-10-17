@@ -4,7 +4,6 @@
 package com.test.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +37,6 @@ import com.test.util.Json;
 @Import(TestConfig.class)
 public class TicketControllerTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
   @MockBean
   TicketService service;
 
@@ -54,7 +50,7 @@ public class TicketControllerTest {
   public void whenGetTickets_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     ObjectList ret = new ObjectList();
     ret.items = Arrays.asList(request);
@@ -77,7 +73,7 @@ public class TicketControllerTest {
   public void whenCreateTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(service.createTicket(any()))
         .thenReturn(request);
@@ -99,7 +95,7 @@ public class TicketControllerTest {
   public void whenCreateTicketWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(service.createTicket(any()))
         .thenReturn(request);
@@ -122,7 +118,7 @@ public class TicketControllerTest {
   public void whenGetTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(service.getTicket(eq(1l)))
         .thenReturn(request);
@@ -142,7 +138,7 @@ public class TicketControllerTest {
   public void whenReplaceTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(service.replaceTicket(eq(1l), any()))
         .thenReturn(request);
@@ -164,7 +160,7 @@ public class TicketControllerTest {
   public void whenReplaceTicketWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(service.replaceTicket(eq(1l), any()))
         .thenReturn(request);
@@ -187,7 +183,7 @@ public class TicketControllerTest {
   public void whenUpdateTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(service.updateTicket(eq(1l), any()))
         .thenReturn(request);
@@ -209,7 +205,7 @@ public class TicketControllerTest {
   public void whenUpdateTicketWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Ticket request = easyRandom.nextObject(Ticket.class);
+    Ticket request = TestConfig.getRandom(Ticket.class);
 
     when(service.updateTicket(eq(1l), any()))
         .thenReturn(request);

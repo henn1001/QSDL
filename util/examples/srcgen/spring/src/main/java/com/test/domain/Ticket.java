@@ -24,10 +24,25 @@ public class Ticket extends AbstractPersistentObject {
   @JsonProperty(value = "status")
   public Status status;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+  @ManyToMany(mappedBy = "tickets", fetch = FetchType.LAZY)
   @JsonIgnore
   public final Set<User> users = new LinkedHashSet<>();
+
+
+  @PreRemove
+  private void preRemoveHook() {
+    new LinkedHashSet<>(this.users).forEach(o -> o.removeFromTickets(this));
+  }
+
+  public void addToUsers(User o) {
+    o.tickets.add(this);
+    this.users.add(o);
+  }
+
+  public void removeFromUsers(User o) {
+    o.tickets.remove(this);
+    this.users.remove(o);
+  }
 
 
   public static Ticket fromJson(String json) throws Json.JsonException {

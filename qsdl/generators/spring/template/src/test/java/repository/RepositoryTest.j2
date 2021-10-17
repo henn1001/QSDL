@@ -5,12 +5,11 @@ package {{base_package}}.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
-import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import {{base_package}}.TestConfig;
@@ -22,9 +21,6 @@ import {{base_package}}.util.Json;
 @Import(TestConfig.class)
 public class {{model.name}}RepositoryTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
 {% for parent in model.parents %}
   @Autowired
   private {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
@@ -33,16 +29,51 @@ public class {{model.name}}RepositoryTest {
   @Autowired
   private {{model.name}}Repository {{model.name|lower}}Repository;
 
+  @Autowired
+  private TestEntityManager testEntityManager;
+
+  public List<{{model.name}}> prepareData(int count) {
+
+    List<{{model.name}}> testDatas = TestConfig.getRandom({{model.name}}.class, count);
+
+    {% for parent in model.parents %}
+    {{parent.model.name}} {{parent.model.name|lower}} = {{parent.model.name|lower}}Repository.save(TestConfig.getRandom({{parent.model.name}}.class));
+    {{- "\n" if loop.last }}
+    {% endfor %}
+    for ({{model.name}} testData : testDatas) {
+    {% for field in model.fields if field.is_relation %}
+      {% if field.is_array and field.is_composition %}
+      testData.addTo{{field.type}}s(TestConfig.getRandom({{field.type}}.class));
+      {% elif field.is_array and field.is_aggregation and field.is_relation_owner %}
+      testData.addTo{{field.type}}s({{field.type|lower}});
+      {% elif field.is_composition %}
+          {% if encapsulation %}
+      testData.set{{field.type}}({{field.type|lower}});
+          {% else %}
+      testData.{{field.name}} = {{field.type|lower}};
+          {% endif %}
+      {% endif %}
+    {% endfor %}
+    }
+
+    {{model.name|lower}}Repository.saveAll(testDatas);
+
+    // forces synchronization to DB
+    // clears persistence context
+    testEntityManager.flush();
+    testEntityManager.clear();
+
+    return {{model.name|lower}}Repository.findAll();
+  }
+
   @Test
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    {{model.name}} testData = easyRandom.nextObject({{model.name}}.class);
-    testData.removeRelations();
+    {{model.name}} testData = prepareData(1).get(0);
 
     // When
-    {{model.name}} dbData = {{model.name|lower}}Repository.saveAndFlush(testData);
-    {{model.name}} findData = {{model.name|lower}}Repository.findById(dbData.getId()).orElse(null);
+    {{model.name}} findData = {{model.name|lower}}Repository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -56,12 +87,10 @@ public class {{model.name}}RepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    {{model.name}} testData = easyRandom.nextObject({{model.name}}.class);
-    testData.removeRelations();
-    {{model.name}} dbData = {{model.name|lower}}Repository.saveAndFlush(testData);
+    {{model.name}} testData = prepareData(1).get(0);
 
     // When
-    {{model.name|lower}}Repository.delete(dbData);
+    {{model.name|lower}}Repository.deleteById(testData.getId());
 
     // Then
     long count = {{model.name|lower}}Repository.count();
@@ -72,13 +101,11 @@ public class {{model.name}}RepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    List<{{model.name}}> dbData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
+    List<{{model.name}}> testData = prepareData(5);
 
     AppPageable pageable = new AppPageable(null, null, null);
     {% for field in model.fields if field.is_query %}
-    pageable.query.put("{{field.name}}", dbData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}});
+    pageable.query.put("{{field.name}}", testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}});
     {% endfor %}
 
     // When
@@ -92,9 +119,7 @@ public class {{model.name}}RepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    {{model.name|lower}}Repository.saveAllAndFlush(testData);
+    List<{{model.name}}> testData = prepareData(5);
 
     // When
     String cursor = null;
@@ -120,38 +145,24 @@ public class {{model.name}}RepositoryTest {
   public void whenCountBy{{parent.model.name}}_thenUseQuerie() throws Exception {
 
     // Given
-    {{parent.model.name}} tmp = easyRandom.nextObject({{parent.model.name}}.class);
-    tmp.removeRelations();
-    {{parent.model.name}} testParent = {{parent.model.name|lower}}Repository.saveAndFlush(tmp);
-
-    List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
-
     {% if parent.field.is_aggregation %}
-      {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
-        {% if encapsulation %}
-    testParent.get{{field.name|pascal}}.addAll(testData);
-        {% else %}
-    testParent.{{field.name}}.addAll(testData);
-        {% endif %}
-    {{parent.model.name|lower}}Repository.saveAndFlush(testParent);
-      {% endfor %}
-    {% else %}
-      {% for field in model.fields if field.is_relation and field.type == parent.model.name %}
       {% if encapsulation %}
-    testData.forEach(x -> x.set{{field.name|pascal}}(testParent));
+    Long parentId = prepareData(5).get(0).get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0].getId();
       {% else %}
-    testData.forEach(x -> x.{{field.name}} = testParent);
+    Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0].getId();
       {% endif %}
-    testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
-      {% endfor %}
+    {% else %}
+      {% if encapsulation %}
+    Long parentId = prepareData(5).get(0).get{{parent.model.name}}.getId();
+      {% else %}
+    Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}.getId();
+      {% endif %}
     {% endif %}
 
     AppPageable pageable = new AppPageable(null, null, null);
 
     // When
-    long count = {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(testParent.getId(), pageable);
+    long count = {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(parentId, pageable);
 
     // Then
     assertEquals({{ "1" if model.has_query else "5" }}, count);
@@ -161,32 +172,18 @@ public class {{model.name}}RepositoryTest {
   public void whenFindAllBy{{parent.model.name}}_thenPaginate() throws Exception {
 
     // Given
-    {{parent.model.name}} tmp = easyRandom.nextObject({{parent.model.name}}.class);
-    tmp.removeRelations();
-    {{parent.model.name}} testParent = {{parent.model.name|lower}}Repository.saveAndFlush(tmp);
-
-    List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
-
     {% if parent.field.is_aggregation %}
-      {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
-        {% if encapsulation %}
-    testParent.get{{field.name|pascal}}.addAll(testData);
-        {% else %}
-    testParent.{{field.name}}.addAll(testData);
-        {% endif %}
-    {{parent.model.name|lower}}Repository.saveAndFlush(testParent);
-      {% endfor %}
-    {% else %}
-      {% for field in model.fields if field.is_relation and field.type == parent.model.name %}
       {% if encapsulation %}
-    testData.forEach(x -> x.set{{field.name|pascal}}(testParent));
+    Long parentId = prepareData(5).get(0).get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0].getId();
       {% else %}
-    testData.forEach(x -> x.{{field.name}} = testParent);
+    Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0].getId();
       {% endif %}
-    testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
-      {% endfor %}
+    {% else %}
+      {% if encapsulation %}
+    Long parentId = prepareData(5).get(0).get{{parent.model.name}}.getId();
+      {% else %}
+    Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}.getId();
+      {% endif %}
     {% endif %}
 
     // When
@@ -195,7 +192,7 @@ public class {{model.name}}RepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{parent.model.hibernate.method_joined_id}}(testParent.getId(), pageable);
+      List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{parent.model.hibernate.method_joined_id}}(parentId, pageable);
 
       cursor = pageable.getNextCursor(findData);
 
@@ -212,34 +209,70 @@ public class {{model.name}}RepositoryTest {
   {% if model.is_aggregated %}
     {% for parent in model.parents if parent.field.is_aggregation %}
   @Test
-  public void whenRemoveRelation_thenLinkRemovedFrom{{parent.model.name}}() throws Exception {
+  public void whenUnlinkFromLinked{{parent.model.name}}_thenStillExist() throws Exception {
 
     // Given
-    {{parent.model.name}} tmp = easyRandom.nextObject({{parent.model.name}}.class);
-    tmp.removeRelations();
-    {{parent.model.name}} testParent = {{parent.model.name|lower}}Repository.saveAndFlush(tmp);
-
-    List<{{model.name}}> testData = easyRandom.objects({{model.name}}.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    testData = {{model.name|lower}}Repository.saveAllAndFlush(testData);
-
-    {% for field in parent.model.fields if field.is_relation and field.type == model.name %}
-      {% if encapsulation %}
-    testParent.get{{field.name|pascal}}.addAll(testData);
-      {% else %}
-    testParent.{{field.name}}.addAll(testData);
-      {% endif %}
-    {{parent.model.name|lower}}Repository.saveAndFlush(testParent);
-    {% endfor %}
+    {{model.name}} testData = prepareData(1).get(0);
+  {% if encapsulation %}
+    {{parent.model.name}} parent = testData.get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0];
+  {% else %}
+    {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
+  {% endif %}
 
     // When
-    {{model.name|lower}}Repository.removeRelations(testData.get(0).getId());
+    testData.removeFrom{{parent.model.name}}s(parent);
+    {{model.name|lower}}Repository.save(testData);
 
     // Then
     AppPageable pageable = new AppPageable(null, null, null);
-    List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{parent.model.hibernate.method_joined_id}}(testParent.getId(), pageable);
 
-    assertEquals(4, findData.size());
+    assertEquals(0, {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(parent.getId(), pageable));
+    assertEquals(true, {{model.name|lower}}Repository.existsById(testData.getId()));
+    assertEquals(true, {{parent.model.name|lower}}Repository.existsById(parent.getId()));
+  }
+
+  @Test
+  public void whenDeleteFromLinked{{parent.model.name}}_thenStillExistA() throws Exception {
+
+    // Given
+    {{model.name}} testData = prepareData(1).get(0);
+  {% if encapsulation %}
+    {{parent.model.name}} parent = testData.get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0];
+  {% else %}
+    {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
+  {% endif %}
+
+    // When
+    {{model.name|lower}}Repository.deleteById(testData.getId());
+
+    // Then
+    AppPageable pageable = new AppPageable(null, null, null);
+
+    assertEquals(0, {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(parent.getId(), pageable));
+    assertEquals(false, {{model.name|lower}}Repository.existsById(testData.getId()));
+    assertEquals(true, {{parent.model.name|lower}}Repository.existsById(parent.getId()));
+  }
+
+  @Test
+  public void whenDeleteFromLinked{{parent.model.name}}_thenStillExistB() throws Exception {
+
+    // Given
+    {{model.name}} testData = prepareData(1).get(0);
+  {% if encapsulation %}
+    {{parent.model.name}} parent = testData.get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0];
+  {% else %}
+    {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
+  {% endif %}
+
+    // When
+    {{parent.model.name|lower}}Repository.deleteById(parent.getId());
+
+    // Then
+    AppPageable pageable = new AppPageable(null, null, null);
+
+    assertEquals(0, {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(parent.getId(), pageable));
+    assertEquals(true, {{model.name|lower}}Repository.existsById(testData.getId()));
+    assertEquals(false, {{parent.model.name|lower}}Repository.existsById(parent.getId()));
   }
 
     {% endfor %}

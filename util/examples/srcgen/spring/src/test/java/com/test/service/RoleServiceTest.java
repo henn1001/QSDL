@@ -5,7 +5,6 @@ package com.test.service;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,9 +39,6 @@ import com.test.util.Json;
 @Import(TestConfig.class)
 public class RoleServiceTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
   @Mock
   private RoleRepository repository;
 
@@ -57,7 +52,7 @@ public class RoleServiceTest {
   void whenGetRoles_thenOk() throws Exception {
 
     // Given
-    List<Role> request = easyRandom.objects(Role.class, 6).collect(Collectors.toList());
+    List<Role> request = TestConfig.getRandom(Role.class, 6);
 
     String expectedCursor = request.get(5).getId().toString();
 
@@ -86,7 +81,7 @@ public class RoleServiceTest {
   void whenCreateRole_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
@@ -107,7 +102,7 @@ public class RoleServiceTest {
   void whenGetRole_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
@@ -128,7 +123,7 @@ public class RoleServiceTest {
   public void whenGetRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
@@ -153,7 +148,7 @@ public class RoleServiceTest {
   void whenReplaceRole_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
@@ -177,7 +172,7 @@ public class RoleServiceTest {
   public void whenReplaceRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
@@ -202,7 +197,7 @@ public class RoleServiceTest {
   void whenUpdateRole_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
@@ -226,7 +221,7 @@ public class RoleServiceTest {
   public void whenUpdateRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
@@ -251,7 +246,7 @@ public class RoleServiceTest {
   void whenDeleteRole_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
@@ -267,7 +262,7 @@ public class RoleServiceTest {
   public void whenDeleteRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);

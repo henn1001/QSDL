@@ -5,12 +5,11 @@ package com.test.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
-import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import com.test.TestConfig;
@@ -23,24 +22,42 @@ import com.test.util.Json;
 public class RoleRepositoryTest {
 
   @Autowired
-  private EasyRandom easyRandom;
-
-  @Autowired
   private ProjectRepository projectRepository;
 
   @Autowired
   private RoleRepository roleRepository;
 
+  @Autowired
+  private TestEntityManager testEntityManager;
+
+  public List<Role> prepareData(int count) {
+
+    List<Role> testDatas = TestConfig.getRandom(Role.class, count);
+
+    Project project = projectRepository.save(TestConfig.getRandom(Project.class));
+
+    for (Role testData : testDatas) {
+      testData.project = project;
+    }
+
+    roleRepository.saveAll(testDatas);
+
+    // forces synchronization to DB
+    // clears persistence context
+    testEntityManager.flush();
+    testEntityManager.clear();
+
+    return roleRepository.findAll();
+  }
+
   @Test
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    Role testData = easyRandom.nextObject(Role.class);
-    testData.removeRelations();
+    Role testData = prepareData(1).get(0);
 
     // When
-    Role dbData = roleRepository.saveAndFlush(testData);
-    Role findData = roleRepository.findById(dbData.getId()).orElse(null);
+    Role findData = roleRepository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -54,12 +71,10 @@ public class RoleRepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    Role testData = easyRandom.nextObject(Role.class);
-    testData.removeRelations();
-    Role dbData = roleRepository.saveAndFlush(testData);
+    Role testData = prepareData(1).get(0);
 
     // When
-    roleRepository.delete(dbData);
+    roleRepository.deleteById(testData.getId());
 
     // Then
     long count = roleRepository.count();
@@ -70,9 +85,7 @@ public class RoleRepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    List<Role> dbData = roleRepository.saveAllAndFlush(testData);
+    List<Role> testData = prepareData(5);
 
     AppPageable pageable = new AppPageable(null, null, null);
 
@@ -87,9 +100,7 @@ public class RoleRepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    roleRepository.saveAllAndFlush(testData);
+    List<Role> testData = prepareData(5);
 
     // When
     String cursor = null;
@@ -114,21 +125,12 @@ public class RoleRepositoryTest {
   public void whenCountByProject_thenUseQuerie() throws Exception {
 
     // Given
-    Project tmp = easyRandom.nextObject(Project.class);
-    tmp.removeRelations();
-    Project testParent = projectRepository.saveAndFlush(tmp);
-
-    List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    testData = roleRepository.saveAllAndFlush(testData);
-
-    testData.forEach(x -> x.project = testParent);
-    testData = roleRepository.saveAllAndFlush(testData);
+    Long parentId = prepareData(5).get(0).project.getId();
 
     AppPageable pageable = new AppPageable(null, null, null);
 
     // When
-    long count = roleRepository.countByProjectId(testParent.getId(), pageable);
+    long count = roleRepository.countByProjectId(parentId, pageable);
 
     // Then
     assertEquals(5, count);
@@ -138,16 +140,7 @@ public class RoleRepositoryTest {
   public void whenFindAllByProject_thenPaginate() throws Exception {
 
     // Given
-    Project tmp = easyRandom.nextObject(Project.class);
-    tmp.removeRelations();
-    Project testParent = projectRepository.saveAndFlush(tmp);
-
-    List<Role> testData = easyRandom.objects(Role.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    testData = roleRepository.saveAllAndFlush(testData);
-
-    testData.forEach(x -> x.project = testParent);
-    testData = roleRepository.saveAllAndFlush(testData);
+    Long parentId = prepareData(5).get(0).project.getId();
 
     // When
     String cursor = null;
@@ -155,7 +148,7 @@ public class RoleRepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<Role> findData = roleRepository.findAllByProjectId(testParent.getId(), pageable);
+      List<Role> findData = roleRepository.findAllByProjectId(parentId, pageable);
 
       cursor = pageable.getNextCursor(findData);
 

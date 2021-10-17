@@ -5,12 +5,11 @@ package com.test.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
-import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import com.test.TestConfig;
@@ -23,21 +22,36 @@ import com.test.util.Json;
 public class TicketRepositoryTest {
 
   @Autowired
-  private EasyRandom easyRandom;
+  private TicketRepository ticketRepository;
 
   @Autowired
-  private TicketRepository ticketRepository;
+  private TestEntityManager testEntityManager;
+
+  public List<Ticket> prepareData(int count) {
+
+    List<Ticket> testDatas = TestConfig.getRandom(Ticket.class, count);
+
+    for (Ticket testData : testDatas) {
+    }
+
+    ticketRepository.saveAll(testDatas);
+
+    // forces synchronization to DB
+    // clears persistence context
+    testEntityManager.flush();
+    testEntityManager.clear();
+
+    return ticketRepository.findAll();
+  }
 
   @Test
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    Ticket testData = easyRandom.nextObject(Ticket.class);
-    testData.removeRelations();
+    Ticket testData = prepareData(1).get(0);
 
     // When
-    Ticket dbData = ticketRepository.saveAndFlush(testData);
-    Ticket findData = ticketRepository.findById(dbData.getId()).orElse(null);
+    Ticket findData = ticketRepository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -51,12 +65,10 @@ public class TicketRepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    Ticket testData = easyRandom.nextObject(Ticket.class);
-    testData.removeRelations();
-    Ticket dbData = ticketRepository.saveAndFlush(testData);
+    Ticket testData = prepareData(1).get(0);
 
     // When
-    ticketRepository.delete(dbData);
+    ticketRepository.deleteById(testData.getId());
 
     // Then
     long count = ticketRepository.count();
@@ -67,9 +79,7 @@ public class TicketRepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<Ticket> testData = easyRandom.objects(Ticket.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    List<Ticket> dbData = ticketRepository.saveAllAndFlush(testData);
+    List<Ticket> testData = prepareData(5);
 
     AppPageable pageable = new AppPageable(null, null, null);
 
@@ -84,9 +94,7 @@ public class TicketRepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<Ticket> testData = easyRandom.objects(Ticket.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    ticketRepository.saveAllAndFlush(testData);
+    List<Ticket> testData = prepareData(5);
 
     // When
     String cursor = null;

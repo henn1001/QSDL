@@ -151,3 +151,32 @@ class TestSpecificsSpring:
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_05(self):
+        """Test Composition with two parents"""
+        test_input = """\
+            type Fruit {
+                field1: String!
+            }
+
+            type Bar {
+                field1: String!
+                field2: [Fruit] @composition
+            }
+
+            type Foo {
+                field1: String!
+                field2: [Fruit] @composition
+            }
+        """
+
+        test_input = textwrap.dedent(test_input)
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+
+        # generate
+        assert generate(test_input, test_output, "spring") == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0

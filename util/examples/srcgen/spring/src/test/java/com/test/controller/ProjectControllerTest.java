@@ -4,7 +4,6 @@
 package com.test.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +37,6 @@ import com.test.util.Json;
 @Import(TestConfig.class)
 public class ProjectControllerTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
   @MockBean
   ProjectService service;
 
@@ -54,7 +50,7 @@ public class ProjectControllerTest {
   public void whenGetProjects_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     ObjectList ret = new ObjectList();
     ret.items = Arrays.asList(request);
@@ -77,7 +73,7 @@ public class ProjectControllerTest {
   public void whenCreateProject_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(service.createProject(any()))
         .thenReturn(request);
@@ -99,7 +95,7 @@ public class ProjectControllerTest {
   public void whenCreateProjectWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(service.createProject(any()))
         .thenReturn(request);
@@ -122,7 +118,7 @@ public class ProjectControllerTest {
   public void whenGetProject_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(service.getProject(eq(1l)))
         .thenReturn(request);
@@ -142,7 +138,7 @@ public class ProjectControllerTest {
   public void whenReplaceProject_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(service.replaceProject(eq(1l), any()))
         .thenReturn(request);
@@ -164,7 +160,7 @@ public class ProjectControllerTest {
   public void whenReplaceProjectWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(service.replaceProject(eq(1l), any()))
         .thenReturn(request);
@@ -187,7 +183,7 @@ public class ProjectControllerTest {
   public void whenUpdateProject_thenOk() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(service.updateProject(eq(1l), any()))
         .thenReturn(request);
@@ -209,7 +205,7 @@ public class ProjectControllerTest {
   public void whenUpdateProjectWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Project request = easyRandom.nextObject(Project.class);
+    Project request = TestConfig.getRandom(Project.class);
 
     when(service.updateProject(eq(1l), any()))
         .thenReturn(request);

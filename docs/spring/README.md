@@ -45,3 +45,9 @@ type Foo {
 ```
 
 This is currently not supported.
+
+## Orphan-Removal
+
+Auto-Deletion of childs is not exactly optimized by default.
+
+https://thorben-janssen.com/avoid-cascadetype-delete-many-assocations/

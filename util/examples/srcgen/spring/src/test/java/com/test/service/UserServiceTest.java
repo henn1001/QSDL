@@ -5,7 +5,6 @@ package com.test.service;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,9 +39,6 @@ import com.test.util.Json;
 @Import(TestConfig.class)
 public class UserServiceTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
   @Mock
   private UserRepository repository;
 
@@ -57,7 +52,7 @@ public class UserServiceTest {
   void whenGetUsersForTicket_thenOk() throws Exception {
 
     // Given
-    List<User> request = easyRandom.objects(User.class, 6).collect(Collectors.toList());
+    List<User> request = TestConfig.getRandom(User.class, 6);
 
     String expectedCursor = request.get(5).getId().toString();
 
@@ -86,8 +81,8 @@ public class UserServiceTest {
   void whenAddUserToTicket_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
-    Ticket testParent = easyRandom.nextObject(Ticket.class);
+    User request = TestConfig.getRandom(User.class);
+    Ticket testParent = TestConfig.getRandom(Ticket.class);
 
     when(ticketRepository.findById(eq(testParent.getId())))
         .thenReturn(Optional.of(testParent));
@@ -95,7 +90,7 @@ public class UserServiceTest {
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
 
-    when(ticketRepository.save(eq(testParent)))
+    when(repository.save(eq(request)))
         .thenReturn(null);
 
     // When
@@ -109,8 +104,8 @@ public class UserServiceTest {
   void whenRemoveUserFromTicket_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
-    Ticket testParent = easyRandom.nextObject(Ticket.class);
+    User request = TestConfig.getRandom(User.class);
+    Ticket testParent = TestConfig.getRandom(Ticket.class);
 
     when(ticketRepository.findById(eq(testParent.getId())))
         .thenReturn(Optional.of(testParent));
@@ -118,7 +113,7 @@ public class UserServiceTest {
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
 
-    when(ticketRepository.save(eq(testParent)))
+    when(repository.save(eq(request)))
         .thenReturn(null);
 
     // When
@@ -132,7 +127,7 @@ public class UserServiceTest {
   void whenGetUsers_thenOk() throws Exception {
 
     // Given
-    List<User> request = easyRandom.objects(User.class, 6).collect(Collectors.toList());
+    List<User> request = TestConfig.getRandom(User.class, 6);
 
     String expectedCursor = request.get(5).getId().toString();
 
@@ -158,7 +153,7 @@ public class UserServiceTest {
   void whenCreateUser_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(repository.save(eq(request)))
         .thenReturn(request);
@@ -176,7 +171,7 @@ public class UserServiceTest {
   void whenGetUser_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
@@ -194,7 +189,7 @@ public class UserServiceTest {
   public void whenGetUserWithInvalidId_thenError() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -216,7 +211,7 @@ public class UserServiceTest {
   void whenReplaceUser_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
@@ -237,7 +232,7 @@ public class UserServiceTest {
   public void whenReplaceUserWithInvalidId_thenError() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -259,7 +254,7 @@ public class UserServiceTest {
   void whenUpdateUser_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
@@ -280,7 +275,7 @@ public class UserServiceTest {
   public void whenUpdateUserWithInvalidId_thenError() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
@@ -302,7 +297,7 @@ public class UserServiceTest {
   void whenDeleteUser_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     // When
     service.deleteUser(request.getId());
@@ -315,7 +310,7 @@ public class UserServiceTest {
   public void whenDeleteUserWithInvalidId_thenError() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     doThrow(new EmptyResultDataAccessException(1))
         .when(repository).deleteById(eq(request.getId()));

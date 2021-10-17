@@ -5,12 +5,11 @@ package com.test.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
-import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import com.test.TestConfig;
@@ -23,21 +22,37 @@ import com.test.util.Json;
 public class ProjectRepositoryTest {
 
   @Autowired
-  private EasyRandom easyRandom;
+  private ProjectRepository projectRepository;
 
   @Autowired
-  private ProjectRepository projectRepository;
+  private TestEntityManager testEntityManager;
+
+  public List<Project> prepareData(int count) {
+
+    List<Project> testDatas = TestConfig.getRandom(Project.class, count);
+
+    for (Project testData : testDatas) {
+      testData.addToRoles(TestConfig.getRandom(Role.class));
+    }
+
+    projectRepository.saveAll(testDatas);
+
+    // forces synchronization to DB
+    // clears persistence context
+    testEntityManager.flush();
+    testEntityManager.clear();
+
+    return projectRepository.findAll();
+  }
 
   @Test
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    Project testData = easyRandom.nextObject(Project.class);
-    testData.removeRelations();
+    Project testData = prepareData(1).get(0);
 
     // When
-    Project dbData = projectRepository.saveAndFlush(testData);
-    Project findData = projectRepository.findById(dbData.getId()).orElse(null);
+    Project findData = projectRepository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -51,12 +66,10 @@ public class ProjectRepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    Project testData = easyRandom.nextObject(Project.class);
-    testData.removeRelations();
-    Project dbData = projectRepository.saveAndFlush(testData);
+    Project testData = prepareData(1).get(0);
 
     // When
-    projectRepository.delete(dbData);
+    projectRepository.deleteById(testData.getId());
 
     // Then
     long count = projectRepository.count();
@@ -67,12 +80,10 @@ public class ProjectRepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<Project> testData = easyRandom.objects(Project.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    List<Project> dbData = projectRepository.saveAllAndFlush(testData);
+    List<Project> testData = prepareData(5);
 
     AppPageable pageable = new AppPageable(null, null, null);
-    pageable.query.put("name", dbData.get(0).name);
+    pageable.query.put("name", testData.get(0).name);
 
     // When
     long count = projectRepository.count(pageable);
@@ -85,9 +96,7 @@ public class ProjectRepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<Project> testData = easyRandom.objects(Project.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    projectRepository.saveAllAndFlush(testData);
+    List<Project> testData = prepareData(5);
 
     // When
     String cursor = null;

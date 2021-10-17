@@ -6,7 +6,6 @@ package {{base_package}}.service;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +19,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,9 +40,6 @@ import {{base_package}}.util.Json;
 @Import(TestConfig.class)
 public class {{model.name}}ServiceTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
   @Mock
   private {{model.name}}Repository repository;
 
@@ -65,7 +60,7 @@ public class {{model.name}}ServiceTest {
   void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    List<{{model.name}}> request = easyRandom.objects({{model.name}}.class, 6).collect(Collectors.toList());
+    List<{{model.name}}> request = TestConfig.getRandom({{model.name}}.class, 6);
 
     String expectedCursor = request.get(5).getId().toString();
 
@@ -105,8 +100,8 @@ public class {{model.name}}ServiceTest {
   void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
-    {{operation.parent.model.name}} testParent = easyRandom.nextObject({{operation.parent.model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
+    {{operation.parent.model.name}} testParent = TestConfig.getRandom({{operation.parent.model.name}}.class);
 
     when({{ operation.parent.model.name|lower }}Repository.findById(eq(testParent.getId())))
         .thenReturn(Optional.of(testParent));
@@ -114,7 +109,7 @@ public class {{model.name}}ServiceTest {
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
 
-    when({{operation.parent.model.name|lower}}Repository.save(eq(testParent)))
+    when(repository.save(eq(request)))
         .thenReturn(null);
 
     // When
@@ -131,7 +126,7 @@ public class {{model.name}}ServiceTest {
   void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
     {% if operation.parent %}
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
@@ -157,7 +152,7 @@ public class {{model.name}}ServiceTest {
   void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
     {% if operation.parent %}
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
@@ -183,7 +178,7 @@ public class {{model.name}}ServiceTest {
   public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
     {% if operation.parent %}
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
@@ -216,7 +211,7 @@ public class {{model.name}}ServiceTest {
   void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
     {% if operation.parent %}
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
@@ -245,7 +240,7 @@ public class {{model.name}}ServiceTest {
   public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
     {% if operation.parent %}
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
@@ -278,7 +273,7 @@ public class {{model.name}}ServiceTest {
   void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
     {% if operation.parent %}
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
@@ -307,7 +302,7 @@ public class {{model.name}}ServiceTest {
   public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
     {% if operation.parent %}
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
@@ -340,7 +335,7 @@ public class {{model.name}}ServiceTest {
   void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
     {% if operation.parent %}
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
@@ -358,7 +353,7 @@ public class {{model.name}}ServiceTest {
   public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
 
     // Given
-    {{model.name}} request = easyRandom.nextObject({{model.name}}.class);
+    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
     {% if operation.parent %}
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))

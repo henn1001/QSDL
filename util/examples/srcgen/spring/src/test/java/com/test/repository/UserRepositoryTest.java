@@ -5,12 +5,11 @@ package com.test.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
-import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import com.test.TestConfig;
@@ -23,24 +22,42 @@ import com.test.util.Json;
 public class UserRepositoryTest {
 
   @Autowired
-  private EasyRandom easyRandom;
-
-  @Autowired
   private TicketRepository ticketRepository;
 
   @Autowired
   private UserRepository userRepository;
 
+  @Autowired
+  private TestEntityManager testEntityManager;
+
+  public List<User> prepareData(int count) {
+
+    List<User> testDatas = TestConfig.getRandom(User.class, count);
+
+    Ticket ticket = ticketRepository.save(TestConfig.getRandom(Ticket.class));
+
+    for (User testData : testDatas) {
+      testData.addToTickets(ticket);
+    }
+
+    userRepository.saveAll(testDatas);
+
+    // forces synchronization to DB
+    // clears persistence context
+    testEntityManager.flush();
+    testEntityManager.clear();
+
+    return userRepository.findAll();
+  }
+
   @Test
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    User testData = easyRandom.nextObject(User.class);
-    testData.removeRelations();
+    User testData = prepareData(1).get(0);
 
     // When
-    User dbData = userRepository.saveAndFlush(testData);
-    User findData = userRepository.findById(dbData.getId()).orElse(null);
+    User findData = userRepository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -54,12 +71,10 @@ public class UserRepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    User testData = easyRandom.nextObject(User.class);
-    testData.removeRelations();
-    User dbData = userRepository.saveAndFlush(testData);
+    User testData = prepareData(1).get(0);
 
     // When
-    userRepository.delete(dbData);
+    userRepository.deleteById(testData.getId());
 
     // Then
     long count = userRepository.count();
@@ -70,9 +85,7 @@ public class UserRepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    List<User> dbData = userRepository.saveAllAndFlush(testData);
+    List<User> testData = prepareData(5);
 
     AppPageable pageable = new AppPageable(null, null, null);
 
@@ -87,9 +100,7 @@ public class UserRepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    userRepository.saveAllAndFlush(testData);
+    List<User> testData = prepareData(5);
 
     // When
     String cursor = null;
@@ -114,21 +125,12 @@ public class UserRepositoryTest {
   public void whenCountByTicket_thenUseQuerie() throws Exception {
 
     // Given
-    Ticket tmp = easyRandom.nextObject(Ticket.class);
-    tmp.removeRelations();
-    Ticket testParent = ticketRepository.saveAndFlush(tmp);
-
-    List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    testData = userRepository.saveAllAndFlush(testData);
-
-    testParent.users.addAll(testData);
-    ticketRepository.saveAndFlush(testParent);
+    Long parentId = prepareData(5).get(0).tickets.toArray(new Ticket[0])[0].getId();
 
     AppPageable pageable = new AppPageable(null, null, null);
 
     // When
-    long count = userRepository.countByTicketId(testParent.getId(), pageable);
+    long count = userRepository.countByTicketId(parentId, pageable);
 
     // Then
     assertEquals(5, count);
@@ -138,16 +140,7 @@ public class UserRepositoryTest {
   public void whenFindAllByTicket_thenPaginate() throws Exception {
 
     // Given
-    Ticket tmp = easyRandom.nextObject(Ticket.class);
-    tmp.removeRelations();
-    Ticket testParent = ticketRepository.saveAndFlush(tmp);
-
-    List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    testData = userRepository.saveAllAndFlush(testData);
-
-    testParent.users.addAll(testData);
-    ticketRepository.saveAndFlush(testParent);
+    Long parentId = prepareData(5).get(0).tickets.toArray(new Ticket[0])[0].getId();
 
     // When
     String cursor = null;
@@ -155,7 +148,7 @@ public class UserRepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<User> findData = userRepository.findAllByTicketId(testParent.getId(), pageable);
+      List<User> findData = userRepository.findAllByTicketId(parentId, pageable);
 
       cursor = pageable.getNextCursor(findData);
 
@@ -169,28 +162,58 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void whenRemoveRelation_thenLinkRemovedFromTicket() throws Exception {
+  public void whenUnlinkFromLinkedTicket_thenStillExist() throws Exception {
 
     // Given
-    Ticket tmp = easyRandom.nextObject(Ticket.class);
-    tmp.removeRelations();
-    Ticket testParent = ticketRepository.saveAndFlush(tmp);
-
-    List<User> testData = easyRandom.objects(User.class, 5).collect(Collectors.toList());
-    testData.forEach(x -> x.removeRelations());
-    testData = userRepository.saveAllAndFlush(testData);
-
-    testParent.users.addAll(testData);
-    ticketRepository.saveAndFlush(testParent);
+    User testData = prepareData(1).get(0);
+    Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
 
     // When
-    userRepository.removeRelations(testData.get(0).getId());
+    testData.removeFromTickets(parent);
+    userRepository.save(testData);
 
     // Then
     AppPageable pageable = new AppPageable(null, null, null);
-    List<User> findData = userRepository.findAllByTicketId(testParent.getId(), pageable);
 
-    assertEquals(4, findData.size());
+    assertEquals(0, userRepository.countByTicketId(parent.getId(), pageable));
+    assertEquals(true, userRepository.existsById(testData.getId()));
+    assertEquals(true, ticketRepository.existsById(parent.getId()));
+  }
+
+  @Test
+  public void whenDeleteFromLinkedTicket_thenStillExistA() throws Exception {
+
+    // Given
+    User testData = prepareData(1).get(0);
+    Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
+
+    // When
+    userRepository.deleteById(testData.getId());
+
+    // Then
+    AppPageable pageable = new AppPageable(null, null, null);
+
+    assertEquals(0, userRepository.countByTicketId(parent.getId(), pageable));
+    assertEquals(false, userRepository.existsById(testData.getId()));
+    assertEquals(true, ticketRepository.existsById(parent.getId()));
+  }
+
+  @Test
+  public void whenDeleteFromLinkedTicket_thenStillExistB() throws Exception {
+
+    // Given
+    User testData = prepareData(1).get(0);
+    Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
+
+    // When
+    ticketRepository.deleteById(parent.getId());
+
+    // Then
+    AppPageable pageable = new AppPageable(null, null, null);
+
+    assertEquals(0, userRepository.countByTicketId(parent.getId(), pageable));
+    assertEquals(true, userRepository.existsById(testData.getId()));
+    assertEquals(false, ticketRepository.existsById(parent.getId()));
   }
 
 }

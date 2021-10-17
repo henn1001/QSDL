@@ -4,7 +4,6 @@
 package com.test.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +37,6 @@ import com.test.util.Json;
 @Import(TestConfig.class)
 public class UserControllerTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
   @MockBean
   UserService service;
 
@@ -54,7 +50,7 @@ public class UserControllerTest {
   public void whenGetUsersForTicket_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     ObjectList ret = new ObjectList();
     ret.items = Arrays.asList(request);
@@ -103,7 +99,7 @@ public class UserControllerTest {
   public void whenGetUsers_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     ObjectList ret = new ObjectList();
     ret.items = Arrays.asList(request);
@@ -126,7 +122,7 @@ public class UserControllerTest {
   public void whenCreateUser_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(service.createUser(any()))
         .thenReturn(request);
@@ -148,7 +144,7 @@ public class UserControllerTest {
   public void whenCreateUserWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(service.createUser(any()))
         .thenReturn(request);
@@ -171,7 +167,7 @@ public class UserControllerTest {
   public void whenGetUser_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(service.getUser(eq(1l)))
         .thenReturn(request);
@@ -191,7 +187,7 @@ public class UserControllerTest {
   public void whenReplaceUser_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(service.replaceUser(eq(1l), any()))
         .thenReturn(request);
@@ -213,7 +209,7 @@ public class UserControllerTest {
   public void whenReplaceUserWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(service.replaceUser(eq(1l), any()))
         .thenReturn(request);
@@ -236,7 +232,7 @@ public class UserControllerTest {
   public void whenUpdateUser_thenOk() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(service.updateUser(eq(1l), any()))
         .thenReturn(request);
@@ -258,7 +254,7 @@ public class UserControllerTest {
   public void whenUpdateUserWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    User request = easyRandom.nextObject(User.class);
+    User request = TestConfig.getRandom(User.class);
 
     when(service.updateUser(eq(1l), any()))
         .thenReturn(request);

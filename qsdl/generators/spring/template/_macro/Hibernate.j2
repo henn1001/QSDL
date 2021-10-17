@@ -31,27 +31,27 @@
   #}
   {% if attr.is_relation and not attr.is_relation_owner %}
       {# 
-        the parent side of the relation  
+        the parent side of the relation.
       #}
       {% if attr.is_aggregation and attr.is_array %}
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "{{model.name|lower}}_to_{{attr.type|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{attr.type|lower}}_id"))
+  @ManyToMany(mappedBy = "{{model.name|lower}}s", fetch = FetchType.LAZY)
       {% elif attr.is_aggregation and not attr.is_array %}
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "{{attr.type|lower}}_id")
+  @OneToMany(mappedBy = "{{model.name|lower}}s", fetch = FetchType.LAZY)
       {% elif attr.is_composition and attr.is_array %}
-  @OneToMany(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, orphanRemoval = true)
+  @OneToMany(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
       {% elif attr.is_composition and not attr.is_array %}
-  @OneToOne(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, orphanRemoval = true)
+  @OneToOne(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
       {% endif %}
   {% elif attr.is_relation and attr.is_relation_owner %}
       {#
         The child/owning side of the relation.
       #}
       {% if attr.is_aggregation and attr.foreign_key_is_array %}
-  @ManyToMany(mappedBy = "{{attr.foreign_key_name}}", fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "{{attr.type|lower}}_to_{{model.name|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{attr.type|lower}}_id"))
       {% elif attr.is_aggregation and not attr.foreign_key_is_array  %}
-  @OneToMany(mappedBy = "{{attr.foreign_key_name}}", fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "{{attr.type|lower}}_id")
       {% elif attr.is_composition and attr.foreign_key_is_array %}
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "{{attr.type|lower}}_id")

@@ -4,7 +4,6 @@
 package com.test.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +37,6 @@ import com.test.util.Json;
 @Import(TestConfig.class)
 public class RoleControllerTest {
 
-  @Autowired
-  private EasyRandom easyRandom;
-
   @MockBean
   RoleService service;
 
@@ -54,7 +50,7 @@ public class RoleControllerTest {
   public void whenGetRoles_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     ObjectList ret = new ObjectList();
     ret.items = Arrays.asList(request);
@@ -77,7 +73,7 @@ public class RoleControllerTest {
   public void whenCreateRole_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(service.createRole(eq(1l), any()))
         .thenReturn(request);
@@ -99,7 +95,7 @@ public class RoleControllerTest {
   public void whenCreateRoleWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(service.createRole(eq(1l), any()))
         .thenReturn(request);
@@ -122,7 +118,7 @@ public class RoleControllerTest {
   public void whenGetRole_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(service.getRole(eq(1l), eq(1l)))
         .thenReturn(request);
@@ -142,7 +138,7 @@ public class RoleControllerTest {
   public void whenReplaceRole_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(service.replaceRole(eq(1l), eq(1l), any()))
         .thenReturn(request);
@@ -164,7 +160,7 @@ public class RoleControllerTest {
   public void whenReplaceRoleWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(service.replaceRole(eq(1l), eq(1l), any()))
         .thenReturn(request);
@@ -187,7 +183,7 @@ public class RoleControllerTest {
   public void whenUpdateRole_thenOk() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(service.updateRole(eq(1l), eq(1l), any()))
         .thenReturn(request);
@@ -209,7 +205,7 @@ public class RoleControllerTest {
   public void whenUpdateRoleWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Role request = easyRandom.nextObject(Role.class);
+    Role request = TestConfig.getRandom(Role.class);
 
     when(service.updateRole(eq(1l), eq(1l), any()))
         .thenReturn(request);

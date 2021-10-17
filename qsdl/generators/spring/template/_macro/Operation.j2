@@ -36,21 +36,13 @@
     {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.findById({{ operation.path_parameters[1].name }})
         .orElseThrow(() -> AppException.entityNotFound({{ model.name }}.class, {{ operation.path_parameters[1].name }}));
 
-    {% if encapsulation %}
-      {% if operation.path.endswith('/add') %}
-    {{ operation.parent.model.name|lower }}.{{operation.parent.field.getter}}().add({{ model.name | lower }});
-      {% elif operation.path.endswith('/remove') %}
-    {{ operation.parent.model.name|lower }}.{{operation.parent.field.getter}}().remove({{ model.name | lower }});
-      {% endif %}
-    {% else %}
-      {% if operation.path.endswith('/add') %}
-    {{ operation.parent.model.name|lower }}.{{operation.parent.field.name}}.add({{ model.name | lower }});
-      {% elif operation.path.endswith('/remove') %}
-    {{ operation.parent.model.name|lower }}.{{operation.parent.field.name}}.remove({{ model.name | lower }});
-      {% endif %}
+    {% if operation.path.endswith('/add') %}
+    {{ model.name|lower }}.addTo{{ operation.parent.model.name }}s({{ operation.parent.model.name|lower }});
+    {% elif operation.path.endswith('/remove') %}
+    {{ model.name|lower }}.removeFrom{{ operation.parent.model.name }}s({{ operation.parent.model.name|lower }});
     {% endif %}
 
-    {{ operation.parent.model.name|lower }}Repository.save({{ operation.parent.model.name|lower }});
+    {{ model.name|lower }}Repository.save({{ model.name|lower }});
 
     return null;
   {% elif operation.method == "post" %}
@@ -154,9 +146,6 @@
 
     {% endif %}
     try {
-      {% if model.is_aggregated %}
-      {{api.name|lower}}Repository.removeRelations({{operation.path_parameters[-1].name}});
-      {% endif %}
       {{api.name|lower}}Repository.deleteById({{operation.path_parameters[-1].name}});
     } catch (DataRetrievalFailureException e) {
       throw AppException.entityNotFound({{api.name}}.class, id);

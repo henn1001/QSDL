@@ -18,9 +18,25 @@ public class User extends AbstractPersistentObject {
   @JsonProperty(value = "name", required = true)
   public String name;
 
-  @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
   @JsonIgnore
   public final Set<Ticket> tickets = new LinkedHashSet<>();
+
+
+  @PreRemove
+  private void preRemoveHook() {
+  }
+
+  public void addToTickets(Ticket o) {
+    o.users.add(this);
+    this.tickets.add(o);
+  }
+
+  public void removeFromTickets(Ticket o) {
+    o.users.remove(this);
+    this.tickets.remove(o);
+  }
 
 
   public static User fromJson(String json) throws Json.JsonException {

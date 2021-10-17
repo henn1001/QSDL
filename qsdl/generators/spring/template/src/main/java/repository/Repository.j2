@@ -6,7 +6,6 @@ package {{base_package}}.repository;
 
 import java.util.*;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -117,19 +116,5 @@ public interface {{model.name}}Repository extends JpaRepository<{{model.name}}, 
     {% endif %}
   {% endfor %}
 
-  {% if model.is_aggregated %}
-  @Modifying
-  @Query(
-      value = """
-
-          {% for parent in model.parents %}
-          DELETE FROM {{parent.hibernate.join_table_name}} WHERE {{model.hibernate.table_joined_id}} = :id ;
-          {% endfor %}
-
-          """,
-      nativeQuery = true)
-  public void removeRelations(@Param("id") Long id);
-
-  {% endif %}
 }
 {{""}}

@@ -44,9 +44,24 @@ public class Project extends AbstractPersistentObject {
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
   public Boolean archive;
 
-  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, orphanRemoval = true)
+  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JsonIgnore
   public final Set<Role> roles = new LinkedHashSet<>();
+
+
+  @PreRemove
+  private void preRemoveHook() {
+  }
+
+  public void addToRoles(Role o) {
+    o.project = this;
+    this.roles.add(o);
+  }
+
+  public void removeFromRoles(Role o) {
+    o.project = null;
+    this.roles.remove(o);
+  }
 
 
   public static Project fromJson(String json) throws Json.JsonException {

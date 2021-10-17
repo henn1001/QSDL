@@ -117,6 +117,7 @@ class ModelClass:
     is_supertype: bool = False
     is_used: bool = False
     is_aggregated: bool = False
+    has_relation: bool = False
     has_required: bool = False
     has_query: bool = False
 
@@ -137,6 +138,15 @@ class ModelClass:
         self.is_base = _ref._tx_fqn in ["entity.Base"]
         self.is_object = _ref._tx_fqn in ["entity.Object"]
 
+        # addons
+        self.is_crud = _ref.is_crud if self.is_object else False
+        self.is_supertype = util.is_supertype(_ref) if self.is_base else False
+        self.is_used = util.is_used(_ref)
+        self.is_aggregated = util.has(_ref, is_aggregated=True)
+        self.has_relation = util.has(_ref, has_relation=True)
+        self.has_required = util.has(_ref, has_required_ignore_id=True)
+        self.has_query = util.has(_ref, has_query=True)
+
         # add attributes
         self._add_attributes(_ref)
         self._add_constants(_ref)
@@ -145,14 +155,6 @@ class ModelClass:
 
         # collect imports
         self.imports = util.get_model_imports(_ref)
-
-        # addons
-        self.is_crud = _ref.is_crud if self.is_object else False
-        self.is_supertype = util.is_supertype(_ref) if self.is_base else False
-        self.is_used = util.is_used(_ref)
-        self.is_aggregated = util.has(_ref, is_aggregated=True)
-        self.has_required = util.has(_ref, has_required_ignore_id=True)
-        self.has_query = util.has(_ref, has_query=True)
 
         return self
 
@@ -193,7 +195,8 @@ class ModelClass:
 
         for dsl_field in dsl_fields:
             new_model_field = ModelField().build(dsl_field)
-            # TODO: rename new_model_field name
+            new_model_field.name = stringcase.camelcase(new_model_field.type)
+            new_model_field.name += "s" if new_model_field.is_array else ""
 
             self.fields.append(new_model_field)
 
@@ -217,8 +220,8 @@ class ModelClass:
             fk_field = dsl.Field()
 
             # aggregations
-            fk_field.name = stringcase.snakecase(parent.name)
-            fk_field.name = fk_field.name + "s" if dsl_field.is_aggregation else fk_field.name
+            fk_field.name = stringcase.camelcase(parent.name)
+            fk_field.name += "s" if dsl_field.is_aggregation else ""
 
             fk_field.value = parent
             fk_field.is_array = dsl_field.is_aggregation
@@ -231,3 +234,6 @@ class ModelClass:
             new_model_field.foreign_key_is_array = dsl_field.is_array
 
             self.fields.append(new_model_field)
+
+            # update relation flag because these do not get picked up by the util method
+            self.has_relation = True

@@ -24,6 +24,11 @@ public class Role extends AbstractPersistentObject {
   public Project project;
 
 
+  @PreRemove
+  private void preRemoveHook() {
+  }
+
+
   public static Role fromJson(String json) throws Json.JsonException {
     return Json.serializer().fromJson(json, Role.class);
   }
