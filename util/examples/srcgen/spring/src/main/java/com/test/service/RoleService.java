@@ -129,7 +129,8 @@ public class RoleService {
 
     try {
       roleRepository.deleteById(id);
-    } catch (DataRetrievalFailureException e) {
+    }
+    catch (DataRetrievalFailureException e) {
       throw AppException.entityNotFound(Role.class, id);
     }
 

@@ -7,7 +7,7 @@
   },
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.format.settings.profile": "ModifiedGoogleStyle",
-  "java.format.settings.url": "file:.vscode/eclipse-java-google-style.xml",
+  "java.format.settings.url": ".vscode/eclipse-java-google-style.xml",
   "java.import.exclusions": [],
   "java.completion.importOrder": [
     "",

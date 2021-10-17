@@ -147,7 +147,8 @@
     {% endif %}
     try {
       {{api.name|lower}}Repository.deleteById({{operation.path_parameters[-1].name}});
-    } catch (DataRetrievalFailureException e) {
+    }
+    catch (DataRetrievalFailureException e) {
       throw AppException.entityNotFound({{api.name}}.class, id);
     }
 

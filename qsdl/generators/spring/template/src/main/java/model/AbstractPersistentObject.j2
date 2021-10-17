@@ -104,11 +104,13 @@ public abstract class AbstractPersistentObject {
 
               clear.invoke(f);
               addAll.invoke(f, field.get(o));
-            } else {
+            }
+            else {
               FieldUtils.writeField(this, field.getName(), field.get(o), true);
             }
           }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
           log.error("Caught unhandeled exception:", e);
         }
       }
@@ -138,10 +140,12 @@ public abstract class AbstractPersistentObject {
             Object f = this.getClass().getField(field.getName()).get(this);
 
             clear.invoke(f);
-          } else {
+          }
+          else {
             FieldUtils.writeField(this, field.getName(), null, true);
           }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
           log.error("Caught unhandeled exception:", e);
         }
       }
@@ -170,7 +174,8 @@ public abstract class AbstractPersistentObject {
   public int hashCode() {
     if (_uuid != null) {
       return _uuid.hashCode();
-    } else {
+    }
+    else {
       return super.hashCode();
     }
   }
@@ -179,7 +184,8 @@ public abstract class AbstractPersistentObject {
     String ret = new String();
     try {
       ret = Json.serializer().toString(this);
-    } catch (Json.JsonException e) {
+    }
+    catch (Json.JsonException e) {
       log.error("Caught unhandeled exception:", e);
     }
     return ret;
@@ -189,7 +195,8 @@ public abstract class AbstractPersistentObject {
     String ret = new String();
     try {
       ret = Json.serializer().toPrettyString(this);
-    } catch (Json.JsonException e) {
+    }
+    catch (Json.JsonException e) {
       log.error("Caught unhandeled exception:", e);
     }
     return ret;

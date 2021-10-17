@@ -57,7 +57,7 @@ public class {{api.name}}Service {
   {% if database == "hibernate" and model and model.is_crud %}
   {{- opr_macro.logic(operation) -}}
   {% else %}
-  return null;
+    return null;
   {% endif %}
   }
 

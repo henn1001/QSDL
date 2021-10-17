@@ -26,7 +26,8 @@ public class ObjectList {
     String ret = new String();
     try {
       ret = Json.serializer().toString(this);
-    } catch (Json.JsonException e) {
+    }
+    catch (Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;
@@ -36,7 +37,8 @@ public class ObjectList {
     String ret = new String();
     try {
       ret = Json.serializer().toPrettyString(this);
-    } catch (Json.JsonException e) {
+    }
+    catch (Json.JsonException e) {
       e.printStackTrace();
     }
     return ret;

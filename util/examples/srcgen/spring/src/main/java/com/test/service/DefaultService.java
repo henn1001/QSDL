@@ -29,7 +29,7 @@ public class DefaultService {
 
   public ObjectNode submitQury(ObjectNode body) throws AppException {
 
-  return null;
+    return null;
   }
 
 }

@@ -151,7 +151,8 @@ public class UserService {
 
     try {
       userRepository.deleteById(id);
-    } catch (DataRetrievalFailureException e) {
+    }
+    catch (DataRetrievalFailureException e) {
       throw AppException.entityNotFound(User.class, id);
     }
 

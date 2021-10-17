@@ -32,7 +32,8 @@ public class AppError {
   public List<String> details = new ArrayList<>();
 
 
-  public AppError() {}
+  public AppError() {
+  }
 
   public AppError(Integer code, String message, Integer status) {
     this.code = code;

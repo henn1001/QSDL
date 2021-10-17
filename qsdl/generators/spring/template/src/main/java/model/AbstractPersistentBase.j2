@@ -73,7 +73,8 @@ public abstract class AbstractPersistentBase {
   public int hashCode() {
     if (_uuid != null) {
       return _uuid.hashCode();
-    } else {
+    }
+    else {
       return super.hashCode();
     }
   }
@@ -82,7 +83,8 @@ public abstract class AbstractPersistentBase {
     String ret = new String();
     try {
       ret = Json.serializer().toString(this);
-    } catch (Json.JsonException e) {
+    }
+    catch (Json.JsonException e) {
       log.error("Caught unhandeled exception:", e);
     }
     return ret;
@@ -92,7 +94,8 @@ public abstract class AbstractPersistentBase {
     String ret = new String();
     try {
       ret = Json.serializer().toPrettyString(this);
-    } catch (Json.JsonException e) {
+    }
+    catch (Json.JsonException e) {
       log.error("Caught unhandeled exception:", e);
     }
     return ret;

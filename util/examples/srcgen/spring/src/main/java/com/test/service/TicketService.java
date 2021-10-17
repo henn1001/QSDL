@@ -90,7 +90,8 @@ public class TicketService {
 
     try {
       ticketRepository.deleteById(id);
-    } catch (DataRetrievalFailureException e) {
+    }
+    catch (DataRetrievalFailureException e) {
       throw AppException.entityNotFound(Ticket.class, id);
     }
 

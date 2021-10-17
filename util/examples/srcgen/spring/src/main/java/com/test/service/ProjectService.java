@@ -92,7 +92,8 @@ public class ProjectService {
 
     try {
       projectRepository.deleteById(id);
-    } catch (DataRetrievalFailureException e) {
+    }
+    catch (DataRetrievalFailureException e) {
       throw AppException.entityNotFound(Project.class, id);
     }
 
