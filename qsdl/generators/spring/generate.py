@@ -202,6 +202,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/config/AppProperties.j2", f"src/main/java/{base_package}/config/AppProperties.java"),
         ("src/main/java/config/AsyncConfig.j2", f"src/main/java/{base_package}/config/AsyncConfig.java"),
         ("src/main/java/config/SchedulerConfig.j2", f"src/main/java/{base_package}/config/SchedulerConfig.java"),
+        ("src/main/java/config/PersistenceConfig.j2", f"src/main/java/{base_package}/config/PersistenceConfig.java"),
         ("src/main/java/config/Errors.j2", f"src/main/java/{base_package}/config/Errors.java"),
         ("src/main/java/config/Constants.j2", f"src/main/java/{base_package}/config/Constants.java"),
         # api

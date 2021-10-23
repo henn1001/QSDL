@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.validation.DataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -41,10 +43,20 @@ public class AppConfiguration {
     return new YAMLMapper();
   }
 
+  /**
+   * Required to support HttpMethod.PATCH
+   */
   @Bean
   public RestTemplate restTemplate() {
-    // required to support HttpMethod.PATCH
     return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+  }
+
+  /**
+   * Required for nested object validation
+   */
+  @InitBinder
+  private void initDirectFieldAccess(DataBinder dataBinder) {
+    dataBinder.initDirectFieldAccess();
   }
 
   @Bean
