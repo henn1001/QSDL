@@ -47,7 +47,7 @@ paths: {%+ if not apis %}{}{% endif %}
         {{ operation.description | indent | trim("\"") | trim }}
     {% endif %}
       operationId: {{ operation.name }}
-  {% if operation.parameters %}
+  {% if operation.parameters or operation.is_pageable %}
       parameters:
         {{ macro.get_parameters(operation) | indent(6) | trim }}
   {% endif %}

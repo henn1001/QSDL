@@ -29,11 +29,15 @@ paths:
       summary: List Projects
       operationId: getProjects
       parameters:
-        - name: name
+        - name: query
           in: query
           required: false
           schema:
-            type: string
+            type: object
+            example:
+              name: string
+          style: form
+          explode: true
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -191,6 +195,13 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: object
+          style: form
+          explode: true
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -379,6 +390,13 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: object
+          style: form
+          explode: true
         - name: cursor
           description: |
             Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
@@ -464,6 +482,36 @@ paths:
         - Management
       summary: List Users
       operationId: getUsers
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: object
+          style: form
+          explode: true
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -592,6 +640,36 @@ paths:
         - Incident
       summary: List Tickets
       operationId: getTickets
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: object
+          style: form
+          explode: true
+        - name: cursor
+          description: |
+            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          description: |
+            The maximum number of items to return.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: count
+          description: |
+            Returns the total number of items in the collection.
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
