@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 import {{base_package}}.domain.*;
 import {{base_package}}.model.*;
@@ -26,20 +25,14 @@ import {{base_package}}.util.Validator;
 @Validated
 @RequestMapping("${server.base-path:{{basePath}}}")
 @Controller
-public class {{api.name}}Controller {
-
-  private final NativeWebRequest request;
+public class {{api.name}}Controller extends BaseController {
 
   @Autowired
   {{api.name}}Service {{api.name|lower}}Service;
 
   @Autowired
   public {{api.name}}Controller(NativeWebRequest request) {
-    this.request = request;
-  }
-
-  public Optional<NativeWebRequest> getRequest() {
-    return Optional.empty();
+    super(request);
   }
 
 {% for operation in api.operations %}
@@ -56,7 +49,7 @@ public class {{api.name}}Controller {
   {%- endif %}
 
   )
-  public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.get_params(operation)}}) throws Exception {
+  public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) throws Exception {
   {% if operation.response %}
     {% if operation.method == "patch" %}
     Validator.validateExRequired(body);

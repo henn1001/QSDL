@@ -52,10 +52,9 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    ObjectList ret = new ObjectList();
-    ret.items = Arrays.asList(request);
+    ObjectList ret = new ObjectList(Arrays.asList(request), null, null);
 
-    when(service.getTickets(any()))
+    when(service.getTickets(any(), any()))
         .thenReturn(ret);
 
     // When

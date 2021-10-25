@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 import com.test.domain.*;
 import com.test.model.*;
@@ -25,20 +24,14 @@ import com.test.util.Validator;
 @Validated
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
-public class RoleController {
-
-  private final NativeWebRequest request;
+public class RoleController extends BaseController {
 
   @Autowired
   RoleService roleService;
 
   @Autowired
   public RoleController(NativeWebRequest request) {
-    this.request = request;
-  }
-
-  public Optional<NativeWebRequest> getRequest() {
-    return Optional.empty();
+    super(request);
   }
 
   /**
@@ -49,7 +42,7 @@ public class RoleController {
     produces = { "application/json" }
   )
   public ResponseEntity<ObjectList> getRoles(@PathVariable("project_id") Long projectId, AppPageable pageable) throws Exception {
-    ObjectList response = roleService.getRoles(projectId, pageable);
+    ObjectList response = roleService.getRoles(projectId, super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

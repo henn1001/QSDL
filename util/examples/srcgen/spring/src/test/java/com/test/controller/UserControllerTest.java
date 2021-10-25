@@ -52,10 +52,9 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    ObjectList ret = new ObjectList();
-    ret.items = Arrays.asList(request);
+    ObjectList ret = new ObjectList(Arrays.asList(request), null, null);
 
-    when(service.getUsersForTicket(any(), any()))
+    when(service.getUsersForTicket(any(), any(), any()))
         .thenReturn(ret);
 
     // When
@@ -101,10 +100,9 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    ObjectList ret = new ObjectList();
-    ret.items = Arrays.asList(request);
+    ObjectList ret = new ObjectList(Arrays.asList(request), null, null);
 
-    when(service.getUsers(any()))
+    when(service.getUsers(any(), any()))
         .thenReturn(ret);
 
     // When

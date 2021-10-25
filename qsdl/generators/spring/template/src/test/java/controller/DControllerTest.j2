@@ -58,8 +58,7 @@ public class {{model.name}}ControllerTest {
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
-    ObjectList ret = new ObjectList();
-    ret.items = Arrays.asList(request);
+    ObjectList ret = new ObjectList(Arrays.asList(request), null, null);
 
     when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
         .thenReturn(ret);

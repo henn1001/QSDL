@@ -52,8 +52,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    ObjectList ret = new ObjectList();
-    ret.items = Arrays.asList(request);
+    ObjectList ret = new ObjectList(Arrays.asList(request), null, null);
 
     when(service.getProjects(any(), any()))
         .thenReturn(ret);

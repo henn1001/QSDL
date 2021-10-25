@@ -3,27 +3,33 @@
  */
 package {{base_package}}.model;
 
-import static {{base_package}}.config.Constants.CURSOR_DEFAULT;
-import static {{base_package}}.config.Constants.CURSOR_MAX;
-import static {{base_package}}.config.Constants.CURSOR_MIN;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import {{base_package}}.util.Json;
+import java.util.Base64;
+import java.util.List;
+
+import static com.test.config.Constants.CURSOR_DEFAULT;
+import static com.test.config.Constants.CURSOR_MAX;
+import static com.test.config.Constants.CURSOR_MIN;
 
 public class AppPageable {
 
-  public long cursor;
+  @JsonProperty(value = "cursor")
+  private final long cursor;
 
-  public long limit;
+  @JsonProperty(value = "limit")
+  private final long limit;
 
-  public boolean count;
+  @JsonProperty(value = "count")
+  private final boolean count;
 
-  public Map<String, Object> query;
-
+  /**
+   * Constructor of {@code CursorPageable}.
+   * 
+   * @param cursor the requested base64 encoded cursor.
+   * @param limit the requested limit.
+   * @param count the request to return the total count.
+   */
   public AppPageable(String cursor, Long limit, Boolean count) {
     Long parsedCursor = null;
 
@@ -33,25 +39,57 @@ public class AppPageable {
       parsedCursor = Long.parseLong(decodedString);
     }
 
-    // set attributes
+    // set cursor either positive value or Long.MAX_VALUE
+    // set limit between min and max value, or default
+    // set count or false as default
     this.cursor = parsedCursor != null && parsedCursor > 0 ? parsedCursor : Long.MAX_VALUE;
     this.limit = limit != null && limit > 0 ? Math.min(CURSOR_MAX, Math.max(CURSOR_MIN, limit)) : CURSOR_DEFAULT;
     this.count = count != null ? count : false;
-    this.query = new HashMap<>();
-
-    // for paging, we always want to request one extra item
-    // the id of this extra item will be the new cursor
-    this.limit += 1;
   }
 
-  public String getNextCursor(List<?> items) {
+  /**
+  * Returns the requested base64 decoded cursor.
+  
+  * @return the requested base64 decoded cursor.
+  */
+  public long cursor() {
+    return cursor;
+  }
+
+  /**
+  * Returns the requested limit.
+  
+  * @return the requested limit.
+  */
+  public long limit() {
+    return limit;
+  }
+
+  /**
+  * Returns the request to return the total count.
+  
+  * @return the request to return the total count.
+  */
+  public boolean count() {
+    return count;
+  }
+
+  /**
+   * Returns the cursor for the next CursorPage.
+   * 
+   * The last last item of the provided list is popped and its
+   * id is used as cursor.
+   * 
+   * @param items the list of entities.
+   * @return the cursor for the next CursorPage.
+   */
+  public String getNextCursor(List<? extends AbstractPersistentObject> items) {
     int size = items.size();
     String nextCursor = null;
 
     if (size == this.limit) {
       // fetch last item in list and encode id as cursor
-      JsonNode node = Json.serializer().nodeFromObject(items.get(size - 1));
-      nextCursor = node.get("id").asText();
+      nextCursor = items.get(size - 1).getId().toString();
       nextCursor = Base64.getEncoder().encodeToString(nextCursor.getBytes());
 
       // very important to remove the last item

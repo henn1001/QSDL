@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 import com.test.domain.*;
 import com.test.model.*;
@@ -25,20 +24,14 @@ import com.test.util.Validator;
 @Validated
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
-public class UserController {
-
-  private final NativeWebRequest request;
+public class UserController extends BaseController {
 
   @Autowired
   UserService userService;
 
   @Autowired
   public UserController(NativeWebRequest request) {
-    this.request = request;
-  }
-
-  public Optional<NativeWebRequest> getRequest() {
-    return Optional.empty();
+    super(request);
   }
 
   /**
@@ -49,7 +42,7 @@ public class UserController {
     produces = { "application/json" }
   )
   public ResponseEntity<ObjectList> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, AppPageable pageable) throws Exception {
-    ObjectList response = userService.getUsersForTicket(ticketId, pageable);
+    ObjectList response = userService.getUsersForTicket(ticketId, super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -83,7 +76,7 @@ public class UserController {
     produces = { "application/json" }
   )
   public ResponseEntity<ObjectList> getUsers(AppPageable pageable) throws Exception {
-    ObjectList response = userService.getUsers(pageable);
+    ObjectList response = userService.getUsers(super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

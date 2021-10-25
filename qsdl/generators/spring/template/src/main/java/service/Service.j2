@@ -5,19 +5,20 @@
  */
 package {{base_package}}.service;
 
+import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.*;
 import javax.annotation.PostConstruct;
 
-import {{base_package}}.config.Errors;
 import {{base_package}}.exception.AppException;
 {% if database == "hibernate" and model %}
 import {{base_package}}.repository.*;
+import com.test.util.PredicateBuilder;
 {% endif %}
 import {{base_package}}.domain.*;
 import {{base_package}}.model.*;
@@ -45,7 +46,7 @@ public class {{api.name}}Service {
 
   private void validate{{parent.model.name}}Id(Long id) throws AppException {
     if (!{{parent.model.name|lower}}Repository.existsById(id)) {
-      throw new AppException(Errors.NOT_FOUND, "{{parent.model.name}} " + id.toString() + " does not exist");
+      throw AppException.entityNotFound({{parent.model.name}}.class, id);
     }
   }
 {% endfor %}

@@ -52,10 +52,9 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    ObjectList ret = new ObjectList();
-    ret.items = Arrays.asList(request);
+    ObjectList ret = new ObjectList(Arrays.asList(request), null, null);
 
-    when(service.getRoles(any(), any()))
+    when(service.getRoles(any(), any(), any()))
         .thenReturn(ret);
 
     // When

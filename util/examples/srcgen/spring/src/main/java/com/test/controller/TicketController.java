@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 import com.test.domain.*;
 import com.test.model.*;
@@ -25,20 +24,14 @@ import com.test.util.Validator;
 @Validated
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
-public class TicketController {
-
-  private final NativeWebRequest request;
+public class TicketController extends BaseController {
 
   @Autowired
   TicketService ticketService;
 
   @Autowired
   public TicketController(NativeWebRequest request) {
-    this.request = request;
-  }
-
-  public Optional<NativeWebRequest> getRequest() {
-    return Optional.empty();
+    super(request);
   }
 
   /**
@@ -49,7 +42,7 @@ public class TicketController {
     produces = { "application/json" }
   )
   public ResponseEntity<ObjectList> getTickets(AppPageable pageable) throws Exception {
-    ObjectList response = ticketService.getTickets(pageable);
+    ObjectList response = ticketService.getTickets(super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

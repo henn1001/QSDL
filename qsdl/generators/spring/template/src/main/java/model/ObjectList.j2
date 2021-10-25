@@ -3,45 +3,79 @@
  */
 package {{base_package}}.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import {{base_package}}.util.Json;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class ObjectList {
 
-  @JsonProperty(value = "items", required = true)
-  public List<? extends AbstractPersistentObject> items = new ArrayList<>();
+  @JsonProperty(value = "items")
+  private final List<? extends AbstractPersistentObject> items;
 
   @JsonProperty(value = "next_cursor")
-  public String nextCursor;
+  private final String nextCursor;
 
   @JsonProperty(value = "total_count")
-  public Long totalCount;
+  private final Long totalCount;
 
-
-  @Override
-  public String toString() {
-    String ret = new String();
-    try {
-      ret = Json.serializer().toString(this);
-    }
-    catch (Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
+  /**
+   * Constructor of {@code CursorPage}.
+   * 
+   * @param items the content of this page.
+   * @param nextCursor the cursor for the next page.
+   * @param totalCount the total amount of items available.
+   */
+  public ObjectList(List<? extends AbstractPersistentObject> items, String nextCursor, Long totalCount) {
+    this.items = Objects.requireNonNullElse(items, new ArrayList<>());
+    this.nextCursor = nextCursor;
+    this.totalCount = totalCount;
   }
 
-  public String toPrettyString() {
-    String ret = new String();
-    try {
-      ret = Json.serializer().toPrettyString(this);
-    }
-    catch (Json.JsonException e) {
-      e.printStackTrace();
-    }
-    return ret;
+  /**
+   * Returns the CursorPage content as List.
+  
+   * @return the CursorPage content as List.
+   */
+  public List<? extends AbstractPersistentObject> items() {
+    return items;
+  }
+
+  /**
+   * Returns the cursor for the next CursorPage.
+  
+   * @return the cursor for the next CursorPage.
+   */
+  public String nextCursor() {
+    return nextCursor;
+  }
+
+  /**
+   * Returns the total amount of items available.
+  
+   * @return the total amount of items available.
+   */
+  public Long totalCount() {
+    return totalCount;
+  }
+
+  /**
+   * Returns the size of this CursorPage.
+  
+   * @return the size of this CursorPage.
+   */
+  public int count() {
+    return items.size();
+  }
+
+  /**
+   * Returns if there is a next CursorPage.
+  
+   * @return if there is a next CursorPage.
+   */
+  public boolean hasNext() {
+    return Objects.nonNull(nextCursor);
   }
 
 }

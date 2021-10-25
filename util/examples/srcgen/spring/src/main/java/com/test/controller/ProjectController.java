@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 import com.test.domain.*;
 import com.test.model.*;
@@ -25,20 +24,14 @@ import com.test.util.Validator;
 @Validated
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
-public class ProjectController {
-
-  private final NativeWebRequest request;
+public class ProjectController extends BaseController {
 
   @Autowired
   ProjectService projectService;
 
   @Autowired
   public ProjectController(NativeWebRequest request) {
-    this.request = request;
-  }
-
-  public Optional<NativeWebRequest> getRequest() {
-    return Optional.empty();
+    super(request);
   }
 
   /**
@@ -48,8 +41,8 @@ public class ProjectController {
     value = "/projects",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getProjects(@Valid @RequestParam(value = "name", required = false) String name, AppPageable pageable) throws Exception {
-    ObjectList response = projectService.getProjects(name, pageable);
+  public ResponseEntity<ObjectList> getProjects(AppPageable pageable) throws Exception {
+    ObjectList response = projectService.getProjects(super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

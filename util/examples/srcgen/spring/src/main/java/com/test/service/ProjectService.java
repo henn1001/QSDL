@@ -3,18 +3,19 @@
  */
 package com.test.service;
 
+import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.*;
 import javax.annotation.PostConstruct;
 
-import com.test.config.Errors;
 import com.test.exception.AppException;
 import com.test.repository.*;
+import com.test.util.PredicateBuilder;
 import com.test.domain.*;
 import com.test.model.*;
 
@@ -30,19 +31,11 @@ public class ProjectService {
 
   }
 
-  public ObjectList getProjects(String name, AppPageable pageable) throws AppException {
+  public ObjectList getProjects(MultiValueMap<String, String> queryParameters, AppPageable pageable) throws AppException {
 
-    pageable.query.put("name", name);
+    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Project.class);
 
-    List<Project> items = projectRepository.findAll(pageable);
-
-    Long totalCount = pageable.count ? projectRepository.count(pageable) : null;
-    String nextCursor = pageable.getNextCursor(items);
-
-    ObjectList ret = new ObjectList();
-    ret.totalCount = totalCount;
-    ret.nextCursor = nextCursor;
-    ret.items = items;
+    ObjectList ret = projectRepository.findAll(predicate, pageable);
 
     return ret;
   }

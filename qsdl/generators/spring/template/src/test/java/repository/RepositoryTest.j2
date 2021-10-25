@@ -105,7 +105,7 @@ public class {{model.name}}RepositoryTest {
 
     AppPageable pageable = new AppPageable(null, null, null);
     {% for field in model.fields if field.is_query %}
-    pageable.query.put("{{field.name}}", testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}});
+    //pageable.query.put("{{field.name}}", testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}});
     {% endfor %}
 
     // When

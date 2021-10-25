@@ -3,18 +3,19 @@
  */
 package com.test.service;
 
+import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.*;
 import javax.annotation.PostConstruct;
 
-import com.test.config.Errors;
 import com.test.exception.AppException;
 import com.test.repository.*;
+import com.test.util.PredicateBuilder;
 import com.test.domain.*;
 import com.test.model.*;
 
@@ -30,17 +31,11 @@ public class TicketService {
 
   }
 
-  public ObjectList getTickets(AppPageable pageable) throws AppException {
+  public ObjectList getTickets(MultiValueMap<String, String> queryParameters, AppPageable pageable) throws AppException {
 
-    List<Ticket> items = ticketRepository.findAll(pageable);
+    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Ticket.class);
 
-    Long totalCount = pageable.count ? ticketRepository.count(pageable) : null;
-    String nextCursor = pageable.getNextCursor(items);
-
-    ObjectList ret = new ObjectList();
-    ret.totalCount = totalCount;
-    ret.nextCursor = nextCursor;
-    ret.items = items;
+    ObjectList ret = ticketRepository.findAll(predicate, pageable);
 
     return ret;
   }

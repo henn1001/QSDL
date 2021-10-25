@@ -206,6 +206,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/config/Errors.j2", f"src/main/java/{base_package}/config/Errors.java"),
         ("src/main/java/config/Constants.j2", f"src/main/java/{base_package}/config/Constants.java"),
         # api
+        ("src/main/java/controller/BaseController.j2", f"src/main/java/{base_package}/controller/BaseController.java"),
         ("src/main/java/controller/HomeController.j2", f"src/main/java/{base_package}/controller/HomeController.java"),
         # util
         ("src/main/java/util/Json.j2", f"src/main/java/{base_package}/util/Json.java"),
@@ -213,6 +214,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/util/Validator.j2", f"src/main/java/{base_package}/util/Validator.java"),
         ("src/main/java/util/IdGenerator.j2", f"src/main/java/{base_package}/util/IdGenerator.java"),
         ("src/main/java/util/NodeConverter.j2", f"src/main/java/{base_package}/util/NodeConverter.java"),
+        ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{base_package}/util/PredicateBuilder.java"),
         # exception
         ("src/main/java/exception/AppException.j2", f"src/main/java/{base_package}/exception/AppException.java"),
         ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{base_package}/exception/GlobalExceptionHandler.java"),
@@ -226,6 +228,12 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/test/java/controller/ControllerTest.j2", f"src/test/java/{base_package}/controller/ControllerTest.java")
     ]
     # fmt: on
+
+    if config.database == "hibernate":
+        # fmt: off
+        supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{base_package}/repository/BaseRepository.java"))
+        supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{base_package}/repository/BaseRepositoryImpl.java"))
+        # fmt: on
 
     # remove ignored files from generator
     remove_ignored_files(output_path, api_files, model_files, supporting_files)

@@ -12,16 +12,11 @@
 
 {%- endmacro %}
 
-{%- macro get_params(operation) -%}
+{%- macro paramsController(operation) -%}
 
   {%- for parameter in operation.path_parameters -%}
     @PathVariable("{{parameter.json_key}}") {{ param_helper(parameter) }}
     {%- if not loop.last or operation.query_parameters or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
-  {%- endfor %}
-
-  {%- for parameter in operation.query_parameters -%}
-    @Valid @RequestParam(value = "{{parameter.json_key}}", required = {{parameter.is_required | lower}}) {{ param_helper(parameter) }}
-    {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
@@ -39,43 +34,15 @@
 
 {%- endmacro %}
 
-
-{%- macro paramsController(operation) -%}
-
-  {%- for parameter in operation.path_parameters -%}
-    {{ param_helper(parameter) }}
-    {%- if not loop.last or operation.query_parameters or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
-  {%- endfor %}
-
-  {%- for parameter in operation.query_parameters -%}
-    @Valid {{ param_helper(parameter) }}
-    {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
-  {%- endfor %}
-
-  {%- if operation.is_pageable -%}
-      AppPageable pageable
-    {%- if operation.body_parameters -%}{{", "}}{% endif -%}
-  {%- endif -%}
-
-  {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      ObjectNode body
-  {%- elif operation.body_parameters and operation.method == "patch" -%}
-      {{ param_helper(operation.body_parameters[0]) }}
-  {%- elif operation.body_parameters -%}
-      @Valid {{ param_helper(operation.body_parameters[0]) }}
-  {%- endif -%}
-
-{%- endmacro %}
-
 {%- macro paramsService(operation) -%}
 
-  {%- for parameter in operation.path_parameters + operation.query_parameters -%}
+  {%- for parameter in operation.path_parameters -%}
       {{ param_helper(parameter) }}
     {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}, {% endif -%}
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      AppPageable pageable
+      MultiValueMap<String, String> queryParameters, AppPageable pageable
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
@@ -89,13 +56,13 @@
 
 {%- macro paramsCallService(operation) -%}
 
-  {%- for parameter in operation.path_parameters + operation.query_parameters -%}
+  {%- for parameter in operation.path_parameters -%}
       {{parameter.name}}
     {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}, {% endif -%}
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      pageable
+      super.getQueryMap(), pageable
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
@@ -109,13 +76,13 @@
 
 {%- macro paramsCallServiceMocked(operation) -%}
 
-  {%- for parameter in operation.path_parameters + operation.query_parameters -%}
+  {%- for parameter in operation.path_parameters -%}
       any()
     {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}, {% endif -%}
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      any()
+      any(), any()
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
@@ -132,13 +99,9 @@
   {%- for parameter in operation.path_parameters -%}
       1l
     {%- if not loop.last or operation.query_parameters or operation.is_pageable -%}, {% endif -%}
-  {%- endfor %}
-
-  {%- for parameter in operation.query_parameters -%}
-      null{{ ", " }}
   {%- endfor -%}
 
-  new AppPageable(null, 5l, true)
+  new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true)
 
 {%- endmacro %}
 

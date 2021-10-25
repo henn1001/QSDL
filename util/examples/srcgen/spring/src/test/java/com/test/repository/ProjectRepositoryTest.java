@@ -83,7 +83,7 @@ public class ProjectRepositoryTest {
     List<Project> testData = prepareData(5);
 
     AppPageable pageable = new AppPageable(null, null, null);
-    pageable.query.put("name", testData.get(0).name);
+    //pageable.query.put("name", testData.get(0).name);
 
     // When
     long count = projectRepository.count(pageable);

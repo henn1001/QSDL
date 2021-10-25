@@ -3,18 +3,19 @@
  */
 package com.test.service;
 
+import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.*;
 import javax.annotation.PostConstruct;
 
-import com.test.config.Errors;
 import com.test.exception.AppException;
 import com.test.repository.*;
+import com.test.util.PredicateBuilder;
 import com.test.domain.*;
 import com.test.model.*;
 
@@ -35,24 +36,19 @@ public class UserService {
 
   private void validateTicketId(Long id) throws AppException {
     if (!ticketRepository.existsById(id)) {
-      throw new AppException(Errors.NOT_FOUND, "Ticket " + id.toString() + " does not exist");
+      throw AppException.entityNotFound(Ticket.class, id);
     }
   }
 
-  public ObjectList getUsersForTicket(Long ticketId, AppPageable pageable) throws AppException {
+  public ObjectList getUsersForTicket(Long ticketId, MultiValueMap<String, String> queryParameters, AppPageable pageable) throws AppException {
 
     // confirm existence of parent
     validateTicketId(ticketId);
 
-    List<User> items = userRepository.findAllByTicketId(ticketId, pageable);
+    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, User.class);
+    predicate.and(QUser.user.tickets.any().id.eq(ticketId));
 
-    Long totalCount = pageable.count ? userRepository.countByTicketId(ticketId, pageable) : null;
-    String nextCursor = pageable.getNextCursor(items);
-
-    ObjectList ret = new ObjectList();
-    ret.totalCount = totalCount;
-    ret.nextCursor = nextCursor;
-    ret.items = items;
+    ObjectList ret = userRepository.findAll(predicate, pageable);
 
     return ret;
   }
@@ -91,17 +87,11 @@ public class UserService {
     return null;
   }
 
-  public ObjectList getUsers(AppPageable pageable) throws AppException {
+  public ObjectList getUsers(MultiValueMap<String, String> queryParameters, AppPageable pageable) throws AppException {
 
-    List<User> items = userRepository.findAll(pageable);
+    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, User.class);
 
-    Long totalCount = pageable.count ? userRepository.count(pageable) : null;
-    String nextCursor = pageable.getNextCursor(items);
-
-    ObjectList ret = new ObjectList();
-    ret.totalCount = totalCount;
-    ret.nextCursor = nextCursor;
-    ret.items = items;
+    ObjectList ret = userRepository.findAll(predicate, pageable);
 
     return ret;
   }

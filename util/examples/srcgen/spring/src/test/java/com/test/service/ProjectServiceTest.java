@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.Base64;
 import java.util.List;
@@ -60,14 +61,14 @@ public class ProjectServiceTest {
         .thenReturn(5l);
 
     // When
-    ObjectList response = service.getProjects(null, new AppPageable(null, 5l, true));
+    ObjectList response = service.getProjects(new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true));
 
     // Then
-    assertEquals(expectedCursor, new String(Base64.getDecoder().decode(response.nextCursor)));
-    assertEquals(5l, response.totalCount);
+    assertEquals(expectedCursor, new String(Base64.getDecoder().decode(response.nextCursor())));
+    assertEquals(5l, response.totalCount());
 
     ArrayNode node1 = Json.serializer().nodeFromList(request);
-    ArrayNode node2 = Json.serializer().nodeFromList(response.items);
+    ArrayNode node2 = Json.serializer().nodeFromList(response.items());
     assertEquals(node1, node2);
   }
 

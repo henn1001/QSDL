@@ -8,19 +8,13 @@
     // confirm existence of parent
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
+    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, {{model.name}}.class);
+    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{operation.parent.predicate}}.id.eq({{ operation.path_parameters[0].name }}));
+    {% else %}
+    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, {{model.name}}.class);
     {% endif %}
-    {% for parameter in operation.query_parameters %}
-    pageable.query.put("{{parameter.name}}", {{parameter.name}});{{ "\n" if  loop.last}}
-    {% endfor %}
-    List<{{api.name}}> items = {{api.name|lower}}Repository.{{ operation.get_repo_find_all_name() }}({{ operation.get_repo_find_all_parameters() }});
 
-    Long totalCount = pageable.count ? {{api.name|lower}}Repository.{{ operation.get_repo_count_name() }}({{ operation.get_repo_find_all_parameters() }}) : null;
-    String nextCursor = pageable.getNextCursor(items);
-
-    ObjectList ret = new ObjectList();
-    ret.totalCount = totalCount;
-    ret.nextCursor = nextCursor;
-    ret.items = items;
+    ObjectList ret = {{api.name|lower}}Repository.findAll(predicate, pageable);
 
     return ret;
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}

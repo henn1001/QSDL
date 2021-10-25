@@ -30,6 +30,7 @@ class Parent:
     model: ModelClass = None
     field: ModelField = None
     hibernate: HibernateParentInfo = None
+    predicate: str = None
 
     def build(self, parent: ModelClass, child: ModelClass) -> Parent:
         """Builds self from Parent and Child ModelClass"""
@@ -39,5 +40,10 @@ class Parent:
         for parent_field in parent.fields:
             if parent_field.type == child.name:
                 self.field = parent_field
+
+        for child_field in child.fields:
+            if child_field.type == parent.name:
+                self.predicate = child_field.name
+                self.predicate += ".any()" if child_field.is_array else ""
 
         return self
