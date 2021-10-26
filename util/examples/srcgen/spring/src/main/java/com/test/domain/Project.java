@@ -10,6 +10,7 @@ import javax.validation.*;
 import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.test.model.*;
 import com.test.util.Json;
@@ -27,17 +28,19 @@ public class Project extends AbstractPersistentObject {
   @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
   public String creationBy;
 
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
   public OffsetDateTime creationDate;
 
   @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
   public String lastUpdateBy;
 
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
   public OffsetDateTime lastUpdateDate;
 
-  @Lob
   @Convert(converter = com.test.util.NodeConverter.class)
+  @Column(columnDefinition="text")
   @JsonProperty(value = "meta_inf")
   public ObjectNode metaInf;
 

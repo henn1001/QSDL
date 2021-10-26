@@ -15,8 +15,8 @@
     Serialization for objects
   #}
   {% if attr.type == "ObjectNode" %}
-  @Lob
   @Convert(converter = {{base_package}}.util.NodeConverter.class)
+  @Column(columnDefinition="text")
   {% endif %}
   {#
     Relations

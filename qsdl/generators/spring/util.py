@@ -208,6 +208,10 @@ def get_model_imports(entity: Union[dsl.Enum, dsl.Base, dsl.Object]):
         _import = ["com.fasterxml.jackson.databind.node.ObjectNode"]
         imports.extend(_import)
 
+    if has(entity, has_type=["Date"]):
+        _import = ["org.springframework.format.annotation.DateTimeFormat"]
+        imports.extend(_import)
+
     return imports
 
 

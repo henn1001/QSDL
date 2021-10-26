@@ -36,6 +36,12 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
   @Valid
   {% endif %}
   {# 
+    Date format
+  #}
+  {% if field.is_date %}
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+  {% endif %}
+  {# 
     Hibernate
   #}
   {{- hibernate.attribute_annotation(field) if database == "hibernate" -}}
