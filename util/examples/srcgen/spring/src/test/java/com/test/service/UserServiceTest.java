@@ -5,12 +5,12 @@ package com.test.service;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.querydsl.core.types.Predicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -53,25 +53,20 @@ public class UserServiceTest {
   void whenGetUsersForTicket_thenOk() throws Exception {
 
     // Given
-    List<User> request = TestConfig.getRandom(User.class, 6);
-
-    String expectedCursor = request.get(5).getId().toString();
+    List<User> request = TestConfig.getRandom(User.class, 5);
 
     when(ticketRepository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findAllByTicketId(eq(1l), any(AppPageable.class)))
-        .thenReturn(request);
-
-    when(repository.countByTicketId(eq(1l), any(AppPageable.class)))
-        .thenReturn(5l);
+    when(repository.findAll(any(Predicate.class), any(AppPageable.class)))
+        .thenReturn(new ObjectList(request, null, 6l));
 
     // When
     ObjectList response = service.getUsersForTicket(1l, new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true));
 
     // Then
-    assertEquals(expectedCursor, new String(Base64.getDecoder().decode(response.nextCursor())));
-    assertEquals(5l, response.totalCount());
+    assertEquals(5l, response.count());
+    assertEquals(6l, response.totalCount());
 
     ArrayNode node1 = Json.serializer().nodeFromList(request);
     ArrayNode node2 = Json.serializer().nodeFromList(response.items());
@@ -128,22 +123,17 @@ public class UserServiceTest {
   void whenGetUsers_thenOk() throws Exception {
 
     // Given
-    List<User> request = TestConfig.getRandom(User.class, 6);
+    List<User> request = TestConfig.getRandom(User.class, 5);
 
-    String expectedCursor = request.get(5).getId().toString();
-
-    when(repository.findAll(any(AppPageable.class)))
-        .thenReturn(request);
-
-    when(repository.count(any(AppPageable.class)))
-        .thenReturn(5l);
+    when(repository.findAll(any(Predicate.class), any(AppPageable.class)))
+        .thenReturn(new ObjectList(request, null, 6l));
 
     // When
     ObjectList response = service.getUsers(new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true));
 
     // Then
-    assertEquals(expectedCursor, new String(Base64.getDecoder().decode(response.nextCursor())));
-    assertEquals(5l, response.totalCount());
+    assertEquals(5l, response.count());
+    assertEquals(6l, response.totalCount());
 
     ArrayNode node1 = Json.serializer().nodeFromList(request);
     ArrayNode node2 = Json.serializer().nodeFromList(response.items());

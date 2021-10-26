@@ -3,42 +3,13 @@
  */
 package com.test.repository;
 
-import com.test.domain.*;
-import com.test.model.AppPageable;
+import com.test.domain.Ticket;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
 public interface TicketRepository extends BaseRepository<Ticket, Long> {
-
-  @Query(
-      value = """
-
-          SELECT *
-          FROM TICKET
-          WHERE 1 = 1
-            AND TICKET.ID <= :#{#pageable.cursor}
-          ORDER BY TICKET.ID DESC
-          LIMIT :#{#pageable.limit}
-
-          """,
-      nativeQuery = true)
-  public List<Ticket> findAll(@Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT COUNT(*)
-          FROM TICKET
-          WHERE 1 = 1
-            AND (:#{#pageable.limit} = :#{#pageable.limit})
-
-          """,
-      nativeQuery = true)
-  public long count(@Param("pageable") AppPageable pageable);
 
 }

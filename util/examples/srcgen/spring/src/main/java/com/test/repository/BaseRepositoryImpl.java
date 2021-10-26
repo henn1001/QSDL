@@ -16,6 +16,7 @@ import org.springframework.data.querydsl.SimpleEntityPathResolver;
 import javax.persistence.EntityManager;
 
 import java.io.Serializable;
+import java.util.Base64;
 import java.util.List;
 
 public class BaseRepositoryImpl<T extends AbstractPersistentObject, ID extends Serializable>
@@ -61,20 +62,54 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, ID extends S
   @Override
   public ObjectList findAll(Predicate predicate, AppPageable pageable) {
 
+    // for paging, we always want to request one extra item
+    // the id of this extra item will be the new cursor
+    long limit = pageable.limit() + 1;
+
     List<T> items = queryFactory.selectFrom(entityPath)
         .where(predicate)
         .where(entityPath.getNumber("id", Long.class).loe(pageable.cursor()))
         .orderBy(entityPath.getNumber("id", Long.class).desc())
-        .limit(pageable.limit() + 1)
+        .limit(limit)
         .fetch();
 
-    // for paging, we always want to request one extra item
-    // the id of this extra item will be the new cursor
-
     Long totalCount = pageable.count() ? count(predicate) : null;
-    String nextCursor = pageable.getNextCursor(items);
+    String nextCursor = getNextCursor(items, pageable.limit());
 
     return new ObjectList(items, nextCursor, totalCount);
+  }
+
+  /**
+  * Returns the cursor for the next CursorPage.
+  * 
+  * All items after the requested limit of the provided list are removed and 
+  * the id of limit + 1 is used as cursor.
+  * 
+  * @param items the list of entities.
+  * @return the cursor for the next CursorPage.
+  */
+  private String getNextCursor(List<T> items, long limit) {
+    String nextCursor = null;
+    int size = items.size();
+    int diff = size - (int) limit;
+    int cursorIndex = size - diff;
+
+    if (diff >= 1) {
+      // fetch last item in list and encode id as cursor
+      nextCursor = items.get(cursorIndex).getId().toString();
+      nextCursor = Base64.getEncoder().encodeToString(nextCursor.getBytes());
+
+      // very important to remove the last item
+      // it is only used for the paging cursor
+      if (diff == 1) {
+        items.remove(cursorIndex);
+      }
+      else {
+        items.subList(cursorIndex, size).clear();
+      }
+    }
+
+    return nextCursor;
   }
 
 }

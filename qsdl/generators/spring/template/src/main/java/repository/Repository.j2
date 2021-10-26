@@ -4,116 +4,17 @@
  */
 package {{base_package}}.repository;
 
-import {{base_package}}.domain.*;
-import {{base_package}}.model.AppPageable;
+import {{base_package}}.domain.{{model.name}};
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
 public interface {{model.name}}Repository extends BaseRepository<{{model.name}}, Long> {
-
-  @Query(
-      value = """
-
-          SELECT *
-          FROM {{model.hibernate.table_name}}
-          WHERE 1 = 1
-            AND {{model.hibernate.table_id_assessor}} <= {{ ":#{#pageable.cursor}" }}
-            {{- macro.get_query() | indent(8) }}
-          ORDER BY {{model.hibernate.table_id_assessor}} DESC
-          LIMIT {{ ":#{#pageable.limit}" }}
-
-          """,
-      nativeQuery = true)
-  public List<{{model.name}}> findAll(@Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT COUNT(*)
-          FROM {{model.hibernate.table_name}}
-          WHERE 1 = 1
-            AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
-            {{- macro.get_query() | indent(8) }}
-
-          """,
-      nativeQuery = true)
-  public long count(@Param("pageable") AppPageable pageable);
   {% for parent in model.parents %}
 
-    {% if parent.field.is_aggregation %}
-  @Query(
-      value = """
-
-          SELECT *
-          FROM {{model.hibernate.table_name}}
-            INNER JOIN {{parent.hibernate.join_table_name}}
-            ON {{parent.hibernate.join_table_name}}.{{model.hibernate.table_joined_id}} = {{model.hibernate.table_id_assessor}}
-          WHERE 1 = 1
-            AND {{parent.hibernate.join_table_name}}.{{parent.model.hibernate.table_joined_id}} = :{{parent.model.hibernate.parameter_joined_id}}
-            AND {{model.hibernate.table_id_assessor}} <= {{ ":#{#pageable.cursor}" }}
-            {{- macro.get_query() | indent(8) }}
-          ORDER BY {{model.hibernate.table_id_assessor}} DESC
-          LIMIT {{ ":#{#pageable.limit}" }}
-
-          """,
-      nativeQuery = true)
-  public List<{{model.name}}> findAllBy{{parent.model.hibernate.method_joined_id}}(@Param("{{parent.model.hibernate.parameter_joined_id}}") Long {{parent.model.hibernate.parameter_joined_id}}, @Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT COUNT(*)
-          FROM {{model.hibernate.table_name}}
-            INNER JOIN {{parent.hibernate.join_table_name}}
-            ON {{parent.hibernate.join_table_name}}.{{model.hibernate.table_joined_id}} = {{model.hibernate.table_id_assessor}}
-          WHERE 1 = 1
-            AND {{parent.hibernate.join_table_name}}.{{parent.model.hibernate.table_joined_id}} = :{{parent.model.hibernate.parameter_joined_id}}
-            AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
-            {{- macro.get_query() | indent(8) }}
-
-          """,
-      nativeQuery = true)
-  public long countBy{{parent.model.hibernate.method_joined_id}}(@Param("{{parent.model.hibernate.parameter_joined_id}}") Long {{parent.model.hibernate.parameter_joined_id}}, @Param("pageable") AppPageable pageable);
-    {% else %}
-  @Query(
-      value = """
-
-          SELECT *
-          FROM {{model.hibernate.table_name}}
-          WHERE 1 = 1
-            AND {{parent.model.hibernate.table_joined_id}} = :{{parent.model.hibernate.parameter_joined_id}}
-            AND {{model.hibernate.table_name}}.ID <= {{ ":#{#pageable.cursor}" }}
-            {{- macro.get_query() | indent(8) }}
-          ORDER BY {{model.hibernate.table_name}}.ID DESC
-          LIMIT {{ ":#{#pageable.limit}" }}
-
-          """,
-      nativeQuery = true)
-  public List<{{model.name}}> findAllBy{{parent.model.hibernate.method_joined_id}}(@Param("{{parent.model.hibernate.parameter_joined_id}}") Long {{parent.model.hibernate.parameter_joined_id}}, @Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT COUNT(*)
-          FROM {{model.hibernate.table_name}}
-          WHERE 1 = 1
-            AND {{parent.model.hibernate.table_joined_id}} = :{{parent.model.hibernate.parameter_joined_id}}
-            AND ({{ ":#{#pageable.limit}" }} = {{ ":#{#pageable.limit}" }})
-            {{- macro.get_query() | indent(8) }}
-
-          """,
-      nativeQuery = true)
-  public long countBy{{parent.model.hibernate.method_joined_id}}(@Param("{{parent.model.hibernate.parameter_joined_id}}") Long {{parent.model.hibernate.parameter_joined_id}}, @Param("pageable") AppPageable pageable);
-
   public Optional<{{model.name}}> findBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
-
-  public Boolean existsBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
-    {% endif %}
   {% endfor %}
 
 }

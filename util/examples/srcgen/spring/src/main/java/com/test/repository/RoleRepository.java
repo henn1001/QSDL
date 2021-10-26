@@ -3,11 +3,8 @@
  */
 package com.test.repository;
 
-import com.test.domain.*;
-import com.test.model.AppPageable;
+import com.test.domain.Role;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -15,62 +12,6 @@ import java.util.*;
 @Repository
 public interface RoleRepository extends BaseRepository<Role, Long> {
 
-  @Query(
-      value = """
-
-          SELECT *
-          FROM ROLE
-          WHERE 1 = 1
-            AND ROLE.ID <= :#{#pageable.cursor}
-          ORDER BY ROLE.ID DESC
-          LIMIT :#{#pageable.limit}
-
-          """,
-      nativeQuery = true)
-  public List<Role> findAll(@Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT COUNT(*)
-          FROM ROLE
-          WHERE 1 = 1
-            AND (:#{#pageable.limit} = :#{#pageable.limit})
-
-          """,
-      nativeQuery = true)
-  public long count(@Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT *
-          FROM ROLE
-          WHERE 1 = 1
-            AND PROJECT_ID = :projectId
-            AND ROLE.ID <= :#{#pageable.cursor}
-          ORDER BY ROLE.ID DESC
-          LIMIT :#{#pageable.limit}
-
-          """,
-      nativeQuery = true)
-  public List<Role> findAllByProjectId(@Param("projectId") Long projectId, @Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT COUNT(*)
-          FROM ROLE
-          WHERE 1 = 1
-            AND PROJECT_ID = :projectId
-            AND (:#{#pageable.limit} = :#{#pageable.limit})
-
-          """,
-      nativeQuery = true)
-  public long countByProjectId(@Param("projectId") Long projectId, @Param("pageable") AppPageable pageable);
-
   public Optional<Role> findByProjectIdAndId(Long projectId, Long id);
-
-  public Boolean existsByProjectIdAndId(Long projectId, Long id);
 
 }

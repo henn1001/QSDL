@@ -6,19 +6,22 @@ package {{base_package}}.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.querydsl.core.BooleanBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import {{base_package}}.TestConfig;
 import {{base_package}}.domain.*;
-import {{base_package}}.model.AppPageable;
+import {{base_package}}.model.*;
 import {{base_package}}.util.Json;
 
 @DataJpaTest
 @Import(TestConfig.class)
+@EnableJpaRepositories(basePackages = "{{base_package}}.repository", repositoryBaseClass = BaseRepositoryImpl.class)
 public class {{model.name}}RepositoryTest {
 
 {% for parent in model.parents %}
@@ -103,13 +106,13 @@ public class {{model.name}}RepositoryTest {
     // Given
     List<{{model.name}}> testData = prepareData(5);
 
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder();
     {% for field in model.fields if field.is_query %}
-    //pageable.query.put("{{field.name}}", testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}});
+    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
     {% endfor %}
 
     // When
-    long count = {{model.name|lower}}Repository.count(pageable);
+    long count = {{model.name|lower}}Repository.count(predicate);
 
     // Then
     assertEquals({{ "1" if model.has_query else "5" }}, count);
@@ -127,11 +130,12 @@ public class {{model.name}}RepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<{{model.name}}> findData = {{model.name|lower}}Repository.findAll(pageable);
+      BooleanBuilder predicate = new BooleanBuilder();
+      ObjectList findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
 
-      cursor = pageable.getNextCursor(findData);
+      cursor = findData.nextCursor();
 
-      assertEquals(1, findData.size());
+      assertEquals(1, findData.count());
 
       idx++;
     } while (cursor != null);
@@ -159,10 +163,13 @@ public class {{model.name}}RepositoryTest {
       {% endif %}
     {% endif %}
 
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parentId));
+    {% for field in model.fields if field.is_query %}
+    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
+    {% endfor %}
 
     // When
-    long count = {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(parentId, pageable);
+    long count = {{model.name|lower}}Repository.count(predicate);
 
     // Then
     assertEquals({{ "1" if model.has_query else "5" }}, count);
@@ -192,11 +199,12 @@ public class {{model.name}}RepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<{{model.name}}> findData = {{model.name|lower}}Repository.findAllBy{{parent.model.hibernate.method_joined_id}}(parentId, pageable);
+      BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parentId));
+      ObjectList findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
 
-      cursor = pageable.getNextCursor(findData);
+      cursor = findData.nextCursor();
 
-      assertEquals(1, findData.size());
+      assertEquals(1, findData.count());
 
       idx++;
     } while (cursor != null);
@@ -224,9 +232,9 @@ public class {{model.name}}RepositoryTest {
     {{model.name|lower}}Repository.save(testData);
 
     // Then
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parent.getId()));
 
-    assertEquals(0, {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(parent.getId(), pageable));
+    assertEquals(0, {{model.name|lower}}Repository.count(predicate));
     assertEquals(true, {{model.name|lower}}Repository.existsById(testData.getId()));
     assertEquals(true, {{parent.model.name|lower}}Repository.existsById(parent.getId()));
   }
@@ -246,9 +254,9 @@ public class {{model.name}}RepositoryTest {
     {{model.name|lower}}Repository.deleteById(testData.getId());
 
     // Then
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parent.getId()));
 
-    assertEquals(0, {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(parent.getId(), pageable));
+    assertEquals(0, {{model.name|lower}}Repository.count(predicate));
     assertEquals(false, {{model.name|lower}}Repository.existsById(testData.getId()));
     assertEquals(true, {{parent.model.name|lower}}Repository.existsById(parent.getId()));
   }
@@ -268,9 +276,9 @@ public class {{model.name}}RepositoryTest {
     {{parent.model.name|lower}}Repository.deleteById(parent.getId());
 
     // Then
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parent.getId()));
 
-    assertEquals(0, {{model.name|lower}}Repository.countBy{{parent.model.hibernate.method_joined_id}}(parent.getId(), pageable));
+    assertEquals(0, {{model.name|lower}}Repository.count(predicate));
     assertEquals(true, {{model.name|lower}}Repository.existsById(testData.getId()));
     assertEquals(false, {{parent.model.name|lower}}Repository.existsById(parent.getId()));
   }

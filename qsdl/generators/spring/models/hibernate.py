@@ -41,7 +41,10 @@ class HibernateParentInfo:
           method_joined_id      = TicketIdAndId
         """
         self.join_table_name = parent.name.upper() + "_TO_" + model.name.upper()
-        self.method_joined_id = stringcase.pascalcase(parent.name) + "IdAndId"
+
+        for child_field in model.fields:
+            if child_field.type == parent.name:
+                self.method_joined_id = stringcase.pascalcase(child_field.name) + "IdAndId"
 
 
 class HibernateModelInfo:

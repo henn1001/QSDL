@@ -5,12 +5,12 @@ package com.test.service;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.querydsl.core.types.Predicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -53,25 +53,20 @@ public class RoleServiceTest {
   void whenGetRoles_thenOk() throws Exception {
 
     // Given
-    List<Role> request = TestConfig.getRandom(Role.class, 6);
-
-    String expectedCursor = request.get(5).getId().toString();
+    List<Role> request = TestConfig.getRandom(Role.class, 5);
 
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findAllByProjectId(eq(1l), any(AppPageable.class)))
-        .thenReturn(request);
-
-    when(repository.countByProjectId(eq(1l), any(AppPageable.class)))
-        .thenReturn(5l);
+    when(repository.findAll(any(Predicate.class), any(AppPageable.class)))
+        .thenReturn(new ObjectList(request, null, 6l));
 
     // When
     ObjectList response = service.getRoles(1l, new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true));
 
     // Then
-    assertEquals(expectedCursor, new String(Base64.getDecoder().decode(response.nextCursor())));
-    assertEquals(5l, response.totalCount());
+    assertEquals(5l, response.count());
+    assertEquals(6l, response.totalCount());
 
     ArrayNode node1 = Json.serializer().nodeFromList(request);
     ArrayNode node2 = Json.serializer().nodeFromList(response.items());

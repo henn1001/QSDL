@@ -6,7 +6,6 @@ package {{base_package}}.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Base64;
-import java.util.List;
 
 import static com.test.config.Constants.CURSOR_DEFAULT;
 import static com.test.config.Constants.CURSOR_MAX;
@@ -72,32 +71,6 @@ public class AppPageable {
   */
   public boolean count() {
     return count;
-  }
-
-  /**
-   * Returns the cursor for the next CursorPage.
-   * 
-   * The last last item of the provided list is popped and its
-   * id is used as cursor.
-   * 
-   * @param items the list of entities.
-   * @return the cursor for the next CursorPage.
-   */
-  public String getNextCursor(List<? extends AbstractPersistentObject> items) {
-    int size = items.size();
-    String nextCursor = null;
-
-    if (size == this.limit) {
-      // fetch last item in list and encode id as cursor
-      nextCursor = items.get(size - 1).getId().toString();
-      nextCursor = Base64.getEncoder().encodeToString(nextCursor.getBytes());
-
-      // very important to remove the last item
-      // it is only used for the paging cursor
-      items.remove(size - 1);
-    }
-
-    return nextCursor;
   }
 
 }

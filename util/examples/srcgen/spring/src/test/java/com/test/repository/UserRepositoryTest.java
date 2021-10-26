@@ -6,19 +6,22 @@ package com.test.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.querydsl.core.BooleanBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.test.TestConfig;
 import com.test.domain.*;
-import com.test.model.AppPageable;
+import com.test.model.*;
 import com.test.util.Json;
 
 @DataJpaTest
 @Import(TestConfig.class)
+@EnableJpaRepositories(basePackages = "com.test.repository", repositoryBaseClass = BaseRepositoryImpl.class)
 public class UserRepositoryTest {
 
   @Autowired
@@ -87,10 +90,10 @@ public class UserRepositoryTest {
     // Given
     List<User> testData = prepareData(5);
 
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder();
 
     // When
-    long count = userRepository.count(pageable);
+    long count = userRepository.count(predicate);
 
     // Then
     assertEquals(5, count);
@@ -108,11 +111,12 @@ public class UserRepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<User> findData = userRepository.findAll(pageable);
+      BooleanBuilder predicate = new BooleanBuilder();
+      ObjectList findData = userRepository.findAll(predicate, pageable);
 
-      cursor = pageable.getNextCursor(findData);
+      cursor = findData.nextCursor();
 
-      assertEquals(1, findData.size());
+      assertEquals(1, findData.count());
 
       idx++;
     } while (cursor != null);
@@ -127,10 +131,10 @@ public class UserRepositoryTest {
     // Given
     Long parentId = prepareData(5).get(0).tickets.toArray(new Ticket[0])[0].getId();
 
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parentId));
 
     // When
-    long count = userRepository.countByTicketId(parentId, pageable);
+    long count = userRepository.count(predicate);
 
     // Then
     assertEquals(5, count);
@@ -148,11 +152,12 @@ public class UserRepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<User> findData = userRepository.findAllByTicketId(parentId, pageable);
+      BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parentId));
+      ObjectList findData = userRepository.findAll(predicate, pageable);
 
-      cursor = pageable.getNextCursor(findData);
+      cursor = findData.nextCursor();
 
-      assertEquals(1, findData.size());
+      assertEquals(1, findData.count());
 
       idx++;
     } while (cursor != null);
@@ -173,9 +178,9 @@ public class UserRepositoryTest {
     userRepository.save(testData);
 
     // Then
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));
 
-    assertEquals(0, userRepository.countByTicketId(parent.getId(), pageable));
+    assertEquals(0, userRepository.count(predicate));
     assertEquals(true, userRepository.existsById(testData.getId()));
     assertEquals(true, ticketRepository.existsById(parent.getId()));
   }
@@ -191,9 +196,9 @@ public class UserRepositoryTest {
     userRepository.deleteById(testData.getId());
 
     // Then
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));
 
-    assertEquals(0, userRepository.countByTicketId(parent.getId(), pageable));
+    assertEquals(0, userRepository.count(predicate));
     assertEquals(false, userRepository.existsById(testData.getId()));
     assertEquals(true, ticketRepository.existsById(parent.getId()));
   }
@@ -209,9 +214,9 @@ public class UserRepositoryTest {
     ticketRepository.deleteById(parent.getId());
 
     // Then
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));
 
-    assertEquals(0, userRepository.countByTicketId(parent.getId(), pageable));
+    assertEquals(0, userRepository.count(predicate));
     assertEquals(true, userRepository.existsById(testData.getId()));
     assertEquals(false, ticketRepository.existsById(parent.getId()));
   }

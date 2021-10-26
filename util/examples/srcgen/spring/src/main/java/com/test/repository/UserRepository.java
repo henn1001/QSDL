@@ -3,11 +3,8 @@
  */
 package com.test.repository;
 
-import com.test.domain.*;
-import com.test.model.AppPageable;
+import com.test.domain.User;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -15,62 +12,6 @@ import java.util.*;
 @Repository
 public interface UserRepository extends BaseRepository<User, Long> {
 
-  @Query(
-      value = """
-
-          SELECT *
-          FROM USER
-          WHERE 1 = 1
-            AND USER.ID <= :#{#pageable.cursor}
-          ORDER BY USER.ID DESC
-          LIMIT :#{#pageable.limit}
-
-          """,
-      nativeQuery = true)
-  public List<User> findAll(@Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT COUNT(*)
-          FROM USER
-          WHERE 1 = 1
-            AND (:#{#pageable.limit} = :#{#pageable.limit})
-
-          """,
-      nativeQuery = true)
-  public long count(@Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT *
-          FROM USER
-            INNER JOIN TICKET_TO_USER
-            ON TICKET_TO_USER.USER_ID = USER.ID
-          WHERE 1 = 1
-            AND TICKET_TO_USER.TICKET_ID = :ticketId
-            AND USER.ID <= :#{#pageable.cursor}
-          ORDER BY USER.ID DESC
-          LIMIT :#{#pageable.limit}
-
-          """,
-      nativeQuery = true)
-  public List<User> findAllByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT COUNT(*)
-          FROM USER
-            INNER JOIN TICKET_TO_USER
-            ON TICKET_TO_USER.USER_ID = USER.ID
-          WHERE 1 = 1
-            AND TICKET_TO_USER.TICKET_ID = :ticketId
-            AND (:#{#pageable.limit} = :#{#pageable.limit})
-
-          """,
-      nativeQuery = true)
-  public long countByTicketId(@Param("ticketId") Long ticketId, @Param("pageable") AppPageable pageable);
+  public Optional<User> findByTicketsIdAndId(Long ticketId, Long id);
 
 }

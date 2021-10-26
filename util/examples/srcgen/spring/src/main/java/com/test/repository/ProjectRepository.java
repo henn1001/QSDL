@@ -3,44 +3,13 @@
  */
 package com.test.repository;
 
-import com.test.domain.*;
-import com.test.model.AppPageable;
+import com.test.domain.Project;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
 public interface ProjectRepository extends BaseRepository<Project, Long> {
-
-  @Query(
-      value = """
-
-          SELECT *
-          FROM PROJECT
-          WHERE 1 = 1
-            AND PROJECT.ID <= :#{#pageable.cursor}
-            AND (:#{#pageable.query['name']} IS NULL OR PROJECT.NAME = :#{#pageable.query['name']})
-          ORDER BY PROJECT.ID DESC
-          LIMIT :#{#pageable.limit}
-
-          """,
-      nativeQuery = true)
-  public List<Project> findAll(@Param("pageable") AppPageable pageable);
-
-  @Query(
-      value = """
-
-          SELECT COUNT(*)
-          FROM PROJECT
-          WHERE 1 = 1
-            AND (:#{#pageable.limit} = :#{#pageable.limit})
-            AND (:#{#pageable.query['name']} IS NULL OR PROJECT.NAME = :#{#pageable.query['name']})
-
-          """,
-      nativeQuery = true)
-  public long count(@Param("pageable") AppPageable pageable);
 
 }

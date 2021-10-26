@@ -6,19 +6,22 @@ package com.test.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.querydsl.core.BooleanBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.test.TestConfig;
 import com.test.domain.*;
-import com.test.model.AppPageable;
+import com.test.model.*;
 import com.test.util.Json;
 
 @DataJpaTest
 @Import(TestConfig.class)
+@EnableJpaRepositories(basePackages = "com.test.repository", repositoryBaseClass = BaseRepositoryImpl.class)
 public class RoleRepositoryTest {
 
   @Autowired
@@ -87,10 +90,10 @@ public class RoleRepositoryTest {
     // Given
     List<Role> testData = prepareData(5);
 
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder();
 
     // When
-    long count = roleRepository.count(pageable);
+    long count = roleRepository.count(predicate);
 
     // Then
     assertEquals(5, count);
@@ -108,11 +111,12 @@ public class RoleRepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<Role> findData = roleRepository.findAll(pageable);
+      BooleanBuilder predicate = new BooleanBuilder();
+      ObjectList findData = roleRepository.findAll(predicate, pageable);
 
-      cursor = pageable.getNextCursor(findData);
+      cursor = findData.nextCursor();
 
-      assertEquals(1, findData.size());
+      assertEquals(1, findData.count());
 
       idx++;
     } while (cursor != null);
@@ -127,10 +131,10 @@ public class RoleRepositoryTest {
     // Given
     Long parentId = prepareData(5).get(0).project.getId();
 
-    AppPageable pageable = new AppPageable(null, null, null);
+    BooleanBuilder predicate = new BooleanBuilder(QRole.role.project.id.eq(parentId));
 
     // When
-    long count = roleRepository.countByProjectId(parentId, pageable);
+    long count = roleRepository.count(predicate);
 
     // Then
     assertEquals(5, count);
@@ -148,11 +152,12 @@ public class RoleRepositoryTest {
 
     do {
       AppPageable pageable = new AppPageable(cursor, 1l, null);
-      List<Role> findData = roleRepository.findAllByProjectId(parentId, pageable);
+      BooleanBuilder predicate = new BooleanBuilder(QRole.role.project.id.eq(parentId));
+      ObjectList findData = roleRepository.findAll(predicate, pageable);
 
-      cursor = pageable.getNextCursor(findData);
+      cursor = findData.nextCursor();
 
-      assertEquals(1, findData.size());
+      assertEquals(1, findData.count());
 
       idx++;
     } while (cursor != null);

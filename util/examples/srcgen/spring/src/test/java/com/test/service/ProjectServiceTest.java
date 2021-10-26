@@ -5,12 +5,12 @@ package com.test.service;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.querydsl.core.types.Predicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -50,22 +50,17 @@ public class ProjectServiceTest {
   void whenGetProjects_thenOk() throws Exception {
 
     // Given
-    List<Project> request = TestConfig.getRandom(Project.class, 6);
+    List<Project> request = TestConfig.getRandom(Project.class, 5);
 
-    String expectedCursor = request.get(5).getId().toString();
-
-    when(repository.findAll(any(AppPageable.class)))
-        .thenReturn(request);
-
-    when(repository.count(any(AppPageable.class)))
-        .thenReturn(5l);
+    when(repository.findAll(any(Predicate.class), any(AppPageable.class)))
+        .thenReturn(new ObjectList(request, null, 6l));
 
     // When
     ObjectList response = service.getProjects(new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true));
 
     // Then
-    assertEquals(expectedCursor, new String(Base64.getDecoder().decode(response.nextCursor())));
-    assertEquals(5l, response.totalCount());
+    assertEquals(5l, response.count());
+    assertEquals(6l, response.totalCount());
 
     ArrayNode node1 = Json.serializer().nodeFromList(request);
     ArrayNode node2 = Json.serializer().nodeFromList(response.items());
