@@ -4,6 +4,7 @@
 package com.test.config;
 
 import com.test.repository.BaseRepositoryImpl;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 

@@ -8,11 +8,8 @@ import com.querydsl.core.types.Predicate;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
-import org.springframework.data.querydsl.binding.QuerydslBindings;
-import org.springframework.data.querydsl.binding.QuerydslBindingsFactory;
-import org.springframework.data.querydsl.binding.QuerydslPredicateBuilder;
-import org.springframework.data.util.ClassTypeInformation;
-import org.springframework.data.util.TypeInformation;
+import org.springframework.data.querydsl.binding.*;
+import org.springframework.data.util.*;
 import org.springframework.util.MultiValueMap;
 
 public class PredicateBuilder {

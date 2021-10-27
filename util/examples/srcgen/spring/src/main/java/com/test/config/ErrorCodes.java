@@ -4,10 +4,10 @@
 package com.test.config;
 
 import com.test.model.AppError;
+
 import org.springframework.http.HttpStatus;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public enum ErrorCodes {
   // @formatter:off

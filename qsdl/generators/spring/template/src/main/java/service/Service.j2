@@ -5,6 +5,14 @@
  */
 package {{base_package}}.service;
 
+import {{base_package}}.domain.*;
+import {{base_package}}.exception.AppException;
+import {{base_package}}.model.*;
+{% if database == "hibernate" and model %}
+import {{base_package}}.repository.*;
+import {{base_package}}.util.PredicateBuilder;
+{% endif %}
+
 import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +22,6 @@ import org.springframework.util.MultiValueMap;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.annotation.PostConstruct;
-
-import {{base_package}}.exception.AppException;
-{% if database == "hibernate" and model %}
-import {{base_package}}.repository.*;
-import com.test.util.PredicateBuilder;
-{% endif %}
-import {{base_package}}.domain.*;
-import {{base_package}}.model.*;
 
 @Slf4j
 @Service

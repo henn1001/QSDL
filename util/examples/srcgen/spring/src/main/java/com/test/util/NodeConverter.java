@@ -3,9 +3,9 @@
  */
 package com.test.util;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import javax.persistence.*;
 
 @Converter
 public class NodeConverter implements AttributeConverter<ObjectNode, String> {

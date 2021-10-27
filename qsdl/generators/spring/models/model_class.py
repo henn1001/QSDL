@@ -110,8 +110,6 @@ class ModelClass:
     fields: List[ModelField] = field(default_factory=list)
     constants: List[str] = field(default_factory=list)
 
-    imports: List[str] = field(default_factory=list)
-
     # addons
     is_crud: bool = False
     is_supertype: bool = False
@@ -152,9 +150,6 @@ class ModelClass:
         self._add_constants(_ref)
         self._add_relations(_ref)
         self._add_foreign_keys(_ref)
-
-        # collect imports
-        self.imports = util.get_model_imports(_ref)
 
         return self
 

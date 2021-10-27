@@ -174,47 +174,6 @@ def is_used(entity: Union[dsl.Base, dsl.Object]) -> bool:
     return False
 
 
-def get_model_imports(entity: Union[dsl.Enum, dsl.Base, dsl.Object]):
-    """Returns all imports for this model."""
-    imports = []
-
-    if entity._tx_fqn not in ["entity.Enum", "entity.Base", "entity.Object"]:
-        raise ValueError
-
-    # note: the order is already sorted
-    if has(entity, has_type=["Date"]):
-        _import = ["java.time.OffsetDateTime"]
-        imports.extend(_import)
-
-    if has(entity, has_list=True) or entity._tx_fqn != "entity.Enum":
-        _import = ["java.util.*"]
-        imports.extend(_import)
-
-    _import = ["javax.persistence.*"]
-    imports.extend(_import)
-
-    if has(entity, has_list=True) or has(entity, has_model=True):
-        _import = ["javax.validation.*"]
-        imports.extend(_import)
-
-    if has(entity, has_required=True):
-        _import = ["javax.validation.constraints.*"]
-        imports.extend(_import)
-
-    _import = ["com.fasterxml.jackson.annotation.*"]
-    imports.extend(_import)
-
-    if has(entity, has_type=["Object"]):
-        _import = ["com.fasterxml.jackson.databind.node.ObjectNode"]
-        imports.extend(_import)
-
-    if has(entity, has_type=["Date"]):
-        _import = ["org.springframework.format.annotation.DateTimeFormat"]
-        imports.extend(_import)
-
-    return imports
-
-
 def add_parents_to_model(models: List[ModelClass]):
     """Add all Models who are a domain parent to a Model.
 

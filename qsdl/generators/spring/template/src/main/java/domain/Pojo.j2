@@ -4,16 +4,23 @@
  */
 package {{base_package}}.domain;
 
-{% for imp in model.imports %}
-import {{imp}};
-{% endfor %}
+import {{base_package}}.model.*;
+import {{base_package}}.util.Json;
+
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 {% if encapsulation %}
 import lombok.Getter;
 import lombok.Setter;
 {% endif %}
+import org.springframework.format.annotation.DateTimeFormat;
 
-import {{base_package}}.model.*;
-import {{base_package}}.util.Json;
+import javax.persistence.*;
+import javax.validation.*;
+import javax.validation.constraints.*;
+
+import java.time.OffsetDateTime;
+import java.util.*;
 
 {% if model.is_enum %}
 {% include "Enum.j2" with context %}

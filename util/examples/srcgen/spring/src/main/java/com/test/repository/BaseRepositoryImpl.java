@@ -5,19 +5,16 @@ package com.test.repository;
 
 import com.test.model.*;
 
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.jpa.repository.support.JpaEntityInformation;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.data.jpa.repository.support.*;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
 import javax.persistence.EntityManager;
 
 import java.io.Serializable;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 public class BaseRepositoryImpl<T extends AbstractPersistentObject, ID extends Serializable>
     extends SimpleJpaRepository<T, ID>

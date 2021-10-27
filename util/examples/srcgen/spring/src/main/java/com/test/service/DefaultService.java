@@ -3,6 +3,10 @@
  */
 package com.test.service;
 
+import com.test.domain.*;
+import com.test.exception.AppException;
+import com.test.model.*;
+
 import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +16,6 @@ import org.springframework.util.MultiValueMap;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.annotation.PostConstruct;
-
-import com.test.exception.AppException;
-import com.test.domain.*;
-import com.test.model.*;
 
 @Slf4j
 @Service

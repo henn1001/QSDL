@@ -3,13 +3,12 @@
  */
 package com.test.model;
 
+import com.test.util.*;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.test.util.Json;
-import com.test.util.Time;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class AppError {
 

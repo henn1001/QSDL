@@ -3,18 +3,16 @@
  */
 package com.test;
 
+import com.test.model.*;
 import com.test.util.Json;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.test.model.AbstractPersistentBase;
-import com.test.model.AbstractPersistentObject;
-import org.jeasy.random.EasyRandom;
-import org.jeasy.random.EasyRandomParameters;
+import org.jeasy.random.*;
 import org.springframework.boot.test.context.TestConfiguration;
 
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @TestConfiguration

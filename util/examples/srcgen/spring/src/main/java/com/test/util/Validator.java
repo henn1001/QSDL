@@ -3,14 +3,12 @@
  */
 package com.test.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import com.test.config.ErrorCodes;
 import com.test.exception.AppException;
+
+import javax.validation.*;
+
+import java.util.*;
 
 public class Validator {
 

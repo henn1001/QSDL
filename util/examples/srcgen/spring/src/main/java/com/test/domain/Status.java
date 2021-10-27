@@ -3,11 +3,19 @@
  */
 package com.test.domain;
 
-import javax.persistence.*;
-import com.fasterxml.jackson.annotation.*;
-
 import com.test.model.*;
 import com.test.util.Json;
+
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
+import javax.validation.*;
+import javax.validation.constraints.*;
+
+import java.time.OffsetDateTime;
+import java.util.*;
 
 public enum Status {
 

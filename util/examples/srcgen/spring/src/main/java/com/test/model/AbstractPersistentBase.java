@@ -3,16 +3,12 @@
  */
 package com.test.model;
 
+import com.test.util.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
-
-import com.test.util.IdGenerator;
-import com.test.util.Json;
+import javax.persistence.*;
 
 @Slf4j
 @MappedSuperclass

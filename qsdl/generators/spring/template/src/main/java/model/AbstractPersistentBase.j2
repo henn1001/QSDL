@@ -3,16 +3,12 @@
  */
 package {{base_package}}.model;
 
+import {{base_package}}.util.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
-
-import {{base_package}}.util.IdGenerator;
-import {{base_package}}.util.Json;
+import javax.persistence.*;
 
 @Slf4j
 @MappedSuperclass
