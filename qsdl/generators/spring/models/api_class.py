@@ -136,9 +136,9 @@ class Operation:
             new_param.type = util.custom_type(_ref.value.name)
 
             if _ref.is_pageable:
-                new_param.name = "ObjectList"
-                new_param.json_key = "ObjectList"
-                new_param.type = "ObjectList"
+                new_param.name = "CursorPage"
+                new_param.json_key = "CursorPage"
+                new_param.type = "CursorPage"
                 new_param.is_array = False
 
             self.response = new_param

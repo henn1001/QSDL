@@ -110,9 +110,9 @@ public class UserRepositoryTest {
     int idx = 0;
 
     do {
-      AppPageable pageable = new AppPageable(cursor, 1l, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder();
-      ObjectList findData = userRepository.findAll(predicate, pageable);
+      CursorPage findData = userRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 
@@ -151,9 +151,9 @@ public class UserRepositoryTest {
     int idx = 0;
 
     do {
-      AppPageable pageable = new AppPageable(cursor, 1l, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parentId));
-      ObjectList findData = userRepository.findAll(predicate, pageable);
+      CursorPage findData = userRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 

@@ -20,6 +20,6 @@ public interface BaseRepository<T extends AbstractPersistentObject, ID extends S
 
   public List<T> findAll(Predicate predicate);
 
-  public ObjectList findAll(Predicate predicate, AppPageable pageable);
+  public CursorPage findAll(Predicate predicate, CursorPageable pageable);
 
 }

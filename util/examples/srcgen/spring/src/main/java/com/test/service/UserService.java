@@ -40,7 +40,7 @@ public class UserService {
     }
   }
 
-  public ObjectList getUsersForTicket(Long ticketId, MultiValueMap<String, String> queryParameters, AppPageable pageable) throws AppException {
+  public CursorPage getUsersForTicket(Long ticketId, MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
     // confirm existence of parent
     validateTicketId(ticketId);
@@ -48,7 +48,7 @@ public class UserService {
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, User.class);
     predicate.and(QUser.user.tickets.any().id.eq(ticketId));
 
-    ObjectList ret = userRepository.findAll(predicate, pageable);
+    CursorPage ret = userRepository.findAll(predicate, pageable);
 
     return ret;
   }
@@ -87,11 +87,11 @@ public class UserService {
     return null;
   }
 
-  public ObjectList getUsers(MultiValueMap<String, String> queryParameters, AppPageable pageable) throws AppException {
+  public CursorPage getUsers(MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, User.class);
 
-    ObjectList ret = userRepository.findAll(predicate, pageable);
+    CursorPage ret = userRepository.findAll(predicate, pageable);
 
     return ret;
   }

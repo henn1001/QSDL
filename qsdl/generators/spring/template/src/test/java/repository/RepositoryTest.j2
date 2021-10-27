@@ -129,9 +129,9 @@ public class {{model.name}}RepositoryTest {
     int idx = 0;
 
     do {
-      AppPageable pageable = new AppPageable(cursor, 1l, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder();
-      ObjectList findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
+      CursorPage findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 
@@ -198,9 +198,9 @@ public class {{model.name}}RepositoryTest {
     int idx = 0;
 
     do {
-      AppPageable pageable = new AppPageable(cursor, 1l, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parentId));
-      ObjectList findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
+      CursorPage findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 

@@ -51,11 +51,11 @@ public class TicketServiceTest {
     // Given
     List<Ticket> request = TestConfig.getRandom(Ticket.class, 5);
 
-    when(repository.findAll(any(Predicate.class), any(AppPageable.class)))
-        .thenReturn(new ObjectList(request, null, 6l));
+    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+        .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    ObjectList response = service.getTickets(new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true));
+    CursorPage response = service.getTickets(new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
 
     // Then
     assertEquals(5l, response.count());

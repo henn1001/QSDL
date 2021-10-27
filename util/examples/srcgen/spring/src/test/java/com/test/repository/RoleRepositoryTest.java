@@ -110,9 +110,9 @@ public class RoleRepositoryTest {
     int idx = 0;
 
     do {
-      AppPageable pageable = new AppPageable(cursor, 1l, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder();
-      ObjectList findData = roleRepository.findAll(predicate, pageable);
+      CursorPage findData = roleRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 
@@ -151,9 +151,9 @@ public class RoleRepositoryTest {
     int idx = 0;
 
     do {
-      AppPageable pageable = new AppPageable(cursor, 1l, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder(QRole.role.project.id.eq(parentId));
-      ObjectList findData = roleRepository.findAll(predicate, pageable);
+      CursorPage findData = roleRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 

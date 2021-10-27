@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ObjectList {
+public class CursorPage {
 
   @JsonProperty(value = "items")
   private final List<? extends AbstractPersistentObject> items;
@@ -27,7 +27,7 @@ public class ObjectList {
    * @param nextCursor the cursor for the next page.
    * @param totalCount the total amount of items available.
    */
-  public ObjectList(List<? extends AbstractPersistentObject> items, String nextCursor, Long totalCount) {
+  public CursorPage(List<? extends AbstractPersistentObject> items, String nextCursor, Long totalCount) {
     this.items = Objects.requireNonNullElse(items, new ArrayList<>());
     this.nextCursor = nextCursor;
     this.totalCount = totalCount;

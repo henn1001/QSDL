@@ -52,7 +52,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    ObjectList ret = new ObjectList(Arrays.asList(request), null, null);
+    CursorPage ret = new CursorPage(Arrays.asList(request), null, null);
 
     when(service.getProjects(any(), any()))
         .thenReturn(ret);

@@ -40,8 +40,8 @@ public class ProjectController extends BaseController {
     value = "/projects",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getProjects(AppPageable pageable) throws Exception {
-    ObjectList response = projectService.getProjects(super.getQueryMap(), pageable);
+  public ResponseEntity<CursorPage> getProjects(CursorPageable pageable) throws Exception {
+    CursorPage response = projectService.getProjects(super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

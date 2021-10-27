@@ -31,11 +31,11 @@ public class ProjectService {
 
   }
 
-  public ObjectList getProjects(MultiValueMap<String, String> queryParameters, AppPageable pageable) throws AppException {
+  public CursorPage getProjects(MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Project.class);
 
-    ObjectList ret = projectRepository.findAll(predicate, pageable);
+    CursorPage ret = projectRepository.findAll(predicate, pageable);
 
     return ret;
   }

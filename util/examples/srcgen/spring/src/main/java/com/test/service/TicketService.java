@@ -31,11 +31,11 @@ public class TicketService {
 
   }
 
-  public ObjectList getTickets(MultiValueMap<String, String> queryParameters, AppPageable pageable) throws AppException {
+  public CursorPage getTickets(MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Ticket.class);
 
-    ObjectList ret = ticketRepository.findAll(predicate, pageable);
+    CursorPage ret = ticketRepository.findAll(predicate, pageable);
 
     return ret;
   }

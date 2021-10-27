@@ -57,11 +57,11 @@ public class UserServiceTest {
     when(ticketRepository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findAll(any(Predicate.class), any(AppPageable.class)))
-        .thenReturn(new ObjectList(request, null, 6l));
+    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+        .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    ObjectList response = service.getUsersForTicket(1l, new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true));
+    CursorPage response = service.getUsersForTicket(1l, new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
 
     // Then
     assertEquals(5l, response.count());
@@ -124,11 +124,11 @@ public class UserServiceTest {
     // Given
     List<User> request = TestConfig.getRandom(User.class, 5);
 
-    when(repository.findAll(any(Predicate.class), any(AppPageable.class)))
-        .thenReturn(new ObjectList(request, null, 6l));
+    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+        .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    ObjectList response = service.getUsers(new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true));
+    CursorPage response = service.getUsers(new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
 
     // Then
     assertEquals(5l, response.count());

@@ -40,8 +40,8 @@ public class RoleController extends BaseController {
     value = "/projects/{project_id}/roles",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getRoles(@PathVariable("project_id") Long projectId, AppPageable pageable) throws Exception {
-    ObjectList response = roleService.getRoles(projectId, super.getQueryMap(), pageable);
+  public ResponseEntity<CursorPage> getRoles(@PathVariable("project_id") Long projectId, CursorPageable pageable) throws Exception {
+    CursorPage response = roleService.getRoles(projectId, super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

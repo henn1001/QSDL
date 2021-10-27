@@ -67,11 +67,11 @@ public class {{model.name}}ServiceTest {
         .thenReturn(true);
 
     {% endif %}
-    when(repository.findAll(any(Predicate.class), any(AppPageable.class)))
-        .thenReturn(new ObjectList(request, null, 6l));
+    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+        .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    ObjectList response = service.{{operation.name}}({{macro.paramsCallServiceMocked2(operation)}});
+    CursorPage response = service.{{operation.name}}({{macro.paramsCallServiceMocked2(operation)}});
 
     // Then
     assertEquals(5l, response.count());

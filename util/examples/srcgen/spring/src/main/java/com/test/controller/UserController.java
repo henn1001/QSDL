@@ -40,8 +40,8 @@ public class UserController extends BaseController {
     value = "/tickets/{ticket_id}/users",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, AppPageable pageable) throws Exception {
-    ObjectList response = userService.getUsersForTicket(ticketId, super.getQueryMap(), pageable);
+  public ResponseEntity<CursorPage> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) throws Exception {
+    CursorPage response = userService.getUsersForTicket(ticketId, super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -74,8 +74,8 @@ public class UserController extends BaseController {
     value = "/users",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getUsers(AppPageable pageable) throws Exception {
-    ObjectList response = userService.getUsers(super.getQueryMap(), pageable);
+  public ResponseEntity<CursorPage> getUsers(CursorPageable pageable) throws Exception {
+    CursorPage response = userService.getUsers(super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

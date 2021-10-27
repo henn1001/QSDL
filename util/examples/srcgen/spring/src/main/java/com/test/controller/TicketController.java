@@ -40,8 +40,8 @@ public class TicketController extends BaseController {
     value = "/tickets",
     produces = { "application/json" }
   )
-  public ResponseEntity<ObjectList> getTickets(AppPageable pageable) throws Exception {
-    ObjectList response = ticketService.getTickets(super.getQueryMap(), pageable);
+  public ResponseEntity<CursorPage> getTickets(CursorPageable pageable) throws Exception {
+    CursorPage response = ticketService.getTickets(super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

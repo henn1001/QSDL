@@ -14,7 +14,7 @@
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, {{model.name}}.class);
     {% endif %}
 
-    ObjectList ret = {{api.name|lower}}Repository.findAll(predicate, pageable);
+    CursorPage ret = {{api.name|lower}}Repository.findAll(predicate, pageable);
 
     return ret;
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}

@@ -106,9 +106,9 @@ public class ProjectRepositoryTest {
     int idx = 0;
 
     do {
-      AppPageable pageable = new AppPageable(cursor, 1l, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder();
-      ObjectList findData = projectRepository.findAll(predicate, pageable);
+      CursorPage findData = projectRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 

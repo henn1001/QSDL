@@ -20,7 +20,7 @@
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      AppPageable pageable
+      CursorPageable pageable
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
@@ -42,7 +42,7 @@
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      MultiValueMap<String, String> queryParameters, AppPageable pageable
+      MultiValueMap<String, String> queryParameters, CursorPageable pageable
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
@@ -101,7 +101,7 @@
     {%- if not loop.last or operation.query_parameters or operation.is_pageable -%}, {% endif -%}
   {%- endfor -%}
 
-  new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true)
+  new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true)
 
 {%- endmacro %}
 

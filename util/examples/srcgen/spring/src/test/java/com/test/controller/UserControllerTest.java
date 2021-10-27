@@ -52,7 +52,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    ObjectList ret = new ObjectList(Arrays.asList(request), null, null);
+    CursorPage ret = new CursorPage(Arrays.asList(request), null, null);
 
     when(service.getUsersForTicket(any(), any(), any()))
         .thenReturn(ret);
@@ -100,7 +100,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    ObjectList ret = new ObjectList(Arrays.asList(request), null, null);
+    CursorPage ret = new CursorPage(Arrays.asList(request), null, null);
 
     when(service.getUsers(any(), any()))
         .thenReturn(ret);

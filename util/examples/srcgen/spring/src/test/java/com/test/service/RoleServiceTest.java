@@ -57,11 +57,11 @@ public class RoleServiceTest {
     when(projectRepository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findAll(any(Predicate.class), any(AppPageable.class)))
-        .thenReturn(new ObjectList(request, null, 6l));
+    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+        .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    ObjectList response = service.getRoles(1l, new LinkedMultiValueMap<>(), new AppPageable(null, 5l, true));
+    CursorPage response = service.getRoles(1l, new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
 
     // Then
     assertEquals(5l, response.count());

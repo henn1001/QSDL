@@ -60,7 +60,7 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, ID extends S
   }
 
   @Override
-  public ObjectList findAll(Predicate predicate, AppPageable pageable) {
+  public CursorPage findAll(Predicate predicate, CursorPageable pageable) {
 
     // for paging, we always want to request one extra item
     // the id of this extra item will be the new cursor
@@ -76,7 +76,7 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, ID extends S
     Long totalCount = pageable.count() ? count(predicate) : null;
     String nextCursor = getNextCursor(items, pageable.limit());
 
-    return new ObjectList(items, nextCursor, totalCount);
+    return new CursorPage(items, nextCursor, totalCount);
   }
 
   /**

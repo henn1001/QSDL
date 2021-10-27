@@ -104,9 +104,9 @@ public class TicketRepositoryTest {
     int idx = 0;
 
     do {
-      AppPageable pageable = new AppPageable(cursor, 1l, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder();
-      ObjectList findData = ticketRepository.findAll(predicate, pageable);
+      CursorPage findData = ticketRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 

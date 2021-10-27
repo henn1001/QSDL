@@ -40,7 +40,7 @@ public class RoleService {
     }
   }
 
-  public ObjectList getRoles(Long projectId, MultiValueMap<String, String> queryParameters, AppPageable pageable) throws AppException {
+  public CursorPage getRoles(Long projectId, MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
     // confirm existence of parent
     validateProjectId(projectId);
@@ -48,7 +48,7 @@ public class RoleService {
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Role.class);
     predicate.and(QRole.role.project.id.eq(projectId));
 
-    ObjectList ret = roleRepository.findAll(predicate, pageable);
+    CursorPage ret = roleRepository.findAll(predicate, pageable);
 
     return ret;
   }
