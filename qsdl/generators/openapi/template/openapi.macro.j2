@@ -1,5 +1,6 @@
 {% macro get_parameters(operation) %}
-{% for parameter in operation.path_parameters %}
+{% set parameters = operation.path_parameters if operation.is_pageable else operation.parameters  %}
+{% for parameter in parameters %}
   - name: {{ parameter.name }}
   {% if parameter.description %}
     description: |

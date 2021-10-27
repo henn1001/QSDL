@@ -57,10 +57,10 @@ class TestDirective:
         parameter = openapi["paths"]["/bars"]["get"]["parameters"]
 
         assert parameter[0]["in"] == "query"
-        assert parameter[0]["name"] in ["name", "world"]
+        assert parameter[0]["name"] == "query"
+        assert parameter[0]["schema"]["example"]["name"]
+        assert parameter[0]["schema"]["example"]["world"]
 
-        assert parameter[1]["in"] == "query"
-        assert parameter[1]["name"] in ["name", "world"]
 
     def test_directive_04_positive(self):
         """Verify usage of @readOnly"""
