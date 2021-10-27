@@ -3,7 +3,7 @@
  */
 package com.test.exception;
 
-import com.test.config.Errors;
+import com.test.config.ErrorCodes;
 import com.test.model.AppError;
 
 import java.util.List;
@@ -14,17 +14,17 @@ public class AppException extends Exception {
 
   private final AppError AppError;
 
-  public AppException(Errors error) {
+  public AppException(ErrorCodes error) {
     super(error.message());
     this.AppError = error.toAppError();
   }
 
-  public AppException(Errors error, String detail) {
+  public AppException(ErrorCodes error, String detail) {
     super(error.message());
     this.AppError = error.toAppError(detail);
   }
 
-  public AppException(Errors error, List<String> details) {
+  public AppException(ErrorCodes error, List<String> details) {
     super(error.message());
     this.AppError = error.toAppError(details);
   }
@@ -35,7 +35,7 @@ public class AppException extends Exception {
 
 
   public static AppException entityNotFound(Class<?> cls, Long id) {
-    return new AppException(Errors.ENTITY_NOT_FOUND,
+    return new AppException(ErrorCodes.ENTITY_NOT_FOUND,
         "No %s entity with id %s exists!"
             .formatted(cls.getSimpleName(), id));
   }

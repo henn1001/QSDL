@@ -28,7 +28,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import {{base_package}}.TestConfig;
-import {{base_package}}.config.Errors;
+import {{base_package}}.config.ErrorCodes;
 import {{base_package}}.domain.*;
 import {{base_package}}.exception.AppException;
 import {{base_package}}.model.*;
@@ -188,9 +188,9 @@ public class {{model.name}}ServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
   }
   {% elif operation.method == "put" %}
   {# 
@@ -250,9 +250,9 @@ public class {{model.name}}ServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
   }
   {% elif operation.method == "patch" %}
   {# 
@@ -312,9 +312,9 @@ public class {{model.name}}ServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
   }
   {% elif operation.method == "delete" %}
   {# 
@@ -360,9 +360,9 @@ public class {{model.name}}ServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
   }
   {% endif %}
 

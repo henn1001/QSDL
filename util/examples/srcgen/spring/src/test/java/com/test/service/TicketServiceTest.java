@@ -27,7 +27,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import com.test.TestConfig;
-import com.test.config.Errors;
+import com.test.config.ErrorCodes;
 import com.test.domain.*;
 import com.test.exception.AppException;
 import com.test.model.*;
@@ -119,9 +119,9 @@ public class TicketServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -162,9 +162,9 @@ public class TicketServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -205,9 +205,9 @@ public class TicketServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -240,9 +240,9 @@ public class TicketServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
   }
 
 }

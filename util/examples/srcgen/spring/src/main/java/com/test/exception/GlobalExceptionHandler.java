@@ -3,7 +3,7 @@
  */
 package com.test.exception;
 
-import com.test.config.Errors;
+import com.test.config.ErrorCodes;
 import com.test.model.AppError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     log.error("Caught unhandeled exception:", ex);
 
-    AppError AppError = Errors.INTERNAL_SERVER_ERROR.toAppError(ex.toString());
+    AppError AppError = ErrorCodes.INTERNAL_SERVER_ERROR.toAppError(ex.toString());
 
     return buildResponseEntity(AppError, httpRequest);
   }
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 
-    AppError AppError = Errors.BAD_REQEST.toAppError(ex.toString());
+    AppError AppError = ErrorCodes.BAD_REQEST.toAppError(ex.toString());
 
     return buildResponseEntity(AppError, httpRequest);
   }
@@ -95,7 +95,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
     }
 
-    AppError AppError = Errors.BAD_REQEST.toAppError(errors);
+    AppError AppError = ErrorCodes.BAD_REQEST.toAppError(errors);
 
     return buildResponseEntity(AppError, httpRequest);
   }

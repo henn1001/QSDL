@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.test.TestConfig;
-import com.test.config.Errors;
+import com.test.config.ErrorCodes;
 import com.test.exception.AppException;
 import com.test.model.*;
 
@@ -46,7 +46,7 @@ public class ControllerTest {
     // Given
     when(mapper.readValue(anyString(), any(Class.class)))
         .thenAnswer(invocation -> {
-          throw new AppException(Errors.ENTITY_NOT_FOUND);
+          throw new AppException(ErrorCodes.ENTITY_NOT_FOUND);
         });
 
     // When
@@ -56,9 +56,9 @@ public class ControllerTest {
 
     // Then
     AppError error = AppError.fromJson(response);
-    assertEquals(Errors.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(Errors.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(Errors.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -73,9 +73,9 @@ public class ControllerTest {
 
     // Then
     AppError error = AppError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.code(), error.code);
-    assertEquals(Errors.BAD_REQEST.message(), error.message);
-    assertEquals(Errors.BAD_REQEST.status(), error.status);
+    assertEquals(ErrorCodes.BAD_REQEST.code(), error.code);
+    assertEquals(ErrorCodes.BAD_REQEST.message(), error.message);
+    assertEquals(ErrorCodes.BAD_REQEST.status(), error.status);
   }
 
 }

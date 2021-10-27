@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.test.TestConfig;
-import com.test.config.Errors;
+import com.test.config.ErrorCodes;
 import com.test.domain.*;
 import com.test.model.*;
 import com.test.service.*;
@@ -108,9 +108,9 @@ public class TicketControllerTest {
 
     // Then
     AppError error = AppError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.code(), error.code);
-    assertEquals(Errors.BAD_REQEST.message(), error.message);
-    assertEquals(Errors.BAD_REQEST.status(), error.status);
+    assertEquals(ErrorCodes.BAD_REQEST.code(), error.code);
+    assertEquals(ErrorCodes.BAD_REQEST.message(), error.message);
+    assertEquals(ErrorCodes.BAD_REQEST.status(), error.status);
   }
 
   @Test
@@ -173,9 +173,9 @@ public class TicketControllerTest {
 
     // Then
     AppError error = AppError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.code(), error.code);
-    assertEquals(Errors.BAD_REQEST.message(), error.message);
-    assertEquals(Errors.BAD_REQEST.status(), error.status);
+    assertEquals(ErrorCodes.BAD_REQEST.code(), error.code);
+    assertEquals(ErrorCodes.BAD_REQEST.message(), error.message);
+    assertEquals(ErrorCodes.BAD_REQEST.status(), error.status);
   }
 
   @Test
@@ -218,9 +218,9 @@ public class TicketControllerTest {
 
     // Then
     AppError error = AppError.fromJson(response);
-    assertEquals(Errors.BAD_REQEST.code(), error.code);
-    assertEquals(Errors.BAD_REQEST.message(), error.message);
-    assertEquals(Errors.BAD_REQEST.status(), error.status);
+    assertEquals(ErrorCodes.BAD_REQEST.code(), error.code);
+    assertEquals(ErrorCodes.BAD_REQEST.message(), error.message);
+    assertEquals(ErrorCodes.BAD_REQEST.status(), error.status);
   }
 
   @Test
