@@ -16,7 +16,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
