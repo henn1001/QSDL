@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.6.0](https://gitlab.com/henn1001/qsdl/compare/v2.5.0...v2.6.0) (2021-10-28)
+
+
+### Features
+
+* **spring:** add flyway for db migration and versioning ([d189ecc](https://gitlab.com/henn1001/qsdl/commit/d189ecc53d228e506d5ce22b00cf705cdd335afb))
+* **spring:** introduce profiles - switch from h2 to hsqldb - add postgresql support and docker-compose example ([1d57af3](https://gitlab.com/henn1001/qsdl/commit/1d57af3c341e0841b2b9939baa10d3e42220b35d))
+* **spring:** introduce querydsl - update and remove old logic and fix tests ([62a635b](https://gitlab.com/henn1001/qsdl/commit/62a635b8163a6040f4c9ba30b666f0d858af5b94))
+* **spring:** introduce querydsl for more typesafe querying ([c5cbea1](https://gitlab.com/henn1001/qsdl/commit/c5cbea18f7e2f15f4e584c19396cb94237170d64))
+
+
+### Bug Fixes
+
+* **openapi:** add missing cursor parameters to types without query parameters and utilize a more generic query parameter with explode ([b2f8d07](https://gitlab.com/henn1001/qsdl/commit/b2f8d07300e76c9d3a212db3e6b9520aec49e522))
+* **openapi:** resolve issue with custom operations query parameters introduced in b2f8d073 ([387e7d5](https://gitlab.com/henn1001/qsdl/commit/387e7d52f1f2de03f79b459de15e87aac395d182))
+* **spring:** add datetimeformat information for querydsl and resolve clob compatibility with postgres ([bd005c7](https://gitlab.com/henn1001/qsdl/commit/bd005c718cf33f304962eb920b7e06ba39988d9d))
+
 ## [2.5.0](https://gitlab.com/henn1001/qsdl/compare/v2.4.0...v2.5.0) (2021-10-17)
 
 
