@@ -19,7 +19,7 @@ import java.util.*;
 public abstract class AbstractPersistentObject {
 
   @Id
-  @GeneratedValue(generator = "optimized-sequence")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
   private Long id;
 

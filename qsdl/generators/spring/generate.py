@@ -185,7 +185,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         (".qsdl-ignore.j2", ".qsdl-ignore"),
         (".gitignore.j2", ".gitignore"),
         ("makefile.j2", "makefile"),
-        ("docker-compose.j2", "docker-compose.yaml"),
+        ("docker-compose.j2", "docker-compose.yml"),
         # vscode
         (".vscode/eclipse-java-google-style.j2", ".vscode/eclipse-java-google-style.xml"),
         (".vscode/settings.j2", ".vscode/settings.json"),

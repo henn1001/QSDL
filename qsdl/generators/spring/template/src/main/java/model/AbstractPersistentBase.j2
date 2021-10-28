@@ -15,7 +15,7 @@ import javax.persistence.*;
 public abstract class AbstractPersistentBase {
 
   @Id
-  @GeneratedValue(generator = "optimized-sequence")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @JsonIgnore
   private Long id;
 

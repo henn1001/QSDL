@@ -5,7 +5,7 @@ services:
       image: app:latest
       command:
          - "--spring.profiles.active=prod"
-         - "--postgres.url=db"
+         - "--spring.datasource.url=jdbc:postgresql://db:5432/postgres"
       ports:
          - 8080:8080
       depends_on:
