@@ -1,0 +1,46 @@
+SHELL = /bin/bash
+
+.ONESHELL:
+
+.PHONY: help setup build test deploy clean
+
+.DEFAULT_GOAL = help
+
+IMAGE_NAME = {{artifact_id}}
+REGISTRY = registry
+
+help:
+	@echo "make setup"
+	@echo "       prepare the environment"
+	@echo "make build"
+	@echo "       builds docker image"
+	@echo "make test"
+	@echo "       run test"
+	@echo "make deploy"
+	@echo "       pushes image to registry"
+	@echo "make clean"
+	@echo "       cleans outputs"
+
+setup:
+	@echo "setup..."
+
+build:
+	@echo "building..."
+	@SVC_VERSION=$$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+	@export SVC_VERSION
+	@mvn spring-boot:build-image -DskipTests
+	@docker tag $(IMAGE_NAME):$${SVC_VERSION} $(IMAGE_NAME):latest
+
+test:
+	@echo "testing..."
+	@docker-compose up
+
+deploy:
+	@echo "deploy images..."
+	@docker tag $(IMAGE_NAME) $(REGISTRY)/$(IMAGE_NAME):latest
+	@docker push $(REGISTRY)/$(IMAGE_NAME)
+
+clean:
+	@echo "cleaning..."
+	@docker-compose down
+{{""}}

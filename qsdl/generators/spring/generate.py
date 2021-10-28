@@ -184,12 +184,13 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("README.j2", "README.md"),
         (".qsdl-ignore.j2", ".qsdl-ignore"),
         (".gitignore.j2", ".gitignore"),
+        ("makefile.j2", "makefile"),
+        ("docker-compose.j2", "docker-compose.yaml"),
         # vscode
         (".vscode/eclipse-java-google-style.j2", ".vscode/eclipse-java-google-style.xml"),
         (".vscode/settings.j2", ".vscode/settings.json"),
         # resources
-        ("src/main/resources/application.properties.j2", "src/main/resources/application.properties"),
-        ("src/test/resources/application.properties.j2", "src/test/resources/application.properties"),
+        ("src/main/resources/application.j2", "src/main/resources/application.yaml"),
         ("src/main/resources/logback-spring.j2", "src/main/resources/logback-spring.xml"),
         ("src/main/resources/public/index.j2", "src/main/resources/public/index.html"),
         ("src/main/resources/public/error/404.j2", "src/main/resources/public/error/404.html"),

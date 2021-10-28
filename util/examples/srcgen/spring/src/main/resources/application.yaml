@@ -1,0 +1,81 @@
+### Core
+server.port: 8080
+server.base-path: /api/v1
+
+### Monitoring service
+management.endpoints.web.base-path: /api/actuator
+management.endpoint.health.show-details: always
+management.endpoints.web.exposure.include: health,info,metrics,prometheus,logfile
+management.endpoints.web.exposure.exclude:
+management.endpoints.web.cors.allowed-origins: "*"
+management.endpoints.web.cors.allowed-methods: GET
+
+#### INFO ENDPOINT CONFIGURATION
+info.app.name: "@project.name@"
+info.app.description: "@project.description@"
+info.app.version: "@project.version@"
+info.app.encoding: "@project.build.sourceEncoding@"
+info.app.java.version: "@java.version@"
+
+### Logging
+logging.file.name: logs/spring.log
+
+### Default Profile
+spring.profiles.active: dev
+
+---
+################################################################################
+spring.config.activate.on-profile: dev
+
+### Datasource
+spring.jpa.properties.hibernate.default_schema: spring
+spring.jpa.properties.hibernate.hbm2dll.create_namespaces: true
+spring.jpa.hibernate.ddl-auto: update
+
+spring.datasource.url: jdbc:hsqldb:mem:testdb;sql.syntax_pgs=true;
+spring.datasource.username: sa
+spring.datasource.password:
+
+### H2-Console
+spring.h2.console.enabled: true
+spring.h2.console.settings.web-allow-others: true
+spring.h2.console.path: /api/h2
+
+### Logging
+logging.level.org.hibernate.SQL: DEBUG
+spring.jpa.properties.hibernate.format_sql: true
+spring.jpa.properties.hibernate.show_sql: false
+
+---
+################################################################################
+spring.config.activate.on-profile: local
+### Datasource
+spring.jpa.properties.hibernate.default_schema: spring
+spring.jpa.properties.hibernate.hbm2dll.create_namespaces: true
+spring.jpa.hibernate.ddl-auto: update
+
+spring.datasource.url: jdbc:hsqldb:file:./db/testdb;sql.syntax_pgs=true;
+spring.datasource.username: sa
+spring.datasource.password:
+
+### H2-Console
+spring.h2.console.enabled: true
+spring.h2.console.settings.web-allow-others: true
+spring.h2.console.path: /api/h2
+
+---
+################################################################################
+spring.config.activate.on-profile: prod
+
+postgres.url: localhost
+postgres.port: 5432
+postgres.db: postgres
+
+### Datasource
+spring.jpa.properties.hibernate.default_schema: spring
+spring.jpa.properties.hibernate.hbm2dll.create_namespaces: true
+spring.jpa.hibernate.ddl-auto: update
+
+spring.datasource.url: jdbc:postgresql://${postgres.url}:${postgres.port}/${postgres.db}
+spring.datasource.username: postgres
+spring.datasource.password: postgres

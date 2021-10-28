@@ -1517,7 +1517,11 @@ paths:
       summary: getBuzzwords
       operationId: getBuzzwords
       parameters:
-        
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: OK
