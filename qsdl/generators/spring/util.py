@@ -20,6 +20,7 @@ from typing import List, Union
 
 import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
+from qsdl.generators.spring.models.model_class import ModelField
 
 from .config import Config
 from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass, Parent
@@ -260,6 +261,25 @@ def get_parent_for(obj_name: dsl.Object.name, parent_name: dsl.Object.name) -> P
             for parent in model.parents:
                 if parent_name == parent.model.name:
                     ret = parent
+    return ret
+
+
+def get_field_for(model: ModelClass, target: ModelClass) -> ModelField:
+    """Returns the ModelField with the type of target for the given ModelClass.
+
+    Args:
+        model (ModelClass): The ModelClass where to search.
+        target (ModelClass): The ModelClass type to search for.
+
+    Returns:
+        ModelField: The matching ModelField
+    """
+    ret = None
+
+    for model_field in model.fields:
+        if model_field.type == target.name:
+            ret = model_field
+
     return ret
 
 

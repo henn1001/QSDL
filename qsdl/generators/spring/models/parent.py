@@ -19,6 +19,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from .. import util
+
 if TYPE_CHECKING:
     from . import HibernateParentInfo, ModelClass, ModelField
 
@@ -36,14 +38,9 @@ class Parent:
         """Builds self from Parent and Child ModelClass"""
 
         self.model = parent
+        self.field = util.get_field_for(parent, child)
 
-        for parent_field in parent.fields:
-            if parent_field.type == child.name:
-                self.field = parent_field
-
-        for child_field in child.fields:
-            if child_field.type == parent.name:
-                self.predicate = child_field.name
-                self.predicate += ".any()" if child_field.is_array else ""
+        child_field = util.get_field_for(child, parent)
+        self.predicate = child_field.name + ".any()" if child_field.is_array else child_field.name
 
         return self

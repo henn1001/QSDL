@@ -141,7 +141,7 @@ public class {{model.name}}ServiceTest {
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.hibernate.method_joined_id}}(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -167,7 +167,7 @@ public class {{model.name}}ServiceTest {
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.hibernate.method_joined_id}}(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -200,7 +200,7 @@ public class {{model.name}}ServiceTest {
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.hibernate.method_joined_id}}(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -229,7 +229,7 @@ public class {{model.name}}ServiceTest {
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.hibernate.method_joined_id}}(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -262,7 +262,7 @@ public class {{model.name}}ServiceTest {
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.hibernate.method_joined_id}}(eq(1l), eq(request.getId())))
         .thenReturn(Optional.of(request));
     {% else %}
     when(repository.findById(eq(request.getId())))
@@ -291,7 +291,7 @@ public class {{model.name}}ServiceTest {
     when({{operation.parent.model.name|lower}}Repository.existsById(eq(1l)))
         .thenReturn(true);
 
-    when(repository.findBy{{operation.parent.model.hibernate.method_joined_id}}AndId(eq(1l), eq(request.getId())))
+    when(repository.findBy{{operation.parent.hibernate.method_joined_id}}(eq(1l), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
     {% else %}
     when(repository.findById(eq(request.getId())))

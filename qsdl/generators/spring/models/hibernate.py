@@ -20,6 +20,8 @@ from typing import TYPE_CHECKING
 
 import stringcase
 
+from .. import util
+
 if TYPE_CHECKING:
     from . import ModelClass, ModelField
 
@@ -37,14 +39,9 @@ class HibernateParentInfo:
     def __init__(self, model: ModelClass, parent: ModelClass):
         """
         Example:
-          join_table_name       = TICKET_TO_USER
           method_joined_id      = TicketIdAndId
         """
-        self.join_table_name = parent.name.upper() + "_TO_" + model.name.upper()
-
-        for child_field in model.fields:
-            if child_field.type == parent.name:
-                self.method_joined_id = stringcase.pascalcase(child_field.name) + "IdAndId"
+        self.method_joined_id = stringcase.pascalcase(util.get_field_for(model, parent).name) + "IdAndId"
 
 
 class HibernateModelInfo:
@@ -53,16 +50,8 @@ class HibernateModelInfo:
     def __init__(self, model: ModelClass):
         """
         Example:
-          table_name            = PROJECT
-          table_id              = ID
-          table_id_accessor     = PROJECT.ID
-          table_joined_id       = PROJECT_ID
           method_joined_id      = ProjectId
           parameter_joined_id   = projectId
         """
-        self.table_name = model.name.upper()
-        self.table_id = "ID"
-        self.table_id_assessor = self.table_name + "." + "ID"
-        self.table_joined_id = self.table_name + "_" + "ID"
         self.method_joined_id = stringcase.pascalcase(model.name) + "Id"
         self.parameter_joined_id = stringcase.camelcase(model.name) + "Id"

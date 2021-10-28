@@ -71,7 +71,7 @@
     validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
 
     {% endif %}
-    {{api.name}} ret = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }})
+    {{api.name}} ret = {{api.name|lower}}Repository.findBy{{ operation.find_by_name }}({{ operation.find_by_parameters }})
         .orElseThrow(() -> AppException.entityNotFound({{api.name}}.class, id));
 
     return ret;
@@ -93,7 +93,7 @@
       {% endif %}
 
     {% endif %}
-    {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }})
+    {{api.name}} dbEntity = {{api.name|lower}}Repository.findBy{{ operation.find_by_name }}({{ operation.find_by_parameters }})
         .orElseThrow(() -> AppException.entityNotFound({{api.name}}.class, id));
 
     // update dbEntity with all writeable fields
@@ -120,7 +120,7 @@
       {% endif %}
 
     {% endif %}
-    {{api.name}} dbEntity = {{api.name|lower}}Repository.find{{ operation.get_repo_by_id_name() }}({{ operation.get_repo_by_id_parameters() }})
+    {{api.name}} dbEntity = {{api.name|lower}}Repository.findBy{{ operation.find_by_name }}({{ operation.find_by_parameters }})
         .orElseThrow(() -> AppException.entityNotFound({{api.name}}.class, id));
 
     // update dbEntity with all writeable fields if present

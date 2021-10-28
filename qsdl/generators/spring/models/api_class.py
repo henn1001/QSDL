@@ -79,6 +79,9 @@ class Operation:
 
     parent: Parent = None
 
+    find_by_name: str = None
+    find_by_parameters: str = None
+
     parameters: List[Parameter] = field(default_factory=list)
     path_parameters: List[Parameter] = field(default_factory=list)
     query_parameters: List[Parameter] = field(default_factory=list)
@@ -106,6 +109,8 @@ class Operation:
 
         self._add_parameters(_ref)
         self._add_response(_ref)
+
+        self.add_hibernate_name_and_parameters()
 
         return self
 
@@ -143,42 +148,19 @@ class Operation:
 
             self.response = new_param
 
-    def get_repo_find_all_name(self) -> str:
-        ret = "findAll"
-        ret += "By" + self.parent.model.hibernate.method_joined_id if self.parent else ""
-        return ret
-
-    def get_repo_count_name(self) -> str:
-        ret = "count"
-        ret += "By" + self.parent.model.hibernate.method_joined_id if self.parent else ""
-        return ret
-
-    def get_repo_find_all_parameters(self) -> str:
-        ret = ""
+    def add_hibernate_name_and_parameters(self):
+        """Add hibernate findBy information"""
+        self.find_by_name = ""
         for parameter in self.path_parameters:
-            ret += parameter.name
-            ret += ", "
+            self.find_by_name += stringcase.pascalcase(parameter.name)
+            self.find_by_name += "And"
+        self.find_by_name = self.find_by_name[:-3]
 
-        # add pagable object or remove last seperator
-        if self.is_pageable:
-            ret += "pageable"
-        else:
-            ret = ret[:-2]
-        return ret
-
-    def get_repo_by_id_name(self) -> str:
-        ret = "By"
+        self.find_by_parameters = ""
         for parameter in self.path_parameters:
-            ret += stringcase.pascalcase(parameter.name)
-            ret += "And"
-        return ret[:-3]
-
-    def get_repo_by_id_parameters(self) -> str:
-        ret = ""
-        for parameter in self.path_parameters:
-            ret += parameter.name
-            ret += ", "
-        return ret[:-2]
+            self.find_by_parameters += parameter.name
+            self.find_by_parameters += ", "
+        self.find_by_parameters = self.find_by_parameters[:-2]
 
 
 @dataclass
