@@ -40,4 +40,16 @@ public class AppException extends Exception {
             .formatted(cls.getSimpleName(), id));
   }
 
+  public static AppException entityAlreadyAdded(Class<?> cls, Long id) {
+    return new AppException(ErrorCodes.BAD_REQEST,
+        "Entity %s with id %s already added!"
+            .formatted(cls.getSimpleName(), id));
+  }
+
+  public static AppException entityNotAttached(Class<?> cls, Long id) {
+    return new AppException(ErrorCodes.BAD_REQEST,
+        "Entity %s with id %s not attached!"
+            .formatted(cls.getSimpleName(), id));
+  }
+
 }

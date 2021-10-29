@@ -63,6 +63,10 @@ public class UserService {
     User user = userRepository.findById(id)
         .orElseThrow(() -> AppException.entityNotFound(User.class, id));
 
+    if (user.tickets.contains(ticket)) {
+      throw AppException.entityAlreadyAdded(User.class, id);
+    }
+
     user.addToTickets(ticket);
 
     userRepository.save(user);
@@ -77,8 +81,8 @@ public class UserService {
     Ticket ticket = ticketRepository.findById(ticketId)
         .orElseThrow(() -> AppException.entityNotFound(Ticket.class, ticketId));
 
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
+    User user = userRepository.findByTicketsIdAndId(ticketId, id)
+        .orElseThrow(() -> AppException.entityNotAttached(User.class, id));
 
     user.removeFromTickets(ticket);
 

@@ -27,12 +27,19 @@
     {{ operation.parent.model.name }} {{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }}Repository.findById({{ operation.path_parameters[0].name }})
         .orElseThrow(() -> AppException.entityNotFound({{ operation.parent.model.name }}.class, {{ operation.path_parameters[0].name }}));
 
+    {% if operation.path.endswith('/add') %}
     {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.findById({{ operation.path_parameters[1].name }})
         .orElseThrow(() -> AppException.entityNotFound({{ model.name }}.class, {{ operation.path_parameters[1].name }}));
 
-    {% if operation.path.endswith('/add') %}
+    if ({{ model.name|lower }}.{{ operation.parent.model.name|lower }}s.contains({{ operation.parent.model.name|lower }})) {
+      throw AppException.entityAlreadyAdded({{ model.name }}.class, {{ operation.path_parameters[1].name }});
+    }
+
     {{ model.name|lower }}.addTo{{ operation.parent.model.name }}s({{ operation.parent.model.name|lower }});
     {% elif operation.path.endswith('/remove') %}
+    {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.findBy{{ operation.parent.hibernate.method_joined_id }}({{ operation.path_parameters[0].name }}, {{ operation.path_parameters[1].name }})
+        .orElseThrow(() -> AppException.entityNotAttached({{ model.name }}.class, {{ operation.path_parameters[1].name }}));
+
     {{ model.name|lower }}.removeFrom{{ operation.parent.model.name }}s({{ operation.parent.model.name|lower }});
     {% endif %}
 
