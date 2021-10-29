@@ -19,9 +19,9 @@ import traceback
 from pathlib import Path
 from typing import Tuple
 
+import inquirer
 from dacite import from_dict
 from pyfiglet import Figlet
-from PyInquirer import prompt
 from textx.exceptions import TextXSemanticError, TextXSyntaxError
 
 from qsdl import logger
@@ -67,15 +67,15 @@ def prompt_user() -> Tuple[GeneratorType, ConfigType]:
 
     # prompt user with available generators
     questions = [
-        {
-            "type": "list",
-            "name": "generator",
-            "message": "Which generator do you want to use?",
-            "choices": Config.available_generators,
-        }
+        inquirer.List(
+            "generator",
+            message="Which generator do you want to use?",
+            choices=Config.available_generators,
+            default="void",
+        ),
     ]
 
-    answers = prompt(questions)
+    answers = inquirer.prompt(questions)
     generator_name = answers["generator"]
 
     # get config and callable generator for provided generator
@@ -86,27 +86,30 @@ def prompt_user() -> Tuple[GeneratorType, ConfigType]:
     questions = []
 
     for key, value in config.__dict__.items():
-        question = {
-            "name": key,
-        }
 
         if isinstance(value, bool):
-            question["type"] = "confirm"
-            question["message"] = "Please select: " + key
-            question["default"] = value
+            question = inquirer.Confirm(
+                key,
+                message="Please select: " + key,
+                default=value,
+            )
         elif isinstance(value, list):
-            question["type"] = "list"
-            question["message"] = "Please select: " + key
-            question["choices"] = value
-            question["default"] = value[0]
+            question = inquirer.List(
+                key,
+                message="Please select: " + key,
+                choices=value,
+                default=value[0],
+            )
         else:
-            question["type"] = "input"
-            question["message"] = "Please enter: " + key
-            question["default"] = value
+            question = inquirer.Text(
+                key,
+                message="Please select: " + key,
+                default=value,
+            )
 
         questions.append(question)
 
-    answers = prompt(questions)
+    answers = inquirer.prompt(questions)
 
     # loop over provided answers and update generator paramaters
     for key, value in answers.items():
