@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.1](https://gitlab.com/henn1001/qsdl/compare/v2.6.0...v2.6.1) (2021-10-29)
+
+
+### Bug Fixes
+
+* **core:** resolve python 3.9 compatibility issue by moving to inquirer ([48e3165](https://gitlab.com/henn1001/qsdl/commit/48e31659f1430547b6d0aed090a8df2b4060dcc4))
+* **spring:** resolve issue missing error response for invalid aggregation requests ([783a700](https://gitlab.com/henn1001/qsdl/commit/783a70095f601fa7933f6dee0430b7b6a055dd42))
+
 ## [2.6.0](https://gitlab.com/henn1001/qsdl/compare/v2.5.0...v2.6.0) (2021-10-28)
 
 
