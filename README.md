@@ -15,6 +15,7 @@ Internally QSDL leverages [textX](https://github.com/textX/textX) for describing
 Currently the following generators are available:
 
 * OpenAPI
+* SpringBoot
 * GraphQL
 * PlantUML
 
@@ -22,7 +23,9 @@ Currently the following generators are available:
 
 The QSDL package has been developed and tested on Python version:
 
+* 3.6.x
 * 3.7.x
+* 3.9.x
 
 ### Installation
 
@@ -364,13 +367,13 @@ There are certain builtin directives that can be used to modify the generation b
 
 3.  `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
 
-4.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a `Object`.
+4.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a list `Object`.
 
-5.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a `Object`.
+5.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a list `Object`.
 
 6.  `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
 
-7.  `Directive` `@path` may be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
+7.  `Directive` `@path` must be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
 
 8.  `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 

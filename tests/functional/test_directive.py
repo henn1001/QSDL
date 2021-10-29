@@ -26,13 +26,13 @@ class TestDirective:
 
     05. `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
 
-    06. `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a `Object`.
+    06. `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a list `Object`.
 
-    07. `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a `Object`.
+    07. `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a list `Object`.
 
     08. `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
 
-    09. `Directive` `@path` may be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
+    09. `Directive` `@path` must be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
 
     10. `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
