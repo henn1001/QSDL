@@ -89,8 +89,13 @@ public class {{model.name}}ServiceTest {
     when({{ operation.parent.model.name|lower }}Repository.findById(eq(testParent.getId())))
         .thenReturn(Optional.of(testParent));
 
+    {% if operation.path.endswith('/remove') %}
+    when(repository.findBy{{operation.parent.hibernate.method_joined_id}}(eq(testParent.getId()), eq(request.getId())))
+        .thenReturn(Optional.of(request));
+    {% else %}
     when(repository.findById(eq(request.getId())))
         .thenReturn(Optional.of(request));
+    {% endif %}
 
     when(repository.save(eq(request)))
         .thenReturn(null);

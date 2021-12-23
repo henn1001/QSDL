@@ -99,7 +99,7 @@ public class UserServiceTest {
     when(ticketRepository.findById(eq(testParent.getId())))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findByTicketsIdAndId(eq(testParent.getId()), eq(request.getId())))
         .thenReturn(Optional.of(request));
 
     when(repository.save(eq(request)))
