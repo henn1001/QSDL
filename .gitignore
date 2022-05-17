@@ -11,4 +11,4 @@ dist/
 # misc
 /srcgen/
 /output/
-/tests/functional/test_input.tx
+/tests/functional/test_input.qsdl

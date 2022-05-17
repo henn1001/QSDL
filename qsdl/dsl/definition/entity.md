@@ -19,6 +19,11 @@ class entity.ValueType <<abstract>> {
 }
 
 
+class entity.Import  {
+  importURI : STRING
+}
+
+
 class entity.Scalar  {
   name : ID
 }
@@ -89,6 +94,7 @@ class entity.Directive  {
 }
 
 
+entity.Schema *-- "0..*" entity.Import
 entity.Schema *-- "0..*" entity.Type
 entity.Type <|-- entity.Scalar
 entity.Type <|-- entity.Enum
@@ -118,10 +124,10 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Description |  |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Comment | \\/\\/.*$ |
 end legend
 

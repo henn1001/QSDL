@@ -3,6 +3,7 @@
 */
 
 Schema:
+    imports*=Import
     ('title' ':' title=STRING)?
     ('version' ':' version=STRING)?
     ('description' ':' description=Description)?
@@ -16,6 +17,10 @@ Type:
 
 ValueType:
     Scalar | Enum | Base | Object
+;
+
+Import: 
+    'import' importURI=STRING
 ;
 
 Scalar:

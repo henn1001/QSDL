@@ -1,0 +1,4 @@
+type ModelC @domain(package:"another") {
+    firstName: String
+    lastName: String
+}

@@ -55,8 +55,8 @@ The QSDL CLI command has the following structure:
 
 For example, to run the generator on a minimal schema definition file:
 
-    $ echo "type Project { name: String }" > project.tx
-    $ qsdl project.tx -g openapi
+    $ echo "type Project { name: String }" > project.qsdl
+    $ qsdl project.qsdl -g openapi
     $ tree srcgen/
       srcgen/
       └── openapi.yaml
@@ -75,11 +75,11 @@ To get the version of the QSDL CLI:
 
 Examples can be found in `util/examples/`.
 
-* [Example API](util/examples/input.tx)
+* [Example API](util/examples/input.qsdl)
 
 # Language
 
-The language definition can be found [here](qsdl/dsl/definition/entity.tx) and as PlantUML representation [here](qsdl/dsl/definition/entity.md). Let's try to go over it from the top.
+The language definition can be found [here](qsdl/dsl/definition/entity.qsdl) and as PlantUML representation [here](qsdl/dsl/definition/entity.md). Let's try to go over it from the top.
 
 ## Schema
 

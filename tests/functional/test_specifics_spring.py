@@ -57,7 +57,7 @@ class TestSpecificsSpring:
         shutil.rmtree(test_output, ignore_errors=True)
 
         # generate
-        assert generate(test_input, test_output, "spring") == 0
+        assert generate("spring", test_output, raw_schema=test_input) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
@@ -89,7 +89,7 @@ class TestSpecificsSpring:
         shutil.rmtree(test_output, ignore_errors=True)
 
         # generate
-        assert generate(test_input, test_output, "spring") == 0
+        assert generate("spring", test_output, raw_schema=test_input) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
@@ -118,7 +118,7 @@ class TestSpecificsSpring:
         shutil.rmtree(test_output, ignore_errors=True)
 
         # generate
-        assert generate(test_input, test_output, "spring") == 0
+        assert generate("spring", test_output, raw_schema=test_input) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
@@ -147,7 +147,7 @@ class TestSpecificsSpring:
         shutil.rmtree(test_output, ignore_errors=True)
 
         # generate
-        assert generate(test_input, test_output, "spring") == 0
+        assert generate("spring", test_output, raw_schema=test_input) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
@@ -176,7 +176,7 @@ class TestSpecificsSpring:
         shutil.rmtree(test_output, ignore_errors=True)
 
         # generate
-        assert generate(test_input, test_output, "spring") == 0
+        assert generate("spring", test_output, raw_schema=test_input) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
@@ -206,7 +206,7 @@ class TestSpecificsSpring:
         shutil.rmtree(test_output, ignore_errors=True)
 
         # generate
-        assert generate(test_input, test_output, "spring") == 0
+        assert generate("spring", test_output, raw_schema=test_input) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
@@ -236,7 +236,7 @@ class TestSpecificsSpring:
         shutil.rmtree(test_output, ignore_errors=True)
 
         # generate
-        assert generate(test_input, test_output, "spring") == 0
+        assert generate("spring", test_output, raw_schema=test_input) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
@@ -261,7 +261,7 @@ class TestSpecificsSpring:
         shutil.rmtree(test_output, ignore_errors=True)
 
         # generate
-        assert generate(test_input, test_output, "spring") == 0
+        assert generate("spring", test_output, raw_schema=test_input) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0

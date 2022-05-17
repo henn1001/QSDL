@@ -29,12 +29,16 @@ class TestMain:
     def test_module_call(self):
         """Verify that we can call the module"""
 
-        assert os.system("python -m qsdl util/examples/input.tx -g openapi -o srcgen/") == 0
+        assert os.system("python -m qsdl util/examples/input.qsdl -g openapi -o srcgen/") == 0
 
-        assert os.system("python -m qsdl util/examples/input.tx -g plantuml -o srcgen/") == 0
+        assert os.system("python -m qsdl util/examples/input.qsdl -g plantuml -o srcgen/") == 0
 
-        assert os.system("python -m qsdl util/examples/input.tx -g spring -o srcgen/") == 0
+        assert os.system("python -m qsdl util/examples/input.qsdl -g spring -o srcgen/") == 0
 
-        assert os.system("python -m qsdl util/examples/input.tx -g void -o srcgen/") == 0
+        assert os.system("python -m qsdl util/examples/input.qsdl -g void -o srcgen/") == 0
+
+        assert os.system("python -m qsdl util/examples/input.qsdl -g void -o srcgen/") == 0
+
+        assert os.system("python -m qsdl util/examples/multifile/multifile.qsdl -g void -o srcgen/") == 0
 
         assert os.system("python -m qsdl --help") == 0

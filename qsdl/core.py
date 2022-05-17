@@ -149,7 +149,7 @@ def init(generator_name: str, config_path: Path = None) -> Tuple[GeneratorType, 
 
         # optionally overwrite the default configuration with user provided data
         if config_path:
-            with open(config_path) as json_file:
+            with open(config_path, encoding="utf-8") as json_file:
                 data = json.load(json_file)
                 config = from_dict(data_class=config.__class__, data=data)
     else:
@@ -162,26 +162,34 @@ def init(generator_name: str, config_path: Path = None) -> Tuple[GeneratorType, 
     return generator, config
 
 
-def generate(raw_schema: str, output_path: Path, generator_name: str, config_path: Path = None) -> int:
+def generate(generator_name: str, output_path: Path, **kwargs) -> int:
     """The main function of QSDL.
 
     Generates various things from the provided schema definition.
+    Expects either input_path or raw_schema.
 
     Args:
-        raw_schema (str): The schema definition.
-        output_path (Path): Path to a output folder.
         generator_name (str, optional): The requested generator.
+        output_path (Path): Path to a output folder.
+        input_path (Path, optional): Path to the schema file.
+        raw_schema (str, optional): The schema definition as string.
         config_path (Path, optional): Path to the config.json.
 
     Returns:
         int: 0 on success, 1 on failure
     """
+
+    # handle optional arguments
+    input_path = kwargs.get("input_path", None)
+    raw_schema = kwargs.get("raw_schema", None)
+    config_path = kwargs.get("config_path", None)
+
     try:
         # initiliase the global config and fetch the generator and its parameters
         Config.generator, Config.config = init(generator_name, config_path)
 
         # build a model from schema definition file
-        Config.schema = parse_schema(raw_schema)
+        Config.schema = parse_schema(input_path, raw_schema)
 
         # set global config
         Config.raw_schema = raw_schema

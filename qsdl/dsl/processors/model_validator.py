@@ -44,6 +44,7 @@ def validate(schema: Schema, metamodel: TextXMetaModel):
     validate_custom_operations_path(schema, metamodel)
     validate_field_directives(schema, metamodel)
 
+
 def validate_server_url(schema: Schema, metamodel: TextXMetaModel):
     """Validate the naming convention for servers.
 

@@ -98,7 +98,7 @@ def remove_ignored_files(output_path: Path, api_files: list, model_files: list, 
         supporting_files.remove((".qsdl-ignore.j2", ".qsdl-ignore"))
 
         # read the spec
-        with open(ignorefile_path, "r") as infile:
+        with open(ignorefile_path, "r", encoding="utf-8") as infile:
             spec = pathspec.PathSpec.from_lines("gitwildmatch", infile)
 
         # loop over each all files and remove matches
@@ -128,7 +128,7 @@ def generate_openapi(output_path: Path):
     import qsdl.core as core  # pylint: disable=import-outside-toplevel
     from qsdl.config import Config as core_config  # pylint: disable=import-outside-toplevel
 
-    core.generate(core_config.raw_schema, gen_schema_file.parent, "openapi")
+    core.generate("openapi", gen_schema_file.parent, raw_schema=core_config.raw_schema)
 
 
 def generate(schema: Schema, output_path: Path, config: Config):

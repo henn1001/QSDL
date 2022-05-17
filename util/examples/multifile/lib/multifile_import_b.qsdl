@@ -1,0 +1,6 @@
+import "multifile_import_c.qsdl"
+
+type ModelB @domain(package:"another") {
+    firstName: String
+    lastName: ModelC
+}

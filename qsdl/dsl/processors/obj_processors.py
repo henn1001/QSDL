@@ -28,7 +28,6 @@ def schema_processor(entity: Schema):
     Args:
         entity (Schema): The schema object.
     """
-    _ = entity
 
     if not entity.servers:
         entity.servers = ["/api/v1"]

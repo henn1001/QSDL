@@ -36,8 +36,8 @@ def wrapper_generate(test_input: str) -> dict:
     test_output = Path("srcgen/" + test_seed + "/")
 
     # generate
-    assert generate(test_input, test_output, "openapi") == 0
-    assert generate(test_input, test_output, "graphql") == 0
+    assert generate("openapi", test_output, raw_schema=test_input) == 0
+    assert generate("graphql", test_output, raw_schema=test_input) == 0
 
     openapi_file = Path("srcgen/" + test_seed + "/" + "openapi.yaml")
     graphql_file = Path("srcgen/" + test_seed + "/" + "schema.graphql")
@@ -67,5 +67,5 @@ def wrapper_generate_failure(test_input: str):
     test_output = Path("srcgen/" + test_seed + "/")
 
     # generate
-    assert generate(test_input, test_output, "openapi") != 0
-    assert generate(test_input, test_output, "graphql") != 0
+    assert generate("openapi", test_output, raw_schema=test_input) != 0
+    assert generate("graphql", test_output, raw_schema=test_input) != 0

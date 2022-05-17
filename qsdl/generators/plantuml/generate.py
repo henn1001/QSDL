@@ -37,7 +37,7 @@ def generate_png(uml_markdown_file: Path):
     # loop over markdown file and capture each start/end uml section
     definitions = []
 
-    with open(uml_markdown_file, "r") as file:
+    with open(uml_markdown_file, "r", encoding="utf-8") as file:
         linereader = False
         section = ""
 

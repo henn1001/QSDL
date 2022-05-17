@@ -18,8 +18,8 @@ from pathlib import Path
 
 import jinja2
 
+import qsdl.filter as qfilter
 from qsdl import logger
-from qsdl.filter import camelcase, pascalcase, pluralize, regex_replace, singularize
 
 log = logger.getLogger(__name__)
 
@@ -59,11 +59,12 @@ def render(
     if type_name and type_def:
         jinja_env.filters[type_name] = type_def
 
-    jinja_env.filters["pluralize"] = pluralize
-    jinja_env.filters["singularize"] = singularize
-    jinja_env.filters["pascal"] = pascalcase
-    jinja_env.filters["camel"] = camelcase
-    jinja_env.filters["regex_replace"] = regex_replace
+    jinja_env.filters["pluralize"] = qfilter.pluralize
+    jinja_env.filters["singularize"] = qfilter.singularize
+    jinja_env.filters["pascal"] = qfilter.pascalcase
+    jinja_env.filters["camel"] = qfilter.camelcase
+    jinja_env.filters["spinal"] = qfilter.spinalcase
+    jinja_env.filters["regex_replace"] = qfilter.regex_replace
 
     # load the template
     template = jinja_env.get_template(template_path.name)
@@ -74,7 +75,7 @@ def render(
     output_file.parent.mkdir(exist_ok=True, parents=True)
 
     # generate code
-    with open(output_file, "w") as file:
+    with open(output_file, "w", encoding="utf-8") as file:
         tmp = template.render(context)
         log.info("rendering file: %s", output_file)
         file.write(tmp)

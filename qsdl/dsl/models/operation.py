@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Argument, Base, Directive, Object, Api
+    from qsdl.dsl.models import Api, Argument, Base, Directive, Enum, Object, Scalar
 
 
 @dataclass
@@ -34,7 +34,7 @@ class Operation:
     arguments: List[Argument] = field(default_factory=list)
     # RHS
     is_array: bool = False
-    value: object = None
+    value: Union[Scalar, Base, Object, Enum] = None
     is_required: bool = False
     # Special directives
     path: str = None
@@ -43,7 +43,7 @@ class Operation:
     directives: List[Directive] = field(default_factory=list)
 
     # required by textX
-    parent: Union[Base, Object, Api] = None
+    parent: Api = None
 
     # addons
     summary: str = None

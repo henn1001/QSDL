@@ -28,6 +28,7 @@ class Schema:
     """textX Schema class"""
 
     # defined in entity.tx
+    imports: List[any] = field(default_factory=list)
     title: str = None
     version: str = None
     description: str = None

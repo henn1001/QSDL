@@ -7,7 +7,7 @@
             "request": "launch",
             "module": "qsdl",
             "args": [
-                "util/examples/input.tx",
+                "util/examples/input.qsdl",
                 "-g",
                 "openapi",
                 "-o",
@@ -22,7 +22,7 @@
             "request": "launch",
             "module": "qsdl",
             "args": [
-                "util/examples/input.tx",
+                "util/examples/input.qsdl",
                 "-g",
                 "graphql",
                 "-o",
@@ -37,7 +37,7 @@
             "request": "launch",
             "module": "qsdl",
             "args": [
-                "util/examples/input.tx",
+                "util/examples/input.qsdl",
                 "-g",
                 "plantuml",
                 "-o",
@@ -52,7 +52,7 @@
             "request": "launch",
             "module": "qsdl",
             "args": [
-                "util/examples/relation.tx",
+                "util/examples/relation.qsdl",
                 "-g",
                 "spring",
                 "-o",
@@ -67,7 +67,7 @@
             "request": "launch",
             "module": "qsdl",
             "args": [
-                "util/examples/input.tx",
+                "util/examples/input.qsdl",
                 "-g",
                 "void",
             ],

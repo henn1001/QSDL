@@ -34,6 +34,21 @@ log = logger.getLogger(__name__)
 def model_processor(schema: Schema, metamodel: TextXMetaModel):
     """Callable that will be called after each successful model parse.
 
+    Args:
+        schema (Schema): The QSDL schema model.
+        metamodel (TextXMetaModel): The metamodel.
+
+    Raises:
+        TextXSemanticError: Exception for logical errors.
+    """
+
+    _ = schema
+    _ = metamodel
+
+
+def model_post_processor(schema: Schema, metamodel: TextXMetaModel):
+    """Callable that should be called after the schema has been generated and merged.
+
     We use this to validate and complete the schema.
 
     Args:
@@ -60,3 +75,56 @@ def model_processor(schema: Schema, metamodel: TextXMetaModel):
     validate_operations(schema)
 
     log.info("schema successfully loaded")
+
+
+def get_all_imports(schema: Schema) -> list:
+    """Recursively collect all imports"""
+
+    imports = []
+
+    for imprt in schema.imports:
+        loaded_schema: Schema = imprt._tx_loaded_models[0]
+
+        tmp = get_all_imports(loaded_schema)
+
+        imports.extend(tmp)
+        imports.append(imprt)
+
+    return imports
+
+
+def sort_all_imports(imports: list):
+    """Remove duplicates in import list"""
+
+    ret = {}
+
+    # loop over all imports and normalize the name to store in dict
+    for imprt in imports:
+        name = imprt.importURI
+
+        # get last piece via split
+        name = name.split("/")[-1].split("\\")[-1]
+        ret[name] = imprt
+
+    return ret.values()
+
+
+def model_merger(schema: Schema):
+    """Callable that should be called after the schema has been generated.
+
+    We use this to combine multiple schema files into one.
+
+    Args:
+        schema (Schema): The QSDL schema model.
+    """
+
+    # iterate over the imports and merge types
+    imports = get_all_imports(schema)
+
+    # remove duplicates
+    imports = sort_all_imports(imports)
+
+    # down merge all imported types into our main schema
+    for imprt in imports:
+        loaded_schema: Schema = imprt._tx_loaded_models[0]
+        schema.types.extend(loaded_schema.types)
