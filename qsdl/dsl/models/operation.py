@@ -39,6 +39,9 @@ class Operation:
     # Special directives
     path: str = None
     method: str = None
+    is_pageable: bool = False
+    consumes: str = None
+    produces: str = None
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
 
@@ -47,7 +50,6 @@ class Operation:
 
     # addons
     summary: str = None
-    is_pageable: bool = False
     is_aggregated: bool = False
     path_parameters: List[Argument] = field(default_factory=list)
     query_parameters: List[Argument] = field(default_factory=list)

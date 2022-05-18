@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Schema
+    from qsdl.dsl.models import Schema, Directive
 
 
 @dataclass
@@ -30,6 +30,8 @@ class Enum:
     # defined in entity.tx
     description: str = None
     name: str = None
+    # Custom directives
+    directives: List[Directive] = field(default_factory=list)
     values: List[str] = field(default_factory=list)
 
     # required by textX

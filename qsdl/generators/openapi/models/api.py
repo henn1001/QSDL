@@ -68,7 +68,11 @@ class _Operation:
     path_parameters: List[_Parameter] = field(default_factory=list)
     query_parameters: List[_Parameter] = field(default_factory=list)
     body_parameters: List[_Parameter] = field(default_factory=list)
+
     response: _Parameter = None
+
+    consumes: str = None
+    produces: str = None
 
     def __post_init__(self):
 
@@ -85,6 +89,9 @@ class _Operation:
         # we want to move them to the parent namespace
         if self._ref.is_aggregated:
             self.tag = self._ref.domain_parent.namespace
+
+        self.consumes = self._ref.consumes
+        self.produces = self._ref.produces
 
         self._add_parameters()
 

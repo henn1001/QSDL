@@ -128,7 +128,12 @@ def generate_openapi(output_path: Path):
     import qsdl.core as core  # pylint: disable=import-outside-toplevel
     from qsdl.config import Config as core_config  # pylint: disable=import-outside-toplevel
 
-    core.generate("openapi", gen_schema_file.parent, raw_schema=core_config.raw_schema)
+    core.generate(
+        "openapi",
+        gen_schema_file.parent,
+        input_path=core_config.input_path,
+        raw_schema=core_config.raw_schema,
+    )
 
 
 def generate(schema: Schema, output_path: Path, config: Config):

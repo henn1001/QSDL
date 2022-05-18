@@ -89,6 +89,9 @@ class Operation:
 
     response: Parameter = None
 
+    consumes: str = None
+    produces: str = None
+
     def build(self, _ref: dsl.Operation) -> Operation:
         """Builds self from dsl.Operation"""
 
@@ -106,6 +109,9 @@ class Operation:
 
         if _ref.domain_object and _ref.domain_parent:
             self.parent = util.get_parent_for(_ref.domain_object.name, _ref.domain_parent.name)
+
+        self.consumes = _ref.consumes
+        self.produces = _ref.produces
 
         self._add_parameters(_ref)
         self._add_response(_ref)

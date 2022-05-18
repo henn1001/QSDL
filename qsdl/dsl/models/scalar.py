@@ -25,3 +25,5 @@ class Scalar:
 
     # defined in entity.tx
     name: str = None
+
+    _tx_fqn: str = "entity.Scalar"

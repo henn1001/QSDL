@@ -378,3 +378,9 @@ There are certain builtin directives that can be used to modify the generation b
 8.  `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
 9.  `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
+
+10.  `Directive` `@pagination` may be used on any `Api` `Field` for converting response in a pageable object.
+
+11.  `Directive` `@produce` may be used on any `Api` `Field` for changing the mime type.
+
+12.  `Directive` `@consumes` may be used on any `Api` `Field` for changing the mime type.

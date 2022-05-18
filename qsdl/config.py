@@ -34,6 +34,9 @@ class Config:
     # the parsed schema definition.
     schema: Schema = None
 
+    # path to a input file
+    input_path: Path = None
+
     # path to a output folder
     output_path: Path = None
 

@@ -81,6 +81,33 @@ components:
           schema:
             $ref: '#/components/schemas/AppError'
 
+  parameters:
+    cursor:
+      name: cursor
+      description: |
+        Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+      in: query
+      required: false
+      schema:
+        type: string
+    limit:  
+      name: limit
+      description: |
+        The maximum number of items to return.
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+    count:
+      name: count
+      description: |
+        Returns the total number of items in the collection.
+      in: query
+      required: false
+      schema:
+        type: boolean
+
   schemas:
 {% for model in models %}
   {% if model.is_enum %}

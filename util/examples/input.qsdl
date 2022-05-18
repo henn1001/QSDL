@@ -80,7 +80,7 @@ type User @namespace(value:"Management"){
         name: String!
 
         extend Api {
-            getBuzzwords(name: String): [Buzzword] @path(value:"/buzzwords")
+            getBuzzwords(name: String): [Buzzword] @path(value:"/buzzwords") @pagination
             createBuzzword(body: Buzzword): Buzzword @path(value:"/buzzwords") @method(value: POST)
             getBuzzword: Buzzword @path(value:"/buzzwords/{id}")
             updateBuzzword(body: String, test: [Boolean]): Buzzword @path(value:"/buzzwords/{id}") @method(value: PUT)

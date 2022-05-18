@@ -29,8 +29,11 @@ Scalar:
 
 Enum:
     description=Description?
+    'enum' name=ID 
 
-    'enum' name=ID '{'
+    directives*=Directive
+    
+    '{'
         values+=/[A-Z_0-9]*$/
     '}'
 ;
@@ -142,6 +145,9 @@ Operation:
     // Special directives
     ( ('@path(value:' path=STRING ')')?
         ('@method(value:' method=Method ')')?
+        is_pageable?='@pagination'
+        ('@consumes(value:' consumes=STRING ')')?
+        ('@produces(value:' produces=STRING ')')?
         )#
 
     // Custom directives

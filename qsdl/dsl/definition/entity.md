@@ -79,6 +79,9 @@ class entity.Operation  {
   is_required : optional<BOOL>
   path : STRING
   method : Method
+  is_pageable : optional<BOOL>
+  consumes : STRING
+  produces : STRING
 }
 
 
@@ -105,6 +108,7 @@ entity.ValueType <|-- entity.Scalar
 entity.ValueType <|-- entity.Enum
 entity.ValueType <|-- entity.Base
 entity.ValueType <|-- entity.Object
+entity.Enum *-- "0..*" entity.Directive
 entity.Base o-- entity.Base
 entity.Base *-- "0..*" entity.Directive
 entity.Base *-- "1..*" entity.Field
@@ -124,11 +128,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
+  | Comment | \\/\\/.*$ |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | Description |  |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | Comment | \\/\\/.*$ |
 end legend
 
 @enduml

@@ -39,10 +39,10 @@ public class {{api.name}}Controller extends BaseController {
   @{{operation.method|capitalize}}Mapping(
     value = "{{operation.path}}"
   {%- if operation.response -%}
-    {{",\n"}}    produces = { "application/json" }
+    {{",\n"}}    produces = {{ "{ \"" + operation.produces + "\" }"}}
   {%- endif %}
   {%- if operation.body_parameters -%}
-    {{",\n"}}    consumes = { "application/json" }
+    {{",\n"}}    consumes = {{ "{ \"" + operation.consumes + "\" }"}}
   {%- endif %}
 
   )

@@ -29,8 +29,7 @@ def schema_processor(entity: Schema):
         entity (Schema): The schema object.
     """
 
-    if not entity.servers:
-        entity.servers = ["/api/v1"]
+    entity.servers = ["/api/v1"] if not entity.servers else entity.servers
 
 
 def scalar_processor(entity: Scalar):
@@ -93,7 +92,9 @@ def operation_processor(entity: Operation):
     Args:
         entity (Api): The query object.
     """
-    _ = entity
+
+    entity.produces = "application/json" if not entity.produces else entity.produces
+    entity.consumes = "application/json" if not entity.consumes else entity.consumes
 
 
 def argument_processor(entity: Argument):

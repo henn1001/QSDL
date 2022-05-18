@@ -17,6 +17,8 @@
 from pathlib import Path
 from typing import List
 
+import stringcase
+
 import qsdl.dsl.textx as xtx
 from qsdl.dsl.models import Field, Object, Scalar, Schema
 from qsdl.render import render
@@ -59,30 +61,37 @@ def parse_models(schema: Schema) -> List[Model]:
     enum_list = xtx.get_children_of_enum(schema)
     base_list = xtx.get_children_of_base(schema)
     object_list = xtx.get_children_of_object(schema)
+    operations_list = xtx.get_children_of_operation(schema)
 
-    for obj in enum_list + base_list:
+    for obj in enum_list + base_list + object_list:
         model = Model(obj)
         models.append(model)
 
-    for obj in object_list:
-        model = Model(obj)
-        models.append(model)
+    # scan for paginated responses
+    # use a dict for efficiency to prevent duplicates
+    pageables = {}
+    operations = [x for x in operations_list if x.is_pageable]
 
-        # add paging response for all objects with default CRUD endpoints
-        if obj.is_crud:
-            model = get_paginated_object(obj, model)
-            model.is_crud = False
-            models.insert(-1, model)
+    for operation in operations:
+        # in theory we should only allow base or object here but this is already validated in model_validator.py
+        pageables[operation.value.name] = operation.value
+
+    for entity in pageables.values():
+        model = get_paginated_object(entity, stringcase.pascalcase(entity.name))
+
+        # find index and insert one before the object
+        index = [i for i, x in enumerate(models) if x.name == entity.name][0]
+        models.insert(index, model)
 
     return models
 
 
-def get_paginated_object(obj: Object, model: Model) -> Model:
+def get_paginated_object(obj: Object, model_name: str) -> Model:
     """Returns a pagable custom model that is used to return a given model.
 
     Args:
         obj (Object): The QSDL Object.
-        model (Model): The OpenApi Model.
+        model_name (str): The OpenApi Model-Name.
 
     Returns:
         Model: The pagable custom model.
@@ -90,7 +99,7 @@ def get_paginated_object(obj: Object, model: Model) -> Model:
 
     # represents the model
     new_object = Object()
-    new_object.name = model.name + "List"
+    new_object.name = model_name + "List"
     new_object._tx_fqn = "entity.Object"
 
     # contains the item list of the entity

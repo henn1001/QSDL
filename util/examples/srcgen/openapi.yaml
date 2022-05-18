@@ -31,28 +31,9 @@ paths:
               name: string
           style: form
           explode: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
@@ -195,28 +176,9 @@ paths:
             type: object
           style: form
           explode: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
@@ -390,28 +352,9 @@ paths:
             type: object
           style: form
           explode: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
@@ -587,28 +530,9 @@ paths:
               name: integer
           style: form
           explode: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
@@ -682,28 +606,9 @@ paths:
               name: integer
           style: form
           explode: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
@@ -846,28 +751,9 @@ paths:
             type: object
           style: form
           explode: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
@@ -1041,28 +927,9 @@ paths:
             type: object
           style: form
           explode: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
@@ -1140,28 +1007,9 @@ paths:
             type: object
           style: form
           explode: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
@@ -1335,28 +1183,9 @@ paths:
             type: object
           style: form
           explode: true
-        - name: cursor
-          description: |
-            Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: limit
-          description: |
-            The maximum number of items to return.
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int64
-        - name: count
-          description: |
-            Returns the total number of items in the collection.
-          in: query
-          required: false
-          schema:
-            type: boolean
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
@@ -1517,20 +1346,25 @@ paths:
       summary: getBuzzwords
       operationId: getBuzzwords
       parameters:
-        - name: name
+        - name: query
           in: query
           required: false
           schema:
-            type: string
+            type: object
+            example:
+              name: string
+          style: form
+          explode: true
+        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Buzzword'
+                $ref: '#/components/schemas/BuzzwordList'
         default:
           $ref: '#/components/responses/DefaultError'
     post:
@@ -1681,6 +1515,33 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AppError'
+
+  parameters:
+    cursor:
+      name: cursor
+      description: |
+        Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+      in: query
+      required: false
+      schema:
+        type: string
+    limit:  
+      name: limit
+      description: |
+        The maximum number of items to return.
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+    count:
+      name: count
+      description: |
+        Returns the total number of items in the collection.
+      in: query
+      required: false
+      schema:
+        type: boolean
 
   schemas:
     Status:
@@ -1954,6 +1815,21 @@ components:
         name:
           type: integer
           format: int32
+
+    BuzzwordList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Buzzword'
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+          format: int64
 
     Buzzword:
       required:

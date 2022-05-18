@@ -192,6 +192,7 @@ def generate(generator_name: str, output_path: Path, **kwargs) -> int:
         Config.schema = parse_schema(input_path, raw_schema)
 
         # set global config
+        Config.input_path = input_path
         Config.raw_schema = raw_schema
         Config.output_path = output_path
 

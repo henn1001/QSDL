@@ -270,3 +270,11 @@ def validate_operations(schema: Schema):
         if len(arg_names) != len(set(arg_names)):
             msg = f"The Operation {operation.name} contains duplicated argument names."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+    # validate that pagination is only used for object and base responses
+    for operation in operations:
+        if (operation.is_pageable and not operation.value) or (
+            operation.is_pageable and operation.value._tx_fqn not in ["entity.Object", "entity.Base"]
+        ):
+            msg = f"The Operation {operation.name} needs to return a 'type' or 'base' when @pagination is used."
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
