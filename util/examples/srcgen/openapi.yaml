@@ -31,7 +31,7 @@ paths:
               name: string
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
@@ -176,7 +176,7 @@ paths:
             type: object
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
@@ -352,7 +352,7 @@ paths:
             type: object
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
@@ -530,7 +530,7 @@ paths:
               name: integer
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
@@ -606,7 +606,7 @@ paths:
               name: integer
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
@@ -751,7 +751,7 @@ paths:
             type: object
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
@@ -927,7 +927,7 @@ paths:
             type: object
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
@@ -1007,7 +1007,7 @@ paths:
             type: object
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
@@ -1183,7 +1183,7 @@ paths:
             type: object
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
@@ -1355,7 +1355,7 @@ paths:
               name: string
           style: form
           explode: true
-        - $ref: '#/components/parameters/curor'
+        - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
       responses:
