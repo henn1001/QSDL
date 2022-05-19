@@ -28,6 +28,7 @@ class Directive:
     """textX Directive class"""
 
     # defined in entity.tx
+    name: str = None
     value: str = None
 
     # required by textX

@@ -77,6 +77,8 @@ def parse_apis(schema: Schema) -> List[ApiClass]:
         new_api = ApiClass().build(entity)
         apis.append(new_api)
 
+    apis = util.sort_api_controller(apis)
+
     return apis
 
 

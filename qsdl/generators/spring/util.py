@@ -20,7 +20,7 @@ from typing import List, Union
 
 import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
-from qsdl.generators.spring.models.model_class import ModelField
+from qsdl.generators.spring.models import ApiClass, ModelField
 
 from .config import Config
 from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass, Parent
@@ -224,6 +224,20 @@ def add_hibernate_info(models: List[ModelClass]):
         for parent in model.parents:
             parent_info = HibernateParentInfo(model, parent.model)
             parent.hibernate = parent_info
+
+
+def sort_api_controller(api_list: list[ApiClass]) -> list[ApiClass]:
+    """Reorganize api controllers and merge operations if needed"""
+    api_store = {}
+
+    # we work with case insensitive names here to simplify things
+    for api in api_list:
+        if api.name.lower() not in api_store:
+            api_store[api.name.lower()] = api
+        else:
+            api_store[api.name.lower()].operations.extend(api.operations)
+
+    return list(api_store.values())
 
 
 def get_model_for(obj_name: dsl.Object.name) -> ModelClass:

@@ -37,8 +37,6 @@ class TestMain:
 
         assert os.system("python -m qsdl util/examples/input.qsdl -g void -o srcgen/") == 0
 
-        assert os.system("python -m qsdl util/examples/input.qsdl -g void -o srcgen/") == 0
-
         assert os.system("python -m qsdl util/examples/multifile/multifile.qsdl -g void -o srcgen/") == 0
 
         assert os.system("python -m qsdl --help") == 0

@@ -1,4 +1,4 @@
-type ModelC @domain(package:"another") {
+type ModelC {
     firstName: String
     lastName: String
 }

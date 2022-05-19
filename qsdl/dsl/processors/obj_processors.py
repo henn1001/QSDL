@@ -19,10 +19,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Argument, Base, Directive, Enum, Field, Object, Api, Scalar, Schema, Operation
+    import qsdl.dsl.models as dsl
 
 
-def schema_processor(entity: Schema):
+def schema_processor(entity: dsl.Schema):
     """The schema post-processor.
 
     Args:
@@ -32,7 +32,7 @@ def schema_processor(entity: Schema):
     entity.servers = ["/api/v1"] if not entity.servers else entity.servers
 
 
-def scalar_processor(entity: Scalar):
+def scalar_processor(entity: dsl.Scalar):
     """The scalar post-processor.
 
     Args:
@@ -41,7 +41,7 @@ def scalar_processor(entity: Scalar):
     _ = entity
 
 
-def enum_processor(entity: Enum):
+def enum_processor(entity: dsl.Enum):
     """The enum post-processor.
 
     Args:
@@ -50,7 +50,7 @@ def enum_processor(entity: Enum):
     _ = entity
 
 
-def base_processor(entity: Base):
+def base_processor(entity: dsl.Base):
     """The base post-processor.
 
     Args:
@@ -59,7 +59,7 @@ def base_processor(entity: Base):
     _ = entity
 
 
-def object_processor(entity: Object):
+def object_processor(entity: dsl.Object):
     """The object post-processor.
 
     Args:
@@ -68,7 +68,7 @@ def object_processor(entity: Object):
     _ = entity
 
 
-def field_processor(entity: Field):
+def field_processor(entity: dsl.Field):
     """The field post-processor.
 
     Args:
@@ -77,7 +77,7 @@ def field_processor(entity: Field):
     entity.is_relation = entity.is_composition or entity.is_aggregation
 
 
-def api_processor(entity: Api):
+def api_processor(entity: dsl.Api):
     """The api post-processor.
 
     Args:
@@ -86,7 +86,7 @@ def api_processor(entity: Api):
     _ = entity
 
 
-def operation_processor(entity: Operation):
+def operation_processor(entity: dsl.Operation):
     """The operation post-processor.
 
     Args:
@@ -97,7 +97,7 @@ def operation_processor(entity: Operation):
     entity.consumes = "application/json" if not entity.consumes else entity.consumes
 
 
-def argument_processor(entity: Argument):
+def argument_processor(entity: dsl.Argument):
     """The parameter post-processor.
 
     Args:
@@ -106,7 +106,7 @@ def argument_processor(entity: Argument):
     _ = entity
 
 
-def directive_processor(entity: Directive):
+def directive_processor(entity: dsl.Directive):
     """The directive post-processor.
 
     Args:

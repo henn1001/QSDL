@@ -173,7 +173,11 @@ Method:
 ;
 
 Directive:
-    value=/\@\w+(?:\(.*?\))?/
+    '@'
+    name=ID
+    ( '(' )?
+    ( value=STRING )?
+    ( ')' )?
 ;
 
 Description:

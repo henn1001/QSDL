@@ -1,7 +1,7 @@
 import "multifile_import_a.qsdl"
 import "lib/multifile_import_b.qsdl"
 
-type Person @domain(package:"some") {
+type Person {
     field_a: ModelA
     field_b: ModelB
 }

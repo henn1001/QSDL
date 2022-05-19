@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING, List
 import stringcase
 
 import qsdl.dsl.models as dsl
+import qsdl.dsl.util as qutil
 
 from .. import util
 
@@ -188,6 +189,10 @@ class ApiClass:
         self.name = _ref.parent.name if _ref.parent._tx_fqn == "entity.Object" else "Default"
         self.tag = stringcase.lowercase(_ref.namespace)
         self.description = _ref.description
+
+        # allow to overwrite the controller name
+        controller_dir = qutil.get_directive_of_name("controller", _ref)
+        self.name = controller_dir.value if controller_dir else self.name
 
         # add model
         if _ref.parent._tx_fqn == "entity.Object":
