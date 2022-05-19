@@ -45,7 +45,6 @@ class TestEnum:
         inputs.append("enum Foo { opEN } ")
         inputs.append("enum Foo { OP-EN } ")
         inputs.append("enum Foo { open } ")
-        inputs.append("enum Foo { OPEN } ")
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)

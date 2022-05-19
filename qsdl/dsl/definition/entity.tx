@@ -34,7 +34,7 @@ Enum:
     directives*=Directive
     
     '{'
-        values+=/[A-Z_0-9]*$/
+        values+=ID
     '}'
 ;
 

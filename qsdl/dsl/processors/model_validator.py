@@ -104,6 +104,12 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
             msg = f"The namespace of {entity._tx_fqn} {entity.name} does not conform to the naming convention."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
+        if entity._tx_fqn == "entity.Enum":
+            for value in entity.values:
+                if not re.match(r"^[A-Z_0-9]*$", value):
+                    msg = f"The value of {entity._tx_fqn} {entity.name} does not conform to the naming convention. [A-Z_0-9]"
+                    raise TextXSemanticError(msg, filename=schema._tx_filename)
+
         if entity.name.upper() == "ID":
             msg = f"The {entity._tx_fqn} {entity.name} uses the reserved name ID."
             raise TextXSemanticError(msg, filename=schema._tx_filename)

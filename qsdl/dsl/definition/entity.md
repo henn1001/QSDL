@@ -32,7 +32,7 @@ class entity.Scalar  {
 class entity.Enum  {
   description : Description
   name : ID
-  values : list[STRING]
+  values : list[ID]
 }
 
 
@@ -128,11 +128,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Comment | \\/\\/.*$ |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | Description |  |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Comment | \\/\\/.*$ |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | Description |  |
 end legend
 
 @enduml
