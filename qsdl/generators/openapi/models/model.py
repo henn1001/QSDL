@@ -101,7 +101,6 @@ class Model:
     constants: List[str] = field(default_factory=list)
 
     # addons
-    is_crud: bool = False
     is_supertype: bool = False
     is_nested: bool = False
 
@@ -127,7 +126,6 @@ class Model:
             self.constants = util.get_enum_values(self._ref)
 
         # addons
-        self.is_crud = not self._ref.api if self.is_object else False
         self.is_supertype = util.is_supertype(self._ref) if self.is_base else False
         self.is_nested = util.is_nested(self._ref)
 

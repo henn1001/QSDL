@@ -75,7 +75,7 @@ class Operation:
     method: str = None
 
     is_deprecated: bool = False
-    is_crud: bool = False
+    is_generated: bool = False
     is_pageable: bool = False
 
     parent: Parent = None
@@ -105,7 +105,7 @@ class Operation:
         self.method = _ref.method.lower()
 
         self.is_deprecated = False
-        self.is_crud = _ref.parent.parent.is_crud if _ref.parent.parent._tx_fqn == "entity.Object" else False
+        self.is_generated = _ref.is_generated
         self.is_pageable = _ref.is_pageable
 
         if _ref.domain_object and _ref.domain_parent:
@@ -182,6 +182,9 @@ class ApiClass:
 
     operations: List[Operation] = field(default_factory=list)
 
+    # addons
+    has_generated: bool = False
+
     def build(self, _ref: dsl.Api) -> ApiClass:
         """Builds self from dsl.Api"""
 
@@ -200,6 +203,8 @@ class ApiClass:
 
         # add methods
         self._add_operations(_ref)
+
+        self.has_generated = _ref.has_generated
 
         return self
 

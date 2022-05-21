@@ -69,6 +69,7 @@ class entity.Api  {
   description : Description
   is_deprecated : optional<BOOL>
   namespace : STRING
+  generate : optional<list[STRING]>
 }
 
 
@@ -120,7 +121,7 @@ entity.Object *-- entity.Api
 entity.Field o-- entity.ValueType
 entity.Field *-- "0..*" entity.Directive
 entity.Api *-- "0..*" entity.Directive
-entity.Api *-- "1..*" entity.Operation
+entity.Api *-- "0..*" entity.Operation
 entity.Operation *-- "1..*" entity.Argument
 entity.Operation o-- entity.ValueType
 entity.Operation *-- "0..*" entity.Directive
@@ -129,10 +130,10 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | Description |  |
   | Comment | \\/\\/.*$ |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Description |  |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
 end legend
 

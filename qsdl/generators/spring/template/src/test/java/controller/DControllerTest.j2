@@ -41,7 +41,7 @@ public class {{model.name}}ControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-{% for operation in api.operations if model.is_crud %}
+{% for operation in api.operations if operation.is_generated %}
   {% if operation.method == "get" and operation.is_pageable %}
   {# 
   ########################################################################################

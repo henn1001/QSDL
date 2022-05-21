@@ -41,6 +41,3 @@ class Object:
 
     # required by textX
     parent: Schema = None
-
-    # addons
-    is_crud: bool = False

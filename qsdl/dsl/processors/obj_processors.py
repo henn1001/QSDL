@@ -81,7 +81,7 @@ def api_processor(entity: dsl.Api):
     """The api post-processor.
 
     Args:
-        entity (Api): The query object.
+        entity (Api): The api object.
     """
     _ = entity
 
@@ -90,7 +90,7 @@ def operation_processor(entity: dsl.Operation):
     """The operation post-processor.
 
     Args:
-        entity (Api): The query object.
+        entity (Api): The operation object.
     """
 
     entity.produces = "application/json" if not entity.produces else entity.produces
@@ -101,7 +101,7 @@ def argument_processor(entity: dsl.Argument):
     """The parameter post-processor.
 
     Args:
-        entity (Argument): The parameter object.
+        entity (Argument): The argument object.
     """
     _ = entity
 

@@ -114,13 +114,14 @@ Api :
     // Special directives
     ( is_deprecated?='@deprecated'
         ('@namespace(value:' namespace=STRING ')')?
+        ('@generate(' generate*=STRING[','] ')')?
         )#
 
     // Custom directives
     directives*=Directive
 
     '{'
-        operations+=Operation
+        operations*=Operation
     '}'
 ;
 

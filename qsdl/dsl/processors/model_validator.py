@@ -23,6 +23,8 @@ from textx.exceptions import TextXSemanticError
 
 import qsdl.dsl.textx as xtx
 
+from . import CrudGeneratorEnum as CrudEnum
+
 if TYPE_CHECKING:
     from textx.metamodel import TextXMetaModel
     from qsdl.dsl.models import Schema
@@ -42,6 +44,7 @@ def validate(schema: Schema, metamodel: TextXMetaModel):
     validate_type_names(schema, metamodel)
     validate_arguments(schema, metamodel)
     validate_custom_operations_path(schema, metamodel)
+    validate_crud_generator_directive(schema, metamodel)
     validate_field_directives(schema, metamodel)
 
 
@@ -85,6 +88,7 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
     entities = []
+    names = []
 
     entities.extend(xtx.get_children_of_scalar(schema))
     entities.extend(xtx.get_children_of_enum(schema))
@@ -92,6 +96,8 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
     entities.extend(xtx.get_children_of_object(schema))
 
     for entity in entities:
+        names.append(entity.name)
+
         if not re.match(r"^[A-Z][a-zA-Z]*$", entity.name):
             msg = f"The {entity._tx_fqn} {entity.name} does not conform to the naming convention."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
@@ -113,6 +119,11 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
         if entity.name.upper() == "ID":
             msg = f"The {entity._tx_fqn} {entity.name} uses the reserved name ID."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+    # verify that we have unique names between all objects
+    if len(names) != len(set(names)):
+        msg = "Names for scalars, enums, bases and objects must be unique."
+        raise TextXSemanticError(msg, filename=schema._tx_filename)
 
     entities = []
 
@@ -237,6 +248,30 @@ def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
             if field.value == entity:
                 msg = f"The Field {field.name} for {field.parent.name} references itself."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+
+def validate_crud_generator_directive(schema: Schema, metamodel: TextXMetaModel):
+    """Check if the requested crud operations are valid
+
+    Args:
+        schema (Schema): The parsed schema definition.
+        metamodel (TextXMetaModel): The metamodel.
+
+    Raises:
+        TextXSemanticError: Exception for logical errors.
+    """
+    _ = metamodel
+
+    apis = xtx.get_children_of_api(schema)
+
+    apis = [x for x in apis if x.generate]
+
+    for api in apis:
+        match = [x for x in api.generate if not CrudEnum.has_member_key(x)]
+
+        if match:
+            msg = f"The Api of Object {api.parent.name} @generate directive specifies a invalid value. Needs to be one or multiples of {[e.value for e in CrudEnum]}"
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
 def validate_operations(schema: Schema):

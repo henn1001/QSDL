@@ -92,3 +92,40 @@ class TestSpecificsOpenAPI:
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
+
+    def test_specifics_04_positive(self):
+        """Verify usage of relations without parent endpoints"""
+        test_input = """\
+            type Foo {
+                field1: String
+            }
+
+            type Bar {
+                name: String
+                foos: [Foo] @aggregation
+
+                extend Api {    }
+            }
+
+            type Fruit  {
+                name: String
+                foos: [Foo] @composition
+
+                extend Api {    }
+            }
+
+        """
+
+        openapi = wrapper_generate(test_input)
+
+        schemas = openapi["components"]["schemas"]
+        assert schemas["FooList"]
+        assert schemas["Foo"]
+        assert schemas["Bar"]
+        assert schemas["Fruit"]
+
+        paths = openapi["paths"]
+        assert paths["/bars/{bar_id}/foos"]
+        assert paths["/fruits/{fruit_id}/foos"]
+        assert "/bars" not in paths
+        assert "/bars" not in paths

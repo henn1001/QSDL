@@ -18,7 +18,7 @@ from tests import wrapper_generate, wrapper_generate_failure
 class TestApi:
     """Test Operations.
 
-    01. `Api` must at least contain one `Operation`.
+    01. `Api` can at least contain one `Operation`.
 
     02. `Api` may be used multiple times for a schema to define custom operations.
 
@@ -34,23 +34,12 @@ class TestApi:
         """Verify empty Operation"""
         test_input = """\
             extend Api {
-                getFoo: Object @path(value:"foo")
             }
         """
 
         openapi = wrapper_generate(test_input)
 
-        assert "get" in openapi["paths"]["/foo"]
-        assert "getFoo" in openapi["paths"]["/foo"]["get"]["operationId"]
-
-    def test_api_01_negative(self):
-        """Verify empty Operation"""
-        test_input = """\
-            extend Api {
-            }
-        """
-
-        wrapper_generate_failure(test_input)
+        assert not openapi["paths"]
 
     def test_api_02_positive(self):
         """Verify Api multiple usage in schema"""

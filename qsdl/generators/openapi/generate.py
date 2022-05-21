@@ -39,11 +39,16 @@ def parse_apis(schema: Schema) -> List[Api]:
     """
     apis = []
 
-    entities = xtx.get_children_of_api(schema)
+    api_list = xtx.get_children_of_api(schema)
 
-    for entity in entities:
-        new_api = Api(entity)
-        apis.append(new_api)
+    for api in api_list:
+
+        # we can skip empty apis
+        if not api.operations:
+            continue
+
+        api_class = Api(api)
+        apis.append(api_class)
 
     return apis
 

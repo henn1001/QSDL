@@ -21,6 +21,8 @@ import qsdl.dsl.textx as xtx
 from qsdl.dsl.models import Api, Argument, Field, Object, Scalar, Schema, Operation
 from qsdl.filter import pluralize
 
+from . import CrudGeneratorEnum as CrudEnum
+
 
 def get_compositions(schema: Schema, obj: Object) -> List[Field]:
     """Return all Fields who are using this Object as composition.
@@ -332,10 +334,11 @@ def operation_builder(
     operation.parent = api
     operation.domain_object = obj
     operation.domain_parent = parent_obj
+    operation.is_generated = True
     operation.produces = "application/json"
     operation.consumes = "application/json"
 
-    if method == "getA":
+    if method == CrudEnum.GET_ALL:
         name = "get" + name_builder(obj, parent_obj if duplicate else None, "For", "s")
         path = path_builder(obj, parent_obj, False)
 
@@ -353,7 +356,7 @@ def operation_builder(
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    elif method == "post":
+    elif method == CrudEnum.CREATE:
         name = "create" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, False)
 
@@ -369,7 +372,7 @@ def operation_builder(
         operation.body_parameters = body_argument_builder(operation, obj)
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    elif method == "get":
+    elif method == CrudEnum.GET:
         name = "get" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, True)
 
@@ -385,7 +388,7 @@ def operation_builder(
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    elif method == "put":
+    elif method == CrudEnum.REPLACE:
         name = "replace" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, True)
 
@@ -401,7 +404,7 @@ def operation_builder(
         operation.body_parameters = body_argument_builder(operation, obj)
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    elif method == "patch":
+    elif method == CrudEnum.UPDATE:
         name = "update" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, True)
 
@@ -417,7 +420,7 @@ def operation_builder(
         operation.body_parameters = body_argument_builder(operation, obj)
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    elif method == "delete":
+    elif method == CrudEnum.DELETE:
         name = "delete" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, True)
 
@@ -433,7 +436,7 @@ def operation_builder(
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    elif method == "add":
+    elif method == CrudEnum.ADD:
         name = "add" + name_builder(obj, parent_obj if duplicate else None, "To")
         path = path_builder(obj, parent_obj, True) + "/add"
 
@@ -449,7 +452,7 @@ def operation_builder(
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    elif method == "remove":
+    elif method == CrudEnum.REMOVE:
         name = "remove" + name_builder(obj, parent_obj if duplicate else None, "From")
         path = path_builder(obj, parent_obj, True) + "/remove"
 
@@ -491,9 +494,24 @@ def api_builder(
     methods = []
 
     if aggregation:
-        methods = ["getA", "add", "remove"]
+        methods = [
+            CrudEnum.GET_ALL,
+            CrudEnum.ADD,
+            CrudEnum.REMOVE,
+        ]
     else:
-        methods = ["getA", "post", "get", "put", "patch", "delete"]
+        methods = [
+            CrudEnum.GET_ALL,
+            CrudEnum.CREATE,
+            CrudEnum.GET,
+            CrudEnum.REPLACE,
+            CrudEnum.UPDATE,
+            CrudEnum.DELETE,
+        ]
+
+        # allow selective generation if requested
+        if obj.api and obj.api.generate:
+            methods = [x for x in obj.api.generate if x in methods]
 
     # it is importent here to only create the api once because
     # we might loop multiple times over this object to add
@@ -507,6 +525,7 @@ def api_builder(
         operation = operation_builder(obj, parent_obj, duplicate, method)
         operation.is_aggregated = aggregation
         obj.api.operations.append(operation)
+        obj.api.has_generated = True
 
     return obj
 
@@ -531,12 +550,10 @@ def parse_objects(schema: Schema):
         id_field = id_builder(obj)
         obj.fields.insert(0, id_field)
 
-    # filter custom definitions and add default apis for the rest
-    objects = list(filter(lambda x: not x.api, objects))
+    # we want to generate apis for all types that do not overwrite the api
+    # or specify the generate directive
+    objects = list(filter(lambda x: not x.api or x.api.generate, objects))
     for obj in objects:
-
-        # flag crud object
-        obj.is_crud = True
 
         # aggregations
         agg_fields = get_aggregation(schema, obj)

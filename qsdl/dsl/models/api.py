@@ -32,9 +32,13 @@ class Api:
     # Special directives
     is_deprecated: bool = False
     namespace: str = None
+    generate: List[str] = field(default_factory=list)
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
     operations: List[Operation] = field(default_factory=list)
 
     # required by textX
-    parent: Union[Schema, Object]  = None
+    parent: Union[Schema, Object] = None
+
+    # addons
+    has_generated: bool = False

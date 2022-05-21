@@ -61,7 +61,7 @@ class _Operation:
     path: str = None
     method: str = None
     is_deprecated: bool = False
-    is_crud: bool = False
+    is_generated: bool = False
     is_pageable: bool = False
 
     parameters: List[_Parameter] = field(default_factory=list)
@@ -82,7 +82,7 @@ class _Operation:
         self.description = self._ref.description
         self.path = self._ref.path
         self.method = self._ref.method.lower()
-        # self.is_crud = field.is_crud
+        self.is_generated = self._ref.is_generated
         self.is_pageable = self._ref.is_pageable
 
         # special for aggregations

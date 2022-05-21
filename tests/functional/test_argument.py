@@ -65,7 +65,7 @@ class TestArgument:
         """Verify empty arguments"""
         test_input = """\
             extend Api {
-                field(arg: String): Void @path(value:"path")
+                field(): Void @path(value:"path")
             }
         """
 
@@ -75,6 +75,7 @@ class TestArgument:
         """Verify empty arguments"""
         test_input = """\
             extend Api {
+                field(arg): Void @path(value:"path")
             }
         """
 

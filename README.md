@@ -318,7 +318,7 @@ Api types can be used to create API Endpoints and Query/Mutation.
 
 Api Rules:
 
-1.  `Api` must at least contain one `Operation`.
+1.  `Api` can at least contain one `Operation`.
 
 2.  `Api` may be used multiple times for a schema to define custom operations.
 
@@ -384,3 +384,5 @@ There are certain builtin directives that can be used to modify the generation b
 11.  `Directive` `@produce` may be used on any `Api` `Field` for changing the mime type.
 
 12.  `Directive` `@consumes` may be used on any `Api` `Field` for changing the mime type.
+
+13.  `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.

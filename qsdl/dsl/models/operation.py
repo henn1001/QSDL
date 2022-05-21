@@ -49,6 +49,7 @@ class Operation:
     parent: Api = None
 
     # addons
+    is_generated: bool = False
     summary: str = None
     is_aggregated: bool = False
     path_parameters: List[Argument] = field(default_factory=list)

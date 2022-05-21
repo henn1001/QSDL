@@ -111,7 +111,6 @@ class ModelClass:
     constants: List[str] = field(default_factory=list)
 
     # addons
-    is_crud: bool = False
     is_supertype: bool = False
     is_used: bool = False
     is_aggregated: bool = False
@@ -137,7 +136,6 @@ class ModelClass:
         self.is_object = _ref._tx_fqn in ["entity.Object"]
 
         # addons
-        self.is_crud = _ref.is_crud if self.is_object else False
         self.is_supertype = util.is_supertype(_ref) if self.is_base else False
         self.is_used = util.is_used(_ref)
         self.is_aggregated = util.has(_ref, is_aggregated=True)

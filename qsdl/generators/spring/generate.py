@@ -30,6 +30,33 @@ from .config import Config
 from .models import ApiClass, ModelClass
 
 
+def parse_apis(schema: Schema) -> List[ApiClass]:
+    """Parse QSDL schema into custom apis.
+
+    Args:
+        schema (Schema): The QSDL schema model.
+
+    Returns:
+        List[ApiClass]: The parsed apis.
+    """
+    apis = []
+
+    api_list = xtx.get_children_of_api(schema)
+
+    for api in api_list:
+
+        # we can skip empty apis
+        if not api.operations:
+            continue
+
+        api_class = ApiClass().build(api)
+        apis.append(api_class)
+
+    apis = util.sort_api_controller(apis)
+
+    return apis
+
+
 def parse_models(schema: Schema) -> List[ModelClass]:
     """Parse QSDL schema into custom models.
 
@@ -47,8 +74,8 @@ def parse_models(schema: Schema) -> List[ModelClass]:
     for entity in enum_list + base_list + obj_list:
         new_model = ModelClass().build(entity)
 
-        # filter unused models
-        if new_model.is_used:
+        # filter unused bases models
+        if not new_model.is_base or new_model.is_used:
             models.append(new_model)
 
     # add domain parents for each model
@@ -58,28 +85,6 @@ def parse_models(schema: Schema) -> List[ModelClass]:
     util.add_hibernate_info(models)
 
     return models
-
-
-def parse_apis(schema: Schema) -> List[ApiClass]:
-    """Parse QSDL schema into custom apis.
-
-    Args:
-        schema (Schema): The QSDL schema model.
-
-    Returns:
-        List[ApiClass]: The parsed apis.
-    """
-    apis = []
-
-    api_list = xtx.get_children_of_api(schema)
-
-    for entity in api_list:
-        new_api = ApiClass().build(entity)
-        apis.append(new_api)
-
-    apis = util.sort_api_controller(apis)
-
-    return apis
 
 
 def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list):
@@ -170,10 +175,6 @@ def generate(schema: Schema, output_path: Path, config: Config):
         if api.model:
             api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{base_package}/controller/{api.name}ControllerTest.java", api))
             api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{base_package}/service/{api.name}ServiceTest.java", api))
-
-        if api.model and config.database == "hibernate":
-            api_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{api.name}Repository.java", api))
-            api_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{base_package}/repository/{api.name}RepositoryTest.java", api))
         # fmt: on
 
     # loop and generate model files
@@ -182,6 +183,10 @@ def generate(schema: Schema, output_path: Path, config: Config):
     for model in models:
         # fmt: off
         model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{base_package}/domain/{model.name}.java", model))
+
+        if config.database == "hibernate" and model.is_object:
+            model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{model.name}Repository.java", model))
+            model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{base_package}/repository/{model.name}RepositoryTest.java", model))
         # fmt: on
 
     # fmt: off

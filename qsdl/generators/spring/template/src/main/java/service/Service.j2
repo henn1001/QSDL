@@ -55,7 +55,7 @@ public class {{api.name}}Service {
 {% for operation in api.operations %}
   public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
 
-  {% if database == "hibernate" and model and model.is_crud %}
+  {% if database == "hibernate" and model and operation.is_generated %}
   {{- opr_macro.logic(operation) -}}
   {% else %}
     return null;
