@@ -48,10 +48,10 @@ public class {{api.name}}Service {
 {% endfor %}
 {% endif %}
 
-{% for operation in api.operations %}
+{% for operation in api.operations if operation.is_generated %}
   public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
 
-  {% if database == "hibernate" and model and operation.is_generated %}
+  {% if database == "hibernate" %}
   {{- opr_macro.logic(operation) -}}
   {% else %}
     return null;

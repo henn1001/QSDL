@@ -5,8 +5,6 @@ package com.test.controller;
 
 import com.test.domain.*;
 import com.test.model.*;
-import com.test.service.DefaultService;
-import com.test.util.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -24,9 +22,6 @@ import javax.validation.Valid;
 public class DefaultController extends BaseController {
 
   @Autowired
-  DefaultService defaultService;
-
-  @Autowired
   public DefaultController(NativeWebRequest request) {
     super(request);
   }
@@ -40,8 +35,7 @@ public class DefaultController extends BaseController {
     consumes = { "application/json" }
   )
   public ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode body) throws Exception {
-    ObjectNode response = defaultService.submitQury(body);
-    return new ResponseEntity<>(response, HttpStatus.OK);
+    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
 }

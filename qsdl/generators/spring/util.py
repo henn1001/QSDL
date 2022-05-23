@@ -147,12 +147,14 @@ def has(
 def controller_has(
     entity: dsl.Api,
     has_enum: bool = False,
+    has_gen_patch: bool = False,
 ) -> bool:
     """Checks if the Operations of a Api has various attributes.
 
     Args:
         entity (Union[Base, Object]): Either entity.Base or entity.Object.
         has_enum (bool, optional): [description]. Defaults to False.
+        has_gen_patch (bool, optional): [description]. Defaults to False.
 
     Returns:
         bool:  Returns True on detection.
@@ -176,6 +178,11 @@ def controller_has(
                 if has_enum and arg and arg._tx_fqn == "entity.Enum":
                     ret = True
                     break
+
+            # checks for generated patch endpoints
+            if has_gen_patch and opr.method == "PATCH" and opr.is_generated:
+                ret = True
+                break
 
     return ret
 
@@ -276,10 +283,16 @@ def sort_api_controller(api_list: list[ApiClass]) -> list[ApiClass]:
 
     # we work with case insensitive names here to simplify things
     for api in api_list:
-        if api.name.lower() not in api_store:
-            api_store[api.name.lower()] = api
+        api_name = api.name.lower()
+
+        # make sure we merge custom apis into domain apis
+        if api_name not in api_store:
+            api_store[api_name] = api
+        elif api_name in api_store and api.has_generated:
+            api.operations.extend(api_store[api_name].operations)
+            api_store[api_name] = api
         else:
-            api_store[api.name.lower()].operations.extend(api.operations)
+            api_store[api_name].operations.extend(api.operations)
 
     return list(api_store.values())
 
@@ -376,11 +389,13 @@ def get_controller_imports(api: dsl.Api, api_name: str) -> List[str]:
     imprt = f"import {Store.package.model}.*;"
     imports.append(imprt)
 
-    imprt = f"import {Store.package.service}.{api_name}Service;"
-    imports.append(imprt)
+    if api.has_generated:
+        imprt = f"import {Store.package.service}.{api_name}Service;"
+        imports.append(imprt)
 
-    imprt = f"import {Store.package.util}.Validator;"
-    imports.append(imprt)
+    if controller_has(api, has_gen_patch=True):
+        imprt = f"import {Store.package.util}.Validator;"
+        imports.append(imprt)
 
     # remove duplicates and sort
     imports = list(dict.fromkeys(imports))

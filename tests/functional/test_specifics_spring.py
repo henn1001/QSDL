@@ -332,3 +332,28 @@ class TestSpecificsSpring:
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_11(self):
+        """Verify usage of generate and controller directive"""
+        test_input = """\
+            extend Api @controller("Buzzword") {
+                submitQury(arg1: String, arg2: [Int]): Object @path(value:"query") @method(value: PATCH)
+            }
+
+            type Buzzword @namespace(value:"Incident"){
+                name: String!
+                extend Api @generate("UPDATE") {}
+            }
+
+        """
+
+        test_input = textwrap.dedent(test_input)
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+
+        # generate
+        assert generate("spring", test_output, raw_schema=test_input) == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0

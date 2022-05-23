@@ -172,9 +172,9 @@ def generate(schema: Schema, output_path: Path, config: Config):
     for api in apis:
         # fmt: off
         api_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{package.controller}/{api.name}Controller.java", api))
-        api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{package.service}/{api.name}Service.java", api))
 
         if api.model:
+            api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{package.service}/{api.name}Service.java", api))
             api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{package.controller}/{api.name}ControllerTest.java", api))
             api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{package.service}/{api.name}ServiceTest.java", api))
         # fmt: on
