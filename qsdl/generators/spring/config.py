@@ -30,3 +30,16 @@ class Config:
 
     # used to change the OpenAPI type for ID between "String" and "Long"
     id_type: str = "Long"
+
+    # used for changing the folder layout
+    # include_namespace: bool = False
+
+    config_path: str = "config"
+    controller_path: str = "controller"
+    domain_path: str = "domain"
+    enum_path: str = "constant"
+    exception_path: str = "exception"
+    model_path: str = "model"
+    repository_path: str = "repository"
+    service_path: str = "service"
+    util_path: str = "util"

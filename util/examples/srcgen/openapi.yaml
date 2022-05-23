@@ -925,6 +925,8 @@ paths:
           required: false
           schema:
             type: object
+            example:
+              name: integer
           style: form
           explode: true
         - $ref: '#/components/parameters/cursor'
@@ -1005,6 +1007,8 @@ paths:
           required: false
           schema:
             type: object
+            example:
+              name: integer
           style: form
           explode: true
         - $ref: '#/components/parameters/cursor'
@@ -1670,14 +1674,14 @@ components:
     Role:
       required:
         - id
-        - role
+        - name
       type: object
       properties:
         id:
           type: integer
           format: int64
           readOnly: true
-        role:
+        name:
           type: integer
           format: int32
 
@@ -1748,8 +1752,9 @@ components:
           format: int32
         title:
           type: string
-        issuer:
-          $ref: '#/components/schemas/User'
+        issuer_id:
+          type: integer
+          format: int32
         issuer_body:
           $ref: '#/components/schemas/User'
           readOnly: true
@@ -1776,14 +1781,14 @@ components:
     Milestone:
       required:
         - id
-        - milestone
+        - name
       type: object
       properties:
         id:
           type: integer
           format: int64
           readOnly: true
-        milestone:
+        name:
           type: integer
           format: int32
 

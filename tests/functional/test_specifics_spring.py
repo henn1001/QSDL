@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import shutil
 import subprocess
 import textwrap
@@ -296,6 +297,38 @@ class TestSpecificsSpring:
 
         # generate
         assert generate("spring", test_output, raw_schema=test_input) == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_10(self):
+        """Verify usage of folder layoud config"""
+
+        test_input = Path("util/examples/input.qsdl")
+        test_output = Path("srcgen/")
+        test_config = Path("srcgen/config.json")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+        test_output.mkdir()
+
+        config = {
+            "group_id": "com.supertest",
+            "config_path": "shared.config",
+            "controller_path": "generated.api",
+            "domain_path": "generated.object",
+            "enum_path": "generated.constants",
+            "exception_path": "shared.exceptions",
+            "model_path": "shared.models",
+            "repository_path": "generated.repositorys",
+            "service_path": "generated.service",
+            "util_path": "shared.utils",
+        }
+
+        with open(test_config, "w", encoding="utf-8") as file:
+            json.dump(config, file)
+
+        # generate
+        assert generate("spring", test_output, input_path=test_input, config_path=test_config) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0

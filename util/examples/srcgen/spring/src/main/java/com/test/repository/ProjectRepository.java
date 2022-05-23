@@ -7,8 +7,6 @@ import com.test.domain.Project;
 
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
-
 @Repository
 public interface ProjectRepository extends BaseRepository<Project, Long> {
 

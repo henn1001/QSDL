@@ -175,7 +175,7 @@ class ApiClass:
     """The Java Model for the Controller and Service Class"""
 
     name: str = None
-    tag: str = None
+    namespace: str = None
     description: str = None
 
     model: ModelClass = None
@@ -184,13 +184,15 @@ class ApiClass:
 
     # addons
     has_generated: bool = False
+    controller_imports: List[str] = field(default_factory=list)
+    service_imports: List[str] = field(default_factory=list)
 
     def build(self, _ref: dsl.Api) -> ApiClass:
         """Builds self from dsl.Api"""
 
         # The api name equals the object name to unless it is not part of a object
         self.name = _ref.parent.name if _ref.parent._tx_fqn == "entity.Object" else "Default"
-        self.tag = stringcase.lowercase(_ref.namespace)
+        self.namespace = stringcase.lowercase(_ref.namespace)
         self.description = _ref.description
 
         # allow to overwrite the controller name
@@ -205,6 +207,8 @@ class ApiClass:
         self._add_operations(_ref)
 
         self.has_generated = _ref.has_generated
+        self.controller_imports = util.get_controller_imports(_ref, self.name)
+        self.service_imports = util.get_service_imports(_ref, self.name)
 
         return self
 

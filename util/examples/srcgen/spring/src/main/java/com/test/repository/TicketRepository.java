@@ -7,8 +7,6 @@ import com.test.domain.Ticket;
 
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
-
 @Repository
 public interface TicketRepository extends BaseRepository<Ticket, Long> {
 

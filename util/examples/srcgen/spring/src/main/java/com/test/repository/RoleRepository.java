@@ -7,7 +7,7 @@ import com.test.domain.Role;
 
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.Optional;
 
 @Repository
 public interface RoleRepository extends BaseRepository<Role, Long> {

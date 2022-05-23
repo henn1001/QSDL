@@ -3,6 +3,7 @@
  */
 package com.test.domain;
 
+import com.test.constant.*;
 import com.test.model.*;
 import com.test.util.Json;
 

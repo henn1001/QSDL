@@ -5,7 +5,7 @@ package com.test.controller;
 
 import com.test.domain.*;
 import com.test.model.*;
-import com.test.service.*;
+import com.test.service.RoleService;
 import com.test.util.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;

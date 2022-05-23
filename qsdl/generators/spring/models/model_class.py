@@ -101,6 +101,7 @@ class ModelClass:
     """The Java Model for the Domain Class Object"""
 
     name: str = None
+    namespace: str = None
     description: str = None
 
     is_enum: bool = False
@@ -117,6 +118,7 @@ class ModelClass:
     has_relation: bool = False
     has_required: bool = False
     has_query: bool = False
+    imports: List[str] = field(default_factory=list)
 
     hibernate: HibernateModelInfo = None
 
@@ -127,6 +129,7 @@ class ModelClass:
 
         # rename to naming convention
         self.name = _ref.name
+        self.namespace = stringcase.lowercase(_ref.namespace)
 
         self.description = _ref.description
 
@@ -142,6 +145,7 @@ class ModelClass:
         self.has_relation = util.has(_ref, has_relation=True)
         self.has_required = util.has(_ref, has_required_ignore_id=True)
         self.has_query = util.has(_ref, has_query=True)
+        self.imports = util.get_model_imports(_ref)
 
         # add attributes
         self._add_attributes(_ref)

@@ -7,7 +7,7 @@ import com.test.domain.User;
 
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends BaseRepository<User, Long> {

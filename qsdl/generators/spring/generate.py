@@ -27,7 +27,7 @@ from qsdl.render import render
 
 from . import util
 from .config import Config
-from .models import ApiClass, ModelClass
+from .models import ApiClass, ModelClass, Package
 
 
 def parse_apis(schema: Schema) -> List[ApiClass]:
@@ -157,24 +157,26 @@ def generate(schema: Schema, output_path: Path, config: Config):
     util.custom_types["ID"] = config.id_type
     util.Store.schema = schema
     util.Store.config = config
-
-    base_package = config.group_id.replace(".", "/")
+    util.Store.package = package = Package(config)
 
     # parse models and apis
     util.Store.models = models = parse_models(schema)
     apis = parse_apis(schema)
+
+    # enable slashing
+    package.slashed = True
 
     # loop and generate domain files
     api_files = []
 
     for api in apis:
         # fmt: off
-        api_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{base_package}/controller/{api.name}Controller.java", api))
-        api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{base_package}/service/{api.name}Service.java", api))
+        api_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{package.controller}/{api.name}Controller.java", api))
+        api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{package.service}/{api.name}Service.java", api))
 
         if api.model:
-            api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{base_package}/controller/{api.name}ControllerTest.java", api))
-            api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{base_package}/service/{api.name}ServiceTest.java", api))
+            api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{package.controller}/{api.name}ControllerTest.java", api))
+            api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{package.service}/{api.name}ServiceTest.java", api))
         # fmt: on
 
     # loop and generate model files
@@ -182,11 +184,14 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     for model in models:
         # fmt: off
-        model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{base_package}/domain/{model.name}.java", model))
+        if model.is_enum:
+            model_files.append(("src/main/java/domain/Enum.j2", f"src/main/java/{package.enum}/{model.name}.java", model))
+        else:
+            model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{package.domain}/{model.name}.java", model))
 
         if config.database == "hibernate" and model.is_object:
-            model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{base_package}/repository/{model.name}Repository.java", model))
-            model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{base_package}/repository/{model.name}RepositoryTest.java", model))
+            model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{package.repository}/{model.name}Repository.java", model))
+            model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{package.repository}/{model.name}RepositoryTest.java", model))
         # fmt: on
 
     # fmt: off
@@ -207,49 +212,52 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/resources/public/index.j2", "src/main/resources/public/index.html"),
         ("src/main/resources/public/error/404.j2", "src/main/resources/public/error/404.html"),
         # main
-        ("src/main/java/package-info.j2", f"src/main/java/{base_package}/package-info.java"),
-        ("src/main/java/SpringBootApp.j2", f"src/main/java/{base_package}/SpringBootApp.java"),
-        ("src/test/java/TestConfig.j2", f"src/test/java/{base_package}/TestConfig.java"),
+        ("src/main/java/package-info.j2", f"src/main/java/{package.base}/package-info.java"),
+        ("src/main/java/SpringBootApp.j2", f"src/main/java/{package.base}/SpringBootApp.java"),
+        ("src/test/java/TestConfig.j2", f"src/test/java/{package.base}/TestConfig.java"),
         # config
-        ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{base_package}/config/AppConfiguration.java"),
-        ("src/main/java/config/AppProperties.j2", f"src/main/java/{base_package}/config/AppProperties.java"),
-        ("src/main/java/config/AsyncConfig.j2", f"src/main/java/{base_package}/config/AsyncConfig.java"),
-        ("src/main/java/config/SchedulerConfig.j2", f"src/main/java/{base_package}/config/SchedulerConfig.java"),
-        ("src/main/java/config/PersistenceConfig.j2", f"src/main/java/{base_package}/config/PersistenceConfig.java"),
-        ("src/main/java/config/ErrorCodes.j2", f"src/main/java/{base_package}/config/ErrorCodes.java"),
-        ("src/main/java/config/Constants.j2", f"src/main/java/{base_package}/config/Constants.java"),
+        ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
+        ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),
+        ("src/main/java/config/AsyncConfig.j2", f"src/main/java/{package.config}/AsyncConfig.java"),
+        ("src/main/java/config/SchedulerConfig.j2", f"src/main/java/{package.config}/SchedulerConfig.java"),
+        ("src/main/java/config/PersistenceConfig.j2", f"src/main/java/{package.config}/PersistenceConfig.java"),
+        ("src/main/java/config/ErrorCodes.j2", f"src/main/java/{package.config}/ErrorCodes.java"),
+        ("src/main/java/config/Constants.j2", f"src/main/java/{package.config}/Constants.java"),
         # api
-        ("src/main/java/controller/BaseController.j2", f"src/main/java/{base_package}/controller/BaseController.java"),
-        ("src/main/java/controller/HomeController.j2", f"src/main/java/{base_package}/controller/HomeController.java"),
+        ("src/main/java/controller/BaseController.j2", f"src/main/java/{package.controller}/BaseController.java"),
+        ("src/main/java/controller/HomeController.j2", f"src/main/java/{package.controller}/HomeController.java"),
         # util
-        ("src/main/java/util/Json.j2", f"src/main/java/{base_package}/util/Json.java"),
-        ("src/main/java/util/Time.j2", f"src/main/java/{base_package}/util/Time.java"),
-        ("src/main/java/util/Validator.j2", f"src/main/java/{base_package}/util/Validator.java"),
-        ("src/main/java/util/IdGenerator.j2", f"src/main/java/{base_package}/util/IdGenerator.java"),
-        ("src/main/java/util/NodeConverter.j2", f"src/main/java/{base_package}/util/NodeConverter.java"),
-        ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{base_package}/util/PredicateBuilder.java"),
+        ("src/main/java/util/Json.j2", f"src/main/java/{package.util}/Json.java"),
+        ("src/main/java/util/Time.j2", f"src/main/java/{package.util}/Time.java"),
+        ("src/main/java/util/Validator.j2", f"src/main/java/{package.util}/Validator.java"),
+        ("src/main/java/util/IdGenerator.j2", f"src/main/java/{package.util}/IdGenerator.java"),
+        ("src/main/java/util/NodeConverter.j2", f"src/main/java/{package.util}/NodeConverter.java"),
+        ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{package.util}/PredicateBuilder.java"),
         # exception
-        ("src/main/java/exception/AppException.j2", f"src/main/java/{base_package}/exception/AppException.java"),
-        ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{base_package}/exception/GlobalExceptionHandler.java"),
+        ("src/main/java/exception/AppException.j2", f"src/main/java/{package.exception}/AppException.java"),
+        ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{package.exception}/GlobalExceptionHandler.java"),
         # model
-        ("src/main/java/model/AppError.j2", f"src/main/java/{base_package}/model/AppError.java"),
-        ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{base_package}/model/AbstractPersistentObject.java"),
-        ("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{base_package}/model/AbstractPersistentBase.java"),
-        ("src/main/java/model/CursorPageable.j2", f"src/main/java/{base_package}/model/CursorPageable.java"),
-        ("src/main/java/model/CursorPage.j2", f"src/main/java/{base_package}/model/CursorPage.java"),
+        ("src/main/java/model/AppError.j2", f"src/main/java/{package.model}/AppError.java"),
+        ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{package.model}/AbstractPersistentObject.java"),
+        ("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{package.model}/AbstractPersistentBase.java"),
+        ("src/main/java/model/CursorPageable.j2", f"src/main/java/{package.model}/CursorPageable.java"),
+        ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),
         # tests
-        ("src/test/java/controller/ControllerTest.j2", f"src/test/java/{base_package}/controller/ControllerTest.java")
+        ("src/test/java/controller/ControllerTest.j2", f"src/test/java/{package.controller}/ControllerTest.java")
     ]
     # fmt: on
 
     if config.database == "hibernate":
         # fmt: off
-        supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{base_package}/repository/BaseRepository.java"))
-        supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{base_package}/repository/BaseRepositoryImpl.java"))
+        supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
+        supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))
         # fmt: on
 
     # remove ignored files from generator
     remove_ignored_files(output_path, api_files, model_files, supporting_files)
+
+    # enable dotting
+    package.slashed = False
 
     # build the render arguments
     context = {
@@ -257,6 +265,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "group_id": config.group_id,
         "artifact_id": config.artifact_id,
         "base_package": config.group_id,
+        "package": package,
         "basePath": schema.servers[0] if schema.servers else "/api/v1",
         "database": config.database,
         "encapsulation": config.encapsulation,

@@ -31,6 +31,12 @@ Enum:
     description=Description?
     'enum' name=ID 
 
+    // Special directives
+    ( is_deprecated?='@deprecated'
+        ('@namespace(value:' namespace=STRING ')')?
+        )#
+
+    // Custom directives
     directives*=Directive
     
     '{'

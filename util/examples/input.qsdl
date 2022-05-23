@@ -43,7 +43,7 @@ type Project extends BaseType @namespace(value:"Management") {
 }
 
 type Role @namespace(value:"Management"){
-    role: Int!
+    name: Int!
     users: [User] @aggregation
 }
 
@@ -59,7 +59,7 @@ type User @namespace(value:"Management"){
     type Ticket @namespace(value:"Incident"){
         number: Int!
         title: String
-        issuer: User
+        issuer_id: Int
         issuer_body: User @readOnly
         body: String
         status: Status
@@ -67,7 +67,7 @@ type User @namespace(value:"Management"){
     }
 
     type Milestone @namespace(value:"Incident"){
-        milestone: Int!
+        name: Int! @query
         sprints: [Sprint] @composition
     }
 

@@ -23,7 +23,7 @@ import qsdl.dsl.textx as xtx
 from qsdl.generators.spring.models import ApiClass, ModelField
 
 from .config import Config
-from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass, Parent
+from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass, Parent, Package
 
 
 class Store:
@@ -32,6 +32,7 @@ class Store:
     schema: dsl.Schema = None
     config: Config = None
     models: List[ModelClass] = []
+    package: Package = None
 
 
 custom_types = {
@@ -70,6 +71,7 @@ def has(
     is_aggregated: bool = False,
     has_relation: bool = False,
     has_query: bool = False,
+    has_enum: bool = False,
 ) -> bool:
     """Checks if the Base or Object has various attributes.
 
@@ -81,6 +83,7 @@ def has(
         has_required (bool, optional): [description]. Defaults to False.
         is_aggregated (bool, optional): [description]. Defaults to False.
         has_relation (bool, optional): [description]. Defaults to False.
+        has_enum (bool, optional): [description]. Defaults to False.
 
     Returns:
         bool:  Returns True on detection.
@@ -132,6 +135,47 @@ def has(
             if has_query and field.is_query:
                 ret = True
                 break
+
+            # checks if there is a query attribute
+            if has_enum and field.value._tx_fqn in ["entity.Enum"]:
+                ret = True
+                break
+
+    return ret
+
+
+def controller_has(
+    entity: dsl.Api,
+    has_enum: bool = False,
+) -> bool:
+    """Checks if the Operations of a Api has various attributes.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
+        has_enum (bool, optional): [description]. Defaults to False.
+
+    Returns:
+        bool:  Returns True on detection.
+    """
+    ret = False
+
+    if entity._tx_fqn in ["entity.Api"]:
+
+        for opr in entity.operations:
+
+            # for the api imports, we only care about the operation return value
+            # and if the body has exactly one parameter
+            args = [opr.value] if opr.value else []
+
+            if len(opr.body_parameters) == 1 and opr.body_parameters[0].value:
+                args.append(opr.body_parameters[0].value)
+
+            for arg in args:
+
+                # checks for enum parameters
+                if has_enum and arg and arg._tx_fqn == "entity.Enum":
+                    ret = True
+                    break
 
     return ret
 
@@ -316,3 +360,82 @@ def get_parent_fields(obj_name: dsl.Object.name, filter_relations=True) -> List[
     fields = [x for x in fields if x.is_relation] if filter_relations else fields
 
     return fields
+
+
+def get_controller_imports(api: dsl.Api, api_name: str) -> List[str]:
+    """Helper for dynamic controller imports"""
+    imports = []
+
+    if controller_has(api, has_enum=True):
+        imprt = f"import {Store.package.enum}.*;"
+        imports.append(imprt)
+
+    imprt = f"import {Store.package.domain}.*;"
+    imports.append(imprt)
+
+    imprt = f"import {Store.package.model}.*;"
+    imports.append(imprt)
+
+    imprt = f"import {Store.package.service}.{api_name}Service;"
+    imports.append(imprt)
+
+    imprt = f"import {Store.package.util}.Validator;"
+    imports.append(imprt)
+
+    # remove duplicates and sort
+    imports = list(dict.fromkeys(imports))
+    imports.sort()
+
+    return imports
+
+
+def get_service_imports(api: dsl.Api, api_name: str) -> List[str]:
+    """Helper for dynamic service imports"""
+    imports = []
+
+    if controller_has(api, has_enum=True):
+        imprt = f"import {Store.package.enum}.*;"
+        imports.append(imprt)
+
+    imprt = f"import {Store.package.domain}.*;"
+    imports.append(imprt)
+
+    imprt = f"import {Store.package.model}.*;"
+    imports.append(imprt)
+
+    imprt = f"import {Store.package.exception}.AppException;"
+    imports.append(imprt)
+
+    if Store.config.database == "hibernate":
+        imprt = f"import {Store.package.repository}.*;"
+        imports.append(imprt)
+
+        imprt = f"import {Store.package.util}.PredicateBuilder;"
+        imports.append(imprt)
+
+    # remove duplicates and sort
+    imports = list(dict.fromkeys(imports))
+    imports.sort()
+
+    return imports
+
+
+def get_model_imports(entity: Union[dsl.Enum, dsl.Base, dsl.Object]) -> List[str]:
+    """Helper for dynamic model imports"""
+    imports = []
+
+    if has(entity, has_enum=True):
+        imprt = f"import {Store.package.enum}.*;"
+        imports.append(imprt)
+
+    imprt = f"import {Store.package.model}.*;"
+    imports.append(imprt)
+
+    imprt = f"import {Store.package.util}.Json;"
+    imports.append(imprt)
+
+    # remove duplicates and sort
+    imports = list(dict.fromkeys(imports))
+    imports.sort()
+
+    return imports
