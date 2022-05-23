@@ -132,9 +132,10 @@ public class RoleRepositoryTest {
   public void whenCountByProject_thenUseQuerie() throws Exception {
 
     // Given
-    Long parentId = prepareData(5).get(0).project.getId();
+    Role testData = prepareData(5).get(0);
+    Project parent = testData.project;
 
-    BooleanBuilder predicate = new BooleanBuilder(QRole.role.project.id.eq(parentId));
+    BooleanBuilder predicate = new BooleanBuilder(QRole.role.project.id.eq(parent.getId()));
 
     // When
     long count = roleRepository.count(predicate);

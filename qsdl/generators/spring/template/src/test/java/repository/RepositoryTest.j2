@@ -152,23 +152,24 @@ public class {{model.name}}RepositoryTest {
   public void whenCountBy{{parent.model.name}}_thenUseQuerie() throws Exception {
 
     // Given
+    {{model.name}} testData = prepareData(5).get(0);
     {% if parent.field.is_aggregation %}
       {% if encapsulation %}
-    Long parentId = prepareData(5).get(0).get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0].getId();
+    {{parent.model.name}} parent = testData.get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0];
       {% else %}
-    Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0].getId();
+    {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
       {% endif %}
     {% else %}
       {% if encapsulation %}
-    Long parentId = prepareData(5).get(0).get{{parent.model.name}}.getId();
+    {{parent.model.name}} parent = testData.get{{parent.model.name}};
       {% else %}
-    Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}.getId();
+    {{parent.model.name}} parent = testData.{{parent.model.name|lower}};
       {% endif %}
     {% endif %}
 
-    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parentId));
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parent.getId()));
     {% for field in model.fields if field.is_query %}
-    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
+    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{field.name}}.eq(testData.{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
     {% endfor %}
 
     // When

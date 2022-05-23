@@ -132,9 +132,10 @@ public class UserRepositoryTest {
   public void whenCountByTicket_thenUseQuerie() throws Exception {
 
     // Given
-    Long parentId = prepareData(5).get(0).tickets.toArray(new Ticket[0])[0].getId();
+    User testData = prepareData(5).get(0);
+    Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
 
-    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parentId));
+    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));
 
     // When
     long count = userRepository.count(predicate);
