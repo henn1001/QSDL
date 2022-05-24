@@ -62,6 +62,11 @@ public class TestConfig {
     // loop over all fields to check for nested objects
     for (Field field : a.getClass().getDeclaredFields()) {
 
+      {% if encapsulation %}
+      // enable field access
+      field.setAccessible(true);
+
+      {% endif %}
       // ignore hibernate relations
       if (field.isAnnotationPresent(JsonIgnore.class)) {
         continue;

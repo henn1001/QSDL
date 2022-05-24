@@ -84,6 +84,11 @@ public abstract class AbstractPersistentObject {
               field.getAnnotation(JsonProperty.class).access() != JsonProperty.Access.READ_ONLY)) {
 
         try {
+          {% if encapsulation %}
+          // enable field access
+          field.setAccessible(true);
+
+          {% endif %}
           if (!skipNull || skipNull && Objects.nonNull(field.get(o))) {
             // Special case for writeable Entity Collections
             // Once Hibernate starts tracking a collection, we can not simply set new values

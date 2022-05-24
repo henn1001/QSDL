@@ -9,10 +9,11 @@ package {{package.domain}};
 {% endfor %}
 
 import com.fasterxml.jackson.annotation.*;
+{% if model.has_objectnode %}
 import com.fasterxml.jackson.databind.node.ObjectNode;
+{% endif %}
 {% if encapsulation %}
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 {% endif %}
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -23,7 +24,10 @@ import javax.validation.constraints.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 
-{% if encapsulation %}@Getter @Setter{{"\n"}}{% endif %}
+{% if encapsulation %}
+@Getter
+@Setter
+{% endif %}
 {% if database == "hibernate" and (model.is_object or model.is_entity) %}@Entity{{"\n"}}{% endif %}
 public class {{model.name}}{% if model.is_object %} extends AbstractPersistentObject{% elif model.is_base and model.is_entity %} extends AbstractPersistentBase{% endif %} {
 
@@ -83,20 +87,36 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
 
 {% for field in model.fields if field.is_relation and field.is_array %}
   public void addTo{{field.type}}s({{field.type}} o) {
+{% if encapsulation %}
+    {% if field.is_composition  %}
+    o.set{{model.name}}(this);
+    {% else %}
+    o.get{{model.name}}s().add(this);
+    {% endif %}
+{% else %}
     {% if field.is_composition  %}
     o.{{model.name|camel}} = this;
     {% else %}
     o.{{model.name|camel}}s.add(this);
     {% endif %}
+{% endif %}
     this.{{field.name}}.add(o);
   }
 
   public void removeFrom{{field.type}}s({{field.type}} o) {
+{% if encapsulation %}
+    {% if field.is_composition  %}
+    o.set{{model.name}}(null);
+    {% else %}
+    o.get{{model.name}}s().remove(this);
+    {% endif %}
+{% else %}
     {% if field.is_composition  %}
     o.{{model.name|camel}} = null;
     {% else %}
     o.{{model.name|camel}}s.remove(this);
     {% endif %}
+{% endif %}
     this.{{field.name}}.remove(o);
   }
 

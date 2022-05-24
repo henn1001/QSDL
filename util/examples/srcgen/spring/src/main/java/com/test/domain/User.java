@@ -7,7 +7,6 @@ import com.test.model.*;
 import com.test.util.Json;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;

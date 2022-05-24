@@ -155,13 +155,13 @@ public class {{model.name}}RepositoryTest {
     {{model.name}} testData = prepareData(5).get(0);
     {% if parent.field.is_aggregation %}
       {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}} parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0];
       {% else %}
     {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
       {% endif %}
     {% else %}
       {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}};
+    {{parent.model.name}} parent = testData.get{{parent.model.name}}();
       {% else %}
     {{parent.model.name}} parent = testData.{{parent.model.name|lower}};
       {% endif %}
@@ -185,13 +185,13 @@ public class {{model.name}}RepositoryTest {
     // Given
     {% if parent.field.is_aggregation %}
       {% if encapsulation %}
-    Long parentId = prepareData(5).get(0).get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0].getId();
+    Long parentId = prepareData(5).get(0).get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0].getId();
       {% else %}
     Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0].getId();
       {% endif %}
     {% else %}
       {% if encapsulation %}
-    Long parentId = prepareData(5).get(0).get{{parent.model.name}}.getId();
+    Long parentId = prepareData(5).get(0).get{{parent.model.name}}().getId();
       {% else %}
     Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}.getId();
       {% endif %}
@@ -226,7 +226,7 @@ public class {{model.name}}RepositoryTest {
     // Given
     {{model.name}} testData = prepareData(1).get(0);
   {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}} parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0];
   {% else %}
     {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
   {% endif %}
@@ -249,7 +249,7 @@ public class {{model.name}}RepositoryTest {
     // Given
     {{model.name}} testData = prepareData(1).get(0);
   {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}} parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0];
   {% else %}
     {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
   {% endif %}
@@ -271,7 +271,7 @@ public class {{model.name}}RepositoryTest {
     // Given
     {{model.name}} testData = prepareData(1).get(0);
   {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}}s.toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}} parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0];
   {% else %}
     {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
   {% endif %}

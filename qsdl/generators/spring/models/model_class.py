@@ -119,6 +119,7 @@ class ModelClass:
     has_relation: bool = False
     has_required: bool = False
     has_query: bool = False
+    has_objectnode: bool = False
     imports: List[str] = field(default_factory=list)
 
     hibernate: HibernateModelInfo = None
@@ -147,6 +148,7 @@ class ModelClass:
         self.has_relation = util.has(_ref, has_relation=True)
         self.has_required = util.has(_ref, has_required_ignore_id=True)
         self.has_query = util.has(_ref, has_query=True)
+        self.has_objectnode = util.has(_ref, has_type=["Object"])
         self.imports = util.get_model_imports(_ref)
 
         # add attributes
