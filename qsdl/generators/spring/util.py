@@ -210,20 +210,24 @@ def is_supertype(entity: dsl.Base) -> bool:
     return False
 
 
-def is_used(entity: Union[dsl.Base, dsl.Object]) -> bool:
+def is_used(entity: Union[dsl.Base, dsl.Object], field_only: bool = False) -> bool:
     """Checks if the provided Base or Object is used anywhere.
 
     Args:
         entity (Union[Base, Object]): Either entity.Base or entity.Object.
+        field_only (bool, optional): Checks only fields. Defaults to False.
 
     Returns:
         bool: [description]
     """
-    field_list = xtx.get_children_of_field(Store.schema)
-    opr_list = xtx.get_children_of_operation(Store.schema)
-    arg_list = xtx.get_children_of_argument(Store.schema)
+    entity_list = []
+    entity_list += xtx.get_children_of_field(Store.schema)
 
-    for itr in field_list + opr_list + arg_list:
+    if not field_only:
+        entity_list += xtx.get_children_of_operation(Store.schema)
+        entity_list += xtx.get_children_of_argument(Store.schema)
+
+    for itr in entity_list:
         if itr.value == entity:
             return True
 

@@ -24,8 +24,8 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 {% if encapsulation %}@Getter @Setter{{"\n"}}{% endif %}
-{% if database == "hibernate" %}@Entity{{"\n"}}{% endif %}
-public class {{model.name}}{% if model.is_object %} extends AbstractPersistentObject{% elif model.is_base %} extends AbstractPersistentBase{% endif %} {
+{% if database == "hibernate" and (model.is_object or model.is_entity) %}@Entity{{"\n"}}{% endif %}
+public class {{model.name}}{% if model.is_object %} extends AbstractPersistentObject{% elif model.is_base and model.is_entity %} extends AbstractPersistentBase{% endif %} {
 
 {% for field in model.fields if not field.is_id %}
   {# 

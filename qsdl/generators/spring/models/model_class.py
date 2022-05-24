@@ -114,6 +114,7 @@ class ModelClass:
     # addons
     is_supertype: bool = False
     is_used: bool = False
+    is_entity: bool = False
     is_aggregated: bool = False
     has_relation: bool = False
     has_required: bool = False
@@ -141,6 +142,7 @@ class ModelClass:
         # addons
         self.is_supertype = util.is_supertype(_ref) if self.is_base else False
         self.is_used = util.is_used(_ref)
+        self.is_entity = util.is_used(_ref, True)
         self.is_aggregated = util.has(_ref, is_aggregated=True)
         self.has_relation = util.has(_ref, has_relation=True)
         self.has_required = util.has(_ref, has_required_ignore_id=True)
