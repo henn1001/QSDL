@@ -3,6 +3,7 @@
  */
 package com.test.controller;
 
+import com.test.api.UserApi;
 import com.test.domain.*;
 import com.test.model.*;
 import com.test.service.UserService;
@@ -14,14 +15,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.validation.Valid;
 
 @Validated
-@RequestMapping("${server.base-path:/api/v1}")
 @Controller
-public class UserController extends BaseController {
+public class UserController extends BaseController implements UserApi {
 
   @Autowired
   UserService userService;
@@ -34,10 +33,6 @@ public class UserController extends BaseController {
   /**
    * GET /tickets/{ticket_id}/users : List Users
    */
-  @GetMapping(
-    value = "/tickets/{ticket_id}/users",
-    produces = { "application/json" }
-  )
   public ResponseEntity<CursorPage> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) throws Exception {
     CursorPage response = userService.getUsersForTicket(ticketId, super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -46,9 +41,6 @@ public class UserController extends BaseController {
   /**
    * POST /tickets/{ticket_id}/users/{id}/add : Add User
    */
-  @PostMapping(
-    value = "/tickets/{ticket_id}/users/{id}/add"
-  )
   public ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
     userService.addUserToTicket(ticketId, id);
     return new ResponseEntity<>(HttpStatus.OK);
@@ -57,9 +49,6 @@ public class UserController extends BaseController {
   /**
    * POST /tickets/{ticket_id}/users/{id}/remove : Remove User
    */
-  @PostMapping(
-    value = "/tickets/{ticket_id}/users/{id}/remove"
-  )
   public ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
     userService.removeUserFromTicket(ticketId, id);
     return new ResponseEntity<>(HttpStatus.OK);
@@ -68,10 +57,6 @@ public class UserController extends BaseController {
   /**
    * GET /users : List Users
    */
-  @GetMapping(
-    value = "/users",
-    produces = { "application/json" }
-  )
   public ResponseEntity<CursorPage> getUsers(CursorPageable pageable) throws Exception {
     CursorPage response = userService.getUsers(super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -80,11 +65,6 @@ public class UserController extends BaseController {
   /**
    * POST /users : Create a User
    */
-  @PostMapping(
-    value = "/users",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<User> createUser(@Valid @RequestBody User body) throws Exception {
     User response = userService.createUser(body);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -93,10 +73,6 @@ public class UserController extends BaseController {
   /**
    * GET /users/{id} : Read the specified User
    */
-  @GetMapping(
-    value = "/users/{id}",
-    produces = { "application/json" }
-  )
   public ResponseEntity<User> getUser(@PathVariable("id") Long id) throws Exception {
     User response = userService.getUser(id);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -105,11 +81,6 @@ public class UserController extends BaseController {
   /**
    * PUT /users/{id} : Replace the specified User
    */
-  @PutMapping(
-    value = "/users/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<User> replaceUser(@PathVariable("id") Long id, @Valid @RequestBody User body) throws Exception {
     User response = userService.replaceUser(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -118,11 +89,6 @@ public class UserController extends BaseController {
   /**
    * PATCH /users/{id} : Update the specified User
    */
-  @PatchMapping(
-    value = "/users/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User body) throws Exception {
     Validator.validateExRequired(body);
     User response = userService.updateUser(id, body);
@@ -132,9 +98,6 @@ public class UserController extends BaseController {
   /**
    * DELETE /users/{id} : Delete the specified User
    */
-  @DeleteMapping(
-    value = "/users/{id}"
-  )
   public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) throws Exception {
     userService.deleteUser(id);
     return new ResponseEntity<>(HttpStatus.OK);

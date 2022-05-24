@@ -146,6 +146,7 @@ def has(
 
 def controller_has(
     entity: dsl.Api,
+    has_objectnode: bool = False,
     has_enum: bool = False,
     has_gen_patch: bool = False,
 ) -> bool:
@@ -153,14 +154,13 @@ def controller_has(
 
     Args:
         entity (Union[Base, Object]): Either entity.Base or entity.Object.
+        has_objectnode (bool, optional): [description]. Defaults to False.
         has_enum (bool, optional): [description]. Defaults to False.
         has_gen_patch (bool, optional): [description]. Defaults to False.
 
     Returns:
         bool:  Returns True on detection.
     """
-    ret = False
-
     if entity._tx_fqn in ["entity.Api"]:
 
         for opr in entity.operations:
@@ -171,20 +171,24 @@ def controller_has(
 
             if len(opr.body_parameters) == 1 and opr.body_parameters[0].value:
                 args.append(opr.body_parameters[0].value)
+            elif has_objectnode and len(opr.body_parameters) > 1:
+                return True
 
             for arg in args:
 
                 # checks for enum parameters
                 if has_enum and arg and arg._tx_fqn == "entity.Enum":
-                    ret = True
-                    break
+                    return True
+
+                # checks for objectnode parameters
+                if has_objectnode and arg and arg.name == "Object":
+                    return True
 
             # checks for generated patch endpoints
             if has_gen_patch and opr.method == "PATCH" and opr.is_generated:
-                ret = True
-                break
+                return True
 
-    return ret
+    return False
 
 
 def is_supertype(entity: dsl.Base) -> bool:
@@ -375,6 +379,27 @@ def get_parent_fields(obj_name: dsl.Object.name, filter_relations=True) -> List[
     return fields
 
 
+def get_api_imports(api: dsl.Api) -> List[str]:
+    """Helper for dynamic controller imports"""
+    imports = []
+
+    if controller_has(api, has_enum=True):
+        imprt = f"import {Store.package.enum}.*;"
+        imports.append(imprt)
+
+    imprt = f"import {Store.package.domain}.*;"
+    imports.append(imprt)
+
+    imprt = f"import {Store.package.model}.*;"
+    imports.append(imprt)
+
+    # remove duplicates and sort
+    imports = list(dict.fromkeys(imports))
+    imports.sort()
+
+    return imports
+
+
 def get_controller_imports(api: dsl.Api, api_name: str) -> List[str]:
     """Helper for dynamic controller imports"""
     imports = []
@@ -382,6 +407,9 @@ def get_controller_imports(api: dsl.Api, api_name: str) -> List[str]:
     if controller_has(api, has_enum=True):
         imprt = f"import {Store.package.enum}.*;"
         imports.append(imprt)
+
+    imprt = f"import {Store.package.api}.{api_name}Api;"
+    imports.append(imprt)
 
     imprt = f"import {Store.package.domain}.*;"
     imports.append(imprt)
@@ -404,7 +432,7 @@ def get_controller_imports(api: dsl.Api, api_name: str) -> List[str]:
     return imports
 
 
-def get_service_imports(api: dsl.Api, api_name: str) -> List[str]:
+def get_service_imports(api: dsl.Api) -> List[str]:
     """Helper for dynamic service imports"""
     imports = []
 

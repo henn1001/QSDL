@@ -3,6 +3,7 @@
  */
 package com.test.controller;
 
+import com.test.api.RoleApi;
 import com.test.domain.*;
 import com.test.model.*;
 import com.test.service.RoleService;
@@ -14,14 +15,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.validation.Valid;
 
 @Validated
-@RequestMapping("${server.base-path:/api/v1}")
 @Controller
-public class RoleController extends BaseController {
+public class RoleController extends BaseController implements RoleApi {
 
   @Autowired
   RoleService roleService;
@@ -34,10 +33,6 @@ public class RoleController extends BaseController {
   /**
    * GET /projects/{project_id}/roles : List Roles
    */
-  @GetMapping(
-    value = "/projects/{project_id}/roles",
-    produces = { "application/json" }
-  )
   public ResponseEntity<CursorPage> getRoles(@PathVariable("project_id") Long projectId, CursorPageable pageable) throws Exception {
     CursorPage response = roleService.getRoles(projectId, super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -46,11 +41,6 @@ public class RoleController extends BaseController {
   /**
    * POST /projects/{project_id}/roles : Create a Role
    */
-  @PostMapping(
-    value = "/projects/{project_id}/roles",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<Role> createRole(@PathVariable("project_id") Long projectId, @Valid @RequestBody Role body) throws Exception {
     Role response = roleService.createRole(projectId, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -59,10 +49,6 @@ public class RoleController extends BaseController {
   /**
    * GET /projects/{project_id}/roles/{id} : Read the specified Role
    */
-  @GetMapping(
-    value = "/projects/{project_id}/roles/{id}",
-    produces = { "application/json" }
-  )
   public ResponseEntity<Role> getRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) throws Exception {
     Role response = roleService.getRole(projectId, id);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -71,11 +57,6 @@ public class RoleController extends BaseController {
   /**
    * PUT /projects/{project_id}/roles/{id} : Replace the specified Role
    */
-  @PutMapping(
-    value = "/projects/{project_id}/roles/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<Role> replaceRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @Valid @RequestBody Role body) throws Exception {
     Role response = roleService.replaceRole(projectId, id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -84,11 +65,6 @@ public class RoleController extends BaseController {
   /**
    * PATCH /projects/{project_id}/roles/{id} : Update the specified Role
    */
-  @PatchMapping(
-    value = "/projects/{project_id}/roles/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<Role> updateRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody Role body) throws Exception {
     Validator.validateExRequired(body);
     Role response = roleService.updateRole(projectId, id, body);
@@ -98,9 +74,6 @@ public class RoleController extends BaseController {
   /**
    * DELETE /projects/{project_id}/roles/{id} : Delete the specified Role
    */
-  @DeleteMapping(
-    value = "/projects/{project_id}/roles/{id}"
-  )
   public ResponseEntity<Void> deleteRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) throws Exception {
     roleService.deleteRole(projectId, id);
     return new ResponseEntity<>(HttpStatus.OK);

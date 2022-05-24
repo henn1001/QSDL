@@ -171,6 +171,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     for api in apis:
         # fmt: off
+        api_files.append(("src/main/java/controller/Api.j2", f"src/main/java/{package.api}/{api.name}Api.java", api))
         api_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{package.controller}/{api.name}Controller.java", api))
 
         if api.model:

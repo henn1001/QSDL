@@ -3,6 +3,7 @@
  */
 package com.test.controller;
 
+import com.test.api.ProjectApi;
 import com.test.domain.*;
 import com.test.model.*;
 import com.test.service.ProjectService;
@@ -14,14 +15,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.validation.Valid;
 
 @Validated
-@RequestMapping("${server.base-path:/api/v1}")
 @Controller
-public class ProjectController extends BaseController {
+public class ProjectController extends BaseController implements ProjectApi {
 
   @Autowired
   ProjectService projectService;
@@ -34,10 +33,6 @@ public class ProjectController extends BaseController {
   /**
    * GET /projects : List Projects
    */
-  @GetMapping(
-    value = "/projects",
-    produces = { "application/json" }
-  )
   public ResponseEntity<CursorPage> getProjects(CursorPageable pageable) throws Exception {
     CursorPage response = projectService.getProjects(super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -46,11 +41,6 @@ public class ProjectController extends BaseController {
   /**
    * POST /projects : Create a Project
    */
-  @PostMapping(
-    value = "/projects",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<Project> createProject(@Valid @RequestBody Project body) throws Exception {
     Project response = projectService.createProject(body);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -59,10 +49,6 @@ public class ProjectController extends BaseController {
   /**
    * GET /projects/{id} : Read the specified Project
    */
-  @GetMapping(
-    value = "/projects/{id}",
-    produces = { "application/json" }
-  )
   public ResponseEntity<Project> getProject(@PathVariable("id") Long id) throws Exception {
     Project response = projectService.getProject(id);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -71,11 +57,6 @@ public class ProjectController extends BaseController {
   /**
    * PUT /projects/{id} : Replace the specified Project
    */
-  @PutMapping(
-    value = "/projects/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @Valid @RequestBody Project body) throws Exception {
     Project response = projectService.replaceProject(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -84,11 +65,6 @@ public class ProjectController extends BaseController {
   /**
    * PATCH /projects/{id} : Update the specified Project
    */
-  @PatchMapping(
-    value = "/projects/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) throws Exception {
     Validator.validateExRequired(body);
     Project response = projectService.updateProject(id, body);
@@ -98,9 +74,6 @@ public class ProjectController extends BaseController {
   /**
    * DELETE /projects/{id} : Delete the specified Project
    */
-  @DeleteMapping(
-    value = "/projects/{id}"
-  )
   public ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) throws Exception {
     projectService.deleteProject(id);
     return new ResponseEntity<>(HttpStatus.OK);

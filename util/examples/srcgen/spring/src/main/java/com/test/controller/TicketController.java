@@ -3,6 +3,7 @@
  */
 package com.test.controller;
 
+import com.test.api.TicketApi;
 import com.test.domain.*;
 import com.test.model.*;
 import com.test.service.TicketService;
@@ -14,14 +15,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.validation.Valid;
 
 @Validated
-@RequestMapping("${server.base-path:/api/v1}")
 @Controller
-public class TicketController extends BaseController {
+public class TicketController extends BaseController implements TicketApi {
 
   @Autowired
   TicketService ticketService;
@@ -34,10 +33,6 @@ public class TicketController extends BaseController {
   /**
    * GET /tickets : List Tickets
    */
-  @GetMapping(
-    value = "/tickets",
-    produces = { "application/json" }
-  )
   public ResponseEntity<CursorPage> getTickets(CursorPageable pageable) throws Exception {
     CursorPage response = ticketService.getTickets(super.getQueryMap(), pageable);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -46,11 +41,6 @@ public class TicketController extends BaseController {
   /**
    * POST /tickets : Create a Ticket
    */
-  @PostMapping(
-    value = "/tickets",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<Ticket> createTicket(@Valid @RequestBody Ticket body) throws Exception {
     Ticket response = ticketService.createTicket(body);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -59,10 +49,6 @@ public class TicketController extends BaseController {
   /**
    * GET /tickets/{id} : Read the specified Ticket
    */
-  @GetMapping(
-    value = "/tickets/{id}",
-    produces = { "application/json" }
-  )
   public ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) throws Exception {
     Ticket response = ticketService.getTicket(id);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -71,11 +57,6 @@ public class TicketController extends BaseController {
   /**
    * PUT /tickets/{id} : Replace the specified Ticket
    */
-  @PutMapping(
-    value = "/tickets/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @Valid @RequestBody Ticket body) throws Exception {
     Ticket response = ticketService.replaceTicket(id, body);
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -84,11 +65,6 @@ public class TicketController extends BaseController {
   /**
    * PATCH /tickets/{id} : Update the specified Ticket
    */
-  @PatchMapping(
-    value = "/tickets/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
-  )
   public ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) throws Exception {
     Validator.validateExRequired(body);
     Ticket response = ticketService.updateTicket(id, body);
@@ -98,9 +74,6 @@ public class TicketController extends BaseController {
   /**
    * DELETE /tickets/{id} : Delete the specified Ticket
    */
-  @DeleteMapping(
-    value = "/tickets/{id}"
-  )
   public ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) throws Exception {
     ticketService.deleteTicket(id);
     return new ResponseEntity<>(HttpStatus.OK);

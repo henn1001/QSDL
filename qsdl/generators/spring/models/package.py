@@ -60,6 +60,11 @@ class Package:
         return ret.replace(".", "/") if self.slashed else ret.replace("/", ".")
 
     @property
+    def api(self) -> str:
+        """property helper method"""
+        return self.__prepare(self._config.api_path)
+
+    @property
     def controller(self) -> str:
         """property helper method"""
         return self.__prepare(self._config.controller_path)

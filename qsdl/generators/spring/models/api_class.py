@@ -184,6 +184,8 @@ class ApiClass:
 
     # addons
     has_generated: bool = False
+    has_objectnode: bool = False
+    api_imports: List[str] = field(default_factory=list)
     controller_imports: List[str] = field(default_factory=list)
     service_imports: List[str] = field(default_factory=list)
 
@@ -207,8 +209,10 @@ class ApiClass:
         self._add_operations(_ref)
 
         self.has_generated = _ref.has_generated
+        self.has_objectnode = util.controller_has(_ref, has_objectnode=True)
+        self.api_imports = util.get_api_imports(_ref)
         self.controller_imports = util.get_controller_imports(_ref, self.name)
-        self.service_imports = util.get_service_imports(_ref, self.name)
+        self.service_imports = util.get_service_imports(_ref)
 
         return self
 

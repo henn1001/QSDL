@@ -34,6 +34,7 @@ class Config:
     # used for changing the folder layout
     # include_namespace: bool = False
 
+    api_path: str = "api"
     config_path: str = "config"
     controller_path: str = "controller"
     domain_path: str = "domain"

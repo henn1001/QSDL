@@ -313,6 +313,7 @@ class TestSpecificsSpring:
 
         config = {
             "group_id": "com.supertest",
+            "api_path": "generated.iface",
             "config_path": "shared.config",
             "controller_path": "generated.api",
             "domain_path": "generated.object",

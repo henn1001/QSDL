@@ -14,14 +14,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
+{% if api.has_objectnode %}
 import com.fasterxml.jackson.databind.node.ObjectNode;
+{% endif %}
 
 import javax.validation.Valid;
 
 @Validated
-@RequestMapping("${server.base-path:{{basePath}}}")
 @Controller
-public class {{api.name}}Controller extends BaseController {
+public class {{api.name}}Controller extends BaseController implements {{api.name}}Api {
 
 {% if api.has_generated %}
   @Autowired
@@ -37,16 +38,6 @@ public class {{api.name}}Controller extends BaseController {
   /**
    * {{operation.method|upper}} {{operation.path}}{% if operation.summary %} : {{operation.summary + "\n"}}{% endif %}
    */
-  @{{operation.method|capitalize}}Mapping(
-    value = "{{operation.path}}"
-  {%- if operation.response -%}
-    {{",\n"}}    produces = {{ "{ \"" + operation.produces + "\" }"}}
-  {%- endif %}
-  {%- if operation.body_parameters -%}
-    {{",\n"}}    consumes = {{ "{ \"" + operation.consumes + "\" }"}}
-  {%- endif %}
-
-  )
   public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) throws Exception {
   {% if operation.is_generated and operation.response %}
     {% if operation.method == "patch" %}
