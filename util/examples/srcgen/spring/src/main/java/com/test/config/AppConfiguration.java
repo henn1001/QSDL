@@ -48,14 +48,6 @@ public class AppConfiguration {
     return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
   }
 
-  /**
-   * Required for nested object validation
-   */
-  @InitBinder
-  private void initDirectFieldAccess(DataBinder dataBinder) {
-    dataBinder.initDirectFieldAccess();
-  }
-
   @Bean
   public WebMvcConfigurer webConfigurer() {
     return new WebMvcConfigurer() {

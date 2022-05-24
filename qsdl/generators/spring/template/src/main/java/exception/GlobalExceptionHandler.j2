@@ -22,6 +22,14 @@ import java.util.*;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+  /**
+   * Required for nested object validation
+   */
+  @InitBinder
+  private void initDirectFieldAccess(DataBinder dataBinder) {
+    dataBinder.initDirectFieldAccess();
+  }
+
   private ResponseEntity<Object> buildResponseEntity(AppError AppError,
       HttpServletRequest httpRequest) {
 
