@@ -25,7 +25,7 @@ import javax.annotation.PostConstruct;
 @Service
 public class {{api.name}}Service {
 
-{% if database == "hibernate" and model %}
+{% if database == "HIBERNATE" and model %}
 {% for parent in model.parents %}
   @Autowired
   private {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
@@ -39,7 +39,7 @@ public class {{api.name}}Service {
   private void init() {
 
   }
-{% if database == "hibernate" and model and model.parents %}
+{% if database == "HIBERNATE" and model and model.parents %}
 {% for parent in model.parents %}
 
   private void validate{{parent.model.name}}Id(Long id) throws AppException {
@@ -53,7 +53,7 @@ public class {{api.name}}Service {
 {% for operation in api.operations if operation.is_generated %}
   public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
 
-  {% if database == "hibernate" %}
+  {% if database == "HIBERNATE" %}
   {{- opr_macro.logic(operation) -}}
   {% else %}
     return null;

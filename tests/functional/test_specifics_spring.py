@@ -306,7 +306,6 @@ class TestSpecificsSpring:
 
         test_input = Path("util/examples/input.qsdl")
         test_output = Path("srcgen/")
-        test_config = Path("srcgen/config.json")
 
         shutil.rmtree(test_output, ignore_errors=True)
         test_output.mkdir()
@@ -325,11 +324,8 @@ class TestSpecificsSpring:
             "util_path": "shared.utils",
         }
 
-        with open(test_config, "w", encoding="utf-8") as file:
-            json.dump(config, file)
-
         # generate
-        assert generate("spring", test_output, input_path=test_input, config_path=test_config) == 0
+        assert generate("spring", test_output, input_path=test_input, config=config) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0

@@ -14,22 +14,34 @@
 
 """Spring Generator Configuration"""
 
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+from enum import Enum
+
+from qsdl.generators.base_config import BaseConfig
+
+
+class Database(str, Enum):
+    HIBERNATE = "HIBERNATE"
+    NO = "NO"
+
+
+class IDTYPE(str, Enum):
+    LONG = "LONG"
+    STRING = "STRING"
 
 
 @dataclass
-class Config:
+class Config(BaseConfig):
     """A configuration class that holds relevant data for the generator"""
 
     title: str = "SpringBootApp"
     group_id: str = "com.test"
     artifact_id: str = "app"
-    database: List[str] = field(default_factory=lambda: ["no", "hibernate"])
+    database: Database = Database.HIBERNATE
     encapsulation: bool = False
 
     # used to change the OpenAPI type for ID between "String" and "Long"
-    id_type: str = "Long"
+    id_type: str = IDTYPE.LONG
 
     # used for changing the folder layout
     # include_namespace: bool = False
@@ -44,3 +56,6 @@ class Config:
     repository_path: str = "repository"
     service_path: str = "service"
     util_path: str = "util"
+
+    # used for dactite enum casting
+    _dactive_casts = [Database, IDTYPE]

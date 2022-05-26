@@ -12,25 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generator specific parameters"""
-
-from dataclasses import dataclass
-from enum import Enum
-
-from qsdl.generators.base_config import BaseConfig
+"""QSDL - Generator Base Config"""
 
 
-class IDTYPE(str, Enum):
-    LONG = "LONG"
-    STRING = "STRING"
-
-
-@dataclass
-class Config(BaseConfig):
-    """A configuration class that holds relevant data for the generator"""
-
-    # used to change the OpenAPI type for ID between "string" and "integer"
-    id_type: IDTYPE = IDTYPE.LONG
+class BaseConfig:
+    """The Base Configclass for generators"""
 
     # used for dactite enum casting
-    _dactive_casts = [IDTYPE]
+    _dactive_casts: list = []

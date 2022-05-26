@@ -265,7 +265,7 @@ def add_parents_to_model(models: List[ModelClass]):
 
 def add_hibernate_info(models: List[ModelClass]):
     """Add hibernate related info to model and fields"""
-    if not Store.config.database == "hibernate":
+    if not Store.config.database == "HIBERNATE":
         return
 
     for model in models:
@@ -453,7 +453,7 @@ def get_service_imports(api: dsl.Api) -> List[str]:
     imprt = f"import {Store.package.exception}.AppException;"
     imports.append(imprt)
 
-    if Store.config.database == "hibernate":
+    if Store.config.database == "HIBERNATE":
         imprt = f"import {Store.package.repository}.*;"
         imports.append(imprt)
 

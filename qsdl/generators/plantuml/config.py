@@ -16,7 +16,9 @@
 
 from dataclasses import dataclass
 
+from qsdl.generators.base_config import BaseConfig
+
 
 @dataclass
-class Config:
+class Config(BaseConfig):
     """A configuration class that holds relevant data for the generator"""

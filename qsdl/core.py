@@ -14,13 +14,14 @@
 
 """Core generation"""
 
+import enum
 import json
 import traceback
 from pathlib import Path
 from typing import Tuple
 
+import dacite
 import inquirer
-from dacite import from_dict
 from pyfiglet import Figlet
 from textx.exceptions import TextXSemanticError, TextXSyntaxError
 
@@ -93,12 +94,12 @@ def prompt_user() -> Tuple[GeneratorType, ConfigType]:
                 message="Please select: " + key,
                 default=value,
             )
-        elif isinstance(value, list):
+        elif type(value) in config._dactive_casts:
             question = inquirer.List(
                 key,
                 message="Please select: " + key,
-                choices=value,
-                default=value[0],
+                choices=type(value)._member_names_,
+                default=value,
             )
         else:
             question = inquirer.Text(
@@ -118,7 +119,11 @@ def prompt_user() -> Tuple[GeneratorType, ConfigType]:
     return generator, config
 
 
-def init(generator_name: str, config_path: Path = None) -> Tuple[GeneratorType, ConfigType]:
+def init(
+    generator_name: str,
+    config_path: Path = None,
+    raw_config: ConfigType = None,
+) -> Tuple[GeneratorType, ConfigType]:
     """Initialise QSDL.
 
     A user can either utilize a interactive prompt for selecting and
@@ -127,6 +132,7 @@ def init(generator_name: str, config_path: Path = None) -> Tuple[GeneratorType, 
     Args:
         generator_name (str): The requested generator.
         config_path (Path, optional): Path to the config.json. Defaults to None.
+        raw_config (ConfigType, optional): The config.json as a dict. Defaults to None.
 
     Returns:
         Tuple[GeneratorType, ConfigType]: Callable generator func and
@@ -151,7 +157,18 @@ def init(generator_name: str, config_path: Path = None) -> Tuple[GeneratorType, 
         if config_path:
             with open(config_path, encoding="utf-8") as json_file:
                 data = json.load(json_file)
-                config = from_dict(data_class=config.__class__, data=data)
+                config = dacite.from_dict(
+                    data_class=config.__class__,
+                    data=data,
+                    config=dacite.Config(cast=config._dactive_casts),
+                )
+
+        if raw_config:
+            config = dacite.from_dict(
+                data_class=config.__class__,
+                data=raw_config,
+                config=dacite.Config(cast=config._dactive_casts),
+            )
     else:
         # prompt mode
         generator, config = prompt_user()
@@ -174,6 +191,7 @@ def generate(generator_name: str, output_path: Path, **kwargs) -> int:
         input_path (Path, optional): Path to the schema file.
         raw_schema (str, optional): The schema definition as string.
         config_path (Path, optional): Path to the config.json.
+        config (dict, optional): The config.json as a dict.
 
     Returns:
         int: 0 on success, 1 on failure
@@ -183,10 +201,11 @@ def generate(generator_name: str, output_path: Path, **kwargs) -> int:
     input_path = kwargs.get("input_path", None)
     raw_schema = kwargs.get("raw_schema", None)
     config_path = kwargs.get("config_path", None)
+    raw_config = kwargs.get("config", None)
 
     try:
         # initiliase the global config and fetch the generator and its parameters
-        Config.generator, Config.config = init(generator_name, config_path)
+        Config.generator, Config.config = init(generator_name, config_path, raw_config)
 
         # build a model from schema definition file
         Config.schema = parse_schema(input_path, raw_schema)

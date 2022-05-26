@@ -26,7 +26,7 @@ from qsdl.dsl.models import Schema
 from qsdl.render import render
 
 from . import util
-from .config import Config
+from .config import IDTYPE, Config
 from .models import ApiClass, ModelClass, Package
 
 
@@ -140,21 +140,23 @@ def generate_openapi(output_path: Path):
         gen_schema_file.parent,
         input_path=core_config.input_path,
         raw_schema=core_config.raw_schema,
+        config={"id_type": util.Store.config.id_type},
     )
 
 
 def generate(schema: Schema, output_path: Path, config: Config):
     """Generator func for spring"""
 
-    if config.id_type not in ["Long", "String"]:
-        raise ValueError("id_type must be `Long` or `String`")
+    if not config.id_type in IDTYPE.__members__:
+        raise ValueError(f"id_type must be `LONG` or `STRING`")
 
-    # for development
-    if isinstance(config.database, list):
-        config.database = "hibernate"
+    if config.id_type == IDTYPE.LONG:
+        id_type = "Long"
+    else:
+        id_type = "String"
 
     # sets the id type and schema
-    util.custom_types["ID"] = config.id_type
+    util.custom_types["ID"] = id_type
     util.Store.schema = schema
     util.Store.config = config
     util.Store.package = package = Package(config)
@@ -190,7 +192,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         else:
             model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{package.domain}/{model.name}.java", model))
 
-        if config.database == "hibernate" and model.is_object:
+        if config.database == "HIBERNATE" and model.is_object:
             model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{package.repository}/{model.name}Repository.java", model))
             model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{package.repository}/{model.name}RepositoryTest.java", model))
         # fmt: on
@@ -248,7 +250,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
     ]
     # fmt: on
 
-    if config.database == "hibernate":
+    if config.database == "HIBERNATE":
         # fmt: off
         supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))

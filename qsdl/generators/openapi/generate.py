@@ -24,7 +24,7 @@ from qsdl.dsl.models import Field, Object, Scalar, Schema
 from qsdl.render import render
 
 from . import util
-from .config import Config
+from .config import IDTYPE, Config
 from .models import Api, Model
 
 
@@ -141,16 +141,19 @@ def get_paginated_object(obj: Object, model_name: str) -> Model:
 def generate(schema: Schema, output_path: Path, config: Config):
     """Generator func for OpenAPI"""
 
-    if config.id_type not in ["integer", "string"]:
-        raise ValueError("id_type must be `integer` or `string`")
+    if not config.id_type in IDTYPE.__members__:
+        raise ValueError(f"id_type must be `{IDTYPE.LONG}` or `{IDTYPE.STRING}`")
 
-    if config.id_type == "integer":
-        config.id_type_format = "int64"
+    if config.id_type == IDTYPE.LONG:
+        id_type = "integer"
+        id_type_format = "int64"
     else:
-        config.id_type_format = None
+        id_type = "string"
+        id_type_format = None
 
     # sets the id type and schema
-    util.custom_types["ID"] = config.id_type
+    util.custom_types["ID"] = id_type
+    util.custom_type_formats["ID"] = id_type_format
     util.schema = schema
     util.used_paths = []
 
