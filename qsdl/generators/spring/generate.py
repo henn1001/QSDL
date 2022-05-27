@@ -208,6 +208,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("docker-compose.j2", "docker-compose.yml"),
         # vscode
         (".vscode/eclipse-java-google-style.j2", ".vscode/eclipse-java-google-style.xml"),
+        (".vscode/launch.j2", ".vscode/launch.json"),
         (".vscode/settings.j2", ".vscode/settings.json"),
         # resources
         ("src/main/resources/application.j2", "src/main/resources/application.yaml"),

@@ -58,12 +58,6 @@ public class AppConfiguration {
             .allowedHeaders("Content-Type");
       }
 
-      @Override
-      public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/api/swagger-ui/**")
-            .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/3.38.0/");
-      }
-
     };
   }
 

@@ -11,13 +11,10 @@ import static {{package.config}}.Constants.*;
 
 public class CursorPageable {
 
-  @JsonProperty(value = "cursor")
-  private final long cursor;
+  private final long decodedCursor;
 
-  @JsonProperty(value = "limit")
   private final long limit;
 
-  @JsonProperty(value = "count")
   private final boolean count;
 
   /**
@@ -39,7 +36,7 @@ public class CursorPageable {
     // set cursor either positive value or Long.MAX_VALUE
     // set limit between min and max value, or default
     // set count or false as default
-    this.cursor = parsedCursor != null && parsedCursor > 0 ? parsedCursor : Long.MAX_VALUE;
+    this.decodedCursor = parsedCursor != null && parsedCursor > 0 ? parsedCursor : Long.MAX_VALUE;
     this.limit = limit != null && limit > 0 ? Math.min(CURSOR_MAX, Math.max(CURSOR_MIN, limit)) : CURSOR_DEFAULT;
     this.count = count != null ? count : false;
   }
@@ -50,7 +47,7 @@ public class CursorPageable {
   * @return the requested base64 decoded cursor.
   */
   public long cursor() {
-    return cursor;
+    return decodedCursor;
   }
 
   /**

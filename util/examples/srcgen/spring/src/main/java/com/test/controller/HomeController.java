@@ -35,13 +35,13 @@ public class HomeController {
     }
   }
 
-  @GetMapping(value = "/api/openapi.yaml", produces = "application/vnd.oai.openapi")
+  @GetMapping(value = "/api/docs/openapi.yaml", produces = "application/vnd.oai.openapi")
   @ResponseBody
   public String openapiYaml() throws IOException {
     return openapiContent();
   }
 
-  @GetMapping(value = "/api/openapi.json", produces = "application/json")
+  @GetMapping(value = "/api/docs/openapi.json", produces = "application/json")
   @ResponseBody
   public Object openapiJson() throws IOException {
     return yamlMapper.readValue(openapiContent(), Object.class);
@@ -55,7 +55,7 @@ public class HomeController {
 
   @RequestMapping("/api")
   public String index() {
-    return "redirect:/api/swagger-ui/index.html?url=../openapi.json";
+    return "redirect:/api/swagger-ui/index.html";
   }
 
   @RequestMapping(value = {"/", "/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}"})

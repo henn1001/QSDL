@@ -1,6 +1,7 @@
 ### Core
 server.port: 8080
 server.base-path: /api/v1
+spring.mvc.pathmatch.matching-strategy: ant_path_matcher
 
 ### Monitoring service
 management.endpoints.web.base-path: /api/actuator
@@ -27,6 +28,12 @@ spring.h2.console.path: /api/h2
 
 ### Flyway
 spring.flyway.enabled: false
+
+# Springdocs
+springdoc.api-docs.path: /api/docs/generated
+springdoc.packagesToScan: X
+springdoc.swagger-ui.path: /api/swagger-ui
+springdoc.swagger-ui.url: /api/docs/openapi.json
 
 ---
 ################################################################################
@@ -91,7 +98,7 @@ spring.jpa.properties.hibernate.hbm2ddl.delimiter: ;
 
 ### src/main/resources/db/migration/V001__Initial.sql
 spring.jpa.properties.javax.persistence.schema-generation.scripts.action: create
-spring.jpa.properties.javax.persistence.schema-generation.scripts.create-target: schema.sql
+spring.jpa.properties.javax.persistence.schema-generation.scripts.create-target: V001__Initial.sql
 spring.jpa.properties.javax.persistence.schema-generation.scripts.create-source: metadata
 
 ---
