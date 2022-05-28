@@ -33,9 +33,16 @@ from qsdl.core import generate
 @click.option("-g", "--generator", help="The requested generator.", type=click.Choice(Config.available_generators))
 @click.option("-c", "--config_path", help="Path to a config json file.", type=click.Path(exists=True))
 @click.option("-o", "--output_path", help="Path to a output folder. Default: 'srcgren/'", type=click.Path())
+@click.option("-pv", "--print_version", help="Prints a .qversion file to the output folder.", is_flag=True)
 @click.version_option(__version__, prog_name="QSDL")
 # fmt: on
-def entrypoint(input_path: str, generator: str = None, config_path: str = None, output_path: str = None) -> int:
+def entrypoint(
+    input_path: str,
+    generator: str = None,
+    config_path: str = None,
+    output_path: str = None,
+    print_version: bool = False,
+) -> int:
     """Runs the QSDL generator with the provided schema definition file.
 
     \b
@@ -51,7 +58,14 @@ def entrypoint(input_path: str, generator: str = None, config_path: str = None, 
     config_path = Path(config_path) if config_path else None
     output_path = Path(output_path) if output_path else input_path.parent / "srcgen"
 
-    sys.exit(generate(generator, output_path, input_path=input_path, config_path=config_path))
+    ret = generate(generator, output_path, input_path=input_path, config_path=config_path)
+
+    # print version
+    if print_version:
+        with open(output_path / ".qversion", "w", encoding="utf-8") as file:
+            file.write(__version__)
+
+    sys.exit(ret)
 
 
 if __name__ == "__main__":
