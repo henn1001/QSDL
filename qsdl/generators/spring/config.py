@@ -41,7 +41,7 @@ class Config(BaseConfig):
     encapsulation: bool = False
 
     # used to change the OpenAPI type for ID between "String" and "Long"
-    id_type: str = IDTYPE.LONG
+    id_type: IDTYPE = IDTYPE.LONG
 
     # used for changing the folder layout
     # include_namespace: bool = False

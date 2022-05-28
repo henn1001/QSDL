@@ -40,6 +40,8 @@ public class ProjectControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  private static Long one = 1l;
+
   @Test
   public void whenGetProjects_thenOk() throws Exception {
 
@@ -113,7 +115,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.getProject(eq(1l)))
+    when(service.getProject(eq(one)))
         .thenReturn(request);
 
     // When
@@ -133,7 +135,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.replaceProject(eq(1l), any()))
+    when(service.replaceProject(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -155,7 +157,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.replaceProject(eq(1l), any()))
+    when(service.replaceProject(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -178,7 +180,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.updateProject(eq(1l), any()))
+    when(service.updateProject(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -200,7 +202,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.updateProject(eq(1l), any()))
+    when(service.updateProject(eq(one), any()))
         .thenReturn(request);
 
     // When

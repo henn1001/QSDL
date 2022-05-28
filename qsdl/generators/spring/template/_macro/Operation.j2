@@ -1,4 +1,9 @@
 {% macro logic(operation) -%}
+  {% if operation.parent %}
+  {% set p_model = operation.parent.model %}
+  {% set p_hibernate = operation.parent.hibernate %}
+  {% set p_m_hibernate = operation.parent.model.hibernate %}
+  {% endif %}
   {% if operation.method == "get" and operation.is_pageable %}
     {# 
      ########################################################################################
@@ -6,15 +11,15 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, {{model.name}}.class);
-    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{operation.parent.predicate}}.id.eq({{ operation.path_parameters[0].name }}));
+    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{operation.parent.predicate}}.{{id_name|lower}}.eq({{ p_m_hibernate.parameter_joined_id }}));
     {% else %}
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, {{model.name}}.class);
     {% endif %}
 
-    CursorPage ret = {{api.name|lower}}Repository.findAll(predicate, pageable);
+    CursorPage ret = {{model.name|lower}}Repository.findAll(predicate, pageable);
 
     return ret;
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
@@ -24,23 +29,23 @@
     #}
     // get and confirm existence
     // we are not using getById here because somehow the reference does not work when using a public field
-    {{ operation.parent.model.name }} {{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }}Repository.findById({{ operation.path_parameters[0].name }})
-        .orElseThrow(() -> AppException.entityNotFound({{ operation.parent.model.name }}.class, {{ operation.path_parameters[0].name }}));
+    {{ p_model.name }} {{ p_model.name|lower }} = {{ p_model.name|lower }}Repository.{{ p_m_hibernate.find_by_id }}({{ p_m_hibernate.parameter_joined_id }})
+        .orElseThrow(() -> AppException.entityNotFound({{ p_model.name }}.class, {{ p_m_hibernate.parameter_joined_id }}));
 
     {% if operation.path.endswith('/add') %}
-    {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.findById({{ operation.path_parameters[1].name }})
-        .orElseThrow(() -> AppException.entityNotFound({{ model.name }}.class, {{ operation.path_parameters[1].name }}));
+    {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.{{ model.hibernate.find_by_id }}(id)
+        .orElseThrow(() -> AppException.entityNotFound({{ model.name }}.class, id));
 
-    if ({{ model.name|lower }}.{{ operation.parent.model.name|lower }}s.contains({{ operation.parent.model.name|lower }})) {
-      throw AppException.entityAlreadyAdded({{ model.name }}.class, {{ operation.path_parameters[1].name }});
+    if ({{ model.name|lower }}.{{ p_model.name|lower }}s.contains({{ p_model.name|lower }})) {
+      throw AppException.entityAlreadyAdded({{ model.name }}.class, id);
     }
 
-    {{ model.name|lower }}.addTo{{ operation.parent.model.name }}s({{ operation.parent.model.name|lower }});
+    {{ model.name|lower }}.addTo{{ p_model.name }}s({{ p_model.name|lower }});
     {% elif operation.path.endswith('/remove') %}
-    {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.findBy{{ operation.parent.hibernate.method_joined_id }}({{ operation.path_parameters[0].name }}, {{ operation.path_parameters[1].name }})
-        .orElseThrow(() -> AppException.entityNotAttached({{ model.name }}.class, {{ operation.path_parameters[1].name }}));
+    {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.{{ p_hibernate.find_by_parentid_and_id }}({{ p_m_hibernate.parameter_joined_id }}, id)
+        .orElseThrow(() -> AppException.entityNotAttached({{ model.name }}.class, id));
 
-    {{ model.name|lower }}.removeFrom{{ operation.parent.model.name }}s({{ operation.parent.model.name|lower }});
+    {{ model.name|lower }}.removeFrom{{ p_model.name }}s({{ p_model.name|lower }});
     {% endif %}
 
     {{ model.name|lower }}Repository.save({{ model.name|lower }});
@@ -53,18 +58,18 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
 
     // add parent relation
-    {{ operation.parent.model.name }} {{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
+    {{ p_model.name }} {{ p_model.name|lower }} = {{ p_model.name|lower }}Repository.{{ p_m_hibernate.get_by_id }}({{ p_m_hibernate.parameter_joined_id }});
     {% if encapsulation %}
-    body.set{{ operation.parent.model.name }}({{ operation.parent.model.name|lower }});
+    body.set{{ p_model.name }}({{ p_model.name|lower }});
     {% else %}
-    body.{{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }};
+    body.{{ p_model.name|lower }} = {{ p_model.name|lower }};
     {% endif %}
 
     {% endif %}
-    {{api.name}} ret = {{api.name|lower}}Repository.save(body);
+    {{model.name}} ret = {{model.name|lower}}Repository.save(body);
 
     return ret;
   {% elif operation.method == "get" %}
@@ -75,11 +80,13 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
 
+    {{model.name}} ret = {{model.name|lower}}Repository.{{ p_hibernate.find_by_parentid_and_id }}({{ p_m_hibernate.parameter_joined_id }}, id)
+    {% else %}
+    {{model.name}} ret = {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
     {% endif %}
-    {{api.name}} ret = {{api.name|lower}}Repository.findBy{{ operation.find_by_name }}({{ operation.find_by_parameters }})
-        .orElseThrow(() -> AppException.entityNotFound({{api.name}}.class, id));
+        .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
 
     return ret;
   {% elif operation.method == "put" %}
@@ -89,24 +96,26 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
 
     // add parent relation
-    {{ operation.parent.model.name }} {{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
+    {{ p_model.name }} {{ p_model.name|lower }} = {{ p_model.name|lower }}Repository.{{ p_m_hibernate.get_by_id }}({{ p_m_hibernate.parameter_joined_id }});
       {% if encapsulation %}
-    body.set{{ operation.parent.model.name }}({{ operation.parent.model.name|lower }});
+    body.set{{ p_model.name }}({{ p_model.name|lower }});
       {% else %}
-    body.{{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }};
+    body.{{ p_model.name|lower }} = {{ p_model.name|lower }};
       {% endif %}
 
+    {{model.name}} dbEntity = {{model.name|lower}}Repository.{{ p_hibernate.find_by_parentid_and_id }}({{ p_m_hibernate.parameter_joined_id }}, id)
+    {% else %}
+    {{model.name}} dbEntity = {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
     {% endif %}
-    {{api.name}} dbEntity = {{api.name|lower}}Repository.findBy{{ operation.find_by_name }}({{ operation.find_by_parameters }})
-        .orElseThrow(() -> AppException.entityNotFound({{api.name}}.class, id));
+        .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
 
-    {{api.name}} ret = {{api.name|lower}}Repository.save(dbEntity);
+    {{model.name}} ret = {{model.name|lower}}Repository.save(dbEntity);
 
     return ret;
   {% elif operation.method == "patch" %}
@@ -116,24 +125,26 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
 
     // add parent relation
-    {{ operation.parent.model.name }} {{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }}Repository.getById({{ operation.path_parameters[0].name }});
+    {{ p_model.name }} {{ p_model.name|lower }} = {{ p_model.name|lower }}Repository.{{ p_m_hibernate.get_by_id }}({{ p_m_hibernate.parameter_joined_id }});
       {% if encapsulation %}
-    body.set{{ operation.parent.model.name }}({{ operation.parent.model.name|lower }});
+    body.set{{ p_model.name }}({{ p_model.name|lower }});
       {% else %}
-    body.{{ operation.parent.model.name|lower }} = {{ operation.parent.model.name|lower }};
+    body.{{ p_model.name|lower }} = {{ p_model.name|lower }};
       {% endif %}
 
+    {{model.name}} dbEntity = {{model.name|lower}}Repository.{{ p_hibernate.find_by_parentid_and_id }}({{ p_m_hibernate.parameter_joined_id }}, id)
+    {% else %}
+    {{model.name}} dbEntity = {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
     {% endif %}
-    {{api.name}} dbEntity = {{api.name|lower}}Repository.findBy{{ operation.find_by_name }}({{ operation.find_by_parameters }})
-        .orElseThrow(() -> AppException.entityNotFound({{api.name}}.class, id));
+        .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);
 
-    {{api.name}} ret = {{api.name|lower}}Repository.save(dbEntity);
+    {{model.name}} ret = {{model.name|lower}}Repository.save(dbEntity);
 
     return ret;
   {% elif operation.method == "delete" %}
@@ -143,14 +154,14 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    validate{{ operation.path_parameters[0].name | pascal }}({{ operation.path_parameters[0].name }});
+    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
 
     {% endif %}
     try {
-      {{api.name|lower}}Repository.deleteById({{operation.path_parameters[-1].name}});
+      {{model.name|lower}}Repository.{{ model.hibernate.delete_by_id }}(id);
     }
     catch (DataRetrievalFailureException e) {
-      throw AppException.entityNotFound({{api.name}}.class, id);
+      throw AppException.entityNotFound({{model.name}}.class, id);
     }
 
     return null;

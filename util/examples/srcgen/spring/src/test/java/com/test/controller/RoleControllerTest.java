@@ -40,6 +40,8 @@ public class RoleControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  private static Long one = 1l;
+
   @Test
   public void whenGetRoles_thenOk() throws Exception {
 
@@ -68,7 +70,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.createRole(eq(1l), any()))
+    when(service.createRole(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -90,7 +92,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.createRole(eq(1l), any()))
+    when(service.createRole(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -113,7 +115,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.getRole(eq(1l), eq(1l)))
+    when(service.getRole(eq(one), eq(one)))
         .thenReturn(request);
 
     // When
@@ -133,7 +135,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.replaceRole(eq(1l), eq(1l), any()))
+    when(service.replaceRole(eq(one), eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -155,7 +157,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.replaceRole(eq(1l), eq(1l), any()))
+    when(service.replaceRole(eq(one), eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -178,7 +180,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.updateRole(eq(1l), eq(1l), any()))
+    when(service.updateRole(eq(one), eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -200,7 +202,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.updateRole(eq(1l), eq(1l), any()))
+    when(service.updateRole(eq(one), eq(one), any()))
         .thenReturn(request);
 
     // When

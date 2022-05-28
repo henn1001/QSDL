@@ -34,19 +34,19 @@ public class AppException extends Exception {
   }
 
 
-  public static AppException entityNotFound(Class<?> cls, Long id) {
+  public static AppException entityNotFound(Class<?> cls, {{id_type}} id) {
     return new AppException(ErrorCodes.ENTITY_NOT_FOUND,
         "No %s entity with id %s exists!"
             .formatted(cls.getSimpleName(), id));
   }
 
-  public static AppException entityAlreadyAdded(Class<?> cls, Long id) {
+  public static AppException entityAlreadyAdded(Class<?> cls, {{id_type}} id) {
     return new AppException(ErrorCodes.BAD_REQEST,
         "Entity %s with id %s already added!"
             .formatted(cls.getSimpleName(), id));
   }
 
-  public static AppException entityNotAttached(Class<?> cls, Long id) {
+  public static AppException entityNotAttached(Class<?> cls, {{id_type}} id) {
     return new AppException(ErrorCodes.BAD_REQEST,
         "Entity %s with id %s not attached!"
             .formatted(cls.getSimpleName(), id));

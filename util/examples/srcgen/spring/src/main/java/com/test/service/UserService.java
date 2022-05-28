@@ -33,7 +33,7 @@ public class UserService {
 
   }
 
-  private void validateTicketId(Long id) throws AppException {
+  private void validateTicket(Long id) throws AppException {
     if (!ticketRepository.existsById(id)) {
       throw AppException.entityNotFound(Ticket.class, id);
     }
@@ -42,7 +42,7 @@ public class UserService {
   public CursorPage getUsersForTicket(Long ticketId, MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
     // confirm existence of parent
-    validateTicketId(ticketId);
+    validateTicket(ticketId);
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, User.class);
     predicate.and(QUser.user.tickets.any().id.eq(ticketId));

@@ -33,7 +33,7 @@ public class RoleService {
 
   }
 
-  private void validateProjectId(Long id) throws AppException {
+  private void validateProject(Long id) throws AppException {
     if (!projectRepository.existsById(id)) {
       throw AppException.entityNotFound(Project.class, id);
     }
@@ -42,7 +42,7 @@ public class RoleService {
   public CursorPage getRoles(Long projectId, MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
     // confirm existence of parent
-    validateProjectId(projectId);
+    validateProject(projectId);
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Role.class);
     predicate.and(QRole.role.project.id.eq(projectId));
@@ -55,7 +55,7 @@ public class RoleService {
   public Role createRole(Long projectId, Role body) throws AppException {
 
     // confirm existence of parent
-    validateProjectId(projectId);
+    validateProject(projectId);
 
     // add parent relation
     Project project = projectRepository.getById(projectId);
@@ -69,7 +69,7 @@ public class RoleService {
   public Role getRole(Long projectId, Long id) throws AppException {
 
     // confirm existence of parent
-    validateProjectId(projectId);
+    validateProject(projectId);
 
     Role ret = roleRepository.findByProjectIdAndId(projectId, id)
         .orElseThrow(() -> AppException.entityNotFound(Role.class, id));
@@ -80,7 +80,7 @@ public class RoleService {
   public Role replaceRole(Long projectId, Long id, Role body) throws AppException {
 
     // confirm existence of parent
-    validateProjectId(projectId);
+    validateProject(projectId);
 
     // add parent relation
     Project project = projectRepository.getById(projectId);
@@ -100,7 +100,7 @@ public class RoleService {
   public Role updateRole(Long projectId, Long id, Role body) throws AppException {
 
     // confirm existence of parent
-    validateProjectId(projectId);
+    validateProject(projectId);
 
     // add parent relation
     Project project = projectRepository.getById(projectId);
@@ -120,7 +120,7 @@ public class RoleService {
   public Void deleteRole(Long projectId, Long id) throws AppException {
 
     // confirm existence of parent
-    validateProjectId(projectId);
+    validateProject(projectId);
 
     try {
       roleRepository.deleteById(id);

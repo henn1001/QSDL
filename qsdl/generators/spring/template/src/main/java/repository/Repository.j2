@@ -13,10 +13,12 @@ import java.util.Optional;
 
 {% endif%}
 @Repository
-public interface {{model.name}}Repository extends BaseRepository<{{model.name}}, Long> {
+public interface {{model.name}}Repository extends AbstractRepository<{{model.name}}, Long> {
   {% for parent in model.parents %}
 
   public Optional<{{model.name}}> findBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
+
+  public Optional<{{model.name}}> findBy{{parent.hibernate.method_joined_uid}}(String {{parent.model.hibernate.parameter_joined_uid}}, String uid);
   {% endfor %}
 
 }

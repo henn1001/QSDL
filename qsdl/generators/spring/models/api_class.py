@@ -80,9 +80,6 @@ class Operation:
 
     parent: Parent = None
 
-    find_by_name: str = None
-    find_by_parameters: str = None
-
     parameters: List[Parameter] = field(default_factory=list)
     path_parameters: List[Parameter] = field(default_factory=list)
     query_parameters: List[Parameter] = field(default_factory=list)
@@ -116,8 +113,6 @@ class Operation:
 
         self._add_parameters(_ref)
         self._add_response(_ref)
-
-        self.add_hibernate_name_and_parameters()
 
         return self
 
@@ -154,20 +149,6 @@ class Operation:
                 new_param.is_array = False
 
             self.response = new_param
-
-    def add_hibernate_name_and_parameters(self):
-        """Add hibernate findBy information"""
-        self.find_by_name = ""
-        for parameter in self.path_parameters:
-            self.find_by_name += stringcase.pascalcase(parameter.name)
-            self.find_by_name += "And"
-        self.find_by_name = self.find_by_name[:-3]
-
-        self.find_by_parameters = ""
-        for parameter in self.path_parameters:
-            self.find_by_parameters += parameter.name
-            self.find_by_parameters += ", "
-        self.find_by_parameters = self.find_by_parameters[:-2]
 
 
 @dataclass

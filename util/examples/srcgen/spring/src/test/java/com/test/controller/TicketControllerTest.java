@@ -40,6 +40,8 @@ public class TicketControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  private static Long one = 1l;
+
   @Test
   public void whenGetTickets_thenOk() throws Exception {
 
@@ -113,7 +115,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.getTicket(eq(1l)))
+    when(service.getTicket(eq(one)))
         .thenReturn(request);
 
     // When
@@ -133,7 +135,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.replaceTicket(eq(1l), any()))
+    when(service.replaceTicket(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -155,7 +157,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.replaceTicket(eq(1l), any()))
+    when(service.replaceTicket(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -178,7 +180,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.updateTicket(eq(1l), any()))
+    when(service.updateTicket(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -200,7 +202,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.updateTicket(eq(1l), any()))
+    when(service.updateTicket(eq(one), any()))
         .thenReturn(request);
 
     // When

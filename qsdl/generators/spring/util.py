@@ -33,6 +33,7 @@ class Store:
     config: Config = None
     models: List[ModelClass] = []
     package: Package = None
+    is_id_long: bool = True
 
 
 custom_types = {

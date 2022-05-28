@@ -40,6 +40,8 @@ public class UserControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  private static Long one = 1l;
+
   @Test
   public void whenGetUsersForTicket_thenOk() throws Exception {
 
@@ -161,7 +163,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.getUser(eq(1l)))
+    when(service.getUser(eq(one)))
         .thenReturn(request);
 
     // When
@@ -181,7 +183,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.replaceUser(eq(1l), any()))
+    when(service.replaceUser(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -203,7 +205,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.replaceUser(eq(1l), any()))
+    when(service.replaceUser(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -226,7 +228,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.updateUser(eq(1l), any()))
+    when(service.updateUser(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -248,7 +250,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.updateUser(eq(1l), any()))
+    when(service.updateUser(eq(one), any()))
         .thenReturn(request);
 
     // When

@@ -20,22 +20,31 @@ public abstract class AbstractPersistentBase {
   private Long id;
 
   @JsonIgnore
-  private String uuid = IdGenerator.createId();
+  private String uid = IdGenerator.createId();
 
   @Version
   @JsonIgnore
-  private Integer uuidv;
+  private Integer iv;
 
+  /**
+   * The internal numeric identifier.
+   */
   public Long getId() {
     return id;
   }
 
-  public String uuid() {
-    return uuid;
+  /**
+   * The (external) UUID.
+   */
+  public String getUid() {
+    return uid;
   }
 
-  public Integer uuidv() {
-    return uuidv;
+  /**
+   * The version field.
+   */
+  public Integer getIv() {
+    return iv;
   }
 
   /**
@@ -43,8 +52,8 @@ public abstract class AbstractPersistentBase {
    */
   public void copyIdentiy(AbstractPersistentBase o) {
     this.id = o.getId();
-    this.uuid = o.uuid();
-    this.uuidv = o.uuidv();
+    this.uid = o.getUid();
+    this.iv = o.getIv();
   }
 
   public boolean equals(Object o) {
@@ -57,18 +66,18 @@ public abstract class AbstractPersistentBase {
 
     AbstractPersistentBase other = (AbstractPersistentBase) o;
 
-    // if the uuid is missing, return false
-    if (uuid == null) {
+    // if the uid is missing, return false
+    if (uid == null) {
       return false;
     }
 
-    // equivalence by uuid
-    return uuid.equals(other.uuid());
+    // equivalence by uid
+    return uid.equals(other.getUid());
   }
 
   public int hashCode() {
-    if (uuid != null) {
-      return uuid.hashCode();
+    if (uid != null) {
+      return uid.hashCode();
     }
     else {
       return super.hashCode();

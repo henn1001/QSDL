@@ -148,11 +148,13 @@ def generate(schema: Schema, output_path: Path, config: Config):
     """Generator func for spring"""
 
     if not config.id_type in IDTYPE.__members__:
-        raise ValueError(f"id_type must be `LONG` or `STRING`")
+        raise ValueError("id_type must be `LONG` or `STRING`")
 
     if config.id_type == IDTYPE.LONG:
+        id_name = "id"
         id_type = "Long"
     else:
+        id_name = "uid"
         id_type = "String"
 
     # sets the id type and schema
@@ -160,6 +162,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
     util.Store.schema = schema
     util.Store.config = config
     util.Store.package = package = Package(config)
+    util.Store.is_id_long = id_type == "Long"
 
     # parse models and apis
     util.Store.models = models = parse_models(schema)
@@ -253,6 +256,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     if config.database == "HIBERNATE":
         # fmt: off
+        supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))
         # fmt: on
@@ -273,6 +277,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "basePath": schema.servers[0] if schema.servers else "/api/v1",
         "database": config.database,
         "encapsulation": config.encapsulation,
+        "id_name": id_name,
+        "id_type": id_type,
     }
 
     # generate supporting files

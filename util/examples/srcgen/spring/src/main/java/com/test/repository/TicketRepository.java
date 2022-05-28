@@ -8,6 +8,6 @@ import com.test.domain.Ticket;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TicketRepository extends BaseRepository<Ticket, Long> {
+public interface TicketRepository extends AbstractRepository<Ticket, Long> {
 
 }

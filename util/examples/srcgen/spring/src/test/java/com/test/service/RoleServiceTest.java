@@ -42,20 +42,22 @@ public class RoleServiceTest {
   @InjectMocks
   RoleService service;
 
+  private static Long one = 1l;
+
   @Test
   void whenGetRoles_thenOk() throws Exception {
 
     // Given
     List<Role> request = TestConfig.getRandom(Role.class, 5);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
         .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    CursorPage response = service.getRoles(1l, new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
+    CursorPage response = service.getRoles(one, new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
 
     // Then
     assertEquals(5l, response.count());
@@ -72,14 +74,14 @@ public class RoleServiceTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
     when(repository.save(eq(request)))
         .thenReturn(request);
 
     // When
-    Role response = service.createRole(1l, request);
+    Role response = service.createRole(one, request);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -93,14 +95,14 @@ public class RoleServiceTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
-    when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
         .thenReturn(Optional.of(request));
 
     // When
-    Role response = service.getRole(1l, request.getId());
+    Role response = service.getRole(one, request.getId());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -114,16 +116,16 @@ public class RoleServiceTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
-    when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.getRole(1l, request.getId());
+          service.getRole(one, request.getId());
         });
 
     // Then
@@ -139,17 +141,17 @@ public class RoleServiceTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
-    when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
         .thenReturn(Optional.of(request));
 
     when(repository.save(eq(request)))
         .thenReturn(request);
 
     // When
-    Role response = service.replaceRole(1l, request.getId(), request);
+    Role response = service.replaceRole(one, request.getId(), request);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -163,16 +165,16 @@ public class RoleServiceTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
-    when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.replaceRole(1l, request.getId(), request);
+          service.replaceRole(one, request.getId(), request);
         });
 
     // Then
@@ -188,17 +190,17 @@ public class RoleServiceTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
-    when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
         .thenReturn(Optional.of(request));
 
     when(repository.save(eq(request)))
         .thenReturn(request);
 
     // When
-    Role response = service.updateRole(1l, request.getId(), request);
+    Role response = service.updateRole(one, request.getId(), request);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -212,16 +214,16 @@ public class RoleServiceTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
-    when(repository.findByProjectIdAndId(eq(1l), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.updateRole(1l, request.getId(), request);
+          service.updateRole(one, request.getId(), request);
         });
 
     // Then
@@ -237,11 +239,11 @@ public class RoleServiceTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
     // When
-    service.deleteRole(1l, request.getId());
+    service.deleteRole(one, request.getId());
 
     // Then
 
@@ -253,7 +255,7 @@ public class RoleServiceTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(projectRepository.existsById(eq(1l)))
+    when(projectRepository.existsById(eq(one)))
         .thenReturn(true);
 
     doThrow(new EmptyResultDataAccessException(1))
@@ -262,7 +264,7 @@ public class RoleServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.deleteRole(1l, request.getId());
+          service.deleteRole(one, request.getId());
         });
 
     // Then

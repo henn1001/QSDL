@@ -39,6 +39,8 @@ public class TicketServiceTest {
   @InjectMocks
   TicketService service;
 
+  private static Long one = 1l;
+
   @Test
   void whenGetTickets_thenOk() throws Exception {
 

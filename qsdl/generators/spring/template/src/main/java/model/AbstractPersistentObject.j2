@@ -20,35 +20,45 @@ public abstract class AbstractPersistentObject {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+  {{ '@JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)' if id_type == "Long" else "@JsonIgnore" }}
   private Long id;
 
-  @JsonIgnore
-  private String uuid = IdGenerator.createId();
+  @Column(unique=true, updatable = false)
+  {{ '@JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)' if id_type == "String" else "@JsonIgnore" }}
+  private String uid = IdGenerator.createId();
 
   @Version
   @JsonIgnore
-  private Integer uuidv;
+  private Integer iv;
 
+  /**
+   * The internal numeric identifier.
+   */
   public Long getId() {
     return id;
   }
 
-  public String uuid() {
-    return uuid;
-  }
-
-  public Integer uuidv() {
-    return uuidv;
+  /**
+   * The (external) UUID.
+   */
+  public String getUid() {
+    return uid;
   }
 
   /**
-   * Copies the id, uuid and version field from another Object.
+   * The version field.
+   */
+  public Integer getIv() {
+    return iv;
+  }
+
+  /**
+   * Copies the id, uid and iv field from another Object.
    */
   public void copyIdentiy(AbstractPersistentObject o) {
     this.id = o.getId();
-    this.uuid = o.uuid();
-    this.uuidv = o.uuidv();
+    this.uid = o.getUid();
+    this.iv = o.getIv();
   }
 
   /**
@@ -162,18 +172,18 @@ public abstract class AbstractPersistentObject {
 
     AbstractPersistentObject other = (AbstractPersistentObject) o;
 
-    // if the uuid is missing, return false
-    if (uuid == null) {
+    // if the uid is missing, return false
+    if (uid == null) {
       return false;
     }
 
-    // equivalence by uuid
-    return uuid.equals(other.uuid());
+    // equivalence by uid
+    return uid.equals(other.getUid());
   }
 
   public int hashCode() {
-    if (uuid != null) {
-      return uuid.hashCode();
+    if (uid != null) {
+      return uid.hashCode();
     }
     else {
       return super.hashCode();

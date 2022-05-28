@@ -42,20 +42,22 @@ public class UserServiceTest {
   @InjectMocks
   UserService service;
 
+  private static Long one = 1l;
+
   @Test
   void whenGetUsersForTicket_thenOk() throws Exception {
 
     // Given
     List<User> request = TestConfig.getRandom(User.class, 5);
 
-    when(ticketRepository.existsById(eq(1l)))
+    when(ticketRepository.existsById(eq(one)))
         .thenReturn(true);
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
         .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    CursorPage response = service.getUsersForTicket(1l, new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
+    CursorPage response = service.getUsersForTicket(one, new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
 
     // Then
     assertEquals(5l, response.count());

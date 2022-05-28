@@ -39,6 +39,8 @@ public class ProjectServiceTest {
   @InjectMocks
   ProjectService service;
 
+  private static Long one = 1l;
+
   @Test
   void whenGetProjects_thenOk() throws Exception {
 

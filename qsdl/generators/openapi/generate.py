@@ -142,7 +142,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
     """Generator func for OpenAPI"""
 
     if not config.id_type in IDTYPE.__members__:
-        raise ValueError(f"id_type must be `{IDTYPE.LONG}` or `{IDTYPE.STRING}`")
+        raise ValueError("id_type must be `LONG` or `STRING`")
 
     if config.id_type == IDTYPE.LONG:
         id_type = "integer"

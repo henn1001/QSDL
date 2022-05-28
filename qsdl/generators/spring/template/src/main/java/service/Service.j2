@@ -42,8 +42,8 @@ public class {{api.name}}Service {
 {% if database == "HIBERNATE" and model and model.parents %}
 {% for parent in model.parents %}
 
-  private void validate{{parent.model.name}}Id(Long id) throws AppException {
-    if (!{{parent.model.name|lower}}Repository.existsById(id)) {
+  private void validate{{parent.model.name}}({{id_type}} id) throws AppException {
+    if (!{{parent.model.name|lower}}Repository.{{ model.hibernate.exists_by_id }}(id)) {
       throw AppException.entityNotFound({{parent.model.name}}.class, id);
     }
   }

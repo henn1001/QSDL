@@ -302,7 +302,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     def test_specifics_10(self):
-        """Verify usage of folder layoud config"""
+        """Verify usage of folder layout config"""
 
         test_input = Path("util/examples/input.qsdl")
         test_output = Path("srcgen/")
@@ -351,6 +351,44 @@ class TestSpecificsSpring:
 
         # generate
         assert generate("spring", test_output, raw_schema=test_input) == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_12(self):
+        """Verify usage of string identifier"""
+
+        test_input = Path("util/examples/input.qsdl")
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+        test_output.mkdir()
+
+        config = {
+            "id_type": "String",
+        }
+
+        # generate
+        assert generate("spring", test_output, input_path=test_input, config=config) == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_13(self):
+        """Verify usage of encapsulation"""
+
+        test_input = Path("util/examples/input.qsdl")
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+        test_output.mkdir()
+
+        config = {
+            "encapsulation": True,
+        }
+
+        # generate
+        assert generate("spring", test_output, input_path=test_input, config=config) == 0
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
