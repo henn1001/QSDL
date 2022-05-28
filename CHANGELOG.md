@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.0](https://gitlab.com/henn1001/qsdl/compare/v2.6.1...v2.7.0) (2022-05-28)
+
+
+### Features
+
+* **core:** add feature that allows to split domain model files ([77ee258](https://gitlab.com/henn1001/qsdl/commit/77ee2588d3efbafe754080d51109b8f01aeb697f))
+* **core:** introduce new generate directive to control the crud generation ([da16e35](https://gitlab.com/henn1001/qsdl/commit/da16e357dc42c3ec2a9ce2d73040ed301a7c608e))
+* **core:** introduce new pagination,produces and consumes directive ([c63a512](https://gitlab.com/henn1001/qsdl/commit/c63a5125f35a4818dcd8d51af3d90e3ba07571c7))
+* **spring:** add directive [@controller](https://gitlab.com/controller) to overwrite the name for controllers ([1f41e9a](https://gitlab.com/henn1001/qsdl/commit/1f41e9a928754e7b6ccb11d8f3d7d5bfa5092f4e))
+* **spring:** custom operations will no longer generate a DefaultService ([273a1ee](https://gitlab.com/henn1001/qsdl/commit/273a1ee8db1b83ff72b3361dc1219128824e1084))
+* **spring:** draft for customizable package structure ([9e41bcf](https://gitlab.com/henn1001/qsdl/commit/9e41bcfde7776c2833d07c16269f96d52212f7aa))
+* **spring:** introduce a controller interface to allow for more flexible implementation ([77fcaee](https://gitlab.com/henn1001/qsdl/commit/77fcaeedb7b42c2d02eecb676c02da48baeecfe4))
+* **spring:** only persist nested base types ([ef189ae](https://gitlab.com/henn1001/qsdl/commit/ef189ae62255085eeb30bd5f8db3411502348540))
+* **spring:** simplify service generation logic and improve parent queries for string identifier ([1dfb3ff](https://gitlab.com/henn1001/qsdl/commit/1dfb3ffa6a166bb6c3a2ac53a4a12ce966ca9460))
+* **spring:** support for uuid  identifiers by exposing uid as id ([a9ee2e7](https://gitlab.com/henn1001/qsdl/commit/a9ee2e7f6dc2baa73a36e18e10b1d332a12c980c))
+* **spring:** update spring-boot version and other various fixes ([e461ca3](https://gitlab.com/henn1001/qsdl/commit/e461ca3fa3ba6b8b8b74bb49ca5f8fc52ac88f4a))
+
+
+### Bug Fixes
+
+* **core:** allow comments in enums ([ec9da3d](https://gitlab.com/henn1001/qsdl/commit/ec9da3d32e45b08426862898fef79a274930d186))
+* **openapi:** correct typo for ref pagination parameter ([1f04a98](https://gitlab.com/henn1001/qsdl/commit/1f04a9878948196a57fe7db9bbb2efc60fe1f0a8))
+* **spring:** re-enable nested bean validation because binder was in wrong config class ([dbf543b](https://gitlab.com/henn1001/qsdl/commit/dbf543b3446a9255dd8b5e4fbe2dc439a7087906))
+* **spring:** resolve issue in testcase for whenCountByXY_thenUseQuerie ([9893e7a](https://gitlab.com/henn1001/qsdl/commit/9893e7a0c7aab4038ee30cc4f9bb4d11f49c190a))
+* **spring:** resolve issue in testcase for whenRemoveXFromY_thenOk ([041ec44](https://gitlab.com/henn1001/qsdl/commit/041ec44f493a5a927cea8f627524fba45ea5877d))
+* **spring:** resolve issues with encapsulation flag generating erroneous code ([9d4f8e5](https://gitlab.com/henn1001/qsdl/commit/9d4f8e50b07df02e861e74249f2ab99a5eaa465c))
+* **spring:** resolve issues with missing objectnode import when using the controller directive ([3663f1c](https://gitlab.com/henn1001/qsdl/commit/3663f1c9241d98b93ffafdc80aa820340dccb6f9))
+
 ### [2.6.1](https://gitlab.com/henn1001/qsdl/compare/v2.6.0...v2.6.1) (2021-10-29)
 
 
