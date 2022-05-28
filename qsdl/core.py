@@ -14,7 +14,6 @@
 
 """Core generation"""
 
-import enum
 import json
 import traceback
 from pathlib import Path

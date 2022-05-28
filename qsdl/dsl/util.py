@@ -33,7 +33,4 @@ def get_directive_of_name(
     """
     match = [x for x in entity.directives if x.name == name]
 
-    if match:
-        return match[0]
-    else:
-        return None
+    return match[0] if match else None

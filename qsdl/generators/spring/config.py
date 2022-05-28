@@ -21,11 +21,13 @@ from qsdl.generators.base_config import BaseConfig
 
 
 class Database(str, Enum):
+    """Available Options for database"""
     HIBERNATE = "HIBERNATE"
     NO = "NO"
 
 
 class IDTYPE(str, Enum):
+    """Available Options for id_type"""
     LONG = "LONG"
     STRING = "STRING"
 

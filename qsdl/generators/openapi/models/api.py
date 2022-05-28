@@ -124,7 +124,7 @@ class _Operation:
             if param.is_query:
                 self.query_parameters.append(param)
                 self.parameters.append(param)
-            if param.is_body and not self._ref.method == "DELETE":
+            if param.is_body and self._ref.method != "DELETE":
                 self.body_parameters.append(param)
 
         # response
