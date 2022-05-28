@@ -32,6 +32,8 @@ class entity.Scalar  {
 class entity.Enum  {
   description : Description
   name : ID
+  is_deprecated : optional<BOOL>
+  namespace : STRING
   values : list[ID]
 }
 
@@ -130,9 +132,9 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Description |  |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
 end legend

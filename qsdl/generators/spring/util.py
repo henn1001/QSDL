@@ -288,7 +288,7 @@ def add_hibernate_info(models: List[ModelClass]):
 
 def sort_api_controller(api_list: list[ApiClass]) -> list[ApiClass]:
     """Reorganize api controllers and merge operations if needed"""
-    api_store = {}
+    api_store: dict[str, ApiClass] = {}
 
     # we work with case insensitive names here to simplify things
     for api in api_list:
@@ -299,6 +299,7 @@ def sort_api_controller(api_list: list[ApiClass]) -> list[ApiClass]:
             api_store[api_name] = api
         elif api_name in api_store and api.has_generated:
             api.operations.extend(api_store[api_name].operations)
+            api.has_objectnode = api_store[api_name].has_objectnode
             api_store[api_name] = api
         else:
             api_store[api_name].operations.extend(api.operations)

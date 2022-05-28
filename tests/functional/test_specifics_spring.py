@@ -365,7 +365,7 @@ class TestSpecificsSpring:
         test_output.mkdir()
 
         config = {
-            "id_type": "String",
+            "id_type": "STRING",
         }
 
         # generate
