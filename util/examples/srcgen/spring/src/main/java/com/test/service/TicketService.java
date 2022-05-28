@@ -30,6 +30,11 @@ public class TicketService {
 
   }
 
+  private Ticket fetchTicketFromDb(Long id) throws AppException {
+    return ticketRepository.findById(id)
+        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
+  }
+
   public CursorPage getTickets(MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Ticket.class);
@@ -48,16 +53,14 @@ public class TicketService {
 
   public Ticket getTicket(Long id) throws AppException {
 
-    Ticket ret = ticketRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
+    Ticket ret = fetchTicketFromDb(id);
 
     return ret;
   }
 
   public Ticket replaceTicket(Long id, Ticket body) throws AppException {
 
-    Ticket dbEntity = ticketRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
+    Ticket dbEntity = fetchTicketFromDb(id);
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
@@ -69,8 +72,7 @@ public class TicketService {
 
   public Ticket updateTicket(Long id, Ticket body) throws AppException {
 
-    Ticket dbEntity = ticketRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
+    Ticket dbEntity = fetchTicketFromDb(id);
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);

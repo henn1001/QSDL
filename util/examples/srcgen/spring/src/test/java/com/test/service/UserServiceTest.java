@@ -49,9 +49,10 @@ public class UserServiceTest {
 
     // Given
     List<User> request = TestConfig.getRandom(User.class, 5);
+    Ticket testParent = TestConfig.getRandom(Ticket.class);
 
-    when(ticketRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(ticketRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
         .thenReturn(new CursorPage(request, null, 6l));

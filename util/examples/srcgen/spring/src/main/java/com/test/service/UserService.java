@@ -33,19 +33,29 @@ public class UserService {
 
   }
 
-  private void validateTicket(Long id) throws AppException {
-    if (!ticketRepository.existsById(id)) {
-      throw AppException.entityNotFound(Ticket.class, id);
-    }
+  private User fetchUserFromDb(Long id) throws AppException {
+    return userRepository.findById(id)
+        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
+  }
+
+  private User fetchUserFromTicketFromDb(Long ticketId, Long id) throws AppException {
+    return userRepository.findByTicketsIdAndId(ticketId, id)
+        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
+  }
+
+  private Ticket fetchTicketFromDb(Long id) throws AppException {
+    return ticketRepository.findById(id)
+        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
   }
 
   public CursorPage getUsersForTicket(Long ticketId, MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
-    // confirm existence of parent
-    validateTicket(ticketId);
+    // confirm existance of parent
+    // should be optimized with something like getReferenceById
+    Ticket ticket = fetchTicketFromDb(ticketId);
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, User.class);
-    predicate.and(QUser.user.tickets.any().id.eq(ticketId));
+    predicate.and(QUser.user.tickets.any().id.eq(ticket.getId()));
 
     CursorPage ret = userRepository.findAll(predicate, pageable);
 
@@ -54,13 +64,10 @@ public class UserService {
 
   public Void addUserToTicket(Long ticketId, Long id) throws AppException {
 
-    // get and confirm existence
-    // we are not using getById here because somehow the reference does not work when using a public field
-    Ticket ticket = ticketRepository.findById(ticketId)
-        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, ticketId));
+    // get and confirm existance
+    Ticket ticket = fetchTicketFromDb(ticketId);
 
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
+    User user = fetchUserFromDb(id);
 
     if (user.tickets.contains(ticket)) {
       throw AppException.entityAlreadyAdded(User.class, id);
@@ -75,13 +82,10 @@ public class UserService {
 
   public Void removeUserFromTicket(Long ticketId, Long id) throws AppException {
 
-    // get and confirm existence
-    // we are not using getById here because somehow the reference does not work when using a public field
-    Ticket ticket = ticketRepository.findById(ticketId)
-        .orElseThrow(() -> AppException.entityNotFound(Ticket.class, ticketId));
+    // get and confirm existance
+    Ticket ticket = fetchTicketFromDb(ticketId);
 
-    User user = userRepository.findByTicketsIdAndId(ticketId, id)
-        .orElseThrow(() -> AppException.entityNotAttached(User.class, id));
+    User user = fetchUserFromTicketFromDb(ticket.getId(), id);
 
     user.removeFromTickets(ticket);
 
@@ -108,16 +112,14 @@ public class UserService {
 
   public User getUser(Long id) throws AppException {
 
-    User ret = userRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
+    User ret = fetchUserFromDb(id);
 
     return ret;
   }
 
   public User replaceUser(Long id, User body) throws AppException {
 
-    User dbEntity = userRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
+    User dbEntity = fetchUserFromDb(id);
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
@@ -129,8 +131,7 @@ public class UserService {
 
   public User updateUser(Long id, User body) throws AppException {
 
-    User dbEntity = userRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(User.class, id));
+    User dbEntity = fetchUserFromDb(id);
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);

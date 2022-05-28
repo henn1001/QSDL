@@ -43,7 +43,7 @@ class HibernateParentInfo:
           method_joined_uid      = TicketUidAndUid
         """
         self.method_joined_id = stringcase.pascalcase(util.get_field_for(model, parent).name) + "IdAndId"
-        self.method_joined_uid = stringcase.pascalcase(util.get_field_for(model, parent).name) + "UidAndUid"
+        self.method_joined_uid = stringcase.pascalcase(util.get_field_for(model, parent).name) + "IdAndUid"
 
         self.find_by_parentid_and_id = "findBy"
         self.find_by_parentid_and_id += self.method_joined_id if util.Store.is_id_long else self.method_joined_uid
@@ -59,11 +59,7 @@ class HibernateModelInfo:
           parameter_joined_id   = projectId
         """
         self.method_joined_id = stringcase.pascalcase(model.name) + "Id"
-        self.method_joined_uid = stringcase.pascalcase(model.name) + "Uid"
         self.parameter_joined_id = stringcase.camelcase(model.name) + "Id"
-        self.parameter_joined_uid = stringcase.camelcase(model.name) + "Uid"
 
         self.find_by_id = "findById" if util.Store.is_id_long else "findByUid"
-        self.get_by_id = "getById" if util.Store.is_id_long else "getByUid"
-        self.exists_by_id = "existsById" if util.Store.is_id_long else "existsByUid"
         self.delete_by_id = "deleteById" if util.Store.is_id_long else "deleteByUid"

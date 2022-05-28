@@ -64,12 +64,13 @@ public class {{model.name}}ServiceTest {
 
     // Given
     List<{{model.name}}> request = TestConfig.getRandom({{model.name}}.class, 5);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
     {% endif %}
+
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
         .thenReturn(new CursorPage(request, null, 6l));
 
@@ -103,7 +104,7 @@ public class {{model.name}}ServiceTest {
         .thenReturn(Optional.of(testParent));
 
     {% if operation.path.endswith('/remove') %}
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.{{getId}}), eq(request.{{getId}})))
+    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq(request.{{getId}})))
         .thenReturn(Optional.of(request));
     {% else %}
     when(repository.{{hibernate.find_by_id}}(eq(request.{{getId}})))
@@ -128,12 +129,13 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
     {% endif %}
+
     when(repository.save(eq(request)))
         .thenReturn(request);
 
@@ -154,14 +156,16 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(one), eq(request.{{getId}})))
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
+
+    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq(request.{{getId}})))
         .thenReturn(Optional.of(request));
     {% else %}
+
     when(repository.{{hibernate.find_by_id}}(eq(request.{{getId}})))
         .thenReturn(Optional.of(request));
     {% endif %}
@@ -180,14 +184,16 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(one), eq(request.{{getId}})))
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
+
+    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq(request.{{getId}})))
         .thenReturn(Optional.ofNullable(null));
     {% else %}
+
     when(repository.{{hibernate.find_by_id}}(eq(request.{{getId}})))
         .thenReturn(Optional.ofNullable(null));
     {% endif %}
@@ -213,14 +219,16 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(one), eq(request.{{getId}})))
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
+
+    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq(request.{{getId}})))
         .thenReturn(Optional.of(request));
     {% else %}
+
     when(repository.{{hibernate.find_by_id}}(eq(request.{{getId}})))
         .thenReturn(Optional.of(request));
     {% endif %}
@@ -242,14 +250,16 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(one), eq(request.{{getId}})))
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
+
+    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq(request.{{getId}})))
         .thenReturn(Optional.ofNullable(null));
     {% else %}
+
     when(repository.{{hibernate.find_by_id}}(eq(request.{{getId}})))
         .thenReturn(Optional.ofNullable(null));
     {% endif %}
@@ -275,14 +285,16 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(one), eq(request.{{getId}})))
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
+
+    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq(request.{{getId}})))
         .thenReturn(Optional.of(request));
     {% else %}
+
     when(repository.{{hibernate.find_by_id}}(eq(request.{{getId}})))
         .thenReturn(Optional.of(request));
     {% endif %}
@@ -304,14 +316,16 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(one), eq(request.{{getId}})))
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
+
+    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq(request.{{getId}})))
         .thenReturn(Optional.ofNullable(null));
     {% else %}
+
     when(repository.{{hibernate.find_by_id}}(eq(request.{{getId}})))
         .thenReturn(Optional.ofNullable(null));
     {% endif %}
@@ -337,12 +351,13 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
     {% endif %}
+
     // When
     service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}});
 
@@ -355,12 +370,13 @@ public class {{model.name}}ServiceTest {
 
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
-
     {% if operation.parent %}
-    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.exists_by_id }}(eq(one)))
-        .thenReturn(true);
+    {{p_model.name}} testParent = TestConfig.getRandom({{p_model.name}}.class);
 
+    when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+        .thenReturn(Optional.of(testParent));
     {% endif %}
+
     doThrow(new EmptyResultDataAccessException(1))
         .when(repository).{{hibernate.delete_by_id}}(eq(request.{{getId}}));
 

@@ -49,9 +49,10 @@ public class RoleServiceTest {
 
     // Given
     List<Role> request = TestConfig.getRandom(Role.class, 5);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
         .thenReturn(new CursorPage(request, null, 6l));
@@ -73,9 +74,10 @@ public class RoleServiceTest {
 
     // Given
     Role request = TestConfig.getRandom(Role.class);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
     when(repository.save(eq(request)))
         .thenReturn(request);
@@ -94,11 +96,12 @@ public class RoleServiceTest {
 
     // Given
     Role request = TestConfig.getRandom(Role.class);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
         .thenReturn(Optional.of(request));
 
     // When
@@ -115,11 +118,12 @@ public class RoleServiceTest {
 
     // Given
     Role request = TestConfig.getRandom(Role.class);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
@@ -140,11 +144,12 @@ public class RoleServiceTest {
 
     // Given
     Role request = TestConfig.getRandom(Role.class);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
         .thenReturn(Optional.of(request));
 
     when(repository.save(eq(request)))
@@ -164,11 +169,12 @@ public class RoleServiceTest {
 
     // Given
     Role request = TestConfig.getRandom(Role.class);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
@@ -189,11 +195,12 @@ public class RoleServiceTest {
 
     // Given
     Role request = TestConfig.getRandom(Role.class);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
         .thenReturn(Optional.of(request));
 
     when(repository.save(eq(request)))
@@ -213,11 +220,12 @@ public class RoleServiceTest {
 
     // Given
     Role request = TestConfig.getRandom(Role.class);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(one), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
@@ -238,9 +246,10 @@ public class RoleServiceTest {
 
     // Given
     Role request = TestConfig.getRandom(Role.class);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
     // When
     service.deleteRole(one, request.getId());
@@ -254,9 +263,10 @@ public class RoleServiceTest {
 
     // Given
     Role request = TestConfig.getRandom(Role.class);
+    Project testParent = TestConfig.getRandom(Project.class);
 
-    when(projectRepository.existsById(eq(one)))
-        .thenReturn(true);
+    when(projectRepository.findById(eq(one)))
+        .thenReturn(Optional.of(testParent));
 
     doThrow(new EmptyResultDataAccessException(1))
         .when(repository).deleteById(eq(request.getId()));

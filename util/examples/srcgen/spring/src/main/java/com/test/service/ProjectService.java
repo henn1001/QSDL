@@ -30,6 +30,11 @@ public class ProjectService {
 
   }
 
+  private Project fetchProjectFromDb(Long id) throws AppException {
+    return projectRepository.findById(id)
+        .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
+  }
+
   public CursorPage getProjects(MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Project.class);
@@ -48,16 +53,14 @@ public class ProjectService {
 
   public Project getProject(Long id) throws AppException {
 
-    Project ret = projectRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
+    Project ret = fetchProjectFromDb(id);
 
     return ret;
   }
 
   public Project replaceProject(Long id, Project body) throws AppException {
 
-    Project dbEntity = projectRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
+    Project dbEntity = fetchProjectFromDb(id);
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
@@ -69,8 +72,7 @@ public class ProjectService {
 
   public Project updateProject(Long id, Project body) throws AppException {
 
-    Project dbEntity = projectRepository.findById(id)
-        .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
+    Project dbEntity = fetchProjectFromDb(id);
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);

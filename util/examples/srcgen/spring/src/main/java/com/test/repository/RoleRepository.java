@@ -14,6 +14,6 @@ public interface RoleRepository extends AbstractRepository<Role, Long> {
 
   public Optional<Role> findByProjectIdAndId(Long projectId, Long id);
 
-  public Optional<Role> findByProjectUidAndUid(String projectUid, String uid);
+  public Optional<Role> findByProjectIdAndUid(Long projectId, String uid);
 
 }

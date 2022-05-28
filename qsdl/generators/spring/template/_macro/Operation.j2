@@ -10,11 +10,12 @@
       Get all entities.
     #}
     {% if operation.parent %}
-    // confirm existence of parent
-    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
+    // confirm existance of parent
+    // should be optimized with something like getReferenceById
+    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, {{model.name}}.class);
-    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{operation.parent.predicate}}.{{id_name|lower}}.eq({{ p_m_hibernate.parameter_joined_id }}));
+    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{operation.parent.predicate}}.id.eq({{ p_model.name|lower }}.getId()));
     {% else %}
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, {{model.name}}.class);
     {% endif %}
@@ -27,14 +28,11 @@
      ########################################################################################
       Create a entity.
     #}
-    // get and confirm existence
-    // we are not using getById here because somehow the reference does not work when using a public field
-    {{ p_model.name }} {{ p_model.name|lower }} = {{ p_model.name|lower }}Repository.{{ p_m_hibernate.find_by_id }}({{ p_m_hibernate.parameter_joined_id }})
-        .orElseThrow(() -> AppException.entityNotFound({{ p_model.name }}.class, {{ p_m_hibernate.parameter_joined_id }}));
+    // get and confirm existance
+    {{ p_model.name }} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
 
     {% if operation.path.endswith('/add') %}
-    {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.{{ model.hibernate.find_by_id }}(id)
-        .orElseThrow(() -> AppException.entityNotFound({{ model.name }}.class, id));
+    {{ model.name }} {{ model.name|lower }} = fetch{{model.name}}FromDb(id);
 
     if ({{ model.name|lower }}.{{ p_model.name|lower }}s.contains({{ p_model.name|lower }})) {
       throw AppException.entityAlreadyAdded({{ model.name }}.class, id);
@@ -42,8 +40,7 @@
 
     {{ model.name|lower }}.addTo{{ p_model.name }}s({{ p_model.name|lower }});
     {% elif operation.path.endswith('/remove') %}
-    {{ model.name }} {{ model.name|lower }} = {{ model.name|lower }}Repository.{{ p_hibernate.find_by_parentid_and_id }}({{ p_m_hibernate.parameter_joined_id }}, id)
-        .orElseThrow(() -> AppException.entityNotAttached({{ model.name }}.class, id));
+    {{ model.name }} {{ model.name|lower }} = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
 
     {{ model.name|lower }}.removeFrom{{ p_model.name }}s({{ p_model.name|lower }});
     {% endif %}
@@ -57,11 +54,10 @@
       Create a entity.
     #}
     {% if operation.parent %}
-    // confirm existence of parent
-    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
+    // confirm existance of parent
+    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
 
     // add parent relation
-    {{ p_model.name }} {{ p_model.name|lower }} = {{ p_model.name|lower }}Repository.{{ p_m_hibernate.get_by_id }}({{ p_m_hibernate.parameter_joined_id }});
     {% if encapsulation %}
     body.set{{ p_model.name }}({{ p_model.name|lower }});
     {% else %}
@@ -79,14 +75,13 @@
 
     #}
     {% if operation.parent %}
-    // confirm existence of parent
-    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
+    // confirm existance of parent
+    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
 
-    {{model.name}} ret = {{model.name|lower}}Repository.{{ p_hibernate.find_by_parentid_and_id }}({{ p_m_hibernate.parameter_joined_id }}, id)
+    {{model.name}} ret = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
     {% else %}
-    {{model.name}} ret = {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
+    {{model.name}} ret = fetch{{model.name}}FromDb(id);
     {% endif %}
-        .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
 
     return ret;
   {% elif operation.method == "put" %}
@@ -95,22 +90,20 @@
       Replace entities.
     #}
     {% if operation.parent %}
-    // confirm existence of parent
-    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
+    // confirm existance of parent
+    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
 
     // add parent relation
-    {{ p_model.name }} {{ p_model.name|lower }} = {{ p_model.name|lower }}Repository.{{ p_m_hibernate.get_by_id }}({{ p_m_hibernate.parameter_joined_id }});
       {% if encapsulation %}
     body.set{{ p_model.name }}({{ p_model.name|lower }});
       {% else %}
     body.{{ p_model.name|lower }} = {{ p_model.name|lower }};
       {% endif %}
 
-    {{model.name}} dbEntity = {{model.name|lower}}Repository.{{ p_hibernate.find_by_parentid_and_id }}({{ p_m_hibernate.parameter_joined_id }}, id)
+    {{model.name}} dbEntity = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
     {% else %}
-    {{model.name}} dbEntity = {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
+    {{model.name}} dbEntity = fetch{{model.name}}FromDb(id);
     {% endif %}
-        .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
@@ -124,22 +117,20 @@
       Patch entities.
     #}
     {% if operation.parent %}
-    // confirm existence of parent
-    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
+    // confirm existance of parent
+    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
 
     // add parent relation
-    {{ p_model.name }} {{ p_model.name|lower }} = {{ p_model.name|lower }}Repository.{{ p_m_hibernate.get_by_id }}({{ p_m_hibernate.parameter_joined_id }});
       {% if encapsulation %}
     body.set{{ p_model.name }}({{ p_model.name|lower }});
       {% else %}
     body.{{ p_model.name|lower }} = {{ p_model.name|lower }};
       {% endif %}
 
-    {{model.name}} dbEntity = {{model.name|lower}}Repository.{{ p_hibernate.find_by_parentid_and_id }}({{ p_m_hibernate.parameter_joined_id }}, id)
+    {{model.name}} dbEntity = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
     {% else %}
-    {{model.name}} dbEntity = {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
+    {{model.name}} dbEntity = fetch{{model.name}}FromDb(id);
     {% endif %}
-        .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);
@@ -153,8 +144,8 @@
       Delete entities.
     #}
     {% if operation.parent %}
-    // confirm existence of parent
-    validate{{ p_model.name }}({{ p_m_hibernate.parameter_joined_id }});
+    // confirm existance of parent
+    fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
 
     {% endif %}
     try {

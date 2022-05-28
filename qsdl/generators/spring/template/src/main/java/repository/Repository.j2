@@ -18,7 +18,7 @@ public interface {{model.name}}Repository extends AbstractRepository<{{model.nam
 
   public Optional<{{model.name}}> findBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
 
-  public Optional<{{model.name}}> findBy{{parent.hibernate.method_joined_uid}}(String {{parent.model.hibernate.parameter_joined_uid}}, String uid);
+  public Optional<{{model.name}}> findBy{{parent.hibernate.method_joined_uid}}(Long {{parent.model.hibernate.parameter_joined_id}}, String uid);
   {% endfor %}
 
 }

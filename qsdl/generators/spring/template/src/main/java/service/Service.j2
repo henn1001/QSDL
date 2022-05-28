@@ -39,13 +39,22 @@ public class {{api.name}}Service {
   private void init() {
 
   }
-{% if database == "HIBERNATE" and model and model.parents %}
+{% if database == "HIBERNATE" and model %}
+
+  private {{model.name}} fetch{{model.name}}FromDb({{id_type}} id) throws AppException {
+    return {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
+        .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
+  }
 {% for parent in model.parents %}
 
-  private void validate{{parent.model.name}}({{id_type}} id) throws AppException {
-    if (!{{parent.model.name|lower}}Repository.{{ model.hibernate.exists_by_id }}(id)) {
-      throw AppException.entityNotFound({{parent.model.name}}.class, id);
-    }
+  private {{model.name}} fetch{{model.name}}From{{parent.model.name}}FromDb(Long {{ parent.model.hibernate.parameter_joined_id }}, {{id_type}} id) throws AppException {
+    return {{model.name|lower}}Repository.{{ parent.hibernate.find_by_parentid_and_id }}({{ parent.model.hibernate.parameter_joined_id }}, id)
+        .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
+  }
+
+  private {{parent.model.name}} fetch{{parent.model.name}}FromDb({{id_type}} id) throws AppException {
+    return {{parent.model.name|lower}}Repository.{{ parent.model.hibernate.find_by_id }}(id)
+        .orElseThrow(() -> AppException.entityNotFound({{parent.model.name}}.class, id));
   }
 {% endfor %}
 {% endif %}

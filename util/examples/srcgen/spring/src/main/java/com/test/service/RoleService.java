@@ -33,19 +33,29 @@ public class RoleService {
 
   }
 
-  private void validateProject(Long id) throws AppException {
-    if (!projectRepository.existsById(id)) {
-      throw AppException.entityNotFound(Project.class, id);
-    }
+  private Role fetchRoleFromDb(Long id) throws AppException {
+    return roleRepository.findById(id)
+        .orElseThrow(() -> AppException.entityNotFound(Role.class, id));
+  }
+
+  private Role fetchRoleFromProjectFromDb(Long projectId, Long id) throws AppException {
+    return roleRepository.findByProjectIdAndId(projectId, id)
+        .orElseThrow(() -> AppException.entityNotFound(Role.class, id));
+  }
+
+  private Project fetchProjectFromDb(Long id) throws AppException {
+    return projectRepository.findById(id)
+        .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
   }
 
   public CursorPage getRoles(Long projectId, MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
 
-    // confirm existence of parent
-    validateProject(projectId);
+    // confirm existance of parent
+    // should be optimized with something like getReferenceById
+    Project project = fetchProjectFromDb(projectId);
 
     BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Role.class);
-    predicate.and(QRole.role.project.id.eq(projectId));
+    predicate.and(QRole.role.project.id.eq(project.getId()));
 
     CursorPage ret = roleRepository.findAll(predicate, pageable);
 
@@ -54,11 +64,10 @@ public class RoleService {
 
   public Role createRole(Long projectId, Role body) throws AppException {
 
-    // confirm existence of parent
-    validateProject(projectId);
+    // confirm existance of parent
+    Project project = fetchProjectFromDb(projectId);
 
     // add parent relation
-    Project project = projectRepository.getById(projectId);
     body.project = project;
 
     Role ret = roleRepository.save(body);
@@ -68,26 +77,23 @@ public class RoleService {
 
   public Role getRole(Long projectId, Long id) throws AppException {
 
-    // confirm existence of parent
-    validateProject(projectId);
+    // confirm existance of parent
+    Project project = fetchProjectFromDb(projectId);
 
-    Role ret = roleRepository.findByProjectIdAndId(projectId, id)
-        .orElseThrow(() -> AppException.entityNotFound(Role.class, id));
+    Role ret = fetchRoleFromProjectFromDb(project.getId(), id);
 
     return ret;
   }
 
   public Role replaceRole(Long projectId, Long id, Role body) throws AppException {
 
-    // confirm existence of parent
-    validateProject(projectId);
+    // confirm existance of parent
+    Project project = fetchProjectFromDb(projectId);
 
     // add parent relation
-    Project project = projectRepository.getById(projectId);
     body.project = project;
 
-    Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id)
-        .orElseThrow(() -> AppException.entityNotFound(Role.class, id));
+    Role dbEntity = fetchRoleFromProjectFromDb(project.getId(), id);
 
     // update dbEntity with all writeable fields
     dbEntity.replace(body);
@@ -99,15 +105,13 @@ public class RoleService {
 
   public Role updateRole(Long projectId, Long id, Role body) throws AppException {
 
-    // confirm existence of parent
-    validateProject(projectId);
+    // confirm existance of parent
+    Project project = fetchProjectFromDb(projectId);
 
     // add parent relation
-    Project project = projectRepository.getById(projectId);
     body.project = project;
 
-    Role dbEntity = roleRepository.findByProjectIdAndId(projectId, id)
-        .orElseThrow(() -> AppException.entityNotFound(Role.class, id));
+    Role dbEntity = fetchRoleFromProjectFromDb(project.getId(), id);
 
     // update dbEntity with all writeable fields if present
     dbEntity.update(body);
@@ -119,8 +123,8 @@ public class RoleService {
 
   public Void deleteRole(Long projectId, Long id) throws AppException {
 
-    // confirm existence of parent
-    validateProject(projectId);
+    // confirm existance of parent
+    fetchProjectFromDb(projectId);
 
     try {
       roleRepository.deleteById(id);

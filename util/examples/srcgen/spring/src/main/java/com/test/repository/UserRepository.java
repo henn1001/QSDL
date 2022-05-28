@@ -14,6 +14,6 @@ public interface UserRepository extends AbstractRepository<User, Long> {
 
   public Optional<User> findByTicketsIdAndId(Long ticketId, Long id);
 
-  public Optional<User> findByTicketsUidAndUid(String ticketUid, String uid);
+  public Optional<User> findByTicketsIdAndUid(Long ticketId, String uid);
 
 }
