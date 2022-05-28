@@ -1,3 +1,20 @@
+# Custom Directives
+
+## @controller
+
+Allows to move custom apis into a different controller.
+
+```
+    extend Api @controller("Buzzword") {
+        submitQury(arg1: String, arg2: [Int]): Object @path(value:"query") @method(value: PATCH)
+    }
+
+    type Buzzword @namespace(value:"Incident"){
+        name: String!
+        extend Api @generate("UPDATE") {}
+    }
+```
+
 # Example Use Cases
 
 ## Read-Only Nested Object

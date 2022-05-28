@@ -22,12 +22,11 @@ from typing import TYPE_CHECKING, List
 from .. import util
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Api as QAPI
-    from qsdl.dsl.models import Operation
+    import qsdl.dsl.models as dsl
 
 
 @dataclass
-class _Parameter:
+class Parameter:
     """Custom dataclass"""
 
     name: str = None
@@ -47,11 +46,8 @@ class _Parameter:
 
 
 @dataclass
-class _Operation:
+class Operation:
     """Custom dataclass"""
-
-    # the textx object
-    _ref: Operation
 
     # computed attributes
     name: str = None
@@ -64,41 +60,44 @@ class _Operation:
     is_generated: bool = False
     is_pageable: bool = False
 
-    parameters: List[_Parameter] = field(default_factory=list)
-    path_parameters: List[_Parameter] = field(default_factory=list)
-    query_parameters: List[_Parameter] = field(default_factory=list)
-    body_parameters: List[_Parameter] = field(default_factory=list)
+    parameters: List[Parameter] = field(default_factory=list)
+    path_parameters: List[Parameter] = field(default_factory=list)
+    query_parameters: List[Parameter] = field(default_factory=list)
+    body_parameters: List[Parameter] = field(default_factory=list)
 
-    response: _Parameter = None
+    response: Parameter = None
 
     consumes: str = None
     produces: str = None
 
-    def __post_init__(self):
+    def build(self, _ref: dsl.Operation) -> Operation:
+        """Builds self from dsl.Operation"""
 
-        self.name = self._ref.name
-        self.tag = self._ref.parent.namespace
-        self.summary = self._ref.summary
-        self.description = self._ref.description
-        self.path = self._ref.path
-        self.method = self._ref.method.lower()
-        self.is_generated = self._ref.is_generated
-        self.is_pageable = self._ref.is_pageable
+        self.name = _ref.name
+        self.tag = _ref.parent.namespace
+        self.summary = _ref.summary
+        self.description = _ref.description
+        self.path = _ref.path
+        self.method = _ref.method.lower()
+        self.is_generated = _ref.is_generated
+        self.is_pageable = _ref.is_pageable
 
         # special for aggregations
         # we want to move them to the parent namespace
-        if self._ref.is_aggregated:
-            self.tag = self._ref.domain_parent.namespace
+        if _ref.is_aggregated:
+            self.tag = _ref.domain_parent.namespace
 
-        self.consumes = self._ref.consumes
-        self.produces = self._ref.produces
+        self.consumes = _ref.consumes
+        self.produces = _ref.produces
 
-        self._add_parameters()
+        self._add_parameters(_ref)
 
-    def _add_parameters(self):
+        return self
 
-        for argument in self._ref.arguments:
-            param = _Parameter()
+    def _add_parameters(self, _ref: dsl.Operation):
+
+        for argument in _ref.arguments:
+            param = Parameter()
             # param.name = stringcase.camelcase(argument.name)
             param.name = argument.name
             param.json_key = argument.name
@@ -124,38 +123,36 @@ class _Operation:
             if param.is_query:
                 self.query_parameters.append(param)
                 self.parameters.append(param)
-            if param.is_body and self._ref.method != "DELETE":
+            if param.is_body and _ref.method != "DELETE":
                 self.body_parameters.append(param)
 
         # response
-        if self._ref.value:
-            param = _Parameter()
+        if _ref.value:
+            param = Parameter()
             # param.name = stringcase.camelcase(field.value.name)
-            param.name = self._ref.value.name
-            param.json_key = self._ref.value.name
+            param.name = _ref.value.name
+            param.json_key = _ref.value.name
             param.is_required = False
-            param.is_array = self._ref.is_array
+            param.is_array = _ref.is_array
 
-            param.type = util.custom_type(self._ref.value.name)
-            param.format = util.custom_type_format(self._ref.value.name)
+            param.type = util.custom_type(_ref.value.name)
+            param.format = util.custom_type_format(_ref.value.name)
 
-            if self._ref.is_pageable:
+            if _ref.is_pageable:
                 param.name += "List"
                 param.json_key += "List"
                 param.type += "List"
                 param.is_array = False
 
-            if self._ref.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
+            if _ref.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
                 param.ref = f"#/components/schemas/{ param.type }"
 
             self.response = param
 
 
 @dataclass
-class Api:
+class ApiObject:
     """Custom dataclass"""
-
-    _ref: QAPI
 
     # computed attributes
     name: str = None
@@ -163,16 +160,19 @@ class Api:
     description: str = None
     operations: List = field(default_factory=list)
 
-    def __post_init__(self):
+    def build(self, _ref: dsl.Api) -> ApiObject:
+        """Builds self from dsl.Api"""
 
-        self.name = self._ref.parent.name if self._ref.parent._tx_fqn == "entity.Object" else "Default"
-        self.tag = self._ref.namespace
-        self.description = self._ref.description
+        self.name = _ref.parent.name if _ref.parent._tx_fqn == "entity.Object" else "Default"
+        self.tag = _ref.namespace
+        self.description = _ref.description
 
-        self._add_operations(self._ref.operations)
+        self._add_operations(_ref.operations)
+
+        return self
 
     def _add_operations(self, operations):
 
         for operation in operations:
-            new_operation = _Operation(operation)
+            new_operation = Operation().build(operation)
             self.operations.append(new_operation)

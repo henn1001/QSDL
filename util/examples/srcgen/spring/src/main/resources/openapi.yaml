@@ -782,11 +782,14 @@ components:
       properties:
         name:
           type: string
+          maxLength: 255
         description:
           type: string
+          maxLength: 255
         creation_by:
           type: string
           readOnly: true
+          maxLength: 255
         creation_date:
           type: string
           format: date-time
@@ -794,6 +797,7 @@ components:
         last_update_by:
           type: string
           readOnly: true
+          maxLength: 255
         last_update_date:
           type: string
           format: date-time
@@ -812,9 +816,11 @@ components:
             $ref: '#/components/schemas/Project'
         next_cursor:
           type: string
+          maxLength: 255
         total_count:
           type: integer
           format: int64
+          minimum: 0
 
     Project:
       required:
@@ -828,11 +834,14 @@ components:
           readOnly: true
         name:
           type: string
+          maxLength: 255
         description:
           type: string
+          maxLength: 255
         creation_by:
           type: string
           readOnly: true
+          maxLength: 255
         creation_date:
           type: string
           format: date-time
@@ -840,6 +849,7 @@ components:
         last_update_by:
           type: string
           readOnly: true
+          maxLength: 255
         last_update_date:
           type: string
           format: date-time
@@ -861,9 +871,11 @@ components:
             $ref: '#/components/schemas/Role'
         next_cursor:
           type: string
+          maxLength: 255
         total_count:
           type: integer
           format: int64
+          minimum: 0
 
     Role:
       required:
@@ -877,6 +889,7 @@ components:
           readOnly: true
         name:
           type: string
+          maxLength: 255
 
     UserList:
       required:
@@ -889,9 +902,11 @@ components:
             $ref: '#/components/schemas/User'
         next_cursor:
           type: string
+          maxLength: 255
         total_count:
           type: integer
           format: int64
+          minimum: 0
 
     User:
       required:
@@ -905,6 +920,7 @@ components:
           readOnly: true
         name:
           type: string
+          maxLength: 255
 
     TicketList:
       required:
@@ -917,9 +933,11 @@ components:
             $ref: '#/components/schemas/Ticket'
         next_cursor:
           type: string
+          maxLength: 255
         total_count:
           type: integer
           format: int64
+          minimum: 0
 
     Ticket:
       required:
@@ -932,8 +950,10 @@ components:
           readOnly: true
         title:
           type: string
+          maxLength: 255
         body:
           type: string
+          maxLength: 255
         status:
           $ref: '#/components/schemas/Status'
 

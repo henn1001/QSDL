@@ -20,6 +20,7 @@ import java.util.*;
 public class Role extends AbstractPersistentObject {
 
   @NotNull
+  @Size(min = 0, max = 255)
   @JsonProperty(value = "name", required = true)
   public String name;
 

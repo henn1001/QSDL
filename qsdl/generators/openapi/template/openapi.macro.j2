@@ -97,14 +97,20 @@
     type: array
     items:
       {{ get_parameter_type(field) | indent(2) | trim }}
-    {% if get_parameter_format(field) %}
+        {% if get_parameter_format(field) %}
     {{ get_parameter_format(field) | indent(2) | trim  }}
-    {% endif %}
+        {% endif %}
+        {% if get_parameter_constraint(field) %}
+    {{ get_parameter_constraint(field) | indent(2) | trim }}
+        {% endif %}
   {% else %}
     {{ get_parameter_type(field) | indent(2) | trim }}
-    {% if get_parameter_format(field) %}
+        {% if get_parameter_format(field) %}
     {{ get_parameter_format(field) | indent(2) | trim }}
-    {% endif %}
+        {% endif %}
+        {% if get_parameter_constraint(field) %}
+    {{ get_parameter_constraint(field) | indent(2) | trim }}
+        {% endif %}
   {% endif %}
 {% endfor %}
 {% endmacro %}
@@ -127,5 +133,14 @@
   readOnly: true
 {% elif field.is_write_only %}
   writeOnly: true
+{% endif %}
+{% endmacro %}
+
+{% macro get_parameter_constraint(field) %}
+{% if field.min_size %}
+  {{field.min_size}}
+{% endif %}
+{% if field.max_size %}
+  {{field.max_size}}
 {% endif %}
 {% endmacro %}

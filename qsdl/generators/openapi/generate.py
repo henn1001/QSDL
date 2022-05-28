@@ -25,10 +25,10 @@ from qsdl.render import render
 
 from . import util
 from .config import IDTYPE, Config
-from .models import Api, Model
+from .models import ApiObject, ModelObject
 
 
-def parse_apis(schema: Schema) -> List[Api]:
+def parse_apis(schema: Schema) -> List[ApiObject]:
     """Parse QSDL schema into custom API model.
 
     Args:
@@ -47,13 +47,13 @@ def parse_apis(schema: Schema) -> List[Api]:
         if not api.operations:
             continue
 
-        api_class = Api(api)
+        api_class = ApiObject().build(api)
         apis.append(api_class)
 
     return apis
 
 
-def parse_models(schema: Schema) -> List[Model]:
+def parse_models(schema: Schema) -> List[ModelObject]:
     """Parse QSDL schema into custom models.
 
     Args:
@@ -69,7 +69,7 @@ def parse_models(schema: Schema) -> List[Model]:
     operations_list = xtx.get_children_of_operation(schema)
 
     for obj in enum_list + base_list + object_list:
-        model = Model(obj)
+        model = ModelObject().build(obj)
         models.append(model)
 
     # scan for paginated responses
@@ -91,7 +91,7 @@ def parse_models(schema: Schema) -> List[Model]:
     return models
 
 
-def get_paginated_object(obj: Object, model_name: str) -> Model:
+def get_paginated_object(obj: Object, model_name: str) -> ModelObject:
     """Returns a pagable custom model that is used to return a given model.
 
     Args:
@@ -133,7 +133,7 @@ def get_paginated_object(obj: Object, model_name: str) -> Model:
     new_object.fields.append(count_field)
 
     # init the new model class
-    model = Model(new_object)
+    model = ModelObject().build(new_object)
 
     return model
 

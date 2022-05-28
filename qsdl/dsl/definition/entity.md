@@ -32,7 +32,6 @@ class entity.Scalar  {
 class entity.Enum  {
   description : Description
   name : ID
-  is_deprecated : optional<BOOL>
   namespace : STRING
   values : list[ID]
 }
@@ -64,6 +63,8 @@ class entity.Field  {
   is_write_only : optional<BOOL>
   is_composition : optional<BOOL>
   is_aggregation : optional<BOOL>
+  min_size : INT
+  max_size : INT
 }
 
 
@@ -132,11 +133,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | Description |  |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Description |  |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | Comment | \\/\\/.*$ |
 end legend
 
 @enduml

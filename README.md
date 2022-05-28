@@ -386,3 +386,7 @@ There are certain builtin directives that can be used to modify the generation b
 12.  `Directive` `@consumes` may be used on any `Api` `Field` for changing the mime type.
 
 13.  `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
+
+14.  `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting minimum length of the value.
+
+15.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum length of the value.

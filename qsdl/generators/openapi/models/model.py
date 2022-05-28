@@ -24,71 +24,90 @@ import stringcase
 from .. import util
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Field, Object
+    import qsdl.dsl.models as dsl
 
 
 @dataclass
-class _Attribute:
-    """Custom dataclass"""
+class ModelField:
+    """The field of a Schema Model"""
 
-    # the textx object
-    _ref: Field
-
-    # computed attributes
     name: str = None
     json_key: str = None
     description: str = None
+
     type: str = None
     is_array: bool = False
+
+    is_required: bool = False
+    is_read_only: bool = False
+    is_write_only: bool = False
+
     is_enum: bool = False
     is_base: bool = False
     is_object: bool = False
     is_id: bool = False
     is_date: bool = False
-    is_required: bool = False
-    is_read_only: bool = False
-    is_write_only: bool = False
+
     is_composition: bool = False
     is_aggregation: bool = False
     is_relation: bool = False
 
     # addon
     format: str = None
+    min_size: str = None
+    max_size: str = None
 
-    def __post_init__(self):
+    def build(self, _ref: dsl.Field) -> ModelField:
+        """Builds self from dsl.Field"""
 
         # rename to naming convention
-        self.name = stringcase.camelcase(self._ref.name)
-        self.json_key = self._ref.name
-        self.description = self._ref.description
+        self.name = stringcase.camelcase(_ref.name)
+        self.json_key = _ref.name
+        self.description = _ref.description
 
-        self.type = util.custom_type(self._ref.value.name)
-        self.format = util.custom_type_format(self._ref.value.name)
+        self.type = util.custom_type(_ref.value.name)
+        self.format = util.custom_type_format(_ref.value.name)
 
-        self.is_array = self._ref.is_array
-        self.is_enum = self._ref.value._tx_fqn in ["entity.Enum"]
-        self.is_base = self._ref.value._tx_fqn in ["entity.Base"]
-        self.is_object = self._ref.value._tx_fqn in ["entity.Object"]
-        self.is_id = self._ref.value.name == "ID"
-        self.is_date = self._ref.value.name == "Date"
+        self._add_constraints(_ref)
 
-        self.is_required = self._ref.is_required
+        self.is_array = _ref.is_array
+        self.is_enum = _ref.value._tx_fqn in ["entity.Enum"]
+        self.is_base = _ref.value._tx_fqn in ["entity.Base"]
+        self.is_object = _ref.value._tx_fqn in ["entity.Object"]
+        self.is_id = _ref.value.name == "ID"
+        self.is_date = _ref.value.name == "Date"
 
-        self.is_read_only = self._ref.is_read_only
-        self.is_write_only = self._ref.is_write_only
+        self.is_required = _ref.is_required
+
+        self.is_read_only = _ref.is_read_only
+        self.is_write_only = _ref.is_write_only
 
         # relation model
-        self.is_composition = self._ref.is_composition
-        self.is_aggregation = self._ref.is_aggregation
-        self.is_relation = self._ref.is_relation
+        self.is_composition = _ref.is_composition
+        self.is_aggregation = _ref.is_aggregation
+        self.is_relation = _ref.is_relation
+
+        return self
+
+    def _add_constraints(self, _ref: dsl.Field):
+        """Adds min max constraints"""
+
+        if _ref.value.name == "String":
+            self.min_size = f"minLength: {_ref.min_size}" if _ref.min_size else None
+            self.max_size = f"maxLength: {_ref.max_size}" if _ref.max_size else "maxLength: 255"
+
+        if _ref.value.name == "Int":
+            self.min_size = f"minimum: {_ref.min_size}" if _ref.min_size else "minimum: 0"
+            self.max_size = f"maximum: {_ref.max_size}" if _ref.max_size else None
+
+        if _ref.value.name == "Long":
+            self.min_size = f"minimum: {_ref.min_size}" if _ref.min_size else "minimum: 0"
+            self.max_size = f"maximum: {_ref.max_size}" if _ref.max_size else None
 
 
 @dataclass
-class Model:
-    """Custom dataclass"""
-
-    # the textx object
-    _ref: Union[Enum, Base, Object]
+class ModelObject:
+    """The Schema Model for the Openapi schema"""
 
     # computed attributes
     name: str = None
@@ -97,47 +116,50 @@ class Model:
     is_base: bool = False
     is_object: bool = False
     extends: str = None
-    attributes: List[_Attribute] = field(default_factory=list)
+    attributes: List[ModelField] = field(default_factory=list)
     constants: List[str] = field(default_factory=list)
 
     # addons
     is_supertype: bool = False
     is_nested: bool = False
 
-    def __post_init__(self):
+    def build(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]) -> ModelObject:
+        """Builds self from Union[dsl.Enum, dsl.Base, dsl.Object]"""
 
         # rename to naming convention
-        self.name = stringcase.pascalcase(self._ref.name)
+        self.name = stringcase.pascalcase(_ref.name)
 
-        self.description = self._ref.description
+        self.description = _ref.description
 
         # identify type
-        self.is_enum = self._ref._tx_fqn in ["entity.Enum"]
-        self.is_base = self._ref._tx_fqn in ["entity.Base"]
-        self.is_object = self._ref._tx_fqn in ["entity.Object"]
+        self.is_enum = _ref._tx_fqn in ["entity.Enum"]
+        self.is_base = _ref._tx_fqn in ["entity.Base"]
+        self.is_object = _ref._tx_fqn in ["entity.Object"]
 
-        if not self.is_enum and self._ref.supertype:
-            self.extends = stringcase.pascalcase(self._ref.supertype.name)
+        if not self.is_enum and _ref.supertype:
+            self.extends = stringcase.pascalcase(_ref.supertype.name)
 
         # attributes
         if not self.is_enum:
-            self._add_attributes()
+            self._add_attributes(_ref)
         else:
-            self.constants = util.get_enum_values(self._ref)
+            self.constants = util.get_enum_values(_ref)
 
         # addons
-        self.is_supertype = util.is_supertype(self._ref) if self.is_base else False
-        self.is_nested = util.is_nested(self._ref)
+        self.is_supertype = util.is_supertype(_ref) if self.is_base else False
+        self.is_nested = util.is_nested(_ref)
 
-    def _add_attributes(self):
+        return self
 
-        if self._ref._tx_fqn not in ["entity.Base", "entity.Object"]:
+    def _add_attributes(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
+
+        if _ref._tx_fqn not in ["entity.Base", "entity.Object"]:
             raise ValueError
 
-        for entity_field in self._ref.fields:
+        for entity_field in _ref.fields:
             # filter hidden relations
             if not entity_field.is_relation:
-                attribute = _Attribute(entity_field)
+                attribute = ModelField().build(entity_field)
                 self.attributes.append(attribute)
 
     def get_required(self):

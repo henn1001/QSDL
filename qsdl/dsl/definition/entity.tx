@@ -32,10 +32,7 @@ Enum:
     'enum' name=ID 
 
     // Special directives
-    ( is_deprecated?='@deprecated'
-        ('@namespace(value:' namespace=STRING ')')?
-        )#
-
+    ('@namespace(value:' namespace=STRING ')')?
     // Custom directives
     directives*=Directive
     
@@ -106,6 +103,8 @@ Field:
         is_write_only?='@writeOnly'
         is_composition?='@composition'
         is_aggregation?='@aggregation'
+        ('@minSize(' min_size=INT ')')?
+        ('@maxSize(' max_size=INT ')')?
         )#
 
     // Custom directives

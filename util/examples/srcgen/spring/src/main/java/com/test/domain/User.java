@@ -20,6 +20,7 @@ import java.util.*;
 public class User extends AbstractPersistentObject {
 
   @NotNull
+  @Size(min = 0, max = 255)
   @JsonProperty(value = "name", required = true)
   public String name;
 

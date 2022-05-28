@@ -20,9 +20,11 @@ import java.util.*;
 @Entity
 public class Ticket extends AbstractPersistentObject {
 
+  @Size(min = 0, max = 255)
   @JsonProperty(value = "title")
   public String title;
 
+  @Size(min = 0, max = 255)
   @JsonProperty(value = "body")
   public String body;
 

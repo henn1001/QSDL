@@ -16,7 +16,7 @@
   #}
   {% if attr.type == "ObjectNode" %}
   @Convert(converter = {{package.util}}.NodeConverter.class)
-  @Column(columnDefinition="text")
+  @Column(columnDefinition = "text")
   {% endif %}
   {#
     Relations

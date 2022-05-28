@@ -31,7 +31,6 @@ class Enum:
     description: str = None
     name: str = None
     # Special directives
-    is_deprecated: bool = False
     namespace: str = None
     # Custom directives
     directives: List[Directive] = field(default_factory=list)

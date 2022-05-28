@@ -21,12 +21,15 @@ import java.util.*;
 public class Project extends AbstractPersistentObject {
 
   @NotNull
+  @Size(min = 0, max = 255)
   @JsonProperty(value = "name", required = true)
   public String name;
 
+  @Size(min = 0, max = 255)
   @JsonProperty(value = "description")
   public String description;
 
+  @Size(min = 0, max = 255)
   @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
   public String creationBy;
 
@@ -34,6 +37,7 @@ public class Project extends AbstractPersistentObject {
   @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
   public OffsetDateTime creationDate;
 
+  @Size(min = 0, max = 255)
   @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
   public String lastUpdateBy;
 
@@ -42,7 +46,7 @@ public class Project extends AbstractPersistentObject {
   public OffsetDateTime lastUpdateDate;
 
   @Convert(converter = com.test.util.NodeConverter.class)
-  @Column(columnDefinition="text")
+  @Column(columnDefinition = "text")
   @JsonProperty(value = "meta_inf")
   public ObjectNode metaInf;
 

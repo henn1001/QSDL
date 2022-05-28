@@ -45,6 +45,16 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
   @Valid
   {% endif %}
   {# 
+    Size limits
+  #}
+  {% if field.type == "String" %}
+  @Size(min = {{field.min_size}}, max = {{field.max_size}})
+  {% endif %}
+  {% if field.type in ["Integer", "Long"] and field.min_size %}
+  @Min({{field.min_size}})
+  @Max({{field.max_size}})
+  {% endif %}
+  {# 
     Date format
   #}
   {% if field.is_date %}

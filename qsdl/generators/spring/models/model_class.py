@@ -63,6 +63,9 @@ class ModelField:
     getter: str = None
     setter: str = None
 
+    min_size: str = None
+    max_size: str = None
+
     def build(self, _ref: dsl.Field) -> ModelField:
         """Init our dataclass by reading information from _ref"""
 
@@ -73,6 +76,8 @@ class ModelField:
 
         self.type = util.custom_type(_ref.value.name)
         self.is_array = _ref.is_array
+
+        self._add_constraints(_ref)
 
         self.is_required = _ref.is_required
         self.is_read_only = _ref.is_read_only
@@ -94,6 +99,21 @@ class ModelField:
         self.setter = "set" + stringcase.pascalcase(self.name)
 
         return self
+
+    def _add_constraints(self, _ref: dsl.Field):
+        """Adds min max constraints"""
+
+        if _ref.value.name == "String":
+            self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
+            self.max_size = f"{_ref.max_size}" if _ref.max_size else "255"
+
+        if _ref.value.name == "Int":
+            self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
+            self.max_size = f"{_ref.max_size}" if _ref.max_size else "Integer.MAX_VALUE"
+
+        if _ref.value.name == "Long":
+            self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
+            self.max_size = f"{_ref.max_size}" if _ref.max_size else "Long.MAX_VALUE"
 
 
 @dataclass

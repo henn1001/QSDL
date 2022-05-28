@@ -1,3 +1,3 @@
-"""Model Definitions"""
-from .api import Api
-from .model import Model
+"""Openapi Generator Models"""
+from .api import ApiObject
+from .model import ModelObject
