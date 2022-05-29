@@ -729,8 +729,8 @@ components:
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
-      name: X-API-Key
       in: header
+      name: Authorization
 
   responses:
     DefaultError:
@@ -832,6 +832,7 @@ components:
           type: integer
           format: int64
           readOnly: true
+          minimum: 0
         name:
           type: string
           maxLength: 255
@@ -887,6 +888,7 @@ components:
           type: integer
           format: int64
           readOnly: true
+          minimum: 0
         name:
           type: string
           maxLength: 255
@@ -918,6 +920,7 @@ components:
           type: integer
           format: int64
           readOnly: true
+          minimum: 0
         name:
           type: string
           maxLength: 255
@@ -948,6 +951,7 @@ components:
           type: integer
           format: int64
           readOnly: true
+          minimum: 0
         title:
           type: string
           maxLength: 255

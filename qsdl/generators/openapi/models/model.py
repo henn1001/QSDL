@@ -92,7 +92,7 @@ class ModelField:
     def _add_constraints(self, _ref: dsl.Field):
         """Adds min max constraints"""
 
-        if self.type == "string":
+        if self.type == "string" and not self.format == "date-time":
             self.min_size = f"minLength: {_ref.min_size}" if _ref.min_size else None
             self.max_size = f"maxLength: {_ref.max_size}" if _ref.max_size else "maxLength: 255"
 

@@ -332,7 +332,7 @@ Example:
         request: String! @writeOnly
         response: Object @readOnly
 
-         extend Api {
+         extend api {
             submitQuery(body: QueryMachine): QueryMachine @path("query/submit") @method(POST)
         }
     }
@@ -384,7 +384,7 @@ Operation Rules:
 
 Example:
 
-    extend Api {
+    extend api {
         submitObject(body: Object): Void @path("(object)") @method(POST)
     }
 
