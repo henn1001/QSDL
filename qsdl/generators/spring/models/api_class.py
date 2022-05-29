@@ -111,7 +111,12 @@ class Operation:
         self.consumes = _ref.consumes
         self.produces = _ref.produces
 
-        self._add_parameters(_ref)
+        # special spring directive for producing empty controller functions
+        # the user is assumed to use the request context here
+        void_input = qutil.get_directive_of_name("spring-void-input", _ref)
+
+        if not void_input:
+            self._add_parameters(_ref)
         self._add_response(_ref)
 
         return self

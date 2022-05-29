@@ -3,8 +3,6 @@
  */
 package com.test.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Base64;
 
 import static com.test.config.Constants.*;

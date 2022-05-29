@@ -3,19 +3,18 @@
  */
 package com.test.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.*;
-import org.springframework.web.context.request.NativeWebRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 import java.util.*;
 import java.util.Map.Entry;
 
 public abstract class BaseController {
 
-  private final NativeWebRequest request;
-
-  public BaseController(NativeWebRequest request) {
-    this.request = request;
-  }
+  @Autowired
+  protected HttpServletRequest request;
 
   protected MultiValueMap<String, String> getQueryMap() {
 

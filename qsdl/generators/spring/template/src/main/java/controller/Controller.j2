@@ -8,17 +8,18 @@ package {{package.controller}};
 {{imprt}}
 {% endfor %}
 
+{% if api.has_objectnode %}
+import com.fasterxml.jackson.databind.node.ObjectNode;
+{% endif %}
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.NativeWebRequest;
-{% if api.has_objectnode %}
-import com.fasterxml.jackson.databind.node.ObjectNode;
-{% endif %}
 
 import javax.validation.Valid;
+
+import java.util.*;
 
 @Validated
 @Controller
@@ -29,11 +30,6 @@ public class {{api.name}}Controller extends BaseController implements {{api.name
   {{api.name}}Service {{api.name|lower}}Service;
 
 {% endif %}
-  @Autowired
-  public {{api.name}}Controller(NativeWebRequest request) {
-    super(request);
-  }
-
 {% for operation in api.operations %}
   /**
    * {{operation.method|upper}} {{operation.path}}{% if operation.summary %} : {{operation.summary + "\n"}}{% endif %}

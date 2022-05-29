@@ -14,9 +14,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.validation.Valid;
+
+import java.util.*;
 
 @Validated
 @Controller
@@ -24,11 +25,6 @@ public class ProjectController extends BaseController implements ProjectApi {
 
   @Autowired
   ProjectService projectService;
-
-  @Autowired
-  public ProjectController(NativeWebRequest request) {
-    super(request);
-  }
 
   /**
    * GET /projects : List Projects

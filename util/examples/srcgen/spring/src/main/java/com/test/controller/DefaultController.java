@@ -7,24 +7,20 @@ import com.test.api.DefaultApi;
 import com.test.domain.*;
 import com.test.model.*;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.NativeWebRequest;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.validation.Valid;
+
+import java.util.*;
 
 @Validated
 @Controller
 public class DefaultController extends BaseController implements DefaultApi {
-
-  @Autowired
-  public DefaultController(NativeWebRequest request) {
-    super(request);
-  }
 
   /**
    * POST /query : submitQury

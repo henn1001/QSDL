@@ -14,9 +14,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.validation.Valid;
+
+import java.util.*;
 
 @Validated
 @Controller
@@ -24,11 +25,6 @@ public class TicketController extends BaseController implements TicketApi {
 
   @Autowired
   TicketService ticketService;
-
-  @Autowired
-  public TicketController(NativeWebRequest request) {
-    super(request);
-  }
 
   /**
    * GET /tickets : List Tickets
