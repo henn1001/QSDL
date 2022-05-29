@@ -46,14 +46,14 @@ class TestApiOperation:
 
         test_input = """\
             extend Api {
-                int: Int @path(value:"path2")
-                long: Long @path(value:"path3")
-                float: Float @path(value:"path4")
-                double: Double @path(value:"path5")
-                string: String @path(value:"path6")
-                boolean: Boolean @path(value:"path7")
-                date: Date @path(value:"path8")
-                object: Object @path(value:"path9")
+                int: Int @path("path2")
+                long: Long @path("path3")
+                float: Float @path("path4")
+                double: Double @path("path5")
+                string: String @path("path6")
+                boolean: Boolean @path("path7")
+                date: Date @path("path8")
+                object: Object @path("path9")
             }
         """
 
@@ -91,7 +91,7 @@ class TestApiOperation:
             }
 
             extend Api {
-                field: Foo @path(value:"path")
+                field: Foo @path("path")
             }
         """
 
@@ -111,7 +111,7 @@ class TestApiOperation:
             }
 
             extend Api {
-                field: Foo @path(value:"path")
+                field: Foo @path("path")
             }
         """
 
@@ -131,7 +131,7 @@ class TestApiOperation:
             }
 
             extend Api {
-                field: Foo @path(value:"path")
+                field: Foo @path("path")
             }
         """
 
@@ -148,12 +148,12 @@ class TestApiOperation:
 
         test_input = """\
             extend Api {
-                int: [Int] @path(value:"path2")
-                float: [Float] @path(value:"path3")
-                string: [String] @path(value:"path4")
-                boolean: [Boolean] @path(value:"path5")
-                date: [Date] @path(value:"path6")
-                object: [Object] @path(value:"path7")
+                int: [Int] @path("path2")
+                float: [Float] @path("path3")
+                string: [String] @path("path4")
+                boolean: [Boolean] @path("path5")
+                date: [Date] @path("path6")
+                object: [Object] @path("path7")
             }
         """
 
@@ -185,8 +185,8 @@ class TestApiOperation:
         """Verify required"""
         test_input = """\
             extend Api {
-                field1: String! @path(value:"path1")
-                field2: [String]! @path(value:"path2")
+                field1: String! @path("path1")
+                field2: [String]! @path("path2")
             }
         """
 

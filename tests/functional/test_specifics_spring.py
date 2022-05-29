@@ -189,8 +189,8 @@ class TestSpecificsSpring:
                 field1: String!
 
                 extend Api {
-                    createBar(body: Bar): Bar @path(value:"/foos/{foo_id}/bars") @method(value: POST)
-                    editBar(body: Bar): Bar @path(value:"/foos/{foo_id}/bars/{id}") @method(value: POST)
+                    createBar(body: Bar): Bar @path("/foos/{foo_id}/bars") @method(POST)
+                    editBar(body: Bar): Bar @path("/foos/{foo_id}/bars/{id}") @method(POST)
                 }
 
             }
@@ -219,8 +219,8 @@ class TestSpecificsSpring:
                 field1: String!
 
                 extend Api {
-                    createBar(body: Bar): Bar @path(value:"/foos/{foo_id}/bars") @method(value: POST)
-                    editBar(body: Bar): Bar @path(value:"/foos/{foo_id}/bars/{id}") @method(value: POST)
+                    createBar(body: Bar): Bar @path("/foos/{foo_id}/bars") @method(POST)
+                    editBar(body: Bar): Bar @path("/foos/{foo_id}/bars/{id}") @method(POST)
                 }
 
             }
@@ -251,8 +251,8 @@ class TestSpecificsSpring:
             }
 
             extend Api {
-                createBar(body: Bar): Bar @path(value:"/bars") @method(value: POST)
-                editBar(body: Bar): Bar @path(value:"/bars/{id}") @method(value: POST)
+                createBar(body: Bar): Bar @path("/bars") @method(POST)
+                editBar(body: Bar): Bar @path("/bars/{id}") @method(POST)
             }
         """
 
@@ -334,10 +334,10 @@ class TestSpecificsSpring:
         """Verify usage of generate and controller directive"""
         test_input = """\
             extend Api @controller("Buzzword") {
-                submitQury(arg1: String, arg2: [Int]): Object @path(value:"query") @method(value: PATCH)
+                submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(PATCH)
             }
 
-            type Buzzword @namespace(value:"Incident"){
+            type Buzzword @namespace("Incident"){
                 name: String!
                 extend Api @generate("UPDATE") {}
             }

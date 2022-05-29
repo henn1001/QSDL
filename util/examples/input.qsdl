@@ -34,7 +34,7 @@ base BaseType {
 
 
 // NameSpace Management
-type Project extends BaseType @namespace(value:"Management") {
+type Project extends BaseType @namespace("Management") {
     archive: Boolean @writeOnly
     metrics: [Metric]
     tickets: [Ticket] @composition
@@ -42,12 +42,12 @@ type Project extends BaseType @namespace(value:"Management") {
     milestones: [Milestone] @composition
 }
 
-type Role @namespace(value:"Management"){
+type Role @namespace("Management"){
     name: Int!
     users: [User] @aggregation
 }
 
-type User @namespace(value:"Management"){
+type User @namespace("Management"){
     name: Int! @query
     full_name: String
     emails: [String]
@@ -56,7 +56,7 @@ type User @namespace(value:"Management"){
 
 
 // NameSpace Incident
-    type Ticket @namespace(value:"Incident"){
+    type Ticket @namespace("Incident"){
         number: Int!
         title: String
         issuer_id: Int
@@ -66,37 +66,37 @@ type User @namespace(value:"Management"){
         milestones: [Milestone] @aggregation
     }
 
-    type Milestone @namespace(value:"Incident"){
+    type Milestone @namespace("Incident"){
         name: Int! @query
         sprints: [Sprint] @composition
     }
 
-    type Sprint @namespace(value:"Incident"){
+    type Sprint @namespace("Incident"){
         name: Int!
         roles: [Role] @composition
     }
 
-    type Buzzword @namespace(value:"Incident"){
+    type Buzzword @namespace("Incident"){
         name: String!
 
         extend Api {
-            getBuzzwords(name: String): [Buzzword] @path(value:"/buzzwords") @pagination
-            createBuzzword(body: Buzzword): Buzzword @path(value:"/buzzwords") @method(value: POST)
-            getBuzzword: Buzzword @path(value:"/buzzwords/{id}")
-            updateBuzzword(body: String, test: [Boolean]): Buzzword @path(value:"/buzzwords/{id}") @method(value: PUT)
-            deleteBuzzword: Void @path(value:"/buzzwords/{id}") @method(value: DELETE)
+            getBuzzwords(name: String): [Buzzword] @path("/buzzwords") @pagination
+            createBuzzword(body: Buzzword): Buzzword @path("/buzzwords") @method(POST)
+            getBuzzword: Buzzword @path("/buzzwords/{id}")
+            updateBuzzword(body: String, test: [Boolean]): Buzzword @path("/buzzwords/{id}") @method(PUT)
+            deleteBuzzword: Void @path("/buzzwords/{id}") @method(DELETE)
         }
     }
 
-    type QueryMachine @namespace(value:"Incident"){
+    type QueryMachine @namespace("Incident"){
         request: String! @writeOnly
         response: Object @readOnly
 
          extend Api {
-            submitQuery(body: QueryMachine): QueryMachine @path(value:"query/submit") @method(value: POST)
+            submitQuery(body: QueryMachine): QueryMachine @path("query/submit") @method(POST)
         }
     }
 
 extend Api {
-    submitQury(body: QueryMachine): QueryMachine @path(value:"query/submits") @method(value: POST)
+    submitQury(body: QueryMachine): QueryMachine @path("query/submits") @method(POST)
 }

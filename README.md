@@ -333,7 +333,7 @@ Example:
         response: Object @readOnly
 
          extend Api {
-            submitQuery(body: QueryMachine): QueryMachine @path(value:"query/submit") @method(value: POST)
+            submitQuery(body: QueryMachine): QueryMachine @path("query/submit") @method(POST)
         }
     }
 
@@ -385,7 +385,7 @@ Operation Rules:
 Example:
 
     extend Api {
-        submitObject(body: Object): Void @path(value:"(object)") @method(value: POST)
+        submitObject(body: Object): Void @path("(object)") @method(POST)
     }
 
 ## Directive

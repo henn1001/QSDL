@@ -31,22 +31,22 @@ base BaseType {
 
 
 // NameSpace Management
-type Project extends BaseType @namespace(value:"Management") {
+type Project extends BaseType @namespace("Management") {
     archive: Boolean @writeOnly
     roles: [Role] @composition
 }
 
-type Role @namespace(value:"Management") {
+type Role @namespace("Management") {
     name: String!
 }
 
-type User @namespace(value:"Management"){
+type User @namespace("Management"){
     name: String!
 }
 
 
 // NameSpace Incident
-type Ticket @namespace(value:"Incident"){
+type Ticket @namespace("Incident"){
     title: String
     body: String
     status: Status
@@ -54,5 +54,5 @@ type Ticket @namespace(value:"Incident"){
 }
 
 extend Api {
-    submitQury(arg1: String, arg2: [Int]): Object @path(value:"query") @method(value: POST)
+    submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(POST)
 }

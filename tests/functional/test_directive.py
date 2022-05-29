@@ -229,7 +229,7 @@ class TestDirective:
         """Verify usage of @path"""
         test_input = """\
             extend Api {
-                getObjects: [String] @path(value:"objects")
+                getObjects: [String] @path("objects")
             }
         """
 
@@ -254,8 +254,8 @@ class TestDirective:
                 field : Int
 
                 extend Api {
-                    getObject: String @path(value:"foos")
-                    getObjects: [String] @path(value:"objects")
+                    getObject: String @path("foos")
+                    getObjects: [String] @path("objects")
                 }
             }
         """
@@ -269,11 +269,11 @@ class TestDirective:
         """Verify usage of @method"""
         test_input = """\
             extend Api {
-                field1: Void @path(value:"path") @method(value: GET)
-                field2: Void @path(value:"path") @method(value: POST)
-                field3: Void @path(value:"path") @method(value: PUT)
-                field4: Void @path(value:"path") @method(value: PATCH)
-                field5: Void @path(value:"path") @method(value: DELETE)
+                field1: Void @path("path") @method(GET)
+                field2: Void @path("path") @method(POST)
+                field3: Void @path("path") @method(PUT)
+                field4: Void @path("path") @method(PATCH)
+                field5: Void @path("path") @method(DELETE)
             }
         """
 
@@ -288,16 +288,16 @@ class TestDirective:
     def test_directive_11_positive(self):
         """Verify usage of @namespace"""
         test_input = """\
-            base Foo @namespace(value:"Test") {
+            base Foo @namespace("Test") {
                 field : String
             }
 
-            type Bar @namespace(value:"Test") {
+            type Bar @namespace("Test") {
                 field : Int
             }
 
-            extend Api @namespace(value:"Test") {
-                field : String @path(value:"path")
+            extend Api @namespace("Test") {
+                field : String @path("path")
             }
         """
 

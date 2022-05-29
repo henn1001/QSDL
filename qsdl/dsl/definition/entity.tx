@@ -35,7 +35,7 @@ Enum:
     'enum' name=ID 
 
     // Special directives
-    ('@namespace(value:' namespace=STRING ')')?
+    ('@namespace(' namespace=STRING ')')?
 
     // Custom directives
     directives*=Directive
@@ -54,7 +54,7 @@ Base:
     
     // Special directives
     ( is_deprecated?='@deprecated'
-        ('@namespace(value:' namespace=STRING ')')?
+        ('@namespace(' namespace=STRING ')')?
         )#
 
     // Custom directives
@@ -74,7 +74,7 @@ Object:
 
     // Special directives
     ( is_deprecated?='@deprecated'
-        ('@namespace(value:' namespace=STRING ')')?
+        ('@namespace(' namespace=STRING ')')?
         )#
 
     // Custom directives
@@ -122,7 +122,7 @@ Api :
 
     // Special directives
     ( is_deprecated?='@deprecated'
-        ('@namespace(value:' namespace=STRING ')')?
+        ('@namespace(' namespace=STRING ')')?
         ('@generate(' generate*=STRING[','] ')')?
         )#
 
@@ -153,11 +153,11 @@ Operation:
     (is_required?='!')?
 
     // Special directives
-    ( ('@path(value:' path=STRING ')')?
-        ('@method(value:' method=Method ')')?
+    ( ('@path(' path=STRING ')')?
+        ('@method(' method=Method ')')?
         is_pageable?='@pagination'
-        ('@consumes(value:' consumes=STRING ')')?
-        ('@produces(value:' produces=STRING ')')?
+        ('@consumes(' consumes=STRING ')')?
+        ('@produces(' produces=STRING ')')?
         )#
 
     // Custom directives

@@ -75,7 +75,7 @@ class TestSpecificsOpenAPI:
     def test_specifics_03_positive(self):
         """Verify PascalCase naming convention"""
         test_input = """\
-            type Foo @namespace(value:"Test") {
+            type Foo @namespace("Test") {
                 field: String
             }
         """
@@ -86,9 +86,9 @@ class TestSpecificsOpenAPI:
         """Verify PascalCase naming convention"""
         inputs = []
 
-        inputs.append('type Foo @namespace(value:"wrong") { field: String } ')
-        inputs.append('type Foo @namespace(value:"Wro-Ng") { field: String } ')
-        inputs.append('type Foo @namespace(value:"WRO_NG") { field: String } ')
+        inputs.append('type Foo @namespace("wrong") { field: String } ')
+        inputs.append('type Foo @namespace("Wro-Ng") { field: String } ')
+        inputs.append('type Foo @namespace("WRO_NG") { field: String } ')
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)

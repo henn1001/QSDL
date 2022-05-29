@@ -46,7 +46,7 @@ class TestArgument:
         """Verify TBD naming convention"""
         test_input = """\
             extend Api {
-                field(arg: String): Void @path(value:"path")
+                field(arg: String): Void @path("path")
             }
         """
 
@@ -56,7 +56,7 @@ class TestArgument:
         """Verify TBD naming convention"""
         inputs = []
 
-        inputs.append('extend Api { field(a?a: String): Void @path(value:"path") } ')
+        inputs.append('extend Api { field(a?a: String): Void @path("path") } ')
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
@@ -65,7 +65,7 @@ class TestArgument:
         """Verify empty arguments"""
         test_input = """\
             extend Api {
-                field(): Void @path(value:"path")
+                field(): Void @path("path")
             }
         """
 
@@ -75,7 +75,7 @@ class TestArgument:
         """Verify empty arguments"""
         test_input = """\
             extend Api {
-                field(arg): Void @path(value:"path")
+                field(arg): Void @path("path")
             }
         """
 
@@ -98,16 +98,16 @@ class TestArgument:
             }
 
             extend Api {
-                field1: Void @path(value:"path1/{arg}")
-                field2(arg: Int): Void @path(value:"path2")
-                field3(arg: Float): Void @path(value:"path3")
-                field4(arg: String): Void @path(value:"path4")
-                field5(arg: Boolean): Void @path(value:"path5")
-                field6(arg: Date): Void @path(value:"path6")
-                field7(arg: Object): Void @path(value:"path7")
-                field8(arg: Foo): Void @path(value:"path8")
-                field9(arg: Bar): Void @path(value:"path9")
-                field10(arg: Fruit): Void @path(value:"path10")
+                field1: Void @path("path1/{arg}")
+                field2(arg: Int): Void @path("path2")
+                field3(arg: Float): Void @path("path3")
+                field4(arg: String): Void @path("path4")
+                field5(arg: Boolean): Void @path("path5")
+                field6(arg: Date): Void @path("path6")
+                field7(arg: Object): Void @path("path7")
+                field8(arg: Foo): Void @path("path8")
+                field9(arg: Bar): Void @path("path9")
+                field10(arg: Fruit): Void @path("path10")
             }
         """
 
@@ -118,8 +118,8 @@ class TestArgument:
         test_input = """\
 
             extend Api {
-                field1(arg: String): Void @path(value:"path1")
-                field2(arg: field1): Void @path(value:"path2")
+                field1(arg: String): Void @path("path1")
+                field2(arg: field1): Void @path("path2")
             }
         """
 
@@ -129,10 +129,10 @@ class TestArgument:
         """Verify value list"""
         test_input = """\
             extend Api {
-                field1(arg: [String]): Void @path(value:"path1")
-                field2(arg: [String]): Void @path(value:"path2") @method(value: POST)
-                field3(arg: [String]): Void @path(value:"path3") @method(value: PUT)
-                field4(arg: [String]): Void @path(value:"path4") @method(value: PATCH)
+                field1(arg: [String]): Void @path("path1")
+                field2(arg: [String]): Void @path("path2") @method(POST)
+                field3(arg: [String]): Void @path("path3") @method(PUT)
+                field4(arg: [String]): Void @path("path4") @method(PATCH)
             }
         """
 
@@ -166,8 +166,8 @@ class TestArgument:
         """Verify required"""
         test_input = """\
             extend Api {
-                field1(arg: String!): Void @path(value:"path1")
-                field2(arg: [String]!): Void @path(value:"path2")
+                field1(arg: String!): Void @path("path1")
+                field2(arg: [String]!): Void @path("path2")
             }
         """
 
@@ -190,16 +190,16 @@ class TestArgument:
             }
 
             extend Api {
-                field1: Void @path(value:"path1/{arg}")
-                field2(arg: Int): Void @path(value:"path2")
-                field3(arg: Float): Void @path(value:"path3")
-                field4(arg: String): Void @path(value:"path4")
-                field5(arg: Boolean): Void @path(value:"path5")
-                field6(arg: Date): Void @path(value:"path6")
-                field7(arg: Object): Void @path(value:"path7")
-                field8(arg: Bar): Void @path(value:"path8")
-                field9(arg: Foo): Void @path(value:"path9")
-                field10(arg: Fruit): Void @path(value:"path10")
+                field1: Void @path("path1/{arg}")
+                field2(arg: Int): Void @path("path2")
+                field3(arg: Float): Void @path("path3")
+                field4(arg: String): Void @path("path4")
+                field5(arg: Boolean): Void @path("path5")
+                field6(arg: Date): Void @path("path6")
+                field7(arg: Object): Void @path("path7")
+                field8(arg: Bar): Void @path("path8")
+                field9(arg: Foo): Void @path("path9")
+                field10(arg: Fruit): Void @path("path10")
             }
         """
 
@@ -253,15 +253,15 @@ class TestArgument:
             }
 
             extend Api {
-                field2(arg: Int): Void @path(value:"path2") @method(value: POST)
-                field3(arg: Float): Void @path(value:"path3") @method(value: POST)
-                field4(arg: String): Void @path(value:"path4") @method(value: POST)
-                field5(arg: Boolean): Void @path(value:"path5") @method(value: POST)
-                field6(arg: Date): Void @path(value:"path6") @method(value: POST)
-                field7(arg: Object): Void @path(value:"path7") @method(value: POST)
-                field8(arg: Bar): Void @path(value:"path8") @method(value: POST)
-                field9(arg: Foo): Void @path(value:"path9") @method(value: POST)
-                field10(arg: Fruit): Void @path(value:"path10") @method(value: POST)
+                field2(arg: Int): Void @path("path2") @method(POST)
+                field3(arg: Float): Void @path("path3") @method(POST)
+                field4(arg: String): Void @path("path4") @method(POST)
+                field5(arg: Boolean): Void @path("path5") @method(POST)
+                field6(arg: Date): Void @path("path6") @method(POST)
+                field7(arg: Object): Void @path("path7") @method(POST)
+                field8(arg: Bar): Void @path("path8") @method(POST)
+                field9(arg: Foo): Void @path("path9") @method(POST)
+                field10(arg: Fruit): Void @path("path10") @method(POST)
             }
         """
 
@@ -319,16 +319,16 @@ class TestArgument:
             }
 
             extend Api {
-                field1: Void @path(value:"/path1/{arg}") @method(value: DELETE)
-                field2(arg: Int): Void @path(value:"path2") @method(value: DELETE)
-                field3(arg: Float): Void @path(value:"path3") @method(value: DELETE)
-                field4(arg: String): Void @path(value:"path4") @method(value: DELETE)
-                field5(arg: Boolean): Void @path(value:"path5") @method(value: DELETE)
-                field6(arg: Date): Void @path(value:"path6") @method(value: DELETE)
-                field7(arg: Object): Void @path(value:"path7") @method(value: DELETE)
-                field8(arg: Bar): Void @path(value:"path8") @method(value: DELETE)
-                field9(arg: Foo): Void @path(value:"path9") @method(value: DELETE)
-                field10(arg: Fruit): Void @path(value:"path10") @method(value: DELETE)
+                field1: Void @path("/path1/{arg}") @method(DELETE)
+                field2(arg: Int): Void @path("path2") @method(DELETE)
+                field3(arg: Float): Void @path("path3") @method(DELETE)
+                field4(arg: String): Void @path("path4") @method(DELETE)
+                field5(arg: Boolean): Void @path("path5") @method(DELETE)
+                field6(arg: Date): Void @path("path6") @method(DELETE)
+                field7(arg: Object): Void @path("path7") @method(DELETE)
+                field8(arg: Bar): Void @path("path8") @method(DELETE)
+                field9(arg: Foo): Void @path("path9") @method(DELETE)
+                field10(arg: Fruit): Void @path("path10") @method(DELETE)
             }
         """
 

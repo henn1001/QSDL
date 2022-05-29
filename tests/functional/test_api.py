@@ -45,15 +45,15 @@ class TestApi:
         """Verify Api multiple usage in schema"""
         test_input = """\
             extend Api {
-                getFoo: Object @path(value:"foo")
+                getFoo: Object @path("foo")
             }
 
             extend Api {
-                getBar: Object @path(value:"bar")
+                getBar: Object @path("bar")
             }
 
             extend Api {
-                getFruit: Object @path(value:"fruit")
+                getFruit: Object @path("fruit")
             }
         """
 
@@ -75,7 +75,7 @@ class TestApi:
                 name: String
 
                 extend Api {
-                    getFoo: Foo @path(value:"/foos")
+                    getFoo: Foo @path("/foos")
                 }
             }
         """
@@ -114,8 +114,8 @@ class TestApi:
 
         test_input = """\
             extend Api {
-                getObject1: String @path(value:"object")
-                getObject2: String @path(value:"object")
+                getObject1: String @path("object")
+                getObject2: String @path("object")
             }
         """
         inputs.append(test_input)
@@ -126,7 +126,7 @@ class TestApi:
             }
 
             extend Api {
-                getObject: String @path(value:"types")
+                getObject: String @path("types")
             }
         """
         inputs.append(test_input)
@@ -140,8 +140,8 @@ class TestApi:
 
         test_input = """\
             extend Api {
-                getObject: String @path(value:"object1")
-                getObject: String @path(value:"object2")
+                getObject: String @path("object1")
+                getObject: String @path("object2")
             }
         """
         inputs.append(test_input)
@@ -152,7 +152,7 @@ class TestApi:
             }
 
             extend Api {
-                getType: String @path(value:"test")
+                getType: String @path("test")
             }
         """
         inputs.append(test_input)

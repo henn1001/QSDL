@@ -6,10 +6,10 @@ Allows to move custom apis into a different controller.
 
 ```
     extend Api @controller("Buzzword") {
-        submitQury(arg1: String, arg2: [Int]): Object @path(value:"query") @method(value: PATCH)
+        submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(PATCH)
     }
 
-    type Buzzword @namespace(value:"Incident"){
+    type Buzzword @namespace("Incident"){
         name: String!
         extend Api @generate("UPDATE") {}
     }
