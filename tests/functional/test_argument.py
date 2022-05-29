@@ -45,7 +45,7 @@ class TestArgument:
     def test_argument_01_positive(self):
         """Verify TBD naming convention"""
         test_input = """\
-            extend Api {
+            extend api {
                 field(arg: String): Void @path("path")
             }
         """
@@ -56,7 +56,7 @@ class TestArgument:
         """Verify TBD naming convention"""
         inputs = []
 
-        inputs.append('extend Api { field(a?a: String): Void @path("path") } ')
+        inputs.append('extend api { field(a?a: String): Void @path("path") } ')
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
@@ -64,7 +64,7 @@ class TestArgument:
     def test_argument_02_positive(self):
         """Verify empty arguments"""
         test_input = """\
-            extend Api {
+            extend api {
                 field(): Void @path("path")
             }
         """
@@ -74,7 +74,7 @@ class TestArgument:
     def test_argument_02_negative(self):
         """Verify empty arguments"""
         test_input = """\
-            extend Api {
+            extend api {
                 field(arg): Void @path("path")
             }
         """
@@ -97,7 +97,7 @@ class TestArgument:
                 field: String
             }
 
-            extend Api {
+            extend api {
                 field1: Void @path("path1/{arg}")
                 field2(arg: Int): Void @path("path2")
                 field3(arg: Float): Void @path("path3")
@@ -117,7 +117,7 @@ class TestArgument:
         """Verify  argument value types"""
         test_input = """\
 
-            extend Api {
+            extend api {
                 field1(arg: String): Void @path("path1")
                 field2(arg: field1): Void @path("path2")
             }
@@ -128,7 +128,7 @@ class TestArgument:
     def test_argument_05_positive(self):
         """Verify value list"""
         test_input = """\
-            extend Api {
+            extend api {
                 field1(arg: [String]): Void @path("path1")
                 field2(arg: [String]): Void @path("path2") @method(POST)
                 field3(arg: [String]): Void @path("path3") @method(PUT)
@@ -165,7 +165,7 @@ class TestArgument:
     def test_argument_06_positive(self):
         """Verify required"""
         test_input = """\
-            extend Api {
+            extend api {
                 field1(arg: String!): Void @path("path1")
                 field2(arg: [String]!): Void @path("path2")
             }
@@ -189,7 +189,7 @@ class TestArgument:
                 field: String
             }
 
-            extend Api {
+            extend api {
                 field1: Void @path("path1/{arg}")
                 field2(arg: Int): Void @path("path2")
                 field3(arg: Float): Void @path("path3")
@@ -252,7 +252,7 @@ class TestArgument:
                 field: String
             }
 
-            extend Api {
+            extend api {
                 field2(arg: Int): Void @path("path2") @method(POST)
                 field3(arg: Float): Void @path("path3") @method(POST)
                 field4(arg: String): Void @path("path4") @method(POST)
@@ -318,7 +318,7 @@ class TestArgument:
                 field: String
             }
 
-            extend Api {
+            extend api {
                 field1: Void @path("/path1/{arg}") @method(DELETE)
                 field2(arg: Int): Void @path("path2") @method(DELETE)
                 field3(arg: Float): Void @path("path3") @method(DELETE)

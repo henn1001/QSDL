@@ -33,7 +33,7 @@ class TestApi:
     def test_api_01_positive(self):
         """Verify empty Operation"""
         test_input = """\
-            extend Api {
+            extend api {
             }
         """
 
@@ -44,15 +44,15 @@ class TestApi:
     def test_api_02_positive(self):
         """Verify Api multiple usage in schema"""
         test_input = """\
-            extend Api {
+            extend api {
                 getFoo: Object @path("foo")
             }
 
-            extend Api {
+            extend api {
                 getBar: Object @path("bar")
             }
 
-            extend Api {
+            extend api {
                 getFruit: Object @path("fruit")
             }
         """
@@ -74,7 +74,7 @@ class TestApi:
             type Foo {
                 name: String
 
-                extend Api {
+                extend api {
                     getFoo: Foo @path("/foos")
                 }
             }
@@ -96,11 +96,11 @@ class TestApi:
             type Type {
                 name: String
 
-                extend Api {
+                extend api {
                     getType: Type
                 }
 
-                extend Api {
+                extend api {
                     getTypes: [Type]
                 }
             }
@@ -113,7 +113,7 @@ class TestApi:
         inputs = []
 
         test_input = """\
-            extend Api {
+            extend api {
                 getObject1: String @path("object")
                 getObject2: String @path("object")
             }
@@ -125,7 +125,7 @@ class TestApi:
                 name: String
             }
 
-            extend Api {
+            extend api {
                 getObject: String @path("types")
             }
         """
@@ -139,7 +139,7 @@ class TestApi:
         inputs = []
 
         test_input = """\
-            extend Api {
+            extend api {
                 getObject: String @path("object1")
                 getObject: String @path("object2")
             }
@@ -151,7 +151,7 @@ class TestApi:
                 name: String
             }
 
-            extend Api {
+            extend api {
                 getType: String @path("test")
             }
         """

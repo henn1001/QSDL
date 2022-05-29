@@ -45,7 +45,7 @@ class TestApiOperation:
         """Verify that we can use basic types"""
 
         test_input = """\
-            extend Api {
+            extend api {
                 int: Int @path("path2")
                 long: Long @path("path3")
                 float: Float @path("path4")
@@ -90,7 +90,7 @@ class TestApiOperation:
                 CLOSED
             }
 
-            extend Api {
+            extend api {
                 field: Foo @path("path")
             }
         """
@@ -110,7 +110,7 @@ class TestApiOperation:
                 field: String
             }
 
-            extend Api {
+            extend api {
                 field: Foo @path("path")
             }
         """
@@ -130,7 +130,7 @@ class TestApiOperation:
                 field: String
             }
 
-            extend Api {
+            extend api {
                 field: Foo @path("path")
             }
         """
@@ -147,7 +147,7 @@ class TestApiOperation:
         """Verify that we can use array types"""
 
         test_input = """\
-            extend Api {
+            extend api {
                 int: [Int] @path("path2")
                 float: [Float] @path("path3")
                 string: [String] @path("path4")
@@ -184,7 +184,7 @@ class TestApiOperation:
     def test_api_operation_07_positive(self):
         """Verify required"""
         test_input = """\
-            extend Api {
+            extend api {
                 field1: String! @path("path1")
                 field2: [String]! @path("path2")
             }

@@ -5,13 +5,13 @@
 Allows to move custom apis into a different controller.
 
 ```
-    extend Api @controller("Buzzword") {
+    extend api @controller("Buzzword") {
         submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(PATCH)
     }
 
     type Buzzword @namespace("Incident"){
         name: String!
-        extend Api @generate("UPDATE") {}
+        extend api @generate("UPDATE") {}
     }
 ```
 

@@ -118,7 +118,7 @@ Field:
 Api :
     description=Description?
 
-    'extend' 'Api' 
+    'extend' 'api' 
 
     // Special directives
     ( is_deprecated?='@deprecated'

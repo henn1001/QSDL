@@ -79,7 +79,7 @@ type User @namespace("Management"){
     type Buzzword @namespace("Incident"){
         name: String!
 
-        extend Api {
+        extend api {
             getBuzzwords(name: String): [Buzzword] @path("/buzzwords") @pagination
             createBuzzword(body: Buzzword): Buzzword @path("/buzzwords") @method(POST)
             getBuzzword: Buzzword @path("/buzzwords/{id}")
@@ -92,11 +92,11 @@ type User @namespace("Management"){
         request: String! @writeOnly
         response: Object @readOnly
 
-         extend Api {
+         extend api {
             submitQuery(body: QueryMachine): QueryMachine @path("query/submit") @method(POST)
         }
     }
 
-extend Api {
+extend api {
     submitQury(body: QueryMachine): QueryMachine @path("query/submits") @method(POST)
 }

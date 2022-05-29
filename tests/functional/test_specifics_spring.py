@@ -188,7 +188,7 @@ class TestSpecificsSpring:
             type Bar {
                 field1: String!
 
-                extend Api {
+                extend api {
                     createBar(body: Bar): Bar @path("/foos/{foo_id}/bars") @method(POST)
                     editBar(body: Bar): Bar @path("/foos/{foo_id}/bars/{id}") @method(POST)
                 }
@@ -218,7 +218,7 @@ class TestSpecificsSpring:
             type Bar {
                 field1: String!
 
-                extend Api {
+                extend api {
                     createBar(body: Bar): Bar @path("/foos/{foo_id}/bars") @method(POST)
                     editBar(body: Bar): Bar @path("/foos/{foo_id}/bars/{id}") @method(POST)
                 }
@@ -250,7 +250,7 @@ class TestSpecificsSpring:
                 field1: String!
             }
 
-            extend Api {
+            extend api {
                 createBar(body: Bar): Bar @path("/bars") @method(POST)
                 editBar(body: Bar): Bar @path("/bars/{id}") @method(POST)
             }
@@ -278,14 +278,14 @@ class TestSpecificsSpring:
                 name: String
                 foos: [Foo] @aggregation
 
-                extend Api {    }
+                extend api {    }
             }
 
             type Fruit  {
                 name: String
                 foos: [Foo] @composition
 
-                extend Api {    }
+                extend api {    }
             }
 
         """
@@ -333,13 +333,13 @@ class TestSpecificsSpring:
     def test_specifics_11(self):
         """Verify usage of generate and controller directive"""
         test_input = """\
-            extend Api @controller("Buzzword") {
+            extend api @controller("Buzzword") {
                 submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(PATCH)
             }
 
             type Buzzword @namespace("Incident"){
                 name: String!
-                extend Api @generate("UPDATE") {}
+                extend api @generate("UPDATE") {}
             }
 
         """

@@ -46,7 +46,7 @@ class TestDescription:
             }
 
             "single line description"
-            extend Api {
+            extend api {
                 "single line description"
                 field: Void @path("path")
             }
@@ -102,7 +102,7 @@ class TestDescription:
             \"""
             Multi line description
             \"""
-            extend Api {
+            extend api {
                 \"""
                 Multi line description
                 \"""

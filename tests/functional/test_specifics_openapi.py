@@ -104,14 +104,14 @@ class TestSpecificsOpenAPI:
                 name: String
                 foos: [Foo] @aggregation
 
-                extend Api {    }
+                extend api {    }
             }
 
             type Fruit  {
                 name: String
                 foos: [Foo] @composition
 
-                extend Api {    }
+                extend api {    }
             }
 
         """

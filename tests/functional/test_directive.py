@@ -228,7 +228,7 @@ class TestDirective:
     def test_directive_08_positive(self):
         """Verify usage of @path"""
         test_input = """\
-            extend Api {
+            extend api {
                 getObjects: [String] @path("objects")
             }
         """
@@ -240,7 +240,7 @@ class TestDirective:
     def test_directive_08_negative(self):
         """Verify usage of @path"""
         test_input = """\
-            extend Api {
+            extend api {
                 getObjects: [String]
             }
         """
@@ -253,7 +253,7 @@ class TestDirective:
             type Foo {
                 field : Int
 
-                extend Api {
+                extend api {
                     getObject: String @path("foos")
                     getObjects: [String] @path("objects")
                 }
@@ -268,7 +268,7 @@ class TestDirective:
     def test_directive_10_positive(self):
         """Verify usage of @method"""
         test_input = """\
-            extend Api {
+            extend api {
                 field1: Void @path("path") @method(GET)
                 field2: Void @path("path") @method(POST)
                 field3: Void @path("path") @method(PUT)
@@ -296,7 +296,7 @@ class TestDirective:
                 field : Int
             }
 
-            extend Api @namespace("Test") {
+            extend api @namespace("Test") {
                 field : String @path("path")
             }
         """

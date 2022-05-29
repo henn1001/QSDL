@@ -53,6 +53,6 @@ type Ticket @namespace("Incident"){
     users: [User] @aggregation
 }
 
-extend Api {
+extend api {
     submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(POST)
 }
