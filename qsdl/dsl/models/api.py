@@ -39,6 +39,7 @@ class Api:
 
     # required by textX
     parent: Union[Schema, Object] = None
+    _tx_fqn: str = "entity.Api"
 
     # addons
     has_generated: bool = False

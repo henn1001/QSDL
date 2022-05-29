@@ -25,6 +25,9 @@ Import:
 
 Scalar:
     'scalar' name=ID
+
+    // Custom directives
+    directives*=Directive
 ;
 
 Enum:
@@ -33,6 +36,7 @@ Enum:
 
     // Special directives
     ('@namespace(value:' namespace=STRING ')')?
+
     // Custom directives
     directives*=Directive
     

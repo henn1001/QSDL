@@ -48,6 +48,7 @@ class Field:
 
     # required by textX
     parent: Union[Base, Object] = None
+    _tx_fqn: str = "entity.Field"
 
     # addons
     is_relation: bool = False

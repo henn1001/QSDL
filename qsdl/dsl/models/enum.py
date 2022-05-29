@@ -38,3 +38,4 @@ class Enum:
 
     # required by textX
     parent: Schema = None
+    _tx_fqn: str = "entity.Enum"

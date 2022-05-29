@@ -47,6 +47,7 @@ class Operation:
 
     # required by textX
     parent: Api = None
+    _tx_fqn: str = "entity.Operation"
 
     # addons
     is_generated: bool = False

@@ -67,9 +67,27 @@ To view help documentation, use the following:
 
     $ qsdl --help
 
-To get the version of the QSDL CLI:
+```
+Usage: qsdl [OPTIONS] INPUT_PATH
 
-    $ qsdl --version
+Runs the QSDL generator with the provided schema definition file.
+
+Args:
+    input_path (str):   The path to the schema definition file.
+
+Returns:
+    int:                0 on success, 1 on failure
+
+Options:
+-g, --generator [openapi|graphql|plantuml|spring|void]
+                                The requested generator.
+-c, --config_path PATH          Path to a config json file.
+-o, --output_path PATH          Path to a output folder. Default: 'srcgren/'
+-pv, --print_version            Prints a .qversion file to the output
+                                folder.
+--version                       Show the version and exit.
+--help                          Show this message and exit.
+```
 
 ## Examples
 
@@ -146,7 +164,20 @@ There are already several builtin types available.
 - `Object`
 - `Void`
 
-> Note: For the OpenAPI generator there is no support for other scalar types than the pre-defined.
+> Note: In order to correctly interpret new scalars for a specific generator, directives can be used to provide a conversion map.
+
+Example:
+```
+scalar UUID @openapi("string,uuid") @spring("UUID")
+```
+
+For openapi, two values can be provided which translate to "type" and "format".
+
+```
+description:
+    type: string
+    format: uuid
+```
 
 ## Enum
 

@@ -20,10 +20,11 @@ from typing import List, Union
 
 import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
+import qsdl.dsl.util as qutil
 from qsdl.generators.spring.models import ApiClass, ModelField
 
 from .config import Config
-from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass, Parent, Package
+from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass, Package, Parent
 
 
 class Store:
@@ -50,7 +51,7 @@ custom_types = {
 }
 
 
-def custom_type(input_type: str) -> str:
+def custom_type(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> str:
     """Converter map for custom types.
 
     Args:
@@ -59,7 +60,34 @@ def custom_type(input_type: str) -> str:
     Returns:
         str: The mapped type name or the input_type if it does not exist.
     """
-    return custom_types.get(input_type, input_type)
+    name = entity.name
+    override = None
+
+    if entity._tx_fqn == "entity.Scalar":
+        override = get_type_override(entity)
+
+    return custom_types.get(name, name) if not override else override
+
+
+def get_type_override(entity: dsl.Scalar) -> str:
+    """Checks and returns a custom scalar format override.
+
+    Args:
+        entity (dsl.Scalar): The scalar object.
+
+    Returns:
+        str: The override if available or None
+    """
+    ret = None
+
+    # check and fetch the spring directive
+    custom_directive = qutil.get_directive_of_name("spring", entity)
+
+    if custom_directive:
+        # strip directive
+        ret = custom_directive.value.strip()
+
+    return ret
 
 
 def has(

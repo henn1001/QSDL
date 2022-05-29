@@ -113,6 +113,7 @@ entity.ValueType <|-- entity.Scalar
 entity.ValueType <|-- entity.Enum
 entity.ValueType <|-- entity.Base
 entity.ValueType <|-- entity.Object
+entity.Scalar *-- "0..*" entity.Directive
 entity.Enum *-- "0..*" entity.Directive
 entity.Base o-- entity.Base
 entity.Base *-- "0..*" entity.Directive
@@ -133,11 +134,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Description |  |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Comment | \\/\\/.*$ |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | Description |  |
 end legend
 
 @enduml

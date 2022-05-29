@@ -74,7 +74,7 @@ class ModelField:
         self.json_key = _ref.name
         self.description = _ref.description
 
-        self.type = util.custom_type(_ref.value.name)
+        self.type = util.custom_type(_ref.value)
         self.is_array = _ref.is_array
 
         self._add_constraints(_ref)
@@ -103,15 +103,15 @@ class ModelField:
     def _add_constraints(self, _ref: dsl.Field):
         """Adds min max constraints"""
 
-        if _ref.value.name == "String":
+        if self.type == "String":
             self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
             self.max_size = f"{_ref.max_size}" if _ref.max_size else "255"
 
-        if _ref.value.name == "Int":
+        if self.type == "Integer":
             self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
             self.max_size = f"{_ref.max_size}" if _ref.max_size else "Integer.MAX_VALUE"
 
-        if _ref.value.name == "Long":
+        if self.type == "Long":
             self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
             self.max_size = f"{_ref.max_size}" if _ref.max_size else "Long.MAX_VALUE"
 

@@ -104,8 +104,8 @@ class Operation:
             param.is_required = argument.is_required
             param.is_array = argument.is_array
 
-            param.type = util.custom_type(argument.value.name)
-            param.format = util.custom_type_format(argument.value.name)
+            param.type = util.custom_type(argument.value)
+            param.format = util.custom_type_format(argument.value)
 
             if argument.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
                 param.ref = f"#/components/schemas/{ param.type }"
@@ -135,8 +135,8 @@ class Operation:
             param.is_required = False
             param.is_array = _ref.is_array
 
-            param.type = util.custom_type(_ref.value.name)
-            param.format = util.custom_type_format(_ref.value.name)
+            param.type = util.custom_type(_ref.value)
+            param.format = util.custom_type_format(_ref.value)
 
             if _ref.is_pageable:
                 param.name += "List"

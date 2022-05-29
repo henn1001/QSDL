@@ -33,3 +33,4 @@ class Directive:
 
     # required by textX
     parent: Union[Base, Api, Object, Field, Operation] = None
+    _tx_fqn: str = "entity.Directive"

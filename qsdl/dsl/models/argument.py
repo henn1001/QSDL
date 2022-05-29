@@ -37,6 +37,7 @@ class Argument:
 
     # required by textX
     parent: Operation = None
+    _tx_fqn: str = "entity.Argument"
 
     # addons
     is_path: bool = False

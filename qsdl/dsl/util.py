@@ -18,15 +18,15 @@ from typing import Union
 
 import qsdl.dsl.models as dsl
 
+ValueType = Union[dsl.Scalar, dsl.Base, dsl.Api, dsl.Object, dsl.Field, dsl.Operation]
 
-def get_directive_of_name(
-    name: str, entity: Union[dsl.Base, dsl.Api, dsl.Object, dsl.Field, dsl.Operation]
-) -> dsl.Directive:
+
+def get_directive_of_name(name: str, entity: ValueType) -> dsl.Directive:
     """Returns the first directive with a given name if available.
 
     Args:
         name (str): The name of the directive
-        entity (Union[dsl.Base, dsl.Api, dsl.Object, dsl.Field, dsl.Operation]): The entity which contains directives.
+        entity (Union[dsl.Scalar, dsl.Base, dsl.Api, dsl.Object, dsl.Field, dsl.Operation]): The entity which contains directives.
 
     Returns:
         dsl.Directive: Either the directive or None

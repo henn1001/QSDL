@@ -34,3 +34,6 @@ class Schema:
     description: str = None
     servers: List[str] = field(default_factory=list)
     types: List[Union[Scalar, Enum, Base, Api, Object]] = field(default_factory=list)
+
+    # required by textX
+    _tx_fqn: str = "entity.Schema"

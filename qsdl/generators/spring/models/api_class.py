@@ -51,7 +51,7 @@ class Parameter:
         self.name = stringcase.camelcase(_ref.name)
         self.json_key = _ref.name
 
-        self.type = util.custom_type(_ref.value.name)
+        self.type = util.custom_type(_ref.value)
         self.is_array = _ref.is_array
 
         self.is_required = _ref.is_required
@@ -140,7 +140,7 @@ class Operation:
             new_param.json_key = _ref.value.name
             new_param.is_array = _ref.is_array
 
-            new_param.type = util.custom_type(_ref.value.name)
+            new_param.type = util.custom_type(_ref.value)
 
             if _ref.is_pageable:
                 new_param.name = "CursorPage"

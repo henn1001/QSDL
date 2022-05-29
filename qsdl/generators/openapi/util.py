@@ -19,13 +19,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, List, Union
 
 import qsdl.dsl.textx as xtx
+import qsdl.dsl.util as qutil
 
 if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Field, Object, Schema
+    import qsdl.dsl.models as dsl
 
 
 # the parsed schema definition.
-schema: Schema = None
+schema: dsl.Schema = None
 
 # used to flag paths as used in order to prevent path duplicates in
 # OpenAPI
@@ -56,31 +57,75 @@ custom_type_formats = {
 }
 
 
-def custom_type(input_type: str) -> str:
+def custom_type(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> str:
     """Converter map for custom types.
 
     Args:
-        input_type (str): The type to map.
+        entity (Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]): The type to map.
 
     Returns:
         str: The mapped type name or the input_type if it does not exist.
     """
-    return custom_types.get(input_type, input_type)
+    name = entity.name
+    override = None
+
+    if entity._tx_fqn == "entity.Scalar":
+        override = get_type_override(entity)
+
+    return custom_types.get(name, name) if not override else override
 
 
-def custom_type_format(input_type_format: str) -> str:
+def custom_type_format(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> str:
     """Converter map for custom formats.
 
     Args:
-        input_type_format (str): The type_format to map.
+        entity (Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]): The type to map.
 
     Returns:
         str: The mapped type_format name or input_type_format if it does not exist.
     """
-    return custom_type_formats.get(input_type_format, None)
+    name = entity.name
+    override = None
+
+    if entity._tx_fqn == "entity.Scalar":
+        override = get_type_override(entity, True)
+
+    return custom_type_formats.get(name, None) if not override else override
 
 
-def is_supertype(entity: Union[Base, Object]) -> bool:
+def get_type_override(entity: dsl.Scalar, toggle: bool = False) -> str:
+    """Checks and returns a custom scalar format override.
+
+    Args:
+        entity (dsl.Scalar): The scalar object.
+        toggle (bool, optional): Returns the first value for False, and the second for True. Defaults to False.
+
+    Returns:
+        str: The override if available or None
+    """
+    ret = None
+
+    # check and fetch the openapi directive
+    custom_directive = qutil.get_directive_of_name("openapi", entity)
+
+    if custom_directive:
+        # split and strip directive
+        splits = [x.strip() for x in custom_directive.value.split(",")]
+
+        if len(splits) > 2:
+            msg = f"invalid format for directive 'openapi' on scalar '{entity.name}'. "
+            msg += "Must contain no more than two comma seperated values."
+            raise ValueError(msg)
+
+        if not toggle and splits[0]:
+            ret = splits[0]
+        elif toggle and splits[1]:
+            ret = splits[1]
+
+    return ret
+
+
+def is_supertype(entity: Union[dsl.Base, dsl.Object]) -> bool:
     """Checks if the Base or Object is used somewhere as a supertype.
 
     Args:
@@ -99,7 +144,7 @@ def is_supertype(entity: Union[Base, Object]) -> bool:
     return False
 
 
-def is_nested(entity: Union[Base, Object]) -> bool:
+def is_nested(entity: Union[dsl.Base, dsl.Object]) -> bool:
     """Checks if the provided Base or Object is nested into another Base or Object.
 
     Args:
@@ -119,7 +164,7 @@ def is_nested(entity: Union[Base, Object]) -> bool:
     return False
 
 
-def get_enum_values(entity: Enum) -> List[Enum]:
+def get_enum_values(entity: dsl.Enum) -> List[dsl.Enum]:
     """Returns all enum values.
 
     Args:
