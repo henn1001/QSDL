@@ -71,8 +71,13 @@ class TestBase:
     def test_base_03_positive(self):
         """Verify base extends base"""
         test_input = """\
-            base Foo {
+            base Fruit {
+                banana: Int
+            }
+
+            base Foo extends Fruit {
                 field: Int
+                banana: Int
             }
 
             base Bar extends Foo {
@@ -84,5 +89,6 @@ class TestBase:
 
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
 
+        assert "banana" in properties
         assert "field" in properties
         assert "name" in properties

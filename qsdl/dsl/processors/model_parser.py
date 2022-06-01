@@ -106,7 +106,7 @@ def get_query_fields(obj: Object) -> List[Field]:
 
 
 def get_all_fields_as_list(entity: Object) -> List[Field]:
-    """Returns all fields ob a object including its supertype as list.
+    """Returns all fields ob a object including its supertype as list and prevents duplicates.
 
     Args:
         entity (object): entity.Object
@@ -120,7 +120,8 @@ def get_all_fields_as_list(entity: Object) -> List[Field]:
     while True:
         tmp_list = []
         for field in tmp.fields:
-            tmp_list.append(field)
+            if field not in fields:
+                tmp_list.append(field)
 
         fields = tmp_list + fields
         if not tmp.supertype:
