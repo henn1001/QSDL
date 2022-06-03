@@ -9,6 +9,7 @@ import {{package.util}}.Json;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jeasy.random.*;
+import org.jeasy.random.randomizers.range.*;
 import org.springframework.boot.test.context.TestConfiguration;
 
 import java.lang.reflect.Field;
@@ -22,7 +23,9 @@ public class TestConfig {
 
   TestConfig() {
     EasyRandomParameters parameters = new EasyRandomParameters()
-        .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}"));
+        .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}"))
+        .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
+        .randomize(Long.class, new LongRangeRandomizer(0l, Long.MAX_VALUE));
 
     easyRandom = new EasyRandom(parameters);
   }
