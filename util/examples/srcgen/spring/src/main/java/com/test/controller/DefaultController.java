@@ -25,7 +25,7 @@ public class DefaultController extends BaseController implements DefaultApi {
   /**
    * POST /query : submitQury
    */
-  public ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode body) throws Exception {
+  public ResponseEntity<ObjectNode> submitQury(ObjectNode body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

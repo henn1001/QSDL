@@ -31,15 +31,15 @@ public interface {{api.name}}Api {
    */
   @{{operation.method|capitalize}}Mapping(
     value = "{{operation.path}}"
-  {%- if operation.response -%}
+  {%- if operation.produces -%}
     {{",\n"}}    produces = {{ "{ \"" + operation.produces + "\" }"}}
   {%- endif %}
-  {%- if operation.body_parameters -%}
+  {%- if operation.consumes -%}
     {{",\n"}}    consumes = {{ "{ \"" + operation.consumes + "\" }"}}
   {%- endif %}
 
   )
-  default ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) throws Exception {
+  default ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsApi(operation)}}) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

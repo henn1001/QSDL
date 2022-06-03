@@ -29,7 +29,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * GET /projects/{project_id}/roles : List Roles
    */
-  public ResponseEntity<CursorPage> getRoles(@PathVariable("project_id") Long projectId, CursorPageable pageable) throws Exception {
+  public ResponseEntity<CursorPage> getRoles(Long projectId, CursorPageable pageable) throws Exception {
     CursorPage response = roleService.getRoles(projectId, pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -37,7 +37,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * POST /projects/{project_id}/roles : Create a Role
    */
-  public ResponseEntity<Role> createRole(@PathVariable("project_id") Long projectId, @Valid @RequestBody Role body) throws Exception {
+  public ResponseEntity<Role> createRole(Long projectId, Role body) throws Exception {
     Role response = roleService.createRole(projectId, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -45,7 +45,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * GET /projects/{project_id}/roles/{id} : Read the specified Role
    */
-  public ResponseEntity<Role> getRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) throws Exception {
+  public ResponseEntity<Role> getRole(Long projectId, Long id) throws Exception {
     Role response = roleService.getRole(projectId, id, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -53,7 +53,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * PUT /projects/{project_id}/roles/{id} : Replace the specified Role
    */
-  public ResponseEntity<Role> replaceRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @Valid @RequestBody Role body) throws Exception {
+  public ResponseEntity<Role> replaceRole(Long projectId, Long id, Role body) throws Exception {
     Role response = roleService.replaceRole(projectId, id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -61,7 +61,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * PATCH /projects/{project_id}/roles/{id} : Update the specified Role
    */
-  public ResponseEntity<Role> updateRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody Role body) throws Exception {
+  public ResponseEntity<Role> updateRole(Long projectId, Long id, Role body) throws Exception {
     Validator.validateExRequired(body);
     Role response = roleService.updateRole(projectId, id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -70,7 +70,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * DELETE /projects/{project_id}/roles/{id} : Delete the specified Role
    */
-  public ResponseEntity<Void> deleteRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) throws Exception {
+  public ResponseEntity<Void> deleteRole(Long projectId, Long id) throws Exception {
     roleService.deleteRole(projectId, id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }

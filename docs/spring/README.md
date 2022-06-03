@@ -68,3 +68,29 @@ This is currently not supported.
 Auto-Deletion of childs is not exactly optimized by default.
 
 https://thorben-janssen.com/avoid-cascadetype-delete-many-assocations/
+
+## File Upload
+
+Multipart-file upload could be specified and implemented in the following way
+
+```
+scalar UUID @openapi("string,uuid") @spring("UUID")
+scalar MultipartFile @openapi("string,binary") @spring("MultipartFile")
+
+extend api  {
+    uploadFile(file: MultipartFile!, docType: String, entityId: UUID!): Void @path("upload") @method(POST) @consumes("multipart/form-data") @spring-void-input
+}
+```
+
+```
+public ResponseEntity<Void> uploadFile() throws Exception {
+
+    StandardMultipartHttpServletRequest  context = new StandardMultipartHttpServletRequest(request);
+
+    MultipartFile file = context.getFile("file");
+    String docType = context.getParameter("docType");
+    String entityId = context.getParameter("entityId");
+
+    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+}
+```

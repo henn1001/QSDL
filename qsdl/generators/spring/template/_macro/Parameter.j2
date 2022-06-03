@@ -12,7 +12,7 @@
 
 {%- endmacro %}
 
-{%- macro paramsController(operation) -%}
+{%- macro paramsApi(operation) -%}
 
   {%- for parameter in operation.path_parameters -%}
     @PathVariable("{{parameter.json_key}}") {{ param_helper(parameter) }}
@@ -30,6 +30,28 @@
       @RequestBody {{ param_helper(operation.body_parameters[0]) }}
   {%- elif operation.body_parameters -%}
       @Valid @RequestBody {{ param_helper(operation.body_parameters[0]) }}
+  {%- endif -%}
+
+{%- endmacro %}
+
+{%- macro paramsController(operation) -%}
+
+  {%- for parameter in operation.path_parameters -%}
+    {{ param_helper(parameter) }}
+    {%- if not loop.last or operation.query_parameters or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
+  {%- endfor %}
+
+  {%- if operation.is_pageable -%}
+      CursorPageable pageable
+    {%- if operation.body_parameters -%}{{", "}}{% endif -%}
+  {%- endif -%}
+
+  {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
+      ObjectNode body
+  {%- elif operation.body_parameters and operation.method == "patch" -%}
+      {{ param_helper(operation.body_parameters[0]) }}
+  {%- elif operation.body_parameters -%}
+      {{ param_helper(operation.body_parameters[0]) }}
   {%- endif -%}
 
 {%- endmacro %}

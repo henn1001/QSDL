@@ -92,9 +92,7 @@ def operation_processor(entity: dsl.Operation):
     Args:
         entity (Api): The operation object.
     """
-
-    entity.produces = "application/json" if not entity.produces else entity.produces
-    entity.consumes = "application/json" if not entity.consumes else entity.consumes
+    _ = entity
 
 
 def argument_processor(entity: dsl.Argument):

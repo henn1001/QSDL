@@ -37,7 +37,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * POST /tickets : Create a Ticket
    */
-  public ResponseEntity<Ticket> createTicket(@Valid @RequestBody Ticket body) throws Exception {
+  public ResponseEntity<Ticket> createTicket(Ticket body) throws Exception {
     Ticket response = ticketService.createTicket(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -45,7 +45,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * GET /tickets/{id} : Read the specified Ticket
    */
-  public ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) throws Exception {
+  public ResponseEntity<Ticket> getTicket(Long id) throws Exception {
     Ticket response = ticketService.getTicket(id, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -53,7 +53,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * PUT /tickets/{id} : Replace the specified Ticket
    */
-  public ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @Valid @RequestBody Ticket body) throws Exception {
+  public ResponseEntity<Ticket> replaceTicket(Long id, Ticket body) throws Exception {
     Ticket response = ticketService.replaceTicket(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -61,7 +61,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * PATCH /tickets/{id} : Update the specified Ticket
    */
-  public ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) throws Exception {
+  public ResponseEntity<Ticket> updateTicket(Long id, Ticket body) throws Exception {
     Validator.validateExRequired(body);
     Ticket response = ticketService.updateTicket(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -70,7 +70,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * DELETE /tickets/{id} : Delete the specified Ticket
    */
-  public ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) throws Exception {
+  public ResponseEntity<Void> deleteTicket(Long id) throws Exception {
     ticketService.deleteTicket(id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }

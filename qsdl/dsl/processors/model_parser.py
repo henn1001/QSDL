@@ -336,8 +336,6 @@ def operation_builder(
     operation.domain_object = obj
     operation.domain_parent = parent_obj
     operation.is_generated = True
-    operation.produces = "application/json"
-    operation.consumes = "application/json"
 
     if method == CrudEnum.GET_ALL:
         name = "get" + name_builder(obj, parent_obj if duplicate else None, "For", "s")
@@ -468,6 +466,10 @@ def operation_builder(
         operation.query_parameters = []
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
+
+    # add produces/consumes
+    operation.produces = "application/json" if operation.value else None
+    operation.consumes = "application/json" if operation.body_parameters else None
 
     return operation
 
@@ -626,3 +628,10 @@ def parse_operations(schema: Schema):
                     operation.body_parameters.append(argument)
 
             operation.summary = operation.name
+
+            # add produces/consumes
+            if not operation.produces:
+                operation.produces = "application/json" if operation.value else None
+
+            if not operation.consumes:
+                operation.consumes = "application/json" if operation.body_parameters else None
