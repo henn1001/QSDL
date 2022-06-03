@@ -182,7 +182,9 @@ def generate(schema: Schema, output_path: Path, config: Config):
         if api.model:
             api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{package.service}/{api.name}Service.java", api))
             api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{package.controller}/{api.name}ControllerTest.java", api))
-            api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{package.service}/{api.name}ServiceTest.java", api))
+
+            if config.database == "HIBERNATE":
+                api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{package.service}/{api.name}ServiceTest.java", api))
         # fmt: on
 
     # loop and generate model files
@@ -227,7 +229,6 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),
         ("src/main/java/config/AsyncConfig.j2", f"src/main/java/{package.config}/AsyncConfig.java"),
         ("src/main/java/config/SchedulerConfig.j2", f"src/main/java/{package.config}/SchedulerConfig.java"),
-        ("src/main/java/config/PersistenceConfig.j2", f"src/main/java/{package.config}/PersistenceConfig.java"),
         ("src/main/java/config/ErrorCodes.j2", f"src/main/java/{package.config}/ErrorCodes.java"),
         ("src/main/java/config/Constants.j2", f"src/main/java/{package.config}/Constants.java"),
         # api
@@ -257,6 +258,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     if config.database == "HIBERNATE":
         # fmt: off
+        supporting_files.append(("src/main/java/config/PersistenceConfig.j2", f"src/main/java/{package.config}/PersistenceConfig.java"))
         supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))

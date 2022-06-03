@@ -17,7 +17,9 @@ import lombok.*;
 {% endif %}
 import org.springframework.format.annotation.DateTimeFormat;
 
+{% if database == "HIBERNATE" %}
 import javax.persistence.*;
+{% endif %}
 import javax.validation.*;
 import javax.validation.constraints.*;
 
@@ -87,6 +89,7 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
   {% endif %}
 
 {% endfor %}
+{% if database == "HIBERNATE" %}
 
   @PreRemove
   private void preRemoveHook() {
@@ -95,6 +98,7 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
     {% endfor %}
   }
 
+{% endif %}
 {% for field in model.fields if field.is_relation and field.is_array %}
   public void addTo{{field.type}}s({{field.type}} o) {
 {% if encapsulation %}

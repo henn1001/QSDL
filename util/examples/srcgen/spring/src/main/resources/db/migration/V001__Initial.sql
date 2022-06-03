@@ -41,6 +41,7 @@ create table "user" (
   iv integer,
   uid varchar(255),
   name varchar(255) not null,
+  count integer,
   primary key (id),
   constraint UK_a7hlm8sj8kmijx6ucp7wfyt31 unique (uid)
 );
