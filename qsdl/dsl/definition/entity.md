@@ -120,7 +120,7 @@ entity.Base *-- "0..*" entity.Directive
 entity.Base *-- "1..*" entity.Field
 entity.Object o-- entity.Base
 entity.Object *-- "0..*" entity.Directive
-entity.Object *-- "1..*" entity.Field
+entity.Object *-- "0..*" entity.Field
 entity.Object *-- entity.Api
 entity.Field o-- entity.ValueType
 entity.Field *-- "0..*" entity.Directive
@@ -134,11 +134,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Description |  |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
 end legend
 
 @enduml

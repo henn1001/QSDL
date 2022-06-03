@@ -20,8 +20,6 @@ class TestObject:
 
     01. `Object` names must use `PascalCase`.
 
-    02. `Object` must at least contain one `Field`.
-
     03. `Object` can inherit `Field`s from a `Base`.
 
     04. `Object` name must be unique between `Object`, `Base` and `Scalar`.
@@ -48,25 +46,6 @@ class TestObject:
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
-
-    def test_object_02_positive(self):
-        """Verify empty fields"""
-        test_input = """\
-            type Foo {
-                field: Int
-            }
-        """
-
-        wrapper_generate(test_input)
-
-    def test_object_02_negative(self):
-        """Verify empty fields"""
-        test_input = """\
-            type Foo {
-            }
-        """
-
-        wrapper_generate_failure(test_input)
 
     def test_object_03_positive(self):
         """Verify object extends base"""

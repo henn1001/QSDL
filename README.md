@@ -283,11 +283,9 @@ Object Rules:
 
 1.  `Object` names must use `PascalCase`.
 
-2.  `Object` must at least contain one `Field`.
+2.  `Object` can inherit `Field`s from a `Base`.
 
-3.  `Object` can inherit `Field`s from a `Base`.
-
-4.  `Object` name must be unique between `Object`, `Base` and `Scalar`.
+3.  `Object` name must be unique between `Object`, `Base` and `Scalar`.
 
 Field Rules:
 

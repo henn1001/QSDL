@@ -81,7 +81,7 @@ Object:
     directives*=Directive
 
     '{'
-        fields+=Field
+        fields*=Field
         api=Api?
     '}'
 ;
