@@ -14,9 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 
 import javax.annotation.PostConstruct;
+
+import java.util.*;
 
 @Slf4j
 @Service
@@ -48,13 +49,15 @@ public class RoleService {
         .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
   }
 
-  public CursorPage getRoles(Long projectId, MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
+  public CursorPage getRoles(Long projectId, CursorPageable pageable, Context context) throws AppException {
 
     // confirm existance of parent
     // should be optimized with something like getReferenceById
     Project project = fetchProjectFromDb(projectId);
 
-    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Role.class);
+    context.loadFromContext(true, false, false);
+    List<String> queryParameters = Arrays.asList(); 
+    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), Role.class);
     predicate.and(QRole.role.project.id.eq(project.getId()));
 
     CursorPage ret = roleRepository.findAll(predicate, pageable);
@@ -62,7 +65,7 @@ public class RoleService {
     return ret;
   }
 
-  public Role createRole(Long projectId, Role body) throws AppException {
+  public Role createRole(Long projectId, Role body, Context context) throws AppException {
 
     // confirm existance of parent
     Project project = fetchProjectFromDb(projectId);
@@ -75,7 +78,7 @@ public class RoleService {
     return ret;
   }
 
-  public Role getRole(Long projectId, Long id) throws AppException {
+  public Role getRole(Long projectId, Long id, Context context) throws AppException {
 
     // confirm existance of parent
     Project project = fetchProjectFromDb(projectId);
@@ -85,7 +88,7 @@ public class RoleService {
     return ret;
   }
 
-  public Role replaceRole(Long projectId, Long id, Role body) throws AppException {
+  public Role replaceRole(Long projectId, Long id, Role body, Context context) throws AppException {
 
     // confirm existance of parent
     Project project = fetchProjectFromDb(projectId);
@@ -103,7 +106,7 @@ public class RoleService {
     return ret;
   }
 
-  public Role updateRole(Long projectId, Long id, Role body) throws AppException {
+  public Role updateRole(Long projectId, Long id, Role body, Context context) throws AppException {
 
     // confirm existance of parent
     Project project = fetchProjectFromDb(projectId);
@@ -121,7 +124,7 @@ public class RoleService {
     return ret;
   }
 
-  public Void deleteRole(Long projectId, Long id) throws AppException {
+  public Void deleteRole(Long projectId, Long id, Context context) throws AppException {
 
     // confirm existance of parent
     fetchProjectFromDb(projectId);

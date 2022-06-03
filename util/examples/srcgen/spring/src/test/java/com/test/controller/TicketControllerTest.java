@@ -70,7 +70,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.createTicket(any()))
+    when(service.createTicket(any(), any()))
         .thenReturn(request);
 
     // When
@@ -92,7 +92,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.createTicket(any()))
+    when(service.createTicket(any(), any()))
         .thenReturn(request);
 
     // When
@@ -115,7 +115,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.getTicket(eq(one)))
+    when(service.getTicket(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -135,7 +135,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.replaceTicket(eq(one), any()))
+    when(service.replaceTicket(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -157,7 +157,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.replaceTicket(eq(one), any()))
+    when(service.replaceTicket(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -180,7 +180,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.updateTicket(eq(one), any()))
+    when(service.updateTicket(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -202,7 +202,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    when(service.updateTicket(eq(one), any()))
+    when(service.updateTicket(eq(one), any(), any()))
         .thenReturn(request);
 
     // When

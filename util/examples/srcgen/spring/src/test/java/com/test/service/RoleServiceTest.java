@@ -58,7 +58,7 @@ public class RoleServiceTest {
         .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    CursorPage response = service.getRoles(one, new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
+    CursorPage response = service.getRoles(one, new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
@@ -83,7 +83,7 @@ public class RoleServiceTest {
         .thenReturn(request);
 
     // When
-    Role response = service.createRole(one, request);
+    Role response = service.createRole(one, request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -105,7 +105,7 @@ public class RoleServiceTest {
         .thenReturn(Optional.of(request));
 
     // When
-    Role response = service.getRole(one, request.getId());
+    Role response = service.getRole(one, request.getId(), new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -129,7 +129,7 @@ public class RoleServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.getRole(one, request.getId());
+          service.getRole(one, request.getId(), new Context());
         });
 
     // Then
@@ -156,7 +156,7 @@ public class RoleServiceTest {
         .thenReturn(request);
 
     // When
-    Role response = service.replaceRole(one, request.getId(), request);
+    Role response = service.replaceRole(one, request.getId(), request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -180,7 +180,7 @@ public class RoleServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.replaceRole(one, request.getId(), request);
+          service.replaceRole(one, request.getId(), request, new Context());
         });
 
     // Then
@@ -207,7 +207,7 @@ public class RoleServiceTest {
         .thenReturn(request);
 
     // When
-    Role response = service.updateRole(one, request.getId(), request);
+    Role response = service.updateRole(one, request.getId(), request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -231,7 +231,7 @@ public class RoleServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.updateRole(one, request.getId(), request);
+          service.updateRole(one, request.getId(), request, new Context());
         });
 
     // Then
@@ -252,7 +252,7 @@ public class RoleServiceTest {
         .thenReturn(Optional.of(testParent));
 
     // When
-    service.deleteRole(one, request.getId());
+    service.deleteRole(one, request.getId(), new Context());
 
     // Then
 
@@ -274,7 +274,7 @@ public class RoleServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.deleteRole(one, request.getId());
+          service.deleteRole(one, request.getId(), new Context());
         });
 
     // Then

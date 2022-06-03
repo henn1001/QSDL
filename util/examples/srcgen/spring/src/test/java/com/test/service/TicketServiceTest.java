@@ -51,7 +51,7 @@ public class TicketServiceTest {
         .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    CursorPage response = service.getTickets(new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
+    CursorPage response = service.getTickets(new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
@@ -72,7 +72,7 @@ public class TicketServiceTest {
         .thenReturn(request);
 
     // When
-    Ticket response = service.createTicket(request);
+    Ticket response = service.createTicket(request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -90,7 +90,7 @@ public class TicketServiceTest {
         .thenReturn(Optional.of(request));
 
     // When
-    Ticket response = service.getTicket(request.getId());
+    Ticket response = service.getTicket(request.getId(), new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -110,7 +110,7 @@ public class TicketServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.getTicket(request.getId());
+          service.getTicket(request.getId(), new Context());
         });
 
     // Then
@@ -133,7 +133,7 @@ public class TicketServiceTest {
         .thenReturn(request);
 
     // When
-    Ticket response = service.replaceTicket(request.getId(), request);
+    Ticket response = service.replaceTicket(request.getId(), request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -153,7 +153,7 @@ public class TicketServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.replaceTicket(request.getId(), request);
+          service.replaceTicket(request.getId(), request, new Context());
         });
 
     // Then
@@ -176,7 +176,7 @@ public class TicketServiceTest {
         .thenReturn(request);
 
     // When
-    Ticket response = service.updateTicket(request.getId(), request);
+    Ticket response = service.updateTicket(request.getId(), request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -196,7 +196,7 @@ public class TicketServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.updateTicket(request.getId(), request);
+          service.updateTicket(request.getId(), request, new Context());
         });
 
     // Then
@@ -213,7 +213,7 @@ public class TicketServiceTest {
     Ticket request = TestConfig.getRandom(Ticket.class);
 
     // When
-    service.deleteTicket(request.getId());
+    service.deleteTicket(request.getId(), new Context());
 
     // Then
 
@@ -231,7 +231,7 @@ public class TicketServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.deleteTicket(request.getId());
+          service.deleteTicket(request.getId(), new Context());
         });
 
     // Then

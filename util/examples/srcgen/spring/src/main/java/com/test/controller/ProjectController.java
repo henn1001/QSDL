@@ -30,7 +30,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * GET /projects : List Projects
    */
   public ResponseEntity<CursorPage> getProjects(CursorPageable pageable) throws Exception {
-    CursorPage response = projectService.getProjects(super.getQueryMap(), pageable);
+    CursorPage response = projectService.getProjects(pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -38,7 +38,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * POST /projects : Create a Project
    */
   public ResponseEntity<Project> createProject(@Valid @RequestBody Project body) throws Exception {
-    Project response = projectService.createProject(body);
+    Project response = projectService.createProject(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -46,7 +46,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * GET /projects/{id} : Read the specified Project
    */
   public ResponseEntity<Project> getProject(@PathVariable("id") Long id) throws Exception {
-    Project response = projectService.getProject(id);
+    Project response = projectService.getProject(id, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -54,7 +54,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * PUT /projects/{id} : Replace the specified Project
    */
   public ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @Valid @RequestBody Project body) throws Exception {
-    Project response = projectService.replaceProject(id, body);
+    Project response = projectService.replaceProject(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -63,7 +63,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    */
   public ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) throws Exception {
     Validator.validateExRequired(body);
-    Project response = projectService.updateProject(id, body);
+    Project response = projectService.updateProject(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -71,7 +71,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * DELETE /projects/{id} : Delete the specified Project
    */
   public ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) throws Exception {
-    projectService.deleteProject(id);
+    projectService.deleteProject(id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

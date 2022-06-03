@@ -924,6 +924,10 @@ components:
         name:
           type: string
           maxLength: 255
+        count:
+          type: integer
+          format: int32
+          minimum: 0
 
     TicketList:
       required:

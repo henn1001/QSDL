@@ -70,7 +70,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.createProject(any()))
+    when(service.createProject(any(), any()))
         .thenReturn(request);
 
     // When
@@ -92,7 +92,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.createProject(any()))
+    when(service.createProject(any(), any()))
         .thenReturn(request);
 
     // When
@@ -115,7 +115,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.getProject(eq(one)))
+    when(service.getProject(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -135,7 +135,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.replaceProject(eq(one), any()))
+    when(service.replaceProject(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -157,7 +157,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.replaceProject(eq(one), any()))
+    when(service.replaceProject(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -180,7 +180,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.updateProject(eq(one), any()))
+    when(service.updateProject(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -202,7 +202,7 @@ public class ProjectControllerTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    when(service.updateProject(eq(one), any()))
+    when(service.updateProject(eq(one), any(), any()))
         .thenReturn(request);
 
     // When

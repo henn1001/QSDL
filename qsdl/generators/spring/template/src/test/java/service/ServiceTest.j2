@@ -76,9 +76,9 @@ public class {{model.name}}ServiceTest {
 
     // When
     {% if operation.parent %}
-    CursorPage response = service.{{operation.name}}(one, new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
+    CursorPage response = service.{{operation.name}}(one, new CursorPageable(null, 5l, true), new Context());
     {% else %}
-    CursorPage response = service.{{operation.name}}(new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
+    CursorPage response = service.{{operation.name}}(new CursorPageable(null, 5l, true), new Context());
     {% endif %}
 
     // Then
@@ -115,7 +115,7 @@ public class {{model.name}}ServiceTest {
         .thenReturn(null);
 
     // When
-    service.{{operation.name}}(testParent.{{getId}}, request.{{getId}});
+    service.{{operation.name}}(testParent.{{getId}}, request.{{getId}}, new Context());
 
     // Then
 
@@ -140,7 +140,7 @@ public class {{model.name}}ServiceTest {
         .thenReturn(request);
 
     // When
-    {{model.name}} response = service.{{operation.name}}({{ "one, " if operation.parent }}request);
+    {{model.name}} response = service.{{operation.name}}({{ "one, " if operation.parent }}request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -171,7 +171,7 @@ public class {{model.name}}ServiceTest {
     {% endif %}
 
     // When
-    {{model.name}} response = service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}});
+    {{model.name}} response = service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -201,7 +201,7 @@ public class {{model.name}}ServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}});
+          service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, new Context());
         });
 
     // Then
@@ -237,7 +237,7 @@ public class {{model.name}}ServiceTest {
         .thenReturn(request);
 
     // When
-    {{model.name}} response = service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, request);
+    {{model.name}} response = service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -267,7 +267,7 @@ public class {{model.name}}ServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, request);
+          service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, request, new Context());
         });
 
     // Then
@@ -303,7 +303,7 @@ public class {{model.name}}ServiceTest {
         .thenReturn(request);
 
     // When
-    {{model.name}} response = service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, request);
+    {{model.name}} response = service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -333,7 +333,7 @@ public class {{model.name}}ServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, request);
+          service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, request, new Context());
         });
 
     // Then
@@ -359,7 +359,7 @@ public class {{model.name}}ServiceTest {
     {% endif %}
 
     // When
-    service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}});
+    service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, new Context());
 
     // Then
 
@@ -383,7 +383,7 @@ public class {{model.name}}ServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}});
+          service.{{operation.name}}({{ "one, " if operation.parent }}request.{{getId}}, new Context());
         });
 
     // Then

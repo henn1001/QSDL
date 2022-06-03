@@ -37,60 +37,60 @@
 {%- macro paramsService(operation) -%}
 
   {%- for parameter in operation.path_parameters -%}
-      {{ param_helper(parameter) }}
-    {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}, {% endif -%}
+      {{ param_helper(parameter) }}{{", "}}
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      MultiValueMap<String, String> queryParameters, CursorPageable pageable
-    {%- if operation.body_parameters -%}{{", "}}{% endif -%}
+      CursorPageable pageable{{", "}}
   {%- endif -%}
 
   {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      ObjectNode body
+      ObjectNode body{{", "}}
   {%- elif operation.body_parameters -%}
-      {{ param_helper(operation.body_parameters[0]) }}
+      {{ param_helper(operation.body_parameters[0]) }}{{", "}}
   {%- endif -%}
+
+      Context context
 
 {%- endmacro %}
 
 {%- macro paramsCallService(operation) -%}
 
   {%- for parameter in operation.path_parameters -%}
-      {{parameter.name}}
-    {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}, {% endif -%}
+      {{parameter.name}}{{", "}}
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      super.getQueryMap(), pageable
-    {%- if operation.body_parameters -%}{{", "}}{% endif -%}
+      pageable{{", "}}
   {%- endif -%}
 
   {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      body
+      body{{", "}}
   {%- elif operation.body_parameters -%}
-      {{operation.body_parameters[0].name}}
+      {{operation.body_parameters[0].name}}{{", "}}
   {%- endif -%}
+
+      super.getContext()
 
 {%- endmacro %}
 
 {%- macro paramsCallServiceMocked(operation) -%}
 
   {%- for parameter in operation.path_parameters -%}
-      any()
-    {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}, {% endif -%}
+      any(){{", "}}
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
-      any(), any()
-    {%- if operation.body_parameters -%}{{", "}}{% endif -%}
+      any(){{", "}}
   {%- endif -%}
 
   {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      any()
+      any(){{", "}}
   {%- elif operation.body_parameters -%}
-      any()
+      any(){{", "}}
   {%- endif -%}
+
+      any()
 
 {%- endmacro %}
 

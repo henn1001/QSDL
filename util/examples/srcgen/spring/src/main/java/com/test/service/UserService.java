@@ -14,9 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 
 import javax.annotation.PostConstruct;
+
+import java.util.*;
 
 @Slf4j
 @Service
@@ -48,13 +49,15 @@ public class UserService {
         .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
   }
 
-  public CursorPage getUsersForTicket(Long ticketId, MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
+  public CursorPage getUsersForTicket(Long ticketId, CursorPageable pageable, Context context) throws AppException {
 
     // confirm existance of parent
     // should be optimized with something like getReferenceById
     Ticket ticket = fetchTicketFromDb(ticketId);
 
-    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, User.class);
+    context.loadFromContext(true, false, false);
+    List<String> queryParameters = Arrays.asList(); 
+    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), User.class);
     predicate.and(QUser.user.tickets.any().id.eq(ticket.getId()));
 
     CursorPage ret = userRepository.findAll(predicate, pageable);
@@ -62,7 +65,7 @@ public class UserService {
     return ret;
   }
 
-  public Void addUserToTicket(Long ticketId, Long id) throws AppException {
+  public Void addUserToTicket(Long ticketId, Long id, Context context) throws AppException {
 
     // get and confirm existance
     Ticket ticket = fetchTicketFromDb(ticketId);
@@ -80,7 +83,7 @@ public class UserService {
     return null;
   }
 
-  public Void removeUserFromTicket(Long ticketId, Long id) throws AppException {
+  public Void removeUserFromTicket(Long ticketId, Long id, Context context) throws AppException {
 
     // get and confirm existance
     Ticket ticket = fetchTicketFromDb(ticketId);
@@ -94,30 +97,32 @@ public class UserService {
     return null;
   }
 
-  public CursorPage getUsers(MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
+  public CursorPage getUsers(CursorPageable pageable, Context context) throws AppException {
 
-    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, User.class);
+    context.loadFromContext(true, false, false);
+    List<String> queryParameters = Arrays.asList(); 
+    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), User.class);
 
     CursorPage ret = userRepository.findAll(predicate, pageable);
 
     return ret;
   }
 
-  public User createUser(User body) throws AppException {
+  public User createUser(User body, Context context) throws AppException {
 
     User ret = userRepository.save(body);
 
     return ret;
   }
 
-  public User getUser(Long id) throws AppException {
+  public User getUser(Long id, Context context) throws AppException {
 
     User ret = fetchUserFromDb(id);
 
     return ret;
   }
 
-  public User replaceUser(Long id, User body) throws AppException {
+  public User replaceUser(Long id, User body, Context context) throws AppException {
 
     User dbEntity = fetchUserFromDb(id);
 
@@ -129,7 +134,7 @@ public class UserService {
     return ret;
   }
 
-  public User updateUser(Long id, User body) throws AppException {
+  public User updateUser(Long id, User body, Context context) throws AppException {
 
     User dbEntity = fetchUserFromDb(id);
 
@@ -141,7 +146,7 @@ public class UserService {
     return ret;
   }
 
-  public Void deleteUser(Long id) throws AppException {
+  public Void deleteUser(Long id, Context context) throws AppException {
 
     try {
       userRepository.deleteById(id);

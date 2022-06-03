@@ -14,9 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 
 import javax.annotation.PostConstruct;
+
+import java.util.*;
 
 @Slf4j
 @Service
@@ -35,30 +36,32 @@ public class TicketService {
         .orElseThrow(() -> AppException.entityNotFound(Ticket.class, id));
   }
 
-  public CursorPage getTickets(MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
+  public CursorPage getTickets(CursorPageable pageable, Context context) throws AppException {
 
-    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Ticket.class);
+    context.loadFromContext(true, false, false);
+    List<String> queryParameters = Arrays.asList(); 
+    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), Ticket.class);
 
     CursorPage ret = ticketRepository.findAll(predicate, pageable);
 
     return ret;
   }
 
-  public Ticket createTicket(Ticket body) throws AppException {
+  public Ticket createTicket(Ticket body, Context context) throws AppException {
 
     Ticket ret = ticketRepository.save(body);
 
     return ret;
   }
 
-  public Ticket getTicket(Long id) throws AppException {
+  public Ticket getTicket(Long id, Context context) throws AppException {
 
     Ticket ret = fetchTicketFromDb(id);
 
     return ret;
   }
 
-  public Ticket replaceTicket(Long id, Ticket body) throws AppException {
+  public Ticket replaceTicket(Long id, Ticket body, Context context) throws AppException {
 
     Ticket dbEntity = fetchTicketFromDb(id);
 
@@ -70,7 +73,7 @@ public class TicketService {
     return ret;
   }
 
-  public Ticket updateTicket(Long id, Ticket body) throws AppException {
+  public Ticket updateTicket(Long id, Ticket body, Context context) throws AppException {
 
     Ticket dbEntity = fetchTicketFromDb(id);
 
@@ -82,7 +85,7 @@ public class TicketService {
     return ret;
   }
 
-  public Void deleteTicket(Long id) throws AppException {
+  public Void deleteTicket(Long id, Context context) throws AppException {
 
     try {
       ticketRepository.deleteById(id);

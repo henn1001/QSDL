@@ -51,7 +51,7 @@ public class ProjectServiceTest {
         .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    CursorPage response = service.getProjects(new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
+    CursorPage response = service.getProjects(new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
@@ -72,7 +72,7 @@ public class ProjectServiceTest {
         .thenReturn(request);
 
     // When
-    Project response = service.createProject(request);
+    Project response = service.createProject(request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -90,7 +90,7 @@ public class ProjectServiceTest {
         .thenReturn(Optional.of(request));
 
     // When
-    Project response = service.getProject(request.getId());
+    Project response = service.getProject(request.getId(), new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -110,7 +110,7 @@ public class ProjectServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.getProject(request.getId());
+          service.getProject(request.getId(), new Context());
         });
 
     // Then
@@ -133,7 +133,7 @@ public class ProjectServiceTest {
         .thenReturn(request);
 
     // When
-    Project response = service.replaceProject(request.getId(), request);
+    Project response = service.replaceProject(request.getId(), request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -153,7 +153,7 @@ public class ProjectServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.replaceProject(request.getId(), request);
+          service.replaceProject(request.getId(), request, new Context());
         });
 
     // Then
@@ -176,7 +176,7 @@ public class ProjectServiceTest {
         .thenReturn(request);
 
     // When
-    Project response = service.updateProject(request.getId(), request);
+    Project response = service.updateProject(request.getId(), request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -196,7 +196,7 @@ public class ProjectServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.updateProject(request.getId(), request);
+          service.updateProject(request.getId(), request, new Context());
         });
 
     // Then
@@ -213,7 +213,7 @@ public class ProjectServiceTest {
     Project request = TestConfig.getRandom(Project.class);
 
     // When
-    service.deleteProject(request.getId());
+    service.deleteProject(request.getId(), new Context());
 
     // Then
 
@@ -231,7 +231,7 @@ public class ProjectServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.deleteProject(request.getId());
+          service.deleteProject(request.getId(), new Context());
         });
 
     // Then

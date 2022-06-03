@@ -70,7 +70,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.createRole(eq(one), any()))
+    when(service.createRole(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -92,7 +92,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.createRole(eq(one), any()))
+    when(service.createRole(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -115,7 +115,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.getRole(eq(one), eq(one)))
+    when(service.getRole(eq(one), eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -135,7 +135,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.replaceRole(eq(one), eq(one), any()))
+    when(service.replaceRole(eq(one), eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -157,7 +157,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.replaceRole(eq(one), eq(one), any()))
+    when(service.replaceRole(eq(one), eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -180,7 +180,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.updateRole(eq(one), eq(one), any()))
+    when(service.updateRole(eq(one), eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -202,7 +202,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    when(service.updateRole(eq(one), eq(one), any()))
+    when(service.updateRole(eq(one), eq(one), any(), any()))
         .thenReturn(request);
 
     // When

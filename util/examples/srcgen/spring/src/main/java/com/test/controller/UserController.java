@@ -30,7 +30,7 @@ public class UserController extends BaseController implements UserApi {
    * GET /tickets/{ticket_id}/users : List Users
    */
   public ResponseEntity<CursorPage> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) throws Exception {
-    CursorPage response = userService.getUsersForTicket(ticketId, super.getQueryMap(), pageable);
+    CursorPage response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -38,7 +38,7 @@ public class UserController extends BaseController implements UserApi {
    * POST /tickets/{ticket_id}/users/{id}/add : Add User
    */
   public ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
-    userService.addUserToTicket(ticketId, id);
+    userService.addUserToTicket(ticketId, id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
@@ -46,7 +46,7 @@ public class UserController extends BaseController implements UserApi {
    * POST /tickets/{ticket_id}/users/{id}/remove : Remove User
    */
   public ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
-    userService.removeUserFromTicket(ticketId, id);
+    userService.removeUserFromTicket(ticketId, id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
@@ -54,7 +54,7 @@ public class UserController extends BaseController implements UserApi {
    * GET /users : List Users
    */
   public ResponseEntity<CursorPage> getUsers(CursorPageable pageable) throws Exception {
-    CursorPage response = userService.getUsers(super.getQueryMap(), pageable);
+    CursorPage response = userService.getUsers(pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -62,7 +62,7 @@ public class UserController extends BaseController implements UserApi {
    * POST /users : Create a User
    */
   public ResponseEntity<User> createUser(@Valid @RequestBody User body) throws Exception {
-    User response = userService.createUser(body);
+    User response = userService.createUser(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -70,7 +70,7 @@ public class UserController extends BaseController implements UserApi {
    * GET /users/{id} : Read the specified User
    */
   public ResponseEntity<User> getUser(@PathVariable("id") Long id) throws Exception {
-    User response = userService.getUser(id);
+    User response = userService.getUser(id, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -78,7 +78,7 @@ public class UserController extends BaseController implements UserApi {
    * PUT /users/{id} : Replace the specified User
    */
   public ResponseEntity<User> replaceUser(@PathVariable("id") Long id, @Valid @RequestBody User body) throws Exception {
-    User response = userService.replaceUser(id, body);
+    User response = userService.replaceUser(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -87,7 +87,7 @@ public class UserController extends BaseController implements UserApi {
    */
   public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User body) throws Exception {
     Validator.validateExRequired(body);
-    User response = userService.updateUser(id, body);
+    User response = userService.updateUser(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -95,7 +95,7 @@ public class UserController extends BaseController implements UserApi {
    * DELETE /users/{id} : Delete the specified User
    */
   public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) throws Exception {
-    userService.deleteUser(id);
+    userService.deleteUser(id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

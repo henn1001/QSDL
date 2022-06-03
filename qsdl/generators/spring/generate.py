@@ -249,6 +249,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{package.model}/AbstractPersistentBase.java"),
         ("src/main/java/model/CursorPageable.j2", f"src/main/java/{package.model}/CursorPageable.java"),
         ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),
+        ("src/main/java/model/Context.j2", f"src/main/java/{package.model}/Context.java"),
         # tests
         ("src/test/java/controller/ControllerTest.j2", f"src/test/java/{package.controller}/ControllerTest.java")
     ]

@@ -58,7 +58,7 @@ public class UserServiceTest {
         .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    CursorPage response = service.getUsersForTicket(one, new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
+    CursorPage response = service.getUsersForTicket(one, new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
@@ -86,7 +86,7 @@ public class UserServiceTest {
         .thenReturn(null);
 
     // When
-    service.addUserToTicket(testParent.getId(), request.getId());
+    service.addUserToTicket(testParent.getId(), request.getId(), new Context());
 
     // Then
 
@@ -109,7 +109,7 @@ public class UserServiceTest {
         .thenReturn(null);
 
     // When
-    service.removeUserFromTicket(testParent.getId(), request.getId());
+    service.removeUserFromTicket(testParent.getId(), request.getId(), new Context());
 
     // Then
 
@@ -125,7 +125,7 @@ public class UserServiceTest {
         .thenReturn(new CursorPage(request, null, 6l));
 
     // When
-    CursorPage response = service.getUsers(new LinkedMultiValueMap<>(), new CursorPageable(null, 5l, true));
+    CursorPage response = service.getUsers(new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
@@ -146,7 +146,7 @@ public class UserServiceTest {
         .thenReturn(request);
 
     // When
-    User response = service.createUser(request);
+    User response = service.createUser(request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -164,7 +164,7 @@ public class UserServiceTest {
         .thenReturn(Optional.of(request));
 
     // When
-    User response = service.getUser(request.getId());
+    User response = service.getUser(request.getId(), new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -184,7 +184,7 @@ public class UserServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.getUser(request.getId());
+          service.getUser(request.getId(), new Context());
         });
 
     // Then
@@ -207,7 +207,7 @@ public class UserServiceTest {
         .thenReturn(request);
 
     // When
-    User response = service.replaceUser(request.getId(), request);
+    User response = service.replaceUser(request.getId(), request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -227,7 +227,7 @@ public class UserServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.replaceUser(request.getId(), request);
+          service.replaceUser(request.getId(), request, new Context());
         });
 
     // Then
@@ -250,7 +250,7 @@ public class UserServiceTest {
         .thenReturn(request);
 
     // When
-    User response = service.updateUser(request.getId(), request);
+    User response = service.updateUser(request.getId(), request, new Context());
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(request);
@@ -270,7 +270,7 @@ public class UserServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.updateUser(request.getId(), request);
+          service.updateUser(request.getId(), request, new Context());
         });
 
     // Then
@@ -287,7 +287,7 @@ public class UserServiceTest {
     User request = TestConfig.getRandom(User.class);
 
     // When
-    service.deleteUser(request.getId());
+    service.deleteUser(request.getId(), new Context());
 
     // Then
 
@@ -305,7 +305,7 @@ public class UserServiceTest {
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.deleteUser(request.getId());
+          service.deleteUser(request.getId(), new Context());
         });
 
     // Then

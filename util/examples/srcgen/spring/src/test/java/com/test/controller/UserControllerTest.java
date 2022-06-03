@@ -118,7 +118,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.createUser(any()))
+    when(service.createUser(any(), any()))
         .thenReturn(request);
 
     // When
@@ -140,7 +140,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.createUser(any()))
+    when(service.createUser(any(), any()))
         .thenReturn(request);
 
     // When
@@ -163,7 +163,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.getUser(eq(one)))
+    when(service.getUser(eq(one), any()))
         .thenReturn(request);
 
     // When
@@ -183,7 +183,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.replaceUser(eq(one), any()))
+    when(service.replaceUser(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -205,7 +205,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.replaceUser(eq(one), any()))
+    when(service.replaceUser(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -228,7 +228,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.updateUser(eq(one), any()))
+    when(service.updateUser(eq(one), any(), any()))
         .thenReturn(request);
 
     // When
@@ -250,7 +250,7 @@ public class UserControllerTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    when(service.updateUser(eq(one), any()))
+    when(service.updateUser(eq(one), any(), any()))
         .thenReturn(request);
 
     // When

@@ -14,9 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 
 import javax.annotation.PostConstruct;
+
+import java.util.*;
 
 @Slf4j
 @Service
@@ -35,30 +36,32 @@ public class ProjectService {
         .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
   }
 
-  public CursorPage getProjects(MultiValueMap<String, String> queryParameters, CursorPageable pageable) throws AppException {
+  public CursorPage getProjects(CursorPageable pageable, Context context) throws AppException {
 
-    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, Project.class);
+    context.loadFromContext(true, false, false);
+    List<String> queryParameters = Arrays.asList("name"); 
+    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), Project.class);
 
     CursorPage ret = projectRepository.findAll(predicate, pageable);
 
     return ret;
   }
 
-  public Project createProject(Project body) throws AppException {
+  public Project createProject(Project body, Context context) throws AppException {
 
     Project ret = projectRepository.save(body);
 
     return ret;
   }
 
-  public Project getProject(Long id) throws AppException {
+  public Project getProject(Long id, Context context) throws AppException {
 
     Project ret = fetchProjectFromDb(id);
 
     return ret;
   }
 
-  public Project replaceProject(Long id, Project body) throws AppException {
+  public Project replaceProject(Long id, Project body, Context context) throws AppException {
 
     Project dbEntity = fetchProjectFromDb(id);
 
@@ -70,7 +73,7 @@ public class ProjectService {
     return ret;
   }
 
-  public Project updateProject(Long id, Project body) throws AppException {
+  public Project updateProject(Long id, Project body, Context context) throws AppException {
 
     Project dbEntity = fetchProjectFromDb(id);
 
@@ -82,7 +85,7 @@ public class ProjectService {
     return ret;
   }
 
-  public Void deleteProject(Long id) throws AppException {
+  public Void deleteProject(Long id, Context context) throws AppException {
 
     try {
       projectRepository.deleteById(id);

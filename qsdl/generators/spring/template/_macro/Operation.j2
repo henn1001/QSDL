@@ -14,10 +14,14 @@
     // should be optimized with something like getReferenceById
     {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
 
-    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, {{model.name}}.class);
+    context.loadFromContext(true, false, false);
+    List<String> queryParameters = Arrays.asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %}); 
+    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}.class);
     predicate.and(Q{{model.name}}.{{model.name|lower}}.{{operation.parent.predicate}}.id.eq({{ p_model.name|lower }}.getId()));
     {% else %}
-    BooleanBuilder predicate = PredicateBuilder.build(queryParameters, {{model.name}}.class);
+    context.loadFromContext(true, false, false);
+    List<String> queryParameters = Arrays.asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %}); 
+    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}.class);
     {% endif %}
 
     CursorPage ret = {{model.name|lower}}Repository.findAll(predicate, pageable);

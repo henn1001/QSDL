@@ -3,29 +3,19 @@
  */
 package com.test.controller;
 
+import com.test.model.Context;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.*;
 
 import javax.servlet.http.HttpServletRequest;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 public abstract class BaseController {
 
   @Autowired
   protected HttpServletRequest request;
 
-  protected MultiValueMap<String, String> getQueryMap() {
-
-    Map<String, String[]> parameterMap = request.getParameterMap();
-    MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<>(parameterMap.size());
-
-    for (Entry<String, String[]> entry : parameterMap.entrySet()) {
-      queryParameters.put(entry.getKey(), Arrays.asList(entry.getValue()));
-    }
-
-    return queryParameters;
+  protected Context getContext(){
+    return new Context(request);
   }
 
 }
