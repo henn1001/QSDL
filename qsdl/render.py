@@ -60,7 +60,6 @@ def render(
         jinja_env.filters[type_name] = type_def
 
     jinja_env.filters["pluralize"] = qfilter.pluralize
-    jinja_env.filters["singularize"] = qfilter.singularize
     jinja_env.filters["pascal"] = qfilter.pascalcase
     jinja_env.filters["camel"] = qfilter.camelcase
     jinja_env.filters["spinal"] = qfilter.spinalcase

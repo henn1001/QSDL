@@ -16,19 +16,12 @@
 
 import re
 
-import inflect
 import stringcase
 
 
 def pluralize(word: str) -> str:
-    """Returns the plural form of a word using inflect"""
-    return inflect.engine().plural(word)
-
-
-def singularize(word: str) -> str:
-    """Returns the singular form of a word using inflect"""
-    return inflect.engine().singular_noun(word) or word
-
+    """Returns the plural form of a word by simply adding a s if possible"""
+    return word + "s" if not word.endswith("s") else word
 
 def pascalcase(word: str) -> str:
     """Returns the Pascalcase form of a word using stringcase"""
