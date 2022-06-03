@@ -85,7 +85,7 @@ extend api  {
 ```
 public ResponseEntity<Void> uploadFile() throws Exception {
 
-    StandardMultipartHttpServletRequest  context = new StandardMultipartHttpServletRequest(request);
+    StandardMultipartHttpServletRequest context = new StandardMultipartHttpServletRequest(request);
 
     MultipartFile file = context.getFile("file");
     String docType = context.getParameter("docType");

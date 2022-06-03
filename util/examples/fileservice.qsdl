@@ -1,0 +1,17 @@
+scalar UUID @openapi("string,uuid") @spring("UUID")
+scalar MultipartFile @openapi("string, binary") @spring("org.springframework.web.multipart.MultipartFile")
+scalar File @openapi("string, binary") @spring("org.springframework.core.io.Resource")
+
+
+type Maasfile {
+    entityId: UUID!
+    docType: String
+    originalFileName: String @writeOnly
+    originalExtension: String @writeOnly
+
+    extend api {
+        uploadFile(file: MultipartFile!, docType: String, entityId: UUID!): Maasfile @path("upload") @method( POST) @consumes("multipart/form-data") @spring-void-input
+        uploadedFilesList(docType: String, entityId: UUID!): [Maasfile] @path("download") @method( GET) 
+        downloadFile(): File @path("download/{id}") @method( GET) @produces( "application/octet-stream")
+    }
+}
