@@ -63,6 +63,8 @@ class entity.Field  {
   is_write_only : optional<BOOL>
   is_composition : optional<BOOL>
   is_aggregation : optional<BOOL>
+  is_unique : optional<BOOL>
+  is_hidden : optional<BOOL>
   min_size : INT
   max_size : INT
 }
@@ -134,11 +136,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | Description |  |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Description |  |
+  | Comment | \\/\\/.*$ |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
 end legend
 
 @enduml

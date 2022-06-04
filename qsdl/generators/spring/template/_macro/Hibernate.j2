@@ -19,6 +19,12 @@
   @Column(columnDefinition = "text")
   {% endif %}
   {#
+    Uniqueness
+  #}
+  {% if field.is_unique %}
+  @Column(unique = true)
+  {% endif %}
+  {#
     Relations
   #}
   {% if field.is_relation and not field.is_relation_owner %}

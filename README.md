@@ -392,30 +392,34 @@ There are certain builtin directives that can be used to modify the generation b
 
 1.  `Directive` `@query` may be use on any `Base` or `Object` `Field` to create a query parameter for the get all method.
 
-2.  `Directive` `@readOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
+2.  `Directive` `@unique` may be use on any `Base` or `Object` `Field` to mark a `Field` as unique.
 
-3.  `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
+3.  `Directive` `@hidden` may be use on any `Base` or `Object` `Field` to mark a `Field` as hidden.
 
-4.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a list `Object`.
+4.  `Directive` `@readOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
 
-5.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a list `Object`.
+5.  `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
 
-6.  `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
+6.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a list `Object`.
 
-7.  `Directive` `@path` must be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
+7.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a list `Object`.
 
-8.  `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
+8.  `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
 
-9.  `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
+9.  `Directive` `@path` must be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
 
-10.  `Directive` `@pagination` may be used on any `Api` `Field` for converting response in a pageable object.
+10. `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
-11.  `Directive` `@produce` may be used on any `Api` `Field` for changing the mime type.
+11. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
 
-12.  `Directive` `@consumes` may be used on any `Api` `Field` for changing the mime type.
+12.  `Directive` `@pagination` may be used on any `Api` `Field` for converting response in a pageable object.
 
-13.  `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
+13.  `Directive` `@produce` may be used on any `Api` `Field` for changing the mime type.
 
-14.  `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting minimum length of the value.
+14.  `Directive` `@consumes` may be used on any `Api` `Field` for changing the mime type.
 
-15.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum length of the value.
+15.  `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
+
+16.  `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting minimum length of the value.
+
+17.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum length of the value.

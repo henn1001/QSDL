@@ -41,6 +41,8 @@ class Field:
     is_write_only: bool = False
     is_composition: bool = False
     is_aggregation: bool = False
+    is_unique: bool = False
+    is_hidden: bool = False
     min_size: int = None
     max_size: int = None
     # Custom directives

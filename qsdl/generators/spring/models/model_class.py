@@ -43,6 +43,8 @@ class ModelField:
     is_required: bool = False
     is_read_only: bool = False
     is_write_only: bool = False
+    is_unique: bool = False
+    is_hidden: bool = False
     is_query: bool = False
 
     is_enum: bool = False
@@ -82,6 +84,8 @@ class ModelField:
         self.is_required = _ref.is_required
         self.is_read_only = _ref.is_read_only
         self.is_write_only = _ref.is_write_only
+        self.is_unique = _ref.is_unique
+        self.is_hidden = _ref.is_hidden
         self.is_query = _ref.is_query
 
         self.is_enum = _ref.value._tx_fqn in ["entity.Enum"]

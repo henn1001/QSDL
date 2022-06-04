@@ -22,6 +22,10 @@ class TestDirective:
 
     01. `Directive` `@query` may be use on any `Base` or `Object` `Field` to create a query parameter for the get all method.
 
+    02. `Directive` `@unique` may be use on any `Base` or `Object` `Field` to mark a `Field` as unique.
+
+    03. `Directive` `@hidden` may be use on any `Base` or `Object` `Field` to mark a `Field` as hidden.
+
     04. `Directive` `@readOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
 
     05. `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
@@ -37,6 +41,18 @@ class TestDirective:
     10. `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
     11. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
+
+    12.  `Directive` `@pagination` may be used on any `Api` `Field` for converting response in a pageable object.
+
+    13.  `Directive` `@produce` may be used on any `Api` `Field` for changing the mime type.
+
+    14.  `Directive` `@consumes` may be used on any `Api` `Field` for changing the mime type.
+
+    15.  `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
+
+    16.  `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting minimum length of the value.
+
+    17.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum length of the value.
 
     """
 
@@ -61,6 +77,20 @@ class TestDirective:
         assert parameter[0]["schema"]["example"]["name"]
         assert parameter[0]["schema"]["example"]["world"]
 
+    def test_directive_03_positive(self):
+        """Verify usage of @hidden"""
+        test_input = """\
+
+            type Bar {
+                world: String
+                fruit: String @hidden
+            }
+        """
+
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+        assert "fruit" not in properties
 
     def test_directive_04_positive(self):
         """Verify usage of @readOnly"""

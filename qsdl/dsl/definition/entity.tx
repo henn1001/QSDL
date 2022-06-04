@@ -107,6 +107,8 @@ Field:
         is_write_only?='@writeOnly'
         is_composition?='@composition'
         is_aggregation?='@aggregation'
+        is_unique?='@unique'
+        is_hidden?='@hidden'
         ('@minSize(' min_size=INT ')')?
         ('@maxSize(' max_size=INT ')')?
         )#

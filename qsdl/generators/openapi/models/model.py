@@ -154,7 +154,7 @@ class ModelObject:
 
         for entity_field in _ref.fields:
             # filter hidden relations
-            if not entity_field.is_relation:
+            if not entity_field.is_relation and not entity_field.is_hidden:
                 attribute = ModelField().build(entity_field)
                 self.attributes.append(attribute)
 

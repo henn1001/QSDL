@@ -26,8 +26,13 @@ public class User extends AbstractPersistentObject {
 
   @Min(0)
   @Max(Integer.MAX_VALUE)
-  @JsonProperty(value = "count")
+  @JsonIgnore
   public Integer count;
+
+  @Size(min = 0, max = 255)
+  @Column(unique = true)
+  @JsonProperty(value = "mail")
+  public String mail;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))

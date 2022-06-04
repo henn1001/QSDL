@@ -42,7 +42,8 @@ type Role @namespace("Management") {
 
 type User @namespace("Management"){
     name: String!
-    count: Int
+    count: Int @hidden
+    mail: String @unique
 }
 
 

@@ -69,7 +69,7 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
   {# 
     Set JsonIgnore for relations
   #}
-  {% if field.is_relation %}
+  {% if field.is_relation or field.is_hidden %}
   @JsonIgnore
   {# 
     Configure Jackson for required/read_only/write_only
