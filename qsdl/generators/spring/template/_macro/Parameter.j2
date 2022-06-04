@@ -16,7 +16,7 @@
 
   {%- for parameter in operation.path_parameters -%}
     @PathVariable("{{parameter.json_key}}") {{ param_helper(parameter) }}
-    {%- if not loop.last or operation.query_parameters or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
+    {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endfor %}
 
   {%- if operation.is_pageable -%}
@@ -38,7 +38,7 @@
 
   {%- for parameter in operation.path_parameters -%}
     {{ param_helper(parameter) }}
-    {%- if not loop.last or operation.query_parameters or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
+    {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endfor %}
 
   {%- if operation.is_pageable -%}

@@ -179,7 +179,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         api_files.append(("src/main/java/controller/Api.j2", f"src/main/java/{package.api}/{api.name}Api.java", api))
         api_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{package.controller}/{api.name}Controller.java", api))
 
-        if api.model:
+        if api.model and api.has_generated:
             api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{package.service}/{api.name}Service.java", api))
             api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{package.controller}/{api.name}ControllerTest.java", api))
 

@@ -5,8 +5,8 @@
       "type": "java",
       "name": "Run Dev",
       "request": "launch",
-      "mainClass": "com.test.SpringBootApp",
-      "projectName": "app",
+      "mainClass": "{{base_package}}.SpringBootApp",
+      "projectName": "{{artifact_id}}",
       "args": [
         "--spring.profiles.active=dev"
       ]
@@ -15,8 +15,8 @@
       "type": "java",
       "name": "Run Local",
       "request": "launch",
-      "mainClass": "com.test.SpringBootApp",
-      "projectName": "app",
+      "mainClass": "{{base_package}}.SpringBootApp",
+      "projectName": "{{artifact_id}}",
       "args": [
         "--spring.profiles.active=local"
       ]
@@ -25,8 +25,8 @@
       "type": "java",
       "name": "Run Production",
       "request": "launch",
-      "mainClass": "com.test.SpringBootApp",
-      "projectName": "app",
+      "mainClass": "{{base_package}}.SpringBootApp",
+      "projectName": "{{artifact_id}}",
       "args": [
         "--spring.profiles.active=prod"
       ]
@@ -35,8 +35,8 @@
       "type": "java",
       "name": "Create Schema",
       "request": "launch",
-      "mainClass": "com.test.SpringBootApp",
-      "projectName": "app",
+      "mainClass": "{{base_package}}.SpringBootApp",
+      "projectName": "{{artifact_id}}",
       "args": [
         "--spring.profiles.active=prod-init"
       ]
