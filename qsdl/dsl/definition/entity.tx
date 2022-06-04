@@ -178,6 +178,7 @@ Argument:
     value=[ValueType]
     (']')?
     (is_required?='!')?
+    (is_query?='?')?
 ;
 
 Method:

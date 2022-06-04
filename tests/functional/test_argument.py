@@ -40,6 +40,8 @@ class TestArgument:
 
     10. `Argument` can only be used by `Operation` of `Api` only.
 
+    11. `Argument` value may be marked as query.
+
     """
 
     def test_argument_01_positive(self):
@@ -368,3 +370,34 @@ class TestArgument:
         """
 
         wrapper_generate_failure(test_input)
+
+    def test_argument_11_positive(self):
+        """Verify argument can be market as query"""
+        test_input = """\
+            extend api {
+                field(arg: String, query1: String?, query2: Int!?): Void @path("path") @method(POST)
+            }
+        """
+
+        openapi = wrapper_generate(test_input)
+
+        def get_schema_parameters(openapi, path, method):
+            var = openapi["paths"][path][method]["parameters"]
+            return var
+
+        def get_schema_request(openapi, path, method):
+            var = openapi["paths"][path][method]["requestBody"]
+            return var["content"]["application/json"]["schema"]
+
+        parameters = get_schema_parameters(openapi, "/path", "post")
+        assert parameters[0]["name"] == "query1"
+        assert parameters[0]["required"] is False
+        assert parameters[0]["schema"]["type"] == "string"
+
+        assert parameters[1]["name"] == "query2"
+        assert parameters[1]["required"] is True
+        assert parameters[1]["schema"]["type"] == "integer"
+
+        schema = get_schema_request(openapi, "/path", "post")
+        assert schema["type"] == "object"
+        assert schema["properties"]["arg"]["type"] == "string"

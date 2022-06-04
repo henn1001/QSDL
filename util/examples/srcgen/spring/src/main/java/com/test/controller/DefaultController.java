@@ -26,4 +26,11 @@ public class DefaultController extends BaseController implements DefaultApi {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
+  /**
+   * POST /action : action
+   */
+  public ResponseEntity<ObjectNode> action(BaseType arg1) throws Exception {
+    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+  }
+
 }

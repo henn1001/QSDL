@@ -17,7 +17,7 @@ import lombok.*;
 {% endif %}
 import org.springframework.format.annotation.DateTimeFormat;
 
-{% if database == "HIBERNATE" %}
+{% if database == "HIBERNATE" and (model.is_object or model.is_entity) %}
 import javax.persistence.*;
 {% endif %}
 import javax.validation.*;
@@ -65,7 +65,7 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
   {# 
     Hibernate
   #}
-  {{- hibernate.attribute_annotation(field) if database == "HIBERNATE" -}}
+  {{- hibernate.attribute_annotation(field) if database == "HIBERNATE" and (model.is_object or model.is_entity) -}}
   {# 
     Set JsonIgnore for relations
   #}
@@ -89,7 +89,7 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
   {% endif %}
 
 {% endfor %}
-{% if database == "HIBERNATE" %}
+{% if database == "HIBERNATE" and (model.is_object or model.is_entity) %}
 
   @PreRemove
   private void preRemoveHook() {

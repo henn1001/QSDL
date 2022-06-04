@@ -157,7 +157,10 @@ def validate_arguments(schema: Schema, metamodel: TextXMetaModel):
         is_ref = False
 
         for argument in operation.arguments:
-            count = count + 1
+
+            # we only wanty limit the request body to one value
+            if not argument.is_query:
+                count = count + 1
 
             if argument.value._tx_fqn in ["entity.Object", "entity.Base"]:
                 is_ref = True

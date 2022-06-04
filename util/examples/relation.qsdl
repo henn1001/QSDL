@@ -57,4 +57,5 @@ type Ticket @namespace("Incident"){
 
 extend api {
     submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(POST)
+    action(arg1: BaseType, arg2: String?, arg4: String!?): Object @path("action") @method(POST)
 }

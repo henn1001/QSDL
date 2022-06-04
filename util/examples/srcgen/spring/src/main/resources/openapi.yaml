@@ -724,6 +724,36 @@ paths:
                 type: object
         default:
           $ref: '#/components/responses/DefaultError'
+  '/action':
+    post:
+      summary: action
+      operationId: action
+      parameters:
+        - name: arg2
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: arg4
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          $ref: '#/components/responses/DefaultError'
 
 components:
   securitySchemes:

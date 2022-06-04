@@ -34,6 +34,7 @@ class Argument:
     is_array: bool = False
     value: Union[Scalar, Base, Object, Enum] = None
     is_required: bool = False
+    is_query: bool = False
 
     # required by textX
     parent: Operation = None

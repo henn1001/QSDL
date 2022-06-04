@@ -95,6 +95,7 @@ class entity.Argument  {
   name : ID
   is_array : optional<BOOL>
   is_required : optional<BOOL>
+  is_query : optional<BOOL>
 }
 
 
@@ -136,11 +137,11 @@ entity.Argument o-- entity.ValueType
 legend
   Match rules:
   |= Name  |= Rule details |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Description |  |
   | Comment | \\/\\/.*$ |
+  | Description |  |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend
 
 @enduml

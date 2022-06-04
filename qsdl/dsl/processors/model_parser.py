@@ -620,7 +620,7 @@ def parse_operations(schema: Schema):
                 if argument.value.name == "ID":
                     argument.is_path = True
                     operation.path_parameters.append(argument)
-                elif operation.method == "GET":
+                elif operation.method == "GET" or argument.is_query:
                     argument.is_query = True
                     operation.query_parameters.append(argument)
                 else:
