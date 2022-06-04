@@ -38,7 +38,6 @@ public class TicketService {
 
   public CursorPage getTickets(CursorPageable pageable, Context context) throws AppException {
 
-    context.loadFromContext(true, false, false);
     List<String> queryParameters = Arrays.asList(); 
     BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), Ticket.class);
 

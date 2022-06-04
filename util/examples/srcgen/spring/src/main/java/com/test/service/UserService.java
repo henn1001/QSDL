@@ -55,7 +55,6 @@ public class UserService {
     // should be optimized with something like getReferenceById
     Ticket ticket = fetchTicketFromDb(ticketId);
 
-    context.loadFromContext(true, false, false);
     List<String> queryParameters = Arrays.asList(); 
     BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), User.class);
     predicate.and(QUser.user.tickets.any().id.eq(ticket.getId()));
@@ -99,7 +98,6 @@ public class UserService {
 
   public CursorPage getUsers(CursorPageable pageable, Context context) throws AppException {
 
-    context.loadFromContext(true, false, false);
     List<String> queryParameters = Arrays.asList(); 
     BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), User.class);
 

@@ -55,7 +55,6 @@ public class RoleService {
     // should be optimized with something like getReferenceById
     Project project = fetchProjectFromDb(projectId);
 
-    context.loadFromContext(true, false, false);
     List<String> queryParameters = Arrays.asList(); 
     BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), Role.class);
     predicate.and(QRole.role.project.id.eq(project.getId()));

@@ -29,6 +29,7 @@ public class Context {
   public Context(HttpServletRequest request) {
     this();
     this.request = request;
+    loadParameterMap();
   }
 
   public Context(MultiValueMap<String, String> parameterMap,
@@ -83,11 +84,8 @@ public class Context {
    * 
    * we want to do this on demand to not waste time when these values are not needed on the service layer.
    */
-  public void loadFromContext(boolean loadParameters, boolean loadHeaders, boolean loadAttributes) {
+  public void loadFromContext(boolean loadHeaders, boolean loadAttributes) {
     if (request != null) {
-      if (loadParameters) {
-        loadParameterMap();
-      }
       if (loadHeaders) {
         loadHeaderMap();
       }
