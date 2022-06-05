@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://gitlab.com/henn1001/qsdl/compare/v2.7.0...v3.0.0) (2022-06-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* **garammar:** extend api is now all lowercase to make it more consistent with the rest of the language
+* **garammar:** remove the 'value: ' section from all directives
+
+### Features
+
+* add directives to scalars to support custom type conversions for openapi and spring ([e17b32f](https://gitlab.com/henn1001/qsdl/commit/e17b32f826bdc46292c093c61f15a4cc88c798b1))
+* **core:** add --print_version flag to cli for creating a qsdl version file ([14b54f6](https://gitlab.com/henn1001/qsdl/commit/14b54f664648936f23d8902f45c808ef4d4a2825))
+* **core:** replace inflect library for pluralization as it can have unwanted side-effects with a simply "s" append method ([12ac68d](https://gitlab.com/henn1001/qsdl/commit/12ac68d916091ce43b93c2abe1605d5bdcdefe33))
+* **grammar:** add a hidden and unique directive that is utilized by openapi and spring respectively ([b269489](https://gitlab.com/henn1001/qsdl/commit/b2694893582d3088a3583c7014e485b82989dfd4))
+* **grammar:** add the a '?' marker for custom operation arguments to indicate a query parameter. allows the mixture of body and query parameters ([dad9bba](https://gitlab.com/henn1001/qsdl/commit/dad9bbae85049e51cdf046a79f5aac5c08d3cda9))
+* **grammar:** add the a '^' marker for custom operation request headers and a 'headers' directive to add custom operation response headers ([84b281a](https://gitlab.com/henn1001/qsdl/commit/84b281a971bd6a2544470555637f2bb6680159b2))
+* **grammar:** allow type definitions without any field. useful for inheritance ([4929ef5](https://gitlab.com/henn1001/qsdl/commit/4929ef582aee4648f620565f4c70e893c701de02))
+* introduce minSize and maxSize directive for adding constraints to openapi and spring string,int and longs ([f4492e7](https://gitlab.com/henn1001/qsdl/commit/f4492e752747e64da8aeea4fbdb85b2082f22569))
+* **openapi:** change default security header to 'Authorization' ([035ad5e](https://gitlab.com/henn1001/qsdl/commit/035ad5e90b4cd8fa6bb9d03794512f3ed8e7854f))
+* **spring:** introduce directive '[@spring-void-input](https://gitlab.com/spring-void-input)' to prevent argument generation for custom operations ([afe6eb2](https://gitlab.com/henn1001/qsdl/commit/afe6eb2b5cfa72adc005da0aa1ffa18f08329c56))
+* **spring:** provide a context object for the service layer to access request specific information ([73abeaa](https://gitlab.com/henn1001/qsdl/commit/73abeaa4888c5a0054fe500bb1549335c2df823f))
+* **spring:** remove service-test generation when hibernate is disabled ([8b2aa6a](https://gitlab.com/henn1001/qsdl/commit/8b2aa6a1e2b38f6f3af3649fd7163f282dd68573))
+* **spring:** remove unneeded annotations from a controller and improve produces/consumes logic ([08a020a](https://gitlab.com/henn1001/qsdl/commit/08a020a5c20c7ce08ddd8a4476b1d965d19a8624))
+
+
+### Bug Fixes
+
+* **core:** prevent duplicated fields when using multiple extends ([3a2f8e4](https://gitlab.com/henn1001/qsdl/commit/3a2f8e4481be18db6b46d907a1fbb510ae59066b))
+* **spring:** align test data generation with default value limits for integers ([92156a0](https://gitlab.com/henn1001/qsdl/commit/92156a08556684aa8418163b74a0c306460a4e06))
+* **spring:** embedding the same base type multiple times should not create conflicts in the join-column name ([5e3e292](https://gitlab.com/henn1001/qsdl/commit/5e3e2923f8b89e0bfebca9812a5374fc76b99d18))
+* **spring:** resolve issue with accessing the model of querydsl predicates ([bb70821](https://gitlab.com/henn1001/qsdl/commit/bb7082145ae1172c39176c8005120cb6b92e729e))
+* **spring:** resolve issue with qsdl-ignore not fully working when the cwd is somewhere else ([48c2702](https://gitlab.com/henn1001/qsdl/commit/48c27023e075c65ecc36576fbf961dbcf226d5c6))
+* **spring:** service_layer parameter generation was not working correctly when using path and query parameters, join_column name for nested base types were wrong, using the directive 'spring-void-input' should generate path parameters ([20beda3](https://gitlab.com/henn1001/qsdl/commit/20beda3a7419efc43cf585f6a40ad9620ed4d7b3))
+
+
+* **garammar:** extend api is now all lowercase to make it more consistent with the rest of the language ([eaf2ea3](https://gitlab.com/henn1001/qsdl/commit/eaf2ea3a3c4d9839b88791365b98972cb45a92fe))
+* **garammar:** remove the 'value: ' section from all directives ([40f0789](https://gitlab.com/henn1001/qsdl/commit/40f07895b74a90875b6d987560c21ca0643f3f47))
+
 ## [2.7.0](https://gitlab.com/henn1001/qsdl/compare/v2.6.1...v2.7.0) (2022-05-28)
 
 
