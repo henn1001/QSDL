@@ -423,3 +423,5 @@ There are certain builtin directives that can be used to modify the generation b
 16.  `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting minimum length of the value.
 
 17.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum length of the value.
+
+18.  `Directive` `@headers` may be used on any `Api` `Field` for adding response headers to the operation.

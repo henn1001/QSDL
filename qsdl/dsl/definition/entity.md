@@ -96,6 +96,7 @@ class entity.Argument  {
   is_array : optional<BOOL>
   is_required : optional<BOOL>
   is_query : optional<BOOL>
+  is_header : optional<BOOL>
 }
 
 
@@ -131,17 +132,18 @@ entity.Api *-- "0..*" entity.Directive
 entity.Api *-- "0..*" entity.Operation
 entity.Operation *-- "1..*" entity.Argument
 entity.Operation o-- entity.ValueType
+entity.Operation *-- "1..*" entity.Argument
 entity.Operation *-- "0..*" entity.Directive
 entity.Argument o-- entity.ValueType
 
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Comment | \\/\\/.*$ |
-  | Description |  |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Description |  |
+  | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
 end legend
 
 @enduml

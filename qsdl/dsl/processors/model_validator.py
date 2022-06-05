@@ -159,7 +159,7 @@ def validate_arguments(schema: Schema, metamodel: TextXMetaModel):
         for argument in operation.arguments:
 
             # we only wanty limit the request body to one value
-            if not argument.is_query:
+            if not argument.is_query and not argument.is_header:
                 count = count + 1
 
             if argument.value._tx_fqn in ["entity.Object", "entity.Base"]:

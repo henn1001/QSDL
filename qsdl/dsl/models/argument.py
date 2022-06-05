@@ -35,6 +35,7 @@ class Argument:
     value: Union[Scalar, Base, Object, Enum] = None
     is_required: bool = False
     is_query: bool = False
+    is_header: bool = False
 
     # required by textX
     parent: Operation = None

@@ -42,6 +42,7 @@ class Operation:
     is_pageable: bool = False
     consumes: str = None
     produces: str = None
+    response_headers: List[Argument] = field(default_factory=list)
     # Custom directives
     directives: List[Directive] = field(default_factory=list)
 
@@ -55,6 +56,7 @@ class Operation:
     is_aggregated: bool = False
     path_parameters: List[Argument] = field(default_factory=list)
     query_parameters: List[Argument] = field(default_factory=list)
+    header_parameters: List[Argument] = field(default_factory=list)
     body_parameters: List[Argument] = field(default_factory=list)
 
     domain_object: Object = None

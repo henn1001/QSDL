@@ -9,10 +9,6 @@ homepage = "https://gitlab.com/henn1001/qsdl"
 repository = "https://gitlab.com/henn1001/qsdl"
 include = [
     "README.md",
-    "qsdl/dsl/definition/*",
-    "qsdl/generators/graphql/template/*",
-    "qsdl/generators/openapi/template/*",
-    "qsdl/generators/plantuml/template/*",
 ]
 
 [tool.poetry.dependencies]

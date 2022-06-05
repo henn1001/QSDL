@@ -6,7 +6,7 @@
     description: |
       {{ parameter.description | indent | trim("\"") | trim }}
   {% endif %}
-    in: {{ "query" if parameter.is_query else "path" }}
+    in: {{ "query" if parameter.is_query else "header" if parameter.is_header else "path" }}
     required: {{ parameter.is_required | lower }}
     schema:
       {{ get_ref_type_format(parameter) | indent(4) | trim }}
@@ -67,6 +67,16 @@
     {{ operation.produces }}:
       schema:
         {{ get_ref_type_format(parameter) | indent(6) | trim }}
+{% endmacro %}
+
+
+{% macro get_response_headers(operation) %}
+  headers:
+  {% for parameter in operation.response_headers %}
+    {{ parameter.name }}:
+      schema:
+        {{ get_ref_type_format(parameter) | indent(6) | trim }}
+  {% endfor %}
 {% endmacro %}
 
 

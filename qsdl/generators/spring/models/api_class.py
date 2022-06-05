@@ -43,6 +43,7 @@ class Parameter:
     is_required: bool = False
     is_query: bool = False
     is_path: bool = False
+    is_header: bool = False
     is_body: bool = False
 
     def build(self, _ref: dsl.Argument) -> Parameter:
@@ -57,6 +58,7 @@ class Parameter:
         self.is_required = _ref.is_required
         self.is_path = _ref.is_path
         self.is_query = _ref.is_query
+        self.is_header = _ref.is_header
         self.is_body = _ref.is_body
 
         return self
@@ -83,9 +85,11 @@ class Operation:
     parameters: List[Parameter] = field(default_factory=list)
     path_parameters: List[Parameter] = field(default_factory=list)
     query_parameters: List[Parameter] = field(default_factory=list)
+    header_parameters: List[Parameter] = field(default_factory=list)
     body_parameters: List[Parameter] = field(default_factory=list)
 
     response: Parameter = None
+    response_headers: List[Parameter] = field(default_factory=list)
 
     consumes: str = None
     produces: str = None
@@ -113,6 +117,7 @@ class Operation:
 
         self._add_parameters(_ref)
         self._add_response(_ref)
+        self._add_response_headers(_ref)
 
         return self
 
@@ -135,6 +140,8 @@ class Operation:
                 self.path_parameters.append(new_param)
             elif new_param.is_query:
                 self.query_parameters.append(new_param)
+            elif new_param.is_header:
+                self.query_parameters.append(new_param)
             elif new_param.is_body and not _ref.method == "DELETE":
                 self.body_parameters.append(new_param)
 
@@ -156,6 +163,14 @@ class Operation:
                 new_param.is_array = False
 
             self.response = new_param
+
+    def _add_response_headers(self, _ref: dsl.Operation):
+        """Creates and adds a response header to a Operation"""
+
+        for argument in _ref.response_headers:
+            new_param = Parameter().build(argument)
+
+            self.response_headers.append(new_param)
 
 
 @dataclass

@@ -54,6 +54,8 @@ class TestDirective:
 
     17.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum length of the value.
 
+    18.  `Directive` `@headers` may be used on any `Api` `Field` for adding response headers to the operation.
+
     """
 
     def test_directive_01_positive(self):

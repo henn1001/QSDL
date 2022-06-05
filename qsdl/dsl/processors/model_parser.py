@@ -623,6 +623,8 @@ def parse_operations(schema: Schema):
                 elif operation.method == "GET" or argument.is_query:
                     argument.is_query = True
                     operation.query_parameters.append(argument)
+                elif argument.is_header:
+                    operation.header_parameters.append(argument)
                 else:
                     argument.is_body = True
                     operation.body_parameters.append(argument)

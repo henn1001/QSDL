@@ -32,22 +32,49 @@ class Parameter:
     name: str = None
     json_key: str = None
     description: str = None
+
     type: str = None
     is_array: bool = False
     is_required: bool = False
 
     is_query: bool = False
     is_path: bool = False
+    is_header: bool = False
     is_body: bool = False
 
     ref: str = None
     is_ref_body: bool = False
     format: str = None
 
+    def build(self, _ref: dsl.Argument) -> Parameter:
+        """Builds self from dsl.Argument"""
+
+        self.name = _ref.name
+        self.json_key = _ref.name
+
+        self.type = util.custom_type(_ref.value)
+        self.format = util.custom_type_format(_ref.value)
+
+        self.is_array = _ref.is_array
+        self.is_required = _ref.is_required
+
+        self.is_path = _ref.is_path
+        self.is_query = _ref.is_query
+        self.is_header = _ref.is_header
+        self.is_body = _ref.is_body
+
+        if _ref.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
+            self.ref = f"#/components/schemas/{ self.type }"
+
+        if _ref.value._tx_fqn in ["entity.Base", "entity.Object"]:
+            self.is_ref_body = True
+
+        return self
+
 
 @dataclass
 class Operation:
-    """Custom dataclass"""
+    """The Operation/Methods for a Api"""
 
     # computed attributes
     name: str = None
@@ -63,9 +90,11 @@ class Operation:
     parameters: List[Parameter] = field(default_factory=list)
     path_parameters: List[Parameter] = field(default_factory=list)
     query_parameters: List[Parameter] = field(default_factory=list)
+    header_parameters: List[Parameter] = field(default_factory=list)
     body_parameters: List[Parameter] = field(default_factory=list)
 
     response: Parameter = None
+    response_headers: List[Parameter] = field(default_factory=list)
 
     consumes: str = None
     produces: str = None
@@ -91,63 +120,61 @@ class Operation:
         self.produces = _ref.produces
 
         self._add_parameters(_ref)
+        self._add_response(_ref)
+        self._add_response_headers(_ref)
 
         return self
 
     def _add_parameters(self, _ref: dsl.Operation):
+        """Creates and adds all parameters to a Operation"""
 
         for argument in _ref.arguments:
-            param = Parameter()
-            # param.name = stringcase.camelcase(argument.name)
-            param.name = argument.name
-            param.json_key = argument.name
-            param.is_required = argument.is_required
-            param.is_array = argument.is_array
+            new_param = Parameter().build(argument)
 
-            param.type = util.custom_type(argument.value)
-            param.format = util.custom_type_format(argument.value)
+            # we need to explicitly split parameters and requestbody for openapi
+            if new_param.is_path:
+                self.path_parameters.append(new_param)
+                self.parameters.append(new_param)
+            elif new_param.is_query:
+                self.query_parameters.append(new_param)
+                self.parameters.append(new_param)
+            elif new_param.is_header:
+                self.header_parameters.append(new_param)
+                self.parameters.append(new_param)
+            elif new_param.is_body and _ref.method != "DELETE":
+                self.body_parameters.append(new_param)
 
-            if argument.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
-                param.ref = f"#/components/schemas/{ param.type }"
+    def _add_response(self, _ref: dsl.Operation):
+        """Creates and adds a response parameter to a Operation"""
 
-            if argument.value._tx_fqn in ["entity.Base", "entity.Object"]:
-                param.is_ref_body = True
-
-            param.is_path = argument.is_path
-            param.is_query = argument.is_query
-            param.is_body = argument.is_body
-
-            if param.is_path:
-                self.path_parameters.append(param)
-                self.parameters.append(param)
-            if param.is_query:
-                self.query_parameters.append(param)
-                self.parameters.append(param)
-            if param.is_body and _ref.method != "DELETE":
-                self.body_parameters.append(param)
-
-        # response
         if _ref.value:
-            param = Parameter()
-            # param.name = stringcase.camelcase(field.value.name)
-            param.name = _ref.value.name
-            param.json_key = _ref.value.name
-            param.is_required = False
-            param.is_array = _ref.is_array
+            new_param = Parameter()
+            new_param.name = _ref.value.name
+            new_param.json_key = _ref.value.name
+            new_param.is_array = _ref.is_array
 
-            param.type = util.custom_type(_ref.value)
-            param.format = util.custom_type_format(_ref.value)
+            new_param.type = util.custom_type(_ref.value)
+            new_param.format = util.custom_type_format(_ref.value)
 
             if _ref.is_pageable:
-                param.name += "List"
-                param.json_key += "List"
-                param.type += "List"
-                param.is_array = False
+                new_param.name += "List"
+                new_param.json_key += "List"
+                new_param.type += "List"
+                new_param.is_array = False
 
             if _ref.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
-                param.ref = f"#/components/schemas/{ param.type }"
+                new_param.ref = f"#/components/schemas/{ new_param.type }"
 
-            self.response = param
+            self.response = new_param
+
+
+    def _add_response_headers(self, _ref: dsl.Operation):
+        """Creates and adds a response header to a Operation"""
+
+        for argument in _ref.response_headers:
+            new_param = Parameter().build(argument)
+
+            self.response_headers.append(new_param)
 
 
 @dataclass
