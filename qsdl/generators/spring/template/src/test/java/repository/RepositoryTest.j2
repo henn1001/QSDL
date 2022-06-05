@@ -111,7 +111,7 @@ public class {{model.name}}RepositoryTest {
 
     BooleanBuilder predicate = new BooleanBuilder();
     {% for field in model.fields if field.is_query %}
-    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
+    predicate.and(Q{{model.name}}.{{model.name|camel}}.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
     {% endfor %}
 
     // When
@@ -167,9 +167,9 @@ public class {{model.name}}RepositoryTest {
       {% endif %}
     {% endif %}
 
-    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));
     {% for field in model.fields if field.is_query %}
-    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{field.name}}.eq(testData.{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
+    predicate.and(Q{{model.name}}.{{model.name|camel}}.{{field.name}}.eq(testData.{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
     {% endfor %}
 
     // When
@@ -203,7 +203,7 @@ public class {{model.name}}RepositoryTest {
 
     do {
       CursorPageable pageable = new CursorPageable(cursor, 1l, null);
-      BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parentId));
+      BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parentId));
       CursorPage findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
@@ -236,7 +236,7 @@ public class {{model.name}}RepositoryTest {
     {{model.name|lower}}Repository.save(testData);
 
     // Then
-    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));
 
     assertEquals(0, {{model.name|lower}}Repository.count(predicate));
     assertEquals(true, {{model.name|lower}}Repository.existsById(testData.getId()));
@@ -258,7 +258,7 @@ public class {{model.name}}RepositoryTest {
     {{model.name|lower}}Repository.deleteById(testData.getId());
 
     // Then
-    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));
 
     assertEquals(0, {{model.name|lower}}Repository.count(predicate));
     assertEquals(false, {{model.name|lower}}Repository.existsById(testData.getId()));
@@ -280,7 +280,7 @@ public class {{model.name}}RepositoryTest {
     {{parent.model.name|lower}}Repository.deleteById(parent.getId());
 
     // Then
-    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|lower}}.{{parent.predicate}}.id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));
 
     assertEquals(0, {{model.name|lower}}Repository.count(predicate));
     assertEquals(true, {{model.name|lower}}Repository.existsById(testData.getId()));

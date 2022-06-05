@@ -16,7 +16,7 @@
 
     List<String> queryParameters = Arrays.asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %}); 
     BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}.class);
-    predicate.and(Q{{model.name}}.{{model.name|lower}}.{{operation.parent.predicate}}.id.eq({{ p_model.name|lower }}.getId()));
+    predicate.and(Q{{model.name}}.{{model.name|camel}}.{{operation.parent.predicate}}.id.eq({{ p_model.name|lower }}.getId()));
     {% else %}
     List<String> queryParameters = Arrays.asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %}); 
     BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}.class);
