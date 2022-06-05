@@ -111,15 +111,15 @@ def remove_ignored_files(output_path: Path, api_files: list, model_files: list, 
         # loop over each all files and remove matches
         # note the copy() - we dont want to modify the list directly
         for src, dest, _ in api_files.copy():
-            if spec.match_file(output_path / dest):
+            if spec.match_file(dest):
                 api_files.remove((src, dest, _))
 
         for src, dest, _ in model_files.copy():
-            if spec.match_file(output_path / dest):
+            if spec.match_file(dest):
                 model_files.remove((src, dest, _))
 
         for src, dest in supporting_files.copy():
-            if spec.match_file(output_path / dest):
+            if spec.match_file(dest):
                 supporting_files.remove((src, dest))
 
 
