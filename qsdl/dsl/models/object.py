@@ -28,7 +28,7 @@ class Object:
     """textX Object class"""
 
     # defined in entity.tx
-    description: str = None
+    description: List[str] = field(default_factory=list)
     name: str = None
     supertype: Base = None
     # Special directives

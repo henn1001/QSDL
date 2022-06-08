@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..util import description_wrapper
+
 if TYPE_CHECKING:
     import qsdl.dsl.models as dsl
 
@@ -29,6 +31,7 @@ def schema_processor(entity: dsl.Schema):
         entity (Schema): The schema object.
     """
 
+    entity.description = description_wrapper(entity.description)
     entity.servers = ["/api/v1"] if not entity.servers else entity.servers
 
 
@@ -47,7 +50,8 @@ def enum_processor(entity: dsl.Enum):
     Args:
         entity (Enum): The enum object.
     """
-    _ = entity
+
+    entity.description = description_wrapper(entity.description)
 
 
 def base_processor(entity: dsl.Base):
@@ -56,7 +60,8 @@ def base_processor(entity: dsl.Base):
     Args:
         entity (Base): The base object.
     """
-    _ = entity
+
+    entity.description = description_wrapper(entity.description)
 
 
 def object_processor(entity: dsl.Object):
@@ -65,7 +70,8 @@ def object_processor(entity: dsl.Object):
     Args:
         entity (Object): The object object.
     """
-    _ = entity
+
+    entity.description = description_wrapper(entity.description)
 
 
 def field_processor(entity: dsl.Field):
@@ -74,6 +80,8 @@ def field_processor(entity: dsl.Field):
     Args:
         entity (Field): The field object.
     """
+
+    entity.description = description_wrapper(entity.description)
     entity.is_relation = entity.is_composition or entity.is_aggregation
 
 
@@ -83,7 +91,8 @@ def api_processor(entity: dsl.Api):
     Args:
         entity (Api): The api object.
     """
-    _ = entity
+
+    entity.description = description_wrapper(entity.description)
 
 
 def operation_processor(entity: dsl.Operation):
@@ -92,7 +101,8 @@ def operation_processor(entity: dsl.Operation):
     Args:
         entity (Api): The operation object.
     """
-    _ = entity
+
+    entity.description = description_wrapper(entity.description)
 
 
 def argument_processor(entity: dsl.Argument):

@@ -71,7 +71,7 @@ class Operation:
     name: str = None
     tag: str = None
     summary: str = None
-    description: str = None
+    description: List[str] = field(default_factory=list)
 
     path: str = None
     method: str = None
@@ -179,7 +179,7 @@ class ApiClass:
 
     name: str = None
     namespace: str = None
-    description: str = None
+    description: List[str] = field(default_factory=list)
 
     model: ModelClass = None
 

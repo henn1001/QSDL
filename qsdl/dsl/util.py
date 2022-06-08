@@ -34,3 +34,44 @@ def get_directive_of_name(name: str, entity: ValueType) -> dsl.Directive:
     match = [x for x in entity.directives if x.name == name]
 
     return match[0] if match else None
+
+
+def description_wrapper(raw_string: str) -> list[str]:
+    """Formats a multiline string if needed"""
+    strings = []
+
+    if raw_string:
+        # first we split by new lines
+        splits = raw_string.split("\n")
+
+        # our ident is defined by the first line that starts with non whitespace
+        first_line_detected = False
+        count = 0
+
+        for string in splits:
+
+            # we skip the beginning and end of the comment if it is empty
+            if string.startswith('"""') or string.endswith('"""'):
+                string = string.replace('"""', "")
+                if string.isspace():
+                    continue
+            else:
+                # remove all quotes
+                if string.startswith('"') or string.endswith('"'):
+                    string = string.replace('"', "")
+
+                # our first valid line starts after the tripple quote
+                # it should be a non space character
+                # we count the spaces via lstrip
+                if string and not string.isspace() and not first_line_detected:
+                    count = len(string) - len(string.lstrip(" "))
+                    first_line_detected = True
+
+            # after we identified the ident - calc padding and remove it
+            padding = " " * count
+            string = string.replace(padding, "", 1) if padding else string
+
+            # finally add string to the list
+            strings.append(string)
+
+    return strings

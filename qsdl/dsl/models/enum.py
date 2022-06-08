@@ -28,7 +28,7 @@ class Enum:
     """textX Enum class"""
 
     # defined in entity.tx
-    description: str = None
+    description: List[str] = field(default_factory=list)
     name: str = None
     # Special directives
     namespace: str = None

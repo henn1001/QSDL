@@ -28,7 +28,7 @@ class Field:
     """textX Field class"""
 
     # defined in entity.tx
-    description: str = None
+    description: List[str] = field(default_factory=list)
     # LHS
     name: str = None
     # RHS

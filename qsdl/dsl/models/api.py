@@ -28,7 +28,7 @@ class Api:
     """textX Api class"""
 
     # defined in entity.tx
-    description: str = None
+    description: List[str] = field(default_factory=list)
     # Special directives
     is_deprecated: bool = False
     namespace: str = None

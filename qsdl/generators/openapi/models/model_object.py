@@ -33,7 +33,7 @@ class ModelField:
 
     name: str = None
     json_key: str = None
-    description: str = None
+    description: List[str] = field(default_factory=list)
 
     type: str = None
     is_array: bool = False
@@ -107,7 +107,7 @@ class ModelObject:
 
     # computed attributes
     name: str = None
-    description: str = None
+    description: List[str] = field(default_factory=list)
     is_enum: bool = False
     is_base: bool = False
     is_object: bool = False

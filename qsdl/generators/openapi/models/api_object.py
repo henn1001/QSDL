@@ -31,7 +31,6 @@ class Parameter:
 
     name: str = None
     json_key: str = None
-    description: str = None
 
     type: str = None
     is_array: bool = False
@@ -80,7 +79,7 @@ class Operation:
     name: str = None
     tag: str = None
     summary: str = None
-    description: str = None
+    description: List[str] = field(default_factory=list)
     path: str = None
     method: str = None
     is_deprecated: bool = False
@@ -184,7 +183,7 @@ class ApiObject:
     # computed attributes
     name: str = None
     tag: str = None
-    description: str = None
+    description: List[str] = field(default_factory=list)
     operations: List = field(default_factory=list)
 
     def build(self, _ref: dsl.Api) -> ApiObject:

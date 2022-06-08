@@ -31,7 +31,7 @@ class Schema:
     imports: List[any] = field(default_factory=list)
     title: str = None
     version: str = None
-    description: str = None
+    description: List[str] = field(default_factory=list)
     servers: List[str] = field(default_factory=list)
     types: List[Union[Scalar, Enum, Base, Api, Object]] = field(default_factory=list)
 

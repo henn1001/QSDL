@@ -45,7 +45,7 @@ def wrapper_generate(test_input: str) -> dict:
     assert openapi_file.is_file()
     assert graphql_file.is_file()
 
-    with open(openapi_file) as file:
+    with open(openapi_file, encoding="utf-8") as file:
         openapi = yaml.load(file, Loader=yaml.FullLoader)
 
     # FIXME: disabled for now

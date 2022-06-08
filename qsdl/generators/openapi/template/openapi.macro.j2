@@ -4,7 +4,9 @@
   - name: {{ parameter.name }}
   {% if parameter.description %}
     description: |
-      {{ parameter.description | indent | trim("\"") | trim }}
+    {% for line in parameter.description %}
+      {{ line }}
+    {% endfor %}
   {% endif %}
     in: {{ "query" if parameter.is_query else "header" if parameter.is_header else "path" }}
     required: {{ parameter.is_required | lower }}
@@ -101,7 +103,9 @@
   {{ field.json_key }}:
   {% if field.description %}
     description: |
-      {{ field.description | indent | trim("\"") | trim }}
+    {% for line in field.description %}
+      {{ line }}
+    {% endfor %}
   {% endif %}
   {% if field.is_array %}
     type: array
