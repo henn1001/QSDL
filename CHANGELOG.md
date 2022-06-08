@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://gitlab.com/henn1001/qsdl/compare/v3.0.0...v3.1.0) (2022-06-08)
+
+
+### Features
+
+* properly handle and indent multi-line comments - utilize custom api comments in spring ([4b2505b](https://gitlab.com/henn1001/qsdl/commit/4b2505b4489d4722e7deecd710b015d4d196ef62))
+* **spring:** database mode now generates only the raw class without any relations ([1f18600](https://gitlab.com/henn1001/qsdl/commit/1f1860000fac08056ba19e62bb96e15ccf7dea20))
+
 ## [3.0.0](https://gitlab.com/henn1001/qsdl/compare/v2.7.0...v3.0.0) (2022-06-05)
 
 
