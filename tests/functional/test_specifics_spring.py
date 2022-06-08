@@ -392,3 +392,22 @@ class TestSpecificsSpring:
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    def test_specifics_14(self):
+        """Verify usage of no database"""
+
+        test_input = Path("util/examples/input.qsdl")
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+        test_output.mkdir()
+
+        config = {
+            "database": "NO",
+        }
+
+        # generate
+        assert generate("spring", test_output, input_path=test_input, config=config) == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0

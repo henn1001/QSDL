@@ -30,17 +30,22 @@ public class TestConfig {
     easyRandom = new EasyRandom(parameters);
   }
 
-  public static <T extends AbstractPersistentObject> T getRandom(Class<T> cls) {
+  public static <T{{" extends AbstractPersistentObject" if database == "HIBERNATE" }}> T getRandom(Class<T> cls) {
     T o = easyRandom.nextObject(cls);
+    {% if database == "HIBERNATE" %}
     o.removeRelations();
+    {% endif %}
     return o;
   }
 
-  public static <T extends AbstractPersistentObject> List<T> getRandom(Class<T> cls, int count) {
+  public static <T{{" extends AbstractPersistentObject" if database == "HIBERNATE" }}> List<T> getRandom(Class<T> cls, int count) {
     List<T> oList = easyRandom.objects(cls, count).collect(Collectors.toList());
+    {% if database == "HIBERNATE" %}
     oList.forEach(o -> o.removeRelations());
+    {% endif %}
     return oList;
   }
+  {% if database == "HIBERNATE" %}
 
   /**
    * A helper-method to deep-copy idenities for nested objects.
@@ -98,6 +103,7 @@ public class TestConfig {
       }
     }
   }
+  {% endif %}
 
 }
 {{""}}

@@ -246,8 +246,6 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{package.exception}/GlobalExceptionHandler.java"),
         # model
         ("src/main/java/model/AppError.j2", f"src/main/java/{package.model}/AppError.java"),
-        ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{package.model}/AbstractPersistentObject.java"),
-        ("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{package.model}/AbstractPersistentBase.java"),
         ("src/main/java/model/CursorPageable.j2", f"src/main/java/{package.model}/CursorPageable.java"),
         ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),
         ("src/main/java/model/Context.j2", f"src/main/java/{package.model}/Context.java"),
@@ -258,6 +256,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     if config.database == "HIBERNATE":
         # fmt: off
+        supporting_files.append( ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{package.model}/AbstractPersistentObject.java"))
+        supporting_files.append(("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{package.model}/AbstractPersistentBase.java"))
         supporting_files.append(("src/main/java/config/PersistenceConfig.j2", f"src/main/java/{package.config}/PersistenceConfig.java"))
         supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))

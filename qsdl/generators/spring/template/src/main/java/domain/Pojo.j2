@@ -30,10 +30,14 @@ import java.util.*;
 @Getter
 @Setter
 {% endif %}
-{% if database == "HIBERNATE" and (model.is_object or model.is_entity) %}@Entity{{"\n"}}{% endif %}
+{% if database == "HIBERNATE" %}
+{% if model.is_object or model.is_entity %}@Entity{{"\n"}}{% endif %}
 public class {{model.name}}{% if model.is_object %} extends AbstractPersistentObject{% elif model.is_base and model.is_entity %} extends AbstractPersistentBase{% endif %} {
+{% else %}
+public class {{model.name}} {
+{% endif %}
 
-{% for field in model.fields if not field.is_id %}
+{% for field in model.fields if not field.is_id or database == "NO" %}
   {# 
     Required fields
   #}
@@ -98,7 +102,6 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
     {% endfor %}
   }
 
-{% endif %}
 {% for field in model.fields if field.is_relation and field.is_array %}
   public void addTo{{field.type}}s({{field.type}} o) {
 {% if encapsulation %}
@@ -135,6 +138,7 @@ public class {{model.name}}{% if model.is_object %} extends AbstractPersistentOb
   }
 
 {% endfor %}
+{% endif %}
 
   public static {{model.name}} fromJson(String json) throws Json.JsonException {
     return Json.serializer().fromJson(json, {{model.name}}.class);
