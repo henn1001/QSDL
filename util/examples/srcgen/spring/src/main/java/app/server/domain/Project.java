@@ -8,14 +8,16 @@ import app.server.model.*;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import javax.persistence.*;
 import javax.validation.constraints.*;
 
 import java.time.*;
-import java.util.*;
 
-@Entity
-public class Project extends AbstractPersistentObject {
+public class Project extends AbstractClass {
+
+  @Min(0)
+  @Max(Long.MAX_VALUE)
+  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+  public Long id;
 
   @NotNull
   @Size(min = 0, max = 255)
@@ -40,28 +42,10 @@ public class Project extends AbstractPersistentObject {
   @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
   public OffsetDateTime lastUpdateDate;
 
-  @Convert(converter = app.server.util.NodeConverter.class)
-  @Column(columnDefinition = "text")
   @JsonProperty(value = "meta_inf")
   public ObjectNode metaInf;
 
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
   public Boolean archive;
-
-  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JsonIgnore
-  public final Set<Role> roles = new LinkedHashSet<>();
-
-
-  public void addToRoles(Role o) {
-    o.project = this;
-    this.roles.add(o);
-  }
-
-  public void removeFromRoles(Role o) {
-    o.project = null;
-    this.roles.remove(o);
-  }
-
 
 }

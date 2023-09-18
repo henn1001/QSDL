@@ -9,7 +9,6 @@ package {{package.service}};
 {{imprt}}
 {% endfor %}
 
-import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,26 +35,29 @@ public class {{api.name}}Service {
 {% endfor %}
   @Autowired
   private {{api.name}}Repository {{api.name|lower}}Repository;
-{% endif %}
 
+  @Autowired
+  private {{api.name}}MapStruct {{api.name|lower}}MapStruct;
+
+{% endif %}
   @PostConstruct
   private void init() {
     // Executed after dependency injection.
   }
 {% if database == "HIBERNATE" and model %}
 
-  private {{model.name}} fetch{{model.name}}FromDb({{id_type}} id) throws AppException {
+  private {{model.name}}Entity fetch{{model.name}}FromDb({{id_type}} id) throws AppException {
     return {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
         .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
   }
 {% for parent in model.parents %}
 
-  private {{model.name}} fetch{{model.name}}From{{parent.model.name}}FromDb(Long {{ parent.model.hibernate.parameter_joined_id }}, {{id_type}} id) throws AppException {
+  private {{model.name}}Entity fetch{{model.name}}From{{parent.model.name}}FromDb(Long {{ parent.model.hibernate.parameter_joined_id }}, {{id_type}} id) throws AppException {
     return {{model.name|lower}}Repository.{{ parent.hibernate.find_by_parentid_and_id }}({{ parent.model.hibernate.parameter_joined_id }}, id)
         .orElseThrow(() -> AppException.entityNotFound({{model.name}}.class, id));
   }
 
-  private {{parent.model.name}} fetch{{parent.model.name}}FromDb({{id_type}} id) throws AppException {
+  private {{parent.model.name}}Entity fetch{{parent.model.name}}FromDb({{id_type}} id) throws AppException {
     return {{parent.model.name|lower}}Repository.{{ parent.model.hibernate.find_by_id }}(id)
         .orElseThrow(() -> AppException.entityNotFound({{parent.model.name}}.class, id));
   }

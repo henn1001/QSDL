@@ -17,10 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.*;
 
@@ -37,10 +36,16 @@ public class UserServiceTest {
   private UserRepository repository;
 
   @Mock
+  private UserMapStruct mockedMapper;
+
+  @Mock
   private TicketRepository ticketRepository;
 
   @InjectMocks
   UserService service;
+
+  @Autowired
+  private UserMapStruct mapper;
 
   private static Long one = 1l;
 
@@ -48,23 +53,31 @@ public class UserServiceTest {
   void whenGetUsersForTicket_thenOk() throws Exception {
 
     // Given
-    List<User> request = TestConfig.getRandom(User.class, 5);
-    Ticket testParent = TestConfig.getRandom(Ticket.class);
+    List<UserEntity> userEntityList = TestConfig.getRandomEntity(UserEntity.class, 5);
+    List<User> userList = userEntityList.stream().map(mapper::toDto).toList();
+    TicketEntity testParent = TestConfig.getRandomEntity(TicketEntity.class);
 
     when(ticketRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage(request, null, 6l));
+        .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6l));
+
+    when(mockedMapper.toDto(any(UserEntity.class)))
+        .thenReturn(userList.get(0))
+        .thenReturn(userList.get(1))
+        .thenReturn(userList.get(2))
+        .thenReturn(userList.get(3))
+        .thenReturn(userList.get(4));
 
     // When
-    CursorPage response = service.getUsersForTicket(one, new CursorPageable(null, 5l, true), new Context());
+    CursorPage<User> response = service.getUsersForTicket(one, new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
     assertEquals(6l, response.totalCount());
 
-    ArrayNode node1 = Json.serializer().nodeFromList(request);
+    ArrayNode node1 = Json.serializer().nodeFromList(userList);
     ArrayNode node2 = Json.serializer().nodeFromList(response.items());
     assertEquals(node1, node2);
   }
@@ -73,20 +86,20 @@ public class UserServiceTest {
   void whenAddUserToTicket_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
-    Ticket testParent = TestConfig.getRandom(Ticket.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
+    TicketEntity testParent = TestConfig.getRandomEntity(TicketEntity.class);
 
     when(ticketRepository.findById(eq(testParent.getId())))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(userEntity.getId())))
+        .thenReturn(Optional.of(userEntity));
 
-    when(repository.save(eq(request)))
+    when(repository.save(eq(userEntity)))
         .thenReturn(null);
 
     // When
-    service.addUserToTicket(testParent.getId(), request.getId(), new Context());
+    service.addUserToTicket(testParent.getId(), userEntity.getId(), new Context());
 
     // Then
 
@@ -96,20 +109,20 @@ public class UserServiceTest {
   void whenRemoveUserFromTicket_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
-    Ticket testParent = TestConfig.getRandom(Ticket.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
+    TicketEntity testParent = TestConfig.getRandomEntity(TicketEntity.class);
 
     when(ticketRepository.findById(eq(testParent.getId())))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findByTicketsIdAndId(eq(testParent.getId()), eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findByTicketsIdAndId(eq(testParent.getId()), eq(userEntity.getId())))
+        .thenReturn(Optional.of(userEntity));
 
-    when(repository.save(eq(request)))
+    when(repository.save(eq(userEntity)))
         .thenReturn(null);
 
     // When
-    service.removeUserFromTicket(testParent.getId(), request.getId(), new Context());
+    service.removeUserFromTicket(testParent.getId(), userEntity.getId(), new Context());
 
     // Then
 
@@ -119,19 +132,27 @@ public class UserServiceTest {
   void whenGetUsers_thenOk() throws Exception {
 
     // Given
-    List<User> request = TestConfig.getRandom(User.class, 5);
+    List<UserEntity> userEntityList = TestConfig.getRandomEntity(UserEntity.class, 5);
+    List<User> userList = userEntityList.stream().map(mapper::toDto).toList();
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage(request, null, 6l));
+        .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6l));
+
+    when(mockedMapper.toDto(any(UserEntity.class)))
+        .thenReturn(userList.get(0))
+        .thenReturn(userList.get(1))
+        .thenReturn(userList.get(2))
+        .thenReturn(userList.get(3))
+        .thenReturn(userList.get(4));
 
     // When
-    CursorPage response = service.getUsers(new CursorPageable(null, 5l, true), new Context());
+    CursorPage<User> response = service.getUsers(new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
     assertEquals(6l, response.totalCount());
 
-    ArrayNode node1 = Json.serializer().nodeFromList(request);
+    ArrayNode node1 = Json.serializer().nodeFromList(userList);
     ArrayNode node2 = Json.serializer().nodeFromList(response.items());
     assertEquals(node1, node2);
   }
@@ -140,16 +161,23 @@ public class UserServiceTest {
   void whenCreateUser_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
+    User user = mapper.toDto(userEntity);
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(mockedMapper.toEntity(any(User.class)))
+        .thenReturn(userEntity);
+
+    when(repository.save(eq(userEntity)))
+        .thenReturn(userEntity);
+
+    when(mockedMapper.toDto(any(UserEntity.class)))
+        .thenReturn(user);
 
     // When
-    User response = service.createUser(request, new Context());
+    User response = service.createUser(user, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(user);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -158,16 +186,20 @@ public class UserServiceTest {
   void whenGetUser_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
+    User user = mapper.toDto(userEntity);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(userEntity.getId())))
+        .thenReturn(Optional.of(userEntity));
+
+    when(mockedMapper.toDto(any(UserEntity.class)))
+        .thenReturn(user);
 
     // When
-    User response = service.getUser(request.getId(), new Context());
+    User response = service.getUser(userEntity.getId(), new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(user);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -176,15 +208,15 @@ public class UserServiceTest {
   public void whenGetUserWithInvalidId_thenError() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(userEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.getUser(request.getId(), new Context());
+          service.getUser(userEntity.getId(), new Context());
         });
 
     // Then
@@ -198,19 +230,23 @@ public class UserServiceTest {
   void whenReplaceUser_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
+    User user = mapper.toDto(userEntity);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(userEntity.getId())))
+        .thenReturn(Optional.of(userEntity));
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(repository.save(eq(userEntity)))
+        .thenReturn(userEntity);
+
+    when(mockedMapper.toDto(any(UserEntity.class)))
+        .thenReturn(user);
 
     // When
-    User response = service.replaceUser(request.getId(), request, new Context());
+    User response = service.replaceUser(userEntity.getId(), user, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(user);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -219,15 +255,16 @@ public class UserServiceTest {
   public void whenReplaceUserWithInvalidId_thenError() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
+    User user = mapper.toDto(userEntity);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(userEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.replaceUser(request.getId(), request, new Context());
+          service.replaceUser(userEntity.getId(), user, new Context());
         });
 
     // Then
@@ -241,19 +278,23 @@ public class UserServiceTest {
   void whenUpdateUser_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
+    User user = mapper.toDto(userEntity);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(userEntity.getId())))
+        .thenReturn(Optional.of(userEntity));
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(repository.save(eq(userEntity)))
+        .thenReturn(userEntity);
+
+    when(mockedMapper.toDto(any(UserEntity.class)))
+        .thenReturn(user);
 
     // When
-    User response = service.updateUser(request.getId(), request, new Context());
+    User response = service.updateUser(userEntity.getId(), user, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(user);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -262,15 +303,16 @@ public class UserServiceTest {
   public void whenUpdateUserWithInvalidId_thenError() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
+    User user = mapper.toDto(userEntity);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(userEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.updateUser(request.getId(), request, new Context());
+          service.updateUser(userEntity.getId(), user, new Context());
         });
 
     // Then
@@ -284,13 +326,13 @@ public class UserServiceTest {
   void whenDeleteUser_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(userEntity.getId())))
+        .thenReturn(Optional.of(userEntity));
 
     // When
-    service.deleteUser(request.getId(), new Context());
+    service.deleteUser(userEntity.getId(), new Context());
 
     // Then
 
@@ -300,15 +342,15 @@ public class UserServiceTest {
   public void whenDeleteUserWithInvalidId_thenError() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    UserEntity userEntity = TestConfig.getRandomEntity(UserEntity.class);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(userEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.deleteUser(request.getId(), new Context());
+          service.deleteUser(userEntity.getId(), new Context());
         });
 
     // Then

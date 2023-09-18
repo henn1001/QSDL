@@ -36,13 +36,13 @@ public class RoleRepositoryTest {
   @Autowired
   private TestEntityManager testEntityManager;
 
-  public List<Role> prepareData(int count) {
+  public List<RoleEntity> prepareData(int count) {
 
-    List<Role> testDatas = TestConfig.getRandom(Role.class, count);
+    List<RoleEntity> testDatas = TestConfig.getRandomEntity(RoleEntity.class, count);
 
-    Project project = projectRepository.save(TestConfig.getRandom(Project.class));
+    ProjectEntity project = projectRepository.save(TestConfig.getRandomEntity(ProjectEntity.class));
 
-    for (Role testData : testDatas) {
+    for (RoleEntity testData : testDatas) {
       testData.project = project;
     }
 
@@ -60,10 +60,10 @@ public class RoleRepositoryTest {
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    Role testData = prepareData(1).get(0);
+    RoleEntity testData = prepareData(1).get(0);
 
     // When
-    Role findData = roleRepository.findById(testData.getId()).orElse(null);
+    RoleEntity findData = roleRepository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -77,7 +77,7 @@ public class RoleRepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    Role testData = prepareData(1).get(0);
+    RoleEntity testData = prepareData(1).get(0);
 
     // When
     roleRepository.delete(testData);
@@ -91,7 +91,7 @@ public class RoleRepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<Role> testData = prepareData(5);
+    List<RoleEntity> testData = prepareData(5);
 
     BooleanBuilder predicate = new BooleanBuilder();
 
@@ -106,7 +106,7 @@ public class RoleRepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<Role> testData = prepareData(5);
+    List<RoleEntity> testData = prepareData(5);
 
     // When
     String cursor = null;
@@ -132,10 +132,10 @@ public class RoleRepositoryTest {
   public void whenCountByProject_thenUseQuerie() throws Exception {
 
     // Given
-    Role testData = prepareData(5).get(0);
-    Project parent = testData.project;
+    RoleEntity testData = prepareData(5).get(0);
+    ProjectEntity parent = testData.project;
 
-    BooleanBuilder predicate = new BooleanBuilder(QRole.role.project.id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(QRoleEntity.roleEntity.project.id.eq(parent.getId()));
 
     // When
     long count = roleRepository.count(predicate);
@@ -156,7 +156,7 @@ public class RoleRepositoryTest {
 
     do {
       CursorPageable pageable = new CursorPageable(cursor, 1l, null);
-      BooleanBuilder predicate = new BooleanBuilder(QRole.role.project.id.eq(parentId));
+      BooleanBuilder predicate = new BooleanBuilder(QRoleEntity.roleEntity.project.id.eq(parentId));
       CursorPage findData = roleRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();

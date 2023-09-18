@@ -48,7 +48,7 @@ public class RoleControllerTest {
     // Given
     Role request = TestConfig.getRandom(Role.class);
 
-    CursorPage ret = new CursorPage(Arrays.asList(request), null, null);
+    CursorPage<Role> ret = new CursorPage<Role>(Arrays.asList(request), null, null);
 
     when(service.getRoles(any(), any(), any()))
         .thenReturn(ret);

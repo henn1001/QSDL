@@ -48,7 +48,7 @@ public class TicketControllerTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    CursorPage ret = new CursorPage(Arrays.asList(request), null, null);
+    CursorPage<Ticket> ret = new CursorPage<Ticket>(Arrays.asList(request), null, null);
 
     when(service.getTickets(any(), any()))
         .thenReturn(ret);

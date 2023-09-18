@@ -3,17 +3,17 @@
  */
 package app.server.repository;
 
-import app.server.domain.Role;
+import app.server.domain.RoleEntity;
 
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface RoleRepository extends AbstractRepository<Role, Long> {
+public interface RoleRepository extends AbstractRepository<RoleEntity, Long> {
 
-  public Optional<Role> findByProjectIdAndId(Long projectId, Long id);
+  public Optional<RoleEntity> findByProjectIdAndId(Long projectId, Long id);
 
-  public Optional<Role> findByProjectIdAndUid(Long projectId, String uid);
+  public Optional<RoleEntity> findByProjectIdAndUid(Long projectId, String uid);
 
 }

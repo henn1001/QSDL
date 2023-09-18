@@ -9,7 +9,6 @@ import app.server.model.*;
 import app.server.repository.*;
 import app.server.util.PredicateBuilder;
 
-import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,73 +25,81 @@ public class ProjectService {
   @Autowired
   private ProjectRepository projectRepository;
 
+  @Autowired
+  private ProjectMapStruct projectMapStruct;
+
   @PostConstruct
   private void init() {
     // Executed after dependency injection.
   }
 
-  private Project fetchProjectFromDb(Long id) throws AppException {
+  private ProjectEntity fetchProjectFromDb(Long id) throws AppException {
     return projectRepository.findById(id)
         .orElseThrow(() -> AppException.entityNotFound(Project.class, id));
   }
 
-  public CursorPage getProjects(CursorPageable pageable, Context context) throws AppException {
+  public CursorPage<Project> getProjects(CursorPageable pageable, Context context) throws AppException {
 
-    List<String> queryParameters = Arrays.asList("name");
-    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), Project.class);
+    var queryParameters = Arrays.<String>asList("name");
+    var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), ProjectEntity.class);
 
-    CursorPage ret = projectRepository.findAll(predicate, pageable);
+    var cursorPage = projectRepository.findAll(predicate, pageable);
 
-    return ret;
+    var projectEntities = cursorPage.items();
+    var projectDtos = projectEntities.stream().map(projectMapStruct::toDto).toList();
+
+    return new CursorPage<Project>(projectDtos, cursorPage.nextCursor(), cursorPage.totalCount());
   }
 
   @Transactional
   public Project createProject(Project body, Context context) throws AppException {
 
-    Project ret = projectRepository.save(body);
+    var projectEntity = projectMapStruct.toEntity(body);
 
-    return ret;
+    projectEntity = projectRepository.save(projectEntity);
+
+    return projectMapStruct.toDto(projectEntity);
   }
 
   public Project getProject(Long id, Context context) throws AppException {
 
-    Project ret = fetchProjectFromDb(id);
+    var projectEntity = fetchProjectFromDb(id);
 
-    return ret;
+    return projectMapStruct.toDto(projectEntity);
   }
 
   @Transactional
   public Project replaceProject(Long id, Project body, Context context) throws AppException {
 
-    Project dbEntity = fetchProjectFromDb(id);
+    var projectEntity = fetchProjectFromDb(id);
 
-    // update dbEntity with all writeable fields
-    dbEntity.replace(body);
+    // replace projectEntity with all writeable fields - nulls included
+    projectMapStruct.replace(body, projectEntity);
 
-    Project ret = projectRepository.save(dbEntity);
+    projectEntity = projectRepository.save(projectEntity);
 
-    return ret;
+    return projectMapStruct.toDto(projectEntity);
   }
 
   @Transactional
   public Project updateProject(Long id, Project body, Context context) throws AppException {
 
-    Project dbEntity = fetchProjectFromDb(id);
+    var projectEntity = fetchProjectFromDb(id);
 
     // update dbEntity with all writeable fields if present
-    dbEntity.update(body);
+    projectMapStruct.update(body, projectEntity);
 
-    Project ret = projectRepository.save(dbEntity);
+    projectEntity = projectRepository.save(projectEntity);
 
-    return ret;
+    return projectMapStruct.toDto(projectEntity);
   }
 
   @Transactional
   public Void deleteProject(Long id, Context context) throws AppException {
 
-    Project dbEntity = fetchProjectFromDb(id);
+    var projectEntity = fetchProjectFromDb(id);
 
-    projectRepository.delete(dbEntity);
+    projectRepository.delete(projectEntity);
 
     return null;
   }

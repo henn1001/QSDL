@@ -26,8 +26,8 @@ public class RoleController extends BaseController implements RoleApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<CursorPage> getRoles(Long projectId, CursorPageable pageable) {
-    CursorPage response = roleService.getRoles(projectId, pageable, super.getContext());
+  public ResponseEntity<CursorPage<Role>> getRoles(Long projectId, CursorPageable pageable) {
+    CursorPage<Role> response = roleService.getRoles(projectId, pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

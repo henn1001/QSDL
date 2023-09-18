@@ -1,8 +1,11 @@
 {% macro logic(operation) -%}
+  {% set model_dto = model.name | lower %}
+  {% set model_entity = model.name | lower + "Entity" %}
   {% if operation.parent %}
   {% set p_model = operation.parent.model %}
   {% set p_hibernate = operation.parent.hibernate %}
   {% set p_m_hibernate = operation.parent.model.hibernate %}
+  {% set p_model_entity = p_model.name | lower + "Entity" %}
   {% endif %}
   {% if operation.method == "get" and operation.is_pageable %}
     {# 
@@ -12,42 +15,45 @@
     {% if operation.parent %}
     // confirm existence of parent
     // should be optimized with something like getReferenceById
-    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
+    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-    List<String> queryParameters = Arrays.asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
-    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}.class);
-    predicate.and(Q{{model.name}}.{{model.name|camel}}.{{operation.parent.predicate}}.id.eq({{ p_model.name|lower }}.getId()));
+    var queryParameters = Arrays.<String>asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
+    var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}Entity.class);
+    predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{operation.parent.predicate}}.id.eq({{p_model_entity}}.getId()));
     {% else %}
-    List<String> queryParameters = Arrays.asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
-    BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}.class);
+    var queryParameters = Arrays.<String>asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
+    var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}Entity.class);
     {% endif %}
 
-    CursorPage ret = {{model.name|lower}}Repository.findAll(predicate, pageable);
+    var cursorPage = {{model_dto}}Repository.findAll(predicate, pageable);
 
-    return ret;
+    var {{model_dto}}Entities = cursorPage.items();
+    var {{model_dto}}Dtos = {{model_dto}}Entities.stream().map({{model_dto}}MapStruct::toDto).toList();
+
+    return new CursorPage<{{model.name}}>({{model_dto}}Dtos, cursorPage.nextCursor(), cursorPage.totalCount());
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
     {# 
      ########################################################################################
       Create a entity.
     #}
     // get and confirm existence
-    {{ p_model.name }} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
+    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
     {% if operation.path.endswith('/add') %}
-    {{ model.name }} {{ model.name|lower }} = fetch{{model.name}}FromDb(id);
+    var {{model_entity}} = fetch{{model.name}}FromDb(id);
 
-    if ({{ model.name|lower }}.{{ p_model.name|lower }}s.contains({{ p_model.name|lower }})) {
+    if ({{model_entity}}.{{p_model.name|lower}}s.contains({{p_model_entity}})) {
       throw AppException.entityAlreadyAdded({{ model.name }}.class, id);
     }
 
-    {{ model.name|lower }}.addTo{{ p_model.name }}s({{ p_model.name|lower }});
+    {{model_entity}}.addTo{{ p_model.name }}s({{p_model_entity}});
     {% elif operation.path.endswith('/remove') %}
-    {{ model.name }} {{ model.name|lower }} = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
+    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
 
-    {{ model.name|lower }}.removeFrom{{ p_model.name }}s({{ p_model.name|lower }});
+    {{model_entity}}.removeFrom{{ p_model.name }}s({{p_model_entity}});
     {% endif %}
 
-    {{ model.name|lower }}Repository.save({{ model.name|lower }});
+    {{model_dto}}Repository.save({{model_entity}});
 
     return null;
   {% elif operation.method == "post" %}
@@ -57,19 +63,24 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
+    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
+
+    var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
 
     // add parent relation
-    {% if encapsulation %}
-    body.set{{ p_model.name }}({{ p_model.name|lower }});
+      {% if encapsulation %}
+    {{model_entity}}.set{{ p_model.name }}({{p_model_entity}});
+      {% else %}
+    {{model_entity}}.{{p_model.name|lower}} = {{p_model_entity}};
+      {% endif %}
+
     {% else %}
-    body.{{ p_model.name|lower }} = {{ p_model.name|lower }};
-    {% endif %}
+    var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
 
     {% endif %}
-    {{model.name}} ret = {{model.name|lower}}Repository.save(body);
+    {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
 
-    return ret;
+    return {{model_dto}}MapStruct.toDto({{model_entity}});
   {% elif operation.method == "get" %}
     {# 
      ########################################################################################
@@ -78,14 +89,14 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
+    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-    {{model.name}} ret = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
+    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
     {% else %}
-    {{model.name}} ret = fetch{{model.name}}FromDb(id);
+    var {{model_entity}} = fetch{{model.name}}FromDb(id);
     {% endif %}
 
-    return ret;
+    return {{model_dto}}MapStruct.toDto({{model_entity}});
   {% elif operation.method == "put" %}
     {# 
      ########################################################################################
@@ -93,26 +104,19 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
+    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-    // add parent relation
-      {% if encapsulation %}
-    body.set{{ p_model.name }}({{ p_model.name|lower }});
-      {% else %}
-    body.{{ p_model.name|lower }} = {{ p_model.name|lower }};
-      {% endif %}
-
-    {{model.name}} dbEntity = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
+    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
     {% else %}
-    {{model.name}} dbEntity = fetch{{model.name}}FromDb(id);
+    var {{model_entity}} = fetch{{model.name}}FromDb(id);
     {% endif %}
 
-    // update dbEntity with all writeable fields
-    dbEntity.replace(body);
+    // replace {{model_entity}} with all writeable fields - nulls included
+    {{model_dto}}MapStruct.replace(body, {{model_entity}});
 
-    {{model.name}} ret = {{model.name|lower}}Repository.save(dbEntity);
+    {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
 
-    return ret;
+    return {{model_dto}}MapStruct.toDto({{model_entity}});
   {% elif operation.method == "patch" %}
     {# 
      ########################################################################################
@@ -120,26 +124,19 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
+    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-    // add parent relation
-      {% if encapsulation %}
-    body.set{{ p_model.name }}({{ p_model.name|lower }});
-      {% else %}
-    body.{{ p_model.name|lower }} = {{ p_model.name|lower }};
-      {% endif %}
-
-    {{model.name}} dbEntity = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
+    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
     {% else %}
-    {{model.name}} dbEntity = fetch{{model.name}}FromDb(id);
+    var {{model_entity}} = fetch{{model.name}}FromDb(id);
     {% endif %}
 
     // update dbEntity with all writeable fields if present
-    dbEntity.update(body);
+    {{model_dto}}MapStruct.update(body, {{model_entity}});
 
-    {{model.name}} ret = {{model.name|lower}}Repository.save(dbEntity);
+    {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
 
-    return ret;
+    return {{model_dto}}MapStruct.toDto({{model_entity}});
   {% elif operation.method == "delete" %}
     {# 
      ########################################################################################
@@ -147,14 +144,14 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
+    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-    {{model.name}} dbEntity = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
+    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
     {% else %}
-    {{model.name}} dbEntity = fetch{{model.name}}FromDb(id);
+    var {{model_entity}} = fetch{{model.name}}FromDb(id);
     {% endif %}
 
-    {{model.name|lower}}Repository.delete(dbEntity);
+    {{model_dto}}Repository.delete({{model_entity}});
 
     return null;
   {% endif %}

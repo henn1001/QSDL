@@ -17,10 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.*;
 
@@ -36,28 +35,40 @@ public class TicketServiceTest {
   @Mock
   private TicketRepository repository;
 
+  @Mock
+  private TicketMapStruct mockedMapper;
+
   @InjectMocks
   TicketService service;
 
-  private static Long one = 1l;
+  @Autowired
+  private TicketMapStruct mapper;
 
   @Test
   void whenGetTickets_thenOk() throws Exception {
 
     // Given
-    List<Ticket> request = TestConfig.getRandom(Ticket.class, 5);
+    List<TicketEntity> ticketEntityList = TestConfig.getRandomEntity(TicketEntity.class, 5);
+    List<Ticket> ticketList = ticketEntityList.stream().map(mapper::toDto).toList();
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage(request, null, 6l));
+        .thenReturn(new CursorPage<TicketEntity>(ticketEntityList, null, 6l));
+
+    when(mockedMapper.toDto(any(TicketEntity.class)))
+        .thenReturn(ticketList.get(0))
+        .thenReturn(ticketList.get(1))
+        .thenReturn(ticketList.get(2))
+        .thenReturn(ticketList.get(3))
+        .thenReturn(ticketList.get(4));
 
     // When
-    CursorPage response = service.getTickets(new CursorPageable(null, 5l, true), new Context());
+    CursorPage<Ticket> response = service.getTickets(new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
     assertEquals(6l, response.totalCount());
 
-    ArrayNode node1 = Json.serializer().nodeFromList(request);
+    ArrayNode node1 = Json.serializer().nodeFromList(ticketList);
     ArrayNode node2 = Json.serializer().nodeFromList(response.items());
     assertEquals(node1, node2);
   }
@@ -66,16 +77,23 @@ public class TicketServiceTest {
   void whenCreateTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    TicketEntity ticketEntity = TestConfig.getRandomEntity(TicketEntity.class);
+    Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(mockedMapper.toEntity(any(Ticket.class)))
+        .thenReturn(ticketEntity);
+
+    when(repository.save(eq(ticketEntity)))
+        .thenReturn(ticketEntity);
+
+    when(mockedMapper.toDto(any(TicketEntity.class)))
+        .thenReturn(ticket);
 
     // When
-    Ticket response = service.createTicket(request, new Context());
+    Ticket response = service.createTicket(ticket, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(ticket);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -84,16 +102,20 @@ public class TicketServiceTest {
   void whenGetTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    TicketEntity ticketEntity = TestConfig.getRandomEntity(TicketEntity.class);
+    Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(ticketEntity.getId())))
+        .thenReturn(Optional.of(ticketEntity));
+
+    when(mockedMapper.toDto(any(TicketEntity.class)))
+        .thenReturn(ticket);
 
     // When
-    Ticket response = service.getTicket(request.getId(), new Context());
+    Ticket response = service.getTicket(ticketEntity.getId(), new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(ticket);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -102,15 +124,15 @@ public class TicketServiceTest {
   public void whenGetTicketWithInvalidId_thenError() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    TicketEntity ticketEntity = TestConfig.getRandomEntity(TicketEntity.class);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(ticketEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.getTicket(request.getId(), new Context());
+          service.getTicket(ticketEntity.getId(), new Context());
         });
 
     // Then
@@ -124,19 +146,23 @@ public class TicketServiceTest {
   void whenReplaceTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    TicketEntity ticketEntity = TestConfig.getRandomEntity(TicketEntity.class);
+    Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(ticketEntity.getId())))
+        .thenReturn(Optional.of(ticketEntity));
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(repository.save(eq(ticketEntity)))
+        .thenReturn(ticketEntity);
+
+    when(mockedMapper.toDto(any(TicketEntity.class)))
+        .thenReturn(ticket);
 
     // When
-    Ticket response = service.replaceTicket(request.getId(), request, new Context());
+    Ticket response = service.replaceTicket(ticketEntity.getId(), ticket, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(ticket);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -145,15 +171,16 @@ public class TicketServiceTest {
   public void whenReplaceTicketWithInvalidId_thenError() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    TicketEntity ticketEntity = TestConfig.getRandomEntity(TicketEntity.class);
+    Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(ticketEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.replaceTicket(request.getId(), request, new Context());
+          service.replaceTicket(ticketEntity.getId(), ticket, new Context());
         });
 
     // Then
@@ -167,19 +194,23 @@ public class TicketServiceTest {
   void whenUpdateTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    TicketEntity ticketEntity = TestConfig.getRandomEntity(TicketEntity.class);
+    Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(ticketEntity.getId())))
+        .thenReturn(Optional.of(ticketEntity));
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(repository.save(eq(ticketEntity)))
+        .thenReturn(ticketEntity);
+
+    when(mockedMapper.toDto(any(TicketEntity.class)))
+        .thenReturn(ticket);
 
     // When
-    Ticket response = service.updateTicket(request.getId(), request, new Context());
+    Ticket response = service.updateTicket(ticketEntity.getId(), ticket, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(ticket);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -188,15 +219,16 @@ public class TicketServiceTest {
   public void whenUpdateTicketWithInvalidId_thenError() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    TicketEntity ticketEntity = TestConfig.getRandomEntity(TicketEntity.class);
+    Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(ticketEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.updateTicket(request.getId(), request, new Context());
+          service.updateTicket(ticketEntity.getId(), ticket, new Context());
         });
 
     // Then
@@ -210,13 +242,13 @@ public class TicketServiceTest {
   void whenDeleteTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    TicketEntity ticketEntity = TestConfig.getRandomEntity(TicketEntity.class);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(ticketEntity.getId())))
+        .thenReturn(Optional.of(ticketEntity));
 
     // When
-    service.deleteTicket(request.getId(), new Context());
+    service.deleteTicket(ticketEntity.getId(), new Context());
 
     // Then
 
@@ -226,15 +258,15 @@ public class TicketServiceTest {
   public void whenDeleteTicketWithInvalidId_thenError() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    TicketEntity ticketEntity = TestConfig.getRandomEntity(TicketEntity.class);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(ticketEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.deleteTicket(request.getId(), new Context());
+          service.deleteTicket(ticketEntity.getId(), new Context());
         });
 
     // Then

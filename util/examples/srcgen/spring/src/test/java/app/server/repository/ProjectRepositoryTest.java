@@ -33,12 +33,12 @@ public class ProjectRepositoryTest {
   @Autowired
   private TestEntityManager testEntityManager;
 
-  public List<Project> prepareData(int count) {
+  public List<ProjectEntity> prepareData(int count) {
 
-    List<Project> testDatas = TestConfig.getRandom(Project.class, count);
+    List<ProjectEntity> testDatas = TestConfig.getRandomEntity(ProjectEntity.class, count);
 
-    for (Project testData : testDatas) {
-      testData.addToRoles(TestConfig.getRandom(Role.class));
+    for (ProjectEntity testData : testDatas) {
+      testData.addToRoles(TestConfig.getRandomEntity(RoleEntity.class));
     }
 
     projectRepository.saveAll(testDatas);
@@ -55,10 +55,10 @@ public class ProjectRepositoryTest {
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    Project testData = prepareData(1).get(0);
+    ProjectEntity testData = prepareData(1).get(0);
 
     // When
-    Project findData = projectRepository.findById(testData.getId()).orElse(null);
+    ProjectEntity findData = projectRepository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -72,7 +72,7 @@ public class ProjectRepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    Project testData = prepareData(1).get(0);
+    ProjectEntity testData = prepareData(1).get(0);
 
     // When
     projectRepository.delete(testData);
@@ -86,10 +86,10 @@ public class ProjectRepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<Project> testData = prepareData(5);
+    List<ProjectEntity> testData = prepareData(5);
 
     BooleanBuilder predicate = new BooleanBuilder();
-    predicate.and(QProject.project.name.eq(testData.get(0).name));
+    predicate.and(QProjectEntity.projectEntity.name.eq(testData.get(0).name));
 
     // When
     long count = projectRepository.count(predicate);
@@ -102,7 +102,7 @@ public class ProjectRepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<Project> testData = prepareData(5);
+    List<ProjectEntity> testData = prepareData(5);
 
     // When
     String cursor = null;

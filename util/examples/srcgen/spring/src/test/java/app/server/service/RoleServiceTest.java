@@ -17,10 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.*;
 
@@ -37,10 +36,16 @@ public class RoleServiceTest {
   private RoleRepository repository;
 
   @Mock
+  private RoleMapStruct mockedMapper;
+
+  @Mock
   private ProjectRepository projectRepository;
 
   @InjectMocks
   RoleService service;
+
+  @Autowired
+  private RoleMapStruct mapper;
 
   private static Long one = 1l;
 
@@ -48,23 +53,31 @@ public class RoleServiceTest {
   void whenGetRoles_thenOk() throws Exception {
 
     // Given
-    List<Role> request = TestConfig.getRandom(Role.class, 5);
-    Project testParent = TestConfig.getRandom(Project.class);
+    List<RoleEntity> roleEntityList = TestConfig.getRandomEntity(RoleEntity.class, 5);
+    List<Role> roleList = roleEntityList.stream().map(mapper::toDto).toList();
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage(request, null, 6l));
+        .thenReturn(new CursorPage<RoleEntity>(roleEntityList, null, 6l));
+
+    when(mockedMapper.toDto(any(RoleEntity.class)))
+        .thenReturn(roleList.get(0))
+        .thenReturn(roleList.get(1))
+        .thenReturn(roleList.get(2))
+        .thenReturn(roleList.get(3))
+        .thenReturn(roleList.get(4));
 
     // When
-    CursorPage response = service.getRoles(one, new CursorPageable(null, 5l, true), new Context());
+    CursorPage<Role> response = service.getRoles(one, new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
     assertEquals(6l, response.totalCount());
 
-    ArrayNode node1 = Json.serializer().nodeFromList(request);
+    ArrayNode node1 = Json.serializer().nodeFromList(roleList);
     ArrayNode node2 = Json.serializer().nodeFromList(response.items());
     assertEquals(node1, node2);
   }
@@ -73,20 +86,27 @@ public class RoleServiceTest {
   void whenCreateRole_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
-    Project testParent = TestConfig.getRandom(Project.class);
+    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    Role role = mapper.toDto(roleEntity);
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(mockedMapper.toEntity(any(Role.class)))
+        .thenReturn(roleEntity);
+
+    when(repository.save(eq(roleEntity)))
+        .thenReturn(roleEntity);
+
+    when(mockedMapper.toDto(any(RoleEntity.class)))
+        .thenReturn(role);
 
     // When
-    Role response = service.createRole(one, request, new Context());
+    Role response = service.createRole(one, role, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(role);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -95,20 +115,24 @@ public class RoleServiceTest {
   void whenGetRole_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
-    Project testParent = TestConfig.getRandom(Project.class);
+    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    Role role = mapper.toDto(roleEntity);
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
+        .thenReturn(Optional.of(roleEntity));
+
+    when(mockedMapper.toDto(any(RoleEntity.class)))
+        .thenReturn(role);
 
     // When
-    Role response = service.getRole(one, request.getId(), new Context());
+    Role response = service.getRole(one, roleEntity.getId(), new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(role);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -117,19 +141,19 @@ public class RoleServiceTest {
   public void whenGetRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
-    Project testParent = TestConfig.getRandom(Project.class);
+    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.getRole(one, request.getId(), new Context());
+          service.getRole(one, roleEntity.getId(), new Context());
         });
 
     // Then
@@ -143,23 +167,27 @@ public class RoleServiceTest {
   void whenReplaceRole_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
-    Project testParent = TestConfig.getRandom(Project.class);
+    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    Role role = mapper.toDto(roleEntity);
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
+        .thenReturn(Optional.of(roleEntity));
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(repository.save(eq(roleEntity)))
+        .thenReturn(roleEntity);
+
+    when(mockedMapper.toDto(any(RoleEntity.class)))
+        .thenReturn(role);
 
     // When
-    Role response = service.replaceRole(one, request.getId(), request, new Context());
+    Role response = service.replaceRole(one, roleEntity.getId(), role, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(role);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -168,19 +196,20 @@ public class RoleServiceTest {
   public void whenReplaceRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
-    Project testParent = TestConfig.getRandom(Project.class);
+    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    Role role = mapper.toDto(roleEntity);
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.replaceRole(one, request.getId(), request, new Context());
+          service.replaceRole(one, roleEntity.getId(), role, new Context());
         });
 
     // Then
@@ -194,23 +223,27 @@ public class RoleServiceTest {
   void whenUpdateRole_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
-    Project testParent = TestConfig.getRandom(Project.class);
+    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    Role role = mapper.toDto(roleEntity);
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
+        .thenReturn(Optional.of(roleEntity));
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(repository.save(eq(roleEntity)))
+        .thenReturn(roleEntity);
+
+    when(mockedMapper.toDto(any(RoleEntity.class)))
+        .thenReturn(role);
 
     // When
-    Role response = service.updateRole(one, request.getId(), request, new Context());
+    Role response = service.updateRole(one, roleEntity.getId(), role, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(role);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -219,19 +252,20 @@ public class RoleServiceTest {
   public void whenUpdateRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
-    Project testParent = TestConfig.getRandom(Project.class);
+    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    Role role = mapper.toDto(roleEntity);
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.updateRole(one, request.getId(), request, new Context());
+          service.updateRole(one, roleEntity.getId(), role, new Context());
         });
 
     // Then
@@ -245,17 +279,17 @@ public class RoleServiceTest {
   void whenDeleteRole_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
-    Project testParent = TestConfig.getRandom(Project.class);
+    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
+        .thenReturn(Optional.of(roleEntity));
 
     // When
-    service.deleteRole(one, request.getId(), new Context());
+    service.deleteRole(one, roleEntity.getId(), new Context());
 
     // Then
 
@@ -265,19 +299,19 @@ public class RoleServiceTest {
   public void whenDeleteRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
-    Project testParent = TestConfig.getRandom(Project.class);
+    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.deleteRole(one, request.getId(), new Context());
+          service.deleteRole(one, roleEntity.getId(), new Context());
         });
 
     // Then

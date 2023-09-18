@@ -3,6 +3,7 @@
  */
 package app.server.domain;
 
+import app.server.model.*;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -11,7 +12,7 @@ import javax.validation.constraints.*;
 
 import java.time.*;
 
-public class BaseType {
+public class BaseType extends AbstractClass {
 
   @NotNull
   @Size(min = 0, max = 255)
@@ -38,6 +39,5 @@ public class BaseType {
 
   @JsonProperty(value = "meta_inf")
   public ObjectNode metaInf;
-
 
 }

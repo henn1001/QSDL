@@ -193,6 +193,11 @@ def generate(schema: Schema, output_path: Path, config: Config):
         else:
             model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{package.domain}/{model.name}.java", model))
 
+        # generate entities for both objects and base entities
+        if config.database == "HIBERNATE" and (model.is_object or model.is_entity) and not model.is_enum:
+            model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{package.domain}/{model.name}Entity.java", model))
+            model_files.append(("src/main/java/domain/MapStruct.j2", f"src/main/java/{package.domain}/{model.name}MapStruct.java", model))
+
         if config.database == "HIBERNATE" and model.is_object:
             model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{package.repository}/{model.name}Repository.java", model))
             model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{package.repository}/{model.name}RepositoryTest.java", model))

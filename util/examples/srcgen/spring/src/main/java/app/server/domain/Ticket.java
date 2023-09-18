@@ -8,13 +8,14 @@ import app.server.model.*;
 
 import com.fasterxml.jackson.annotation.*;
 
-import javax.persistence.*;
 import javax.validation.constraints.*;
 
-import java.util.*;
+public class Ticket extends AbstractClass {
 
-@Entity
-public class Ticket extends AbstractPersistentObject {
+  @Min(0)
+  @Max(Long.MAX_VALUE)
+  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+  public Long id;
 
   @Size(min = 0, max = 255)
   @JsonProperty(value = "title")
@@ -26,26 +27,5 @@ public class Ticket extends AbstractPersistentObject {
 
   @JsonProperty(value = "status")
   public Status status;
-
-  @ManyToMany(mappedBy = "tickets", fetch = FetchType.LAZY)
-  @JsonIgnore
-  public final Set<User> users = new LinkedHashSet<>();
-
-
-  @PreRemove
-  private void preRemoveHook() {
-    new LinkedHashSet<>(this.users).forEach(o -> o.removeFromTickets(this));
-  }
-
-  public void addToUsers(User o) {
-    o.tickets.add(this);
-    this.users.add(o);
-  }
-
-  public void removeFromUsers(User o) {
-    o.tickets.remove(this);
-    this.users.remove(o);
-  }
-
 
 }

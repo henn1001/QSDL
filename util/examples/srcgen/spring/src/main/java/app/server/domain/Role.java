@@ -7,21 +7,18 @@ import app.server.model.*;
 
 import com.fasterxml.jackson.annotation.*;
 
-import javax.persistence.*;
 import javax.validation.constraints.*;
 
-@Entity
-public class Role extends AbstractPersistentObject {
+public class Role extends AbstractClass {
+
+  @Min(0)
+  @Max(Long.MAX_VALUE)
+  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+  public Long id;
 
   @NotNull
   @Size(min = 0, max = 255)
   @JsonProperty(value = "name", required = true)
   public String name;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "project_id")
-  @JsonIgnore
-  public Project project;
-
 
 }

@@ -26,7 +26,7 @@ public interface UserApi {
       value = "/tickets/{ticket_id}/users",
       produces = {"application/json"}
   )
-  default ResponseEntity<CursorPage> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) {
+  default ResponseEntity<CursorPage<User>> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -57,7 +57,7 @@ public interface UserApi {
       value = "/users",
       produces = {"application/json"}
   )
-  default ResponseEntity<CursorPage> getUsers(CursorPageable pageable) {
+  default ResponseEntity<CursorPage<User>> getUsers(CursorPageable pageable) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

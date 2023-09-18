@@ -7,44 +7,22 @@ import app.server.model.*;
 
 import com.fasterxml.jackson.annotation.*;
 
-import javax.persistence.*;
 import javax.validation.constraints.*;
 
-import java.util.*;
+public class User extends AbstractClass {
 
-@Entity
-public class User extends AbstractPersistentObject {
+  @Min(0)
+  @Max(Long.MAX_VALUE)
+  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+  public Long id;
 
   @NotNull
   @Size(min = 0, max = 255)
   @JsonProperty(value = "name", required = true)
   public String name;
 
-  @Min(0)
-  @Max(Integer.MAX_VALUE)
-  @JsonIgnore
-  public Integer count;
-
   @Size(min = 0, max = 255)
-  @Column(unique = true)
   @JsonProperty(value = "mail")
   public String mail;
-
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
-  @JsonIgnore
-  public final Set<Ticket> tickets = new LinkedHashSet<>();
-
-
-  public void addToTickets(Ticket o) {
-    o.users.add(this);
-    this.tickets.add(o);
-  }
-
-  public void removeFromTickets(Ticket o) {
-    o.users.remove(this);
-    this.tickets.remove(o);
-  }
-
 
 }

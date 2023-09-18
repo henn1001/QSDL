@@ -36,13 +36,13 @@ public class UserRepositoryTest {
   @Autowired
   private TestEntityManager testEntityManager;
 
-  public List<User> prepareData(int count) {
+  public List<UserEntity> prepareData(int count) {
 
-    List<User> testDatas = TestConfig.getRandom(User.class, count);
+    List<UserEntity> testDatas = TestConfig.getRandomEntity(UserEntity.class, count);
 
-    Ticket ticket = ticketRepository.save(TestConfig.getRandom(Ticket.class));
+    TicketEntity ticket = ticketRepository.save(TestConfig.getRandomEntity(TicketEntity.class));
 
-    for (User testData : testDatas) {
+    for (UserEntity testData : testDatas) {
       testData.addToTickets(ticket);
     }
 
@@ -60,10 +60,10 @@ public class UserRepositoryTest {
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    User testData = prepareData(1).get(0);
+    UserEntity testData = prepareData(1).get(0);
 
     // When
-    User findData = userRepository.findById(testData.getId()).orElse(null);
+    UserEntity findData = userRepository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -77,7 +77,7 @@ public class UserRepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    User testData = prepareData(1).get(0);
+    UserEntity testData = prepareData(1).get(0);
 
     // When
     userRepository.delete(testData);
@@ -91,7 +91,7 @@ public class UserRepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<User> testData = prepareData(5);
+    List<UserEntity> testData = prepareData(5);
 
     BooleanBuilder predicate = new BooleanBuilder();
 
@@ -106,7 +106,7 @@ public class UserRepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<User> testData = prepareData(5);
+    List<UserEntity> testData = prepareData(5);
 
     // When
     String cursor = null;
@@ -132,10 +132,10 @@ public class UserRepositoryTest {
   public void whenCountByTicket_thenUseQuerie() throws Exception {
 
     // Given
-    User testData = prepareData(5).get(0);
-    Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
+    UserEntity testData = prepareData(5).get(0);
+    TicketEntity parent = testData.tickets.toArray(new TicketEntity[0])[0];
 
-    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parent.getId()));
 
     // When
     long count = userRepository.count(predicate);
@@ -148,7 +148,7 @@ public class UserRepositoryTest {
   public void whenFindAllByTicket_thenPaginate() throws Exception {
 
     // Given
-    Long parentId = prepareData(5).get(0).tickets.toArray(new Ticket[0])[0].getId();
+    Long parentId = prepareData(5).get(0).tickets.toArray(new TicketEntity[0])[0].getId();
 
     // When
     String cursor = null;
@@ -156,7 +156,7 @@ public class UserRepositoryTest {
 
     do {
       CursorPageable pageable = new CursorPageable(cursor, 1l, null);
-      BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parentId));
+      BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parentId));
       CursorPage findData = userRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
@@ -174,15 +174,15 @@ public class UserRepositoryTest {
   public void whenUnlinkFromLinkedTicket_thenStillExist() throws Exception {
 
     // Given
-    User testData = prepareData(1).get(0);
-    Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
+    UserEntity testData = prepareData(1).get(0);
+    TicketEntity parent = testData.tickets.toArray(new TicketEntity[0])[0];
 
     // When
     testData.removeFromTickets(parent);
     userRepository.save(testData);
 
     // Then
-    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parent.getId()));
 
     assertEquals(0, userRepository.count(predicate));
     assertEquals(true, userRepository.existsById(testData.getId()));
@@ -193,14 +193,14 @@ public class UserRepositoryTest {
   public void whenDeleteFromLinkedTicket_thenStillExistA() throws Exception {
 
     // Given
-    User testData = prepareData(1).get(0);
-    Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
+    UserEntity testData = prepareData(1).get(0);
+    TicketEntity parent = testData.tickets.toArray(new TicketEntity[0])[0];
 
     // When
     userRepository.delete(testData);
 
     // Then
-    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parent.getId()));
 
     assertEquals(0, userRepository.count(predicate));
     assertEquals(false, userRepository.existsById(testData.getId()));
@@ -211,14 +211,14 @@ public class UserRepositoryTest {
   public void whenDeleteFromLinkedTicket_thenStillExistB() throws Exception {
 
     // Given
-    User testData = prepareData(1).get(0);
-    Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
+    UserEntity testData = prepareData(1).get(0);
+    TicketEntity parent = testData.tickets.toArray(new TicketEntity[0])[0];
 
     // When
     ticketRepository.delete(parent);
 
     // Then
-    BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parent.getId()));
 
     assertEquals(0, userRepository.count(predicate));
     assertEquals(true, userRepository.existsById(testData.getId()));

@@ -33,11 +33,11 @@ public class TicketRepositoryTest {
   @Autowired
   private TestEntityManager testEntityManager;
 
-  public List<Ticket> prepareData(int count) {
+  public List<TicketEntity> prepareData(int count) {
 
-    List<Ticket> testDatas = TestConfig.getRandom(Ticket.class, count);
+    List<TicketEntity> testDatas = TestConfig.getRandomEntity(TicketEntity.class, count);
 
-    for (Ticket testData : testDatas) {
+    for (TicketEntity testData : testDatas) {
     }
 
     ticketRepository.saveAll(testDatas);
@@ -54,10 +54,10 @@ public class TicketRepositoryTest {
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    Ticket testData = prepareData(1).get(0);
+    TicketEntity testData = prepareData(1).get(0);
 
     // When
-    Ticket findData = ticketRepository.findById(testData.getId()).orElse(null);
+    TicketEntity findData = ticketRepository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -71,7 +71,7 @@ public class TicketRepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    Ticket testData = prepareData(1).get(0);
+    TicketEntity testData = prepareData(1).get(0);
 
     // When
     ticketRepository.delete(testData);
@@ -85,7 +85,7 @@ public class TicketRepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<Ticket> testData = prepareData(5);
+    List<TicketEntity> testData = prepareData(5);
 
     BooleanBuilder predicate = new BooleanBuilder();
 
@@ -100,7 +100,7 @@ public class TicketRepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<Ticket> testData = prepareData(5);
+    List<TicketEntity> testData = prepareData(5);
 
     // When
     String cursor = null;

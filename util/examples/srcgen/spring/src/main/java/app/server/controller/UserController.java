@@ -26,8 +26,8 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<CursorPage> getUsersForTicket(Long ticketId, CursorPageable pageable) {
-    CursorPage response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
+  public ResponseEntity<CursorPage<User>> getUsersForTicket(Long ticketId, CursorPageable pageable) {
+    CursorPage<User> response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
@@ -53,8 +53,8 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<CursorPage> getUsers(CursorPageable pageable) {
-    CursorPage response = userService.getUsers(pageable, super.getContext());
+  public ResponseEntity<CursorPage<User>> getUsers(CursorPageable pageable) {
+    CursorPage<User> response = userService.getUsers(pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

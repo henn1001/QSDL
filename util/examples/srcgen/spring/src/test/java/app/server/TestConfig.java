@@ -11,12 +11,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jeasy.random.*;
 import org.jeasy.random.randomizers.range.*;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @TestConfiguration
+@ComponentScan("app.server.domain")
 public class TestConfig {
 
   public static EasyRandom easyRandom;
@@ -30,13 +32,23 @@ public class TestConfig {
     easyRandom = new EasyRandom(parameters);
   }
 
-  public static <T extends AbstractPersistentObject> T getRandom(Class<T> cls) {
+  public static <T> T getRandom(Class<T> cls) {
+    T o = easyRandom.nextObject(cls);
+    return o;
+  }
+
+  public static <T> List<T> getRandom(Class<T> cls, int count) {
+    List<T> oList = easyRandom.objects(cls, count).collect(Collectors.toList());
+    return oList;
+  }
+
+  public static <T extends AbstractPersistentObject> T getRandomEntity(Class<T> cls) {
     T o = easyRandom.nextObject(cls);
     o.removeRelations();
     return o;
   }
 
-  public static <T extends AbstractPersistentObject> List<T> getRandom(Class<T> cls, int count) {
+  public static <T extends AbstractPersistentObject> List<T> getRandomEntity(Class<T> cls, int count) {
     List<T> oList = easyRandom.objects(cls, count).collect(Collectors.toList());
     oList.forEach(o -> o.removeRelations());
     return oList;
@@ -55,13 +67,14 @@ public class TestConfig {
     if (a instanceof AbstractPersistentObject && b instanceof AbstractPersistentObject) {
       var copyIdentiy = AbstractPersistentObject.class.getDeclaredMethod("copyIdentiy", AbstractPersistentObject.class);
       copyIdentiy.invoke(a, b);
-    } else if (a instanceof AbstractPersistentBase && b instanceof AbstractPersistentBase) {
+    }
+    else if (a instanceof AbstractPersistentBase && b instanceof AbstractPersistentBase) {
       var copyIdentiy = AbstractPersistentBase.class.getDeclaredMethod("copyIdentiy", AbstractPersistentBase.class);
       copyIdentiy.invoke(a, b);
-    } else {
+    }
+    else {
       return;
     }
-
     // loop over all fields to check for nested objects
     for (Field field : a.getClass().getDeclaredFields()) {
 

@@ -17,10 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.*;
 
@@ -36,28 +35,40 @@ public class ProjectServiceTest {
   @Mock
   private ProjectRepository repository;
 
+  @Mock
+  private ProjectMapStruct mockedMapper;
+
   @InjectMocks
   ProjectService service;
 
-  private static Long one = 1l;
+  @Autowired
+  private ProjectMapStruct mapper;
 
   @Test
   void whenGetProjects_thenOk() throws Exception {
 
     // Given
-    List<Project> request = TestConfig.getRandom(Project.class, 5);
+    List<ProjectEntity> projectEntityList = TestConfig.getRandomEntity(ProjectEntity.class, 5);
+    List<Project> projectList = projectEntityList.stream().map(mapper::toDto).toList();
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage(request, null, 6l));
+        .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6l));
+
+    when(mockedMapper.toDto(any(ProjectEntity.class)))
+        .thenReturn(projectList.get(0))
+        .thenReturn(projectList.get(1))
+        .thenReturn(projectList.get(2))
+        .thenReturn(projectList.get(3))
+        .thenReturn(projectList.get(4));
 
     // When
-    CursorPage response = service.getProjects(new CursorPageable(null, 5l, true), new Context());
+    CursorPage<Project> response = service.getProjects(new CursorPageable(null, 5l, true), new Context());
 
     // Then
     assertEquals(5l, response.count());
     assertEquals(6l, response.totalCount());
 
-    ArrayNode node1 = Json.serializer().nodeFromList(request);
+    ArrayNode node1 = Json.serializer().nodeFromList(projectList);
     ArrayNode node2 = Json.serializer().nodeFromList(response.items());
     assertEquals(node1, node2);
   }
@@ -66,16 +77,23 @@ public class ProjectServiceTest {
   void whenCreateProject_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    ProjectEntity projectEntity = TestConfig.getRandomEntity(ProjectEntity.class);
+    Project project = mapper.toDto(projectEntity);
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(mockedMapper.toEntity(any(Project.class)))
+        .thenReturn(projectEntity);
+
+    when(repository.save(eq(projectEntity)))
+        .thenReturn(projectEntity);
+
+    when(mockedMapper.toDto(any(ProjectEntity.class)))
+        .thenReturn(project);
 
     // When
-    Project response = service.createProject(request, new Context());
+    Project response = service.createProject(project, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(project);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -84,16 +102,20 @@ public class ProjectServiceTest {
   void whenGetProject_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    ProjectEntity projectEntity = TestConfig.getRandomEntity(ProjectEntity.class);
+    Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(projectEntity.getId())))
+        .thenReturn(Optional.of(projectEntity));
+
+    when(mockedMapper.toDto(any(ProjectEntity.class)))
+        .thenReturn(project);
 
     // When
-    Project response = service.getProject(request.getId(), new Context());
+    Project response = service.getProject(projectEntity.getId(), new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(project);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -102,15 +124,15 @@ public class ProjectServiceTest {
   public void whenGetProjectWithInvalidId_thenError() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    ProjectEntity projectEntity = TestConfig.getRandomEntity(ProjectEntity.class);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(projectEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.getProject(request.getId(), new Context());
+          service.getProject(projectEntity.getId(), new Context());
         });
 
     // Then
@@ -124,19 +146,23 @@ public class ProjectServiceTest {
   void whenReplaceProject_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    ProjectEntity projectEntity = TestConfig.getRandomEntity(ProjectEntity.class);
+    Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(projectEntity.getId())))
+        .thenReturn(Optional.of(projectEntity));
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(repository.save(eq(projectEntity)))
+        .thenReturn(projectEntity);
+
+    when(mockedMapper.toDto(any(ProjectEntity.class)))
+        .thenReturn(project);
 
     // When
-    Project response = service.replaceProject(request.getId(), request, new Context());
+    Project response = service.replaceProject(projectEntity.getId(), project, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(project);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -145,15 +171,16 @@ public class ProjectServiceTest {
   public void whenReplaceProjectWithInvalidId_thenError() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    ProjectEntity projectEntity = TestConfig.getRandomEntity(ProjectEntity.class);
+    Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(projectEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.replaceProject(request.getId(), request, new Context());
+          service.replaceProject(projectEntity.getId(), project, new Context());
         });
 
     // Then
@@ -167,19 +194,23 @@ public class ProjectServiceTest {
   void whenUpdateProject_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    ProjectEntity projectEntity = TestConfig.getRandomEntity(ProjectEntity.class);
+    Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(projectEntity.getId())))
+        .thenReturn(Optional.of(projectEntity));
 
-    when(repository.save(eq(request)))
-        .thenReturn(request);
+    when(repository.save(eq(projectEntity)))
+        .thenReturn(projectEntity);
+
+    when(mockedMapper.toDto(any(ProjectEntity.class)))
+        .thenReturn(project);
 
     // When
-    Project response = service.updateProject(request.getId(), request, new Context());
+    Project response = service.updateProject(projectEntity.getId(), project, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
+    ObjectNode node1 = Json.serializer().nodeFromObject(project);
     ObjectNode node2 = Json.serializer().nodeFromObject(response);
     assertEquals(node1, node2);
   }
@@ -188,15 +219,16 @@ public class ProjectServiceTest {
   public void whenUpdateProjectWithInvalidId_thenError() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    ProjectEntity projectEntity = TestConfig.getRandomEntity(ProjectEntity.class);
+    Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(projectEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.updateProject(request.getId(), request, new Context());
+          service.updateProject(projectEntity.getId(), project, new Context());
         });
 
     // Then
@@ -210,13 +242,13 @@ public class ProjectServiceTest {
   void whenDeleteProject_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    ProjectEntity projectEntity = TestConfig.getRandomEntity(ProjectEntity.class);
 
-    when(repository.findById(eq(request.getId())))
-        .thenReturn(Optional.of(request));
+    when(repository.findById(eq(projectEntity.getId())))
+        .thenReturn(Optional.of(projectEntity));
 
     // When
-    service.deleteProject(request.getId(), new Context());
+    service.deleteProject(projectEntity.getId(), new Context());
 
     // Then
 
@@ -226,15 +258,15 @@ public class ProjectServiceTest {
   public void whenDeleteProjectWithInvalidId_thenError() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    ProjectEntity projectEntity = TestConfig.getRandomEntity(ProjectEntity.class);
 
-    when(repository.findById(eq(request.getId())))
+    when(repository.findById(eq(projectEntity.getId())))
         .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,
         () -> {
-          service.deleteProject(request.getId(), new Context());
+          service.deleteProject(projectEntity.getId(), new Context());
         });
 
     // Then

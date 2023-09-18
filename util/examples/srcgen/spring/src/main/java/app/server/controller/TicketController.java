@@ -26,8 +26,8 @@ public class TicketController extends BaseController implements TicketApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<CursorPage> getTickets(CursorPageable pageable) {
-    CursorPage response = ticketService.getTickets(pageable, super.getContext());
+  public ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
+    CursorPage<Ticket> response = ticketService.getTickets(pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

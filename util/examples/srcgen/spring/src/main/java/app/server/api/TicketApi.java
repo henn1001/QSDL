@@ -26,7 +26,7 @@ public interface TicketApi {
       value = "/tickets",
       produces = {"application/json"}
   )
-  default ResponseEntity<CursorPage> getTickets(CursorPageable pageable) {
+  default ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

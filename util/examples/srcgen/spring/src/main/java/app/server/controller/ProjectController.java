@@ -26,8 +26,8 @@ public class ProjectController extends BaseController implements ProjectApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<CursorPage> getProjects(CursorPageable pageable) {
-    CursorPage response = projectService.getProjects(pageable, super.getContext());
+  public ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
+    CursorPage<Project> response = projectService.getProjects(pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

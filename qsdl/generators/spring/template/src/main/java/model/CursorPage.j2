@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
 
-public class CursorPage {
+public class CursorPage<T> {
 
   @JsonProperty(value = "items")
-  private final List<?> items;
+  private final List<T> items;
 
   @JsonProperty(value = "next_cursor")
   private final String nextCursor;
@@ -25,8 +25,8 @@ public class CursorPage {
    * @param nextCursor the cursor for the next page.
    * @param totalCount the total amount of items available.
    */
-  public CursorPage(List<?> items, String nextCursor, Long totalCount) {
-    this.items = Objects.requireNonNullElse(items, new ArrayList<>());
+  public CursorPage(List<T> items, String nextCursor, Long totalCount) {
+    this.items = Objects.requireNonNullElse(items, new ArrayList<T>());
     this.nextCursor = nextCursor;
     this.totalCount = totalCount;
   }
@@ -36,7 +36,7 @@ public class CursorPage {
   
    * @return the CursorPage content as List.
    */
-  public List<?> items() {
+  public List<T> items() {
     return items;
   }
 

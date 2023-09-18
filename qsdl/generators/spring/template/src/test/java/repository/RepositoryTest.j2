@@ -38,18 +38,18 @@ public class {{model.name}}RepositoryTest {
   @Autowired
   private TestEntityManager testEntityManager;
 
-  public List<{{model.name}}> prepareData(int count) {
+  public List<{{model.name}}Entity> prepareData(int count) {
 
-    List<{{model.name}}> testDatas = TestConfig.getRandom({{model.name}}.class, count);
+    List<{{model.name}}Entity> testDatas = TestConfig.getRandomEntity({{model.name}}Entity.class, count);
 
     {% for parent in model.parents %}
-    {{parent.model.name}} {{parent.model.name|lower}} = {{parent.model.name|lower}}Repository.save(TestConfig.getRandom({{parent.model.name}}.class));
+    {{parent.model.name}}Entity {{parent.model.name|lower}} = {{parent.model.name|lower}}Repository.save(TestConfig.getRandomEntity({{parent.model.name}}Entity.class));
     {{- "\n" if loop.last }}
     {% endfor %}
-    for ({{model.name}} testData : testDatas) {
+    for ({{model.name}}Entity testData : testDatas) {
     {% for field in model.fields if field.is_relation %}
       {% if field.is_array and field.is_composition %}
-      testData.addTo{{field.type}}s(TestConfig.getRandom({{field.type}}.class));
+      testData.addTo{{field.type}}s(TestConfig.getRandomEntity({{field.type}}Entity.class));
       {% elif field.is_array and field.is_aggregation and field.is_relation_owner %}
       testData.addTo{{field.type}}s({{field.type|lower}});
       {% elif field.is_composition %}
@@ -76,10 +76,10 @@ public class {{model.name}}RepositoryTest {
   public void whenSave_thenFind() throws Exception {
 
     // Given
-    {{model.name}} testData = prepareData(1).get(0);
+    {{model.name}}Entity testData = prepareData(1).get(0);
 
     // When
-    {{model.name}} findData = {{model.name|lower}}Repository.findById(testData.getId()).orElse(null);
+    {{model.name}}Entity findData = {{model.name|lower}}Repository.findById(testData.getId()).orElse(null);
 
     TestConfig.copyAllIdentities(testData, findData);
 
@@ -93,7 +93,7 @@ public class {{model.name}}RepositoryTest {
   public void whenDelete_thenCountZero() throws Exception {
 
     // Given
-    {{model.name}} testData = prepareData(1).get(0);
+    {{model.name}}Entity testData = prepareData(1).get(0);
 
     // When
     {{model.name|lower}}Repository.delete(testData);
@@ -107,11 +107,11 @@ public class {{model.name}}RepositoryTest {
   public void whenCount_thenUseQuerie() throws Exception {
 
     // Given
-    List<{{model.name}}> testData = prepareData(5);
+    List<{{model.name}}Entity> testData = prepareData(5);
 
     BooleanBuilder predicate = new BooleanBuilder();
     {% for field in model.fields if field.is_query %}
-    predicate.and(Q{{model.name}}.{{model.name|camel}}.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
+    predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
     {% endfor %}
 
     // When
@@ -125,7 +125,7 @@ public class {{model.name}}RepositoryTest {
   public void whenFindAll_thenPaginate() throws Exception {
 
     // Given
-    List<{{model.name}}> testData = prepareData(5);
+    List<{{model.name}}Entity> testData = prepareData(5);
 
     // When
     String cursor = null;
@@ -152,24 +152,24 @@ public class {{model.name}}RepositoryTest {
   public void whenCountBy{{parent.model.name}}_thenUseQuerie() throws Exception {
 
     // Given
-    {{model.name}} testData = prepareData(5).get(0);
+    {{model.name}}Entity testData = prepareData(5).get(0);
     {% if parent.field.is_aggregation %}
       {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0];
       {% else %}
-    {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0];
       {% endif %}
     {% else %}
       {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}}();
+    {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}();
       {% else %}
-    {{parent.model.name}} parent = testData.{{parent.model.name|lower}};
+    {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}};
       {% endif %}
     {% endif %}
 
-    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{parent.predicate}}.id.eq(parent.getId()));
     {% for field in model.fields if field.is_query %}
-    predicate.and(Q{{model.name}}.{{model.name|camel}}.{{field.name}}.eq(testData.{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
+    predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
     {% endfor %}
 
     // When
@@ -185,9 +185,9 @@ public class {{model.name}}RepositoryTest {
     // Given
     {% if parent.field.is_aggregation %}
       {% if encapsulation %}
-    Long parentId = prepareData(5).get(0).get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0].getId();
+    Long parentId = prepareData(5).get(0).get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0].getId();
       {% else %}
-    Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0].getId();
+    Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0].getId();
       {% endif %}
     {% else %}
       {% if encapsulation %}
@@ -203,7 +203,7 @@ public class {{model.name}}RepositoryTest {
 
     do {
       CursorPageable pageable = new CursorPageable(cursor, 1l, null);
-      BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parentId));
+      BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{parent.predicate}}.id.eq(parentId));
       CursorPage findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
@@ -224,11 +224,11 @@ public class {{model.name}}RepositoryTest {
   public void whenUnlinkFromLinked{{parent.model.name}}_thenStillExist() throws Exception {
 
     // Given
-    {{model.name}} testData = prepareData(1).get(0);
+    {{model.name}}Entity testData = prepareData(1).get(0);
   {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0];
   {% else %}
-    {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0];
   {% endif %}
 
     // When
@@ -236,7 +236,7 @@ public class {{model.name}}RepositoryTest {
     {{model.name|lower}}Repository.save(testData);
 
     // Then
-    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{parent.predicate}}.id.eq(parent.getId()));
 
     assertEquals(0, {{model.name|lower}}Repository.count(predicate));
     assertEquals(true, {{model.name|lower}}Repository.existsById(testData.getId()));
@@ -247,18 +247,18 @@ public class {{model.name}}RepositoryTest {
   public void whenDeleteFromLinked{{parent.model.name}}_thenStillExistA() throws Exception {
 
     // Given
-    {{model.name}} testData = prepareData(1).get(0);
+    {{model.name}}Entity testData = prepareData(1).get(0);
   {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0];
   {% else %}
-    {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0];
   {% endif %}
 
     // When
     {{model.name|lower}}Repository.delete(testData);
 
     // Then
-    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{parent.predicate}}.id.eq(parent.getId()));
 
     assertEquals(0, {{model.name|lower}}Repository.count(predicate));
     assertEquals(false, {{model.name|lower}}Repository.existsById(testData.getId()));
@@ -269,18 +269,18 @@ public class {{model.name}}RepositoryTest {
   public void whenDeleteFromLinked{{parent.model.name}}_thenStillExistB() throws Exception {
 
     // Given
-    {{model.name}} testData = prepareData(1).get(0);
+    {{model.name}}Entity testData = prepareData(1).get(0);
   {% if encapsulation %}
-    {{parent.model.name}} parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0];
   {% else %}
-    {{parent.model.name}} parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}[0])[0];
+    {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0];
   {% endif %}
 
     // When
     {{parent.model.name|lower}}Repository.delete(parent);
 
     // Then
-    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));
+    BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{parent.predicate}}.id.eq(parent.getId()));
 
     assertEquals(0, {{model.name|lower}}Repository.count(predicate));
     assertEquals(true, {{model.name|lower}}Repository.existsById(testData.getId()));

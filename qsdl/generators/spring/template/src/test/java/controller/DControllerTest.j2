@@ -54,7 +54,7 @@ public class {{model.name}}ControllerTest {
     // Given
     {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
 
-    CursorPage ret = new CursorPage(Arrays.asList(request), null, null);
+    CursorPage<{{model.name}}> ret = new CursorPage<{{model.name}}>(Arrays.asList(request), null, null);
 
     when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
         .thenReturn(ret);

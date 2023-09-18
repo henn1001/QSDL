@@ -3,11 +3,11 @@
  */
 package app.server.repository;
 
-import app.server.domain.Ticket;
+import app.server.domain.TicketEntity;
 
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TicketRepository extends AbstractRepository<Ticket, Long> {
+public interface TicketRepository extends AbstractRepository<TicketEntity, Long> {
 
 }

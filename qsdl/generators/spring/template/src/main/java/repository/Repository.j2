@@ -4,7 +4,7 @@
  */
 package {{package.repository}};
 
-import {{package.domain}}.{{model.name}};
+import {{package.domain}}.{{model.name}}Entity;
 
 import org.springframework.stereotype.Repository;
 
@@ -13,12 +13,12 @@ import java.util.Optional;
 
 {% endif%}
 @Repository
-public interface {{model.name}}Repository extends AbstractRepository<{{model.name}}, Long> {
+public interface {{model.name}}Repository extends AbstractRepository<{{model.name}}Entity, Long> {
   {% for parent in model.parents %}
 
-  public Optional<{{model.name}}> findBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
+  public Optional<{{model.name}}Entity> findBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
 
-  public Optional<{{model.name}}> findBy{{parent.hibernate.method_joined_uid}}(Long {{parent.model.hibernate.parameter_joined_id}}, String uid);
+  public Optional<{{model.name}}Entity> findBy{{parent.hibernate.method_joined_uid}}(Long {{parent.model.hibernate.parameter_joined_id}}, String uid);
   {% endfor %}
 
 }

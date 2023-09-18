@@ -26,7 +26,7 @@ public interface ProjectApi {
       value = "/projects",
       produces = {"application/json"}
   )
-  default ResponseEntity<CursorPage> getProjects(CursorPageable pageable) {
+  default ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

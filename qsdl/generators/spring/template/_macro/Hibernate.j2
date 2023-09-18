@@ -70,19 +70,3 @@
   @ElementCollection
   {% endif %}
 {% endmacro %}
-
-{# 
-  Returns Queries
-#}
-{%- macro get_query() -%}
-{%- for operation in api.operations %}
-
-  {%- if operation.method == "get" and operation.is_pageable and operation.query_parameters %}
-
-    {% for parameter in operation.query_parameters %}
-    AND ({{ ":#{#pageable.query['" + parameter.name + "']}" }} IS NULL OR {{ api.name | upper + "." + parameter.name | upper}} = {{ ":#{#pageable.query['" + parameter.name + "']}" }}){{ "\n" if not loop.last }}
-    {%- endfor %}
-
-  {%- endif %}
-{%- endfor %}
-{%- endmacro %}

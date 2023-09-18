@@ -3,11 +3,11 @@
  */
 package app.server.repository;
 
-import app.server.domain.Project;
+import app.server.domain.ProjectEntity;
 
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProjectRepository extends AbstractRepository<Project, Long> {
+public interface ProjectRepository extends AbstractRepository<ProjectEntity, Long> {
 
 }

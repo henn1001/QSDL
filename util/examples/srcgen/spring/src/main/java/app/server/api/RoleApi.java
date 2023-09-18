@@ -26,7 +26,7 @@ public interface RoleApi {
       value = "/projects/{project_id}/roles",
       produces = {"application/json"}
   )
-  default ResponseEntity<CursorPage> getRoles(@PathVariable("project_id") Long projectId, CursorPageable pageable) {
+  default ResponseEntity<CursorPage<Role>> getRoles(@PathVariable("project_id") Long projectId, CursorPageable pageable) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

@@ -6,7 +6,6 @@ package app.server.model;
 import app.server.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 

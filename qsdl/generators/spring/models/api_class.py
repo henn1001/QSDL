@@ -162,7 +162,7 @@ class Operation:
             if _ref.is_pageable:
                 new_param.name = "CursorPage"
                 new_param.json_key = "CursorPage"
-                new_param.type = "CursorPage"
+                new_param.type = f"CursorPage<{new_param.type}>"
                 new_param.is_array = False
 
             self.response = new_param

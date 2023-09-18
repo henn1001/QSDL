@@ -506,9 +506,9 @@ def get_model_imports(model: ModelClass, entity: dsl.Enum | dsl.Base | dsl.Objec
         imprt = f"import {Store.package.enum}.*;"
         imports.append(imprt)
 
-    if model.is_object or (model.is_base and model.is_entity):
-        imprt = f"import {Store.package.model}.*;"
-        imports.append(imprt)
+
+    imprt = f"import {Store.package.model}.*;"
+    imports.append(imprt)
 
     # remove duplicates and sort
     imports = list(dict.fromkeys(imports))

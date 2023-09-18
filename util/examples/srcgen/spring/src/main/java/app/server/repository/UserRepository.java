@@ -3,17 +3,17 @@
  */
 package app.server.repository;
 
-import app.server.domain.User;
+import app.server.domain.UserEntity;
 
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends AbstractRepository<User, Long> {
+public interface UserRepository extends AbstractRepository<UserEntity, Long> {
 
-  public Optional<User> findByTicketsIdAndId(Long ticketId, Long id);
+  public Optional<UserEntity> findByTicketsIdAndId(Long ticketId, Long id);
 
-  public Optional<User> findByTicketsIdAndUid(Long ticketId, String uid);
+  public Optional<UserEntity> findByTicketsIdAndUid(Long ticketId, String uid);
 
 }
