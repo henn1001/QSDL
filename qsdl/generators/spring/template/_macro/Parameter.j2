@@ -24,7 +24,8 @@
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
-  {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
+  {% set requiresNode = operation.body_parameters | rejectattr("is_base") | rejectattr("is_object") | list %}
+  {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
       @RequestBody ObjectNode body
   {%- elif operation.body_parameters and operation.method == "patch" -%}
       @RequestBody {{ param_helper(operation.body_parameters[0]) }}
@@ -46,7 +47,8 @@
     {%- if operation.body_parameters -%}{{", "}}{% endif -%}
   {%- endif -%}
 
-  {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
+  {% set requiresNode = operation.body_parameters | rejectattr("is_base") | rejectattr("is_object") | list %}
+  {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
       ObjectNode body
   {%- elif operation.body_parameters and operation.method == "patch" -%}
       {{ param_helper(operation.body_parameters[0]) }}

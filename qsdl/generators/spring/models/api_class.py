@@ -46,6 +46,9 @@ class Parameter:
     is_header: bool = False
     is_body: bool = False
 
+    is_base: bool = False
+    is_object: bool = False
+
     def build(self, _ref: dsl.Argument) -> Parameter:
         """Builds self from dsl.Argument"""
 
@@ -60,6 +63,9 @@ class Parameter:
         self.is_query = _ref.is_query
         self.is_header = _ref.is_header
         self.is_body = _ref.is_body
+
+        self.is_base = _ref.value._tx_fqn in ["entity.Base"]
+        self.is_object = _ref.value._tx_fqn in ["entity.Object"]
 
         return self
 
