@@ -13,7 +13,7 @@ import java.util.*;
 public class AppError extends AbstractClass {
 
   @JsonProperty(value = "code")
-  public Integer code;
+  public String code;
 
   @JsonProperty(value = "message")
   public String message;
@@ -34,20 +34,20 @@ public class AppError extends AbstractClass {
   public AppError() {
   }
 
-  public AppError(Integer code, String message, Integer status) {
+  public AppError(String code, String message, Integer status) {
     this.code = code;
     this.message = message;
     this.status = status;
   }
 
-  public AppError(Integer code, String message, Integer status, String detail) {
+  public AppError(String code, String message, Integer status, String detail) {
     this.code = code;
     this.message = message;
     this.status = status;
     this.details.add(detail);
   }
 
-  public AppError(Integer code, String message, Integer status, List<String> details) {
+  public AppError(String code, String message, Integer status, List<String> details) {
     this.code = code;
     this.message = message;
     this.status = status;

@@ -12,27 +12,27 @@ import java.util.*;
 public enum ErrorCodes {
   // @formatter:off
   // generics
-  BAD_REQEST(400, "Bad Request", HttpStatus.BAD_REQUEST),
-  UNAUTHORIZED(401, "Unauthorized", HttpStatus.UNAUTHORIZED),
-  FORBIDDEN(403, "Forbidden", HttpStatus.FORBIDDEN),
-  NOT_FOUND(404, "Not Found", HttpStatus.NOT_FOUND),
-  INTERNAL_SERVER_ERROR(500, "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
+  BAD_REQEST("400", "Bad Request", HttpStatus.BAD_REQUEST),
+  UNAUTHORIZED("401", "Unauthorized", HttpStatus.UNAUTHORIZED),
+  FORBIDDEN("403", "Forbidden", HttpStatus.FORBIDDEN),
+  NOT_FOUND("404", "Not Found", HttpStatus.NOT_FOUND),
+  INTERNAL_SERVER_ERROR("500", "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
   // specifics
-  ENTITY_NOT_FOUND(1000, "Entity not found", HttpStatus.NOT_FOUND),
+  ENTITY_NOT_FOUND("1000", "Entity not found", HttpStatus.NOT_FOUND),
   // @formatter:on
   ;
 
-  private final Integer code;
+  private final String code;
   private final String message;
   private final Integer status;
 
-  private ErrorCodes(Integer code, String message, HttpStatus status) {
+  private ErrorCodes(String code, String message, HttpStatus status) {
     this.code = code;
     this.message = message;
     this.status = Objects.nonNull(status) ? status.value() : null;
   }
 
-  public Integer code() {
+  public String code() {
     return code;
   }
 
