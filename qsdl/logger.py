@@ -23,15 +23,46 @@ class CustomLogRecord(logging.LogRecord):
         self.origin = f"{self.name}.{self.funcName}"
 
 
-logging.setLogRecordFactory(CustomLogRecord)
+class CustomFormatter(logging.Formatter):
+    """Enables color coded logging"""
+    grey = "\x1b[38;20m"
+    yellow = "\x1b[33;20m"
+    red = "\x1b[31;20m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"
+    log_format = "%(levelname)s %(name)s - %(message)s"
+    date_format = "%Y-%m-%d %H:%M:%S"
 
-logging.basicConfig(
-    format="%(levelname)s %(name)s - %(message)s",
-    level=logging.INFO,
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
+    FORMATS = {
+        logging.DEBUG: grey + log_format + reset,
+        logging.INFO: grey + log_format + reset,
+        logging.WARNING: yellow + log_format + reset,
+        logging.ERROR: red + log_format + reset,
+        logging.CRITICAL: bold_red + log_format + reset,
+    }
+
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt, datefmt=self.date_format)
+        return formatter.format(record)
 
 
+# pylint: disable=invalid-name
 def getLogger(name):
     """Returns logging.getLogger"""
-    return logging.getLogger(name)
+    # add custom record - not used at the moment
+    logging.setLogRecordFactory(CustomLogRecord)
+
+    # create logger
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+
+    # create console handler with a higher log level
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+
+    # set formatter and add handler
+    ch.setFormatter(CustomFormatter())
+    logger.addHandler(ch)
+
+    return logger

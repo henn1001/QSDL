@@ -140,10 +140,10 @@ legend
   Match rules:
   |= Name  |= Rule details |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Comment | \\/\\/.*$ |
   | Description |  |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | Comment | \\/\\/.*$ |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend
 
 @enduml

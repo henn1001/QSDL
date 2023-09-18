@@ -68,13 +68,12 @@ def render(
     # load the template
     template = jinja_env.get_template(template_path.name)
 
-    # testing Area
-
     # generate folders if needed
     output_file.parent.mkdir(exist_ok=True, parents=True)
 
     # generate code
+    log.info("rendering file: %s", output_file)
+    tmp = template.render(context)
+
     with open(output_file, "w", encoding="utf-8") as file:
-        tmp = template.render(context)
-        log.info("rendering file: %s", output_file)
         file.write(tmp)

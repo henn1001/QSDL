@@ -94,7 +94,7 @@ class ModelField:
             self.min_size = f"minLength: {_ref.min_size}" if _ref.min_size else None
             self.max_size = f"maxLength: {_ref.max_size}" if _ref.max_size else "maxLength: 255"
 
-        if self.type == "integer" or self.type == "number":
+        if self.type in ["integer", "number"]:
             self.min_size = f"minimum: {_ref.min_size}" if _ref.min_size else "minimum: 0"
             self.max_size = f"maximum: {_ref.max_size}" if _ref.max_size else None
 
