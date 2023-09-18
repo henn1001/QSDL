@@ -1,0 +1,13 @@
+@GenericGenerator(
+    name = "optimized-sequence",
+    strategy = "enhanced-sequence",
+    parameters = {
+        @Parameter(name = "optimizer", value = "pooled"),
+        @Parameter(name = "prefer_sequence_per_entity", value = "true"),
+        @Parameter(name = "initial_value", value = "1000"),
+        @Parameter(name = "increment_size", value = "50")
+    })
+package app.server;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;

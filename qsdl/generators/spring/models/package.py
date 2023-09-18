@@ -32,10 +32,11 @@ class Package:
     slashed: bool = False
 
     def __prepare(self, string: Str) -> str:
-        ret = self.base
-        ret += "."
+        # ret = self.base
+        # ret += "."
         # ret += self.__namespace()
-        ret += string
+        # ret += string
+        ret = string
 
         # format
         ret = ret.replace(".", "/") if self.slashed else ret.replace("/", ".")

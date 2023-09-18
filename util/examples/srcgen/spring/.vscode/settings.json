@@ -12,7 +12,7 @@
   "java.sources.organizeImports.staticStarThreshold": 2,
   "java.import.exclusions": [],
   "java.completion.importOrder": [
-    "com.test.server",
+    "app.server",
     "",
     "javax",
     "java",
