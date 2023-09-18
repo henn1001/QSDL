@@ -77,7 +77,7 @@ class TestBase:
 
             base Foo extends Fruit {
                 field: Int
-                banana: Int
+                bananaaa: Int
             }
 
             base Bar extends Foo {
