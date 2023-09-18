@@ -178,6 +178,10 @@ def get_enum_values(entity: dsl.Enum) -> List[dsl.Enum]:
     if entity._tx_fqn in ["entity.Enum"]:
 
         for value in entity.values:
+
+            if value.upper() in ["YES", "NO", "TRUE", "FALSE", "ON", "OFF"]:
+                value = f"'{value}'"
+
             values.append(value)
 
     return values

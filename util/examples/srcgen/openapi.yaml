@@ -2,9 +2,7 @@ openapi: 3.0.3
 info:
   title: Test API
   description: |
-    
     This example should test every option of this generator.
-    
   version: '1.0'
 servers:
   - url: '/api/v1'
