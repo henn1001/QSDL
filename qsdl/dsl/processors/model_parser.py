@@ -514,7 +514,7 @@ def api_builder(
 
         # allow selective generation if requested
         if obj.api and obj.api.generate:
-            methods = [x for x in obj.api.generate if x in methods]
+            methods = [x for x in methods if x in obj.api.generate]
 
     # it is importent here to only create the api once because
     # we might loop multiple times over this object to add
