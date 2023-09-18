@@ -38,7 +38,7 @@ public class ProjectService {
 
   public CursorPage getProjects(CursorPageable pageable, Context context) throws AppException {
 
-    List<String> queryParameters = Arrays.asList("name"); 
+    List<String> queryParameters = Arrays.asList("name");
     BooleanBuilder predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), Project.class);
 
     CursorPage ret = projectRepository.findAll(predicate, pageable);

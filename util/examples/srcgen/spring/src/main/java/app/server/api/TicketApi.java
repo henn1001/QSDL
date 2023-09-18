@@ -24,8 +24,8 @@ public interface TicketApi {
    * GET /tickets : List Tickets
    */
   @GetMapping(
-    value = "/tickets",
-    produces = { "application/json" }
+      value = "/tickets",
+      produces = {"application/json"}
   )
   default ResponseEntity<CursorPage> getTickets(CursorPageable pageable) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -35,9 +35,9 @@ public interface TicketApi {
    * POST /tickets : Create a Ticket
    */
   @PostMapping(
-    value = "/tickets",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/tickets",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<Ticket> createTicket(@Valid @RequestBody Ticket body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -47,8 +47,8 @@ public interface TicketApi {
    * GET /tickets/{id} : Read the specified Ticket
    */
   @GetMapping(
-    value = "/tickets/{id}",
-    produces = { "application/json" }
+      value = "/tickets/{id}",
+      produces = {"application/json"}
   )
   default ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -58,9 +58,9 @@ public interface TicketApi {
    * PUT /tickets/{id} : Replace the specified Ticket
    */
   @PutMapping(
-    value = "/tickets/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/tickets/{id}",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @Valid @RequestBody Ticket body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -70,9 +70,9 @@ public interface TicketApi {
    * PATCH /tickets/{id} : Update the specified Ticket
    */
   @PatchMapping(
-    value = "/tickets/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/tickets/{id}",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -82,7 +82,7 @@ public interface TicketApi {
    * DELETE /tickets/{id} : Delete the specified Ticket
    */
   @DeleteMapping(
-    value = "/tickets/{id}"
+      value = "/tickets/{id}"
   )
   default ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

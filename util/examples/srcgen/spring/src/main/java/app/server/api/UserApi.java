@@ -24,8 +24,8 @@ public interface UserApi {
    * GET /tickets/{ticket_id}/users : List Users
    */
   @GetMapping(
-    value = "/tickets/{ticket_id}/users",
-    produces = { "application/json" }
+      value = "/tickets/{ticket_id}/users",
+      produces = {"application/json"}
   )
   default ResponseEntity<CursorPage> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -35,7 +35,7 @@ public interface UserApi {
    * POST /tickets/{ticket_id}/users/{id}/add : Add User
    */
   @PostMapping(
-    value = "/tickets/{ticket_id}/users/{id}/add"
+      value = "/tickets/{ticket_id}/users/{id}/add"
   )
   default ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -45,7 +45,7 @@ public interface UserApi {
    * POST /tickets/{ticket_id}/users/{id}/remove : Remove User
    */
   @PostMapping(
-    value = "/tickets/{ticket_id}/users/{id}/remove"
+      value = "/tickets/{ticket_id}/users/{id}/remove"
   )
   default ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -55,8 +55,8 @@ public interface UserApi {
    * GET /users : List Users
    */
   @GetMapping(
-    value = "/users",
-    produces = { "application/json" }
+      value = "/users",
+      produces = {"application/json"}
   )
   default ResponseEntity<CursorPage> getUsers(CursorPageable pageable) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -66,9 +66,9 @@ public interface UserApi {
    * POST /users : Create a User
    */
   @PostMapping(
-    value = "/users",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/users",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<User> createUser(@Valid @RequestBody User body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -78,8 +78,8 @@ public interface UserApi {
    * GET /users/{id} : Read the specified User
    */
   @GetMapping(
-    value = "/users/{id}",
-    produces = { "application/json" }
+      value = "/users/{id}",
+      produces = {"application/json"}
   )
   default ResponseEntity<User> getUser(@PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -89,9 +89,9 @@ public interface UserApi {
    * PUT /users/{id} : Replace the specified User
    */
   @PutMapping(
-    value = "/users/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/users/{id}",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<User> replaceUser(@PathVariable("id") Long id, @Valid @RequestBody User body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -101,9 +101,9 @@ public interface UserApi {
    * PATCH /users/{id} : Update the specified User
    */
   @PatchMapping(
-    value = "/users/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/users/{id}",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -113,7 +113,7 @@ public interface UserApi {
    * DELETE /users/{id} : Delete the specified User
    */
   @DeleteMapping(
-    value = "/users/{id}"
+      value = "/users/{id}"
   )
   default ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

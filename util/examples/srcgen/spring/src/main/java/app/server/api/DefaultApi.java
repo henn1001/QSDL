@@ -25,9 +25,9 @@ public interface DefaultApi {
    * POST /query : submitQury
    */
   @PostMapping(
-    value = "/query",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/query",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -37,9 +37,9 @@ public interface DefaultApi {
    * POST /action : action
    */
   @PostMapping(
-    value = "/action",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/action",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<ObjectNode> action(@Valid @RequestBody BaseType arg1) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

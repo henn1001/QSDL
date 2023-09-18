@@ -51,16 +51,28 @@ class Config(BaseConfig):
     # used for changing the folder layout
     # include_namespace: bool = False
 
-    api_path: str = f"{base_package}.api"
-    config_path: str = f"{base_package}.config"
-    controller_path: str = f"{base_package}.controller"
-    domain_path: str = f"{base_package}.domain"
-    enum_path: str = f"{base_package}.constant"
-    exception_path: str = f"{base_package}.exception"
-    model_path: str = f"{base_package}.model"
-    repository_path: str = f"{base_package}.repository"
-    service_path: str = f"{base_package}.service"
-    util_path: str = f"{base_package}.util"
+    api_path: str = "%placeholder%.api"
+    config_path: str = "%placeholder%.config"
+    controller_path: str = "%placeholder%.controller"
+    domain_path: str = "%placeholder%.domain"
+    enum_path: str = "%placeholder%.constant"
+    exception_path: str = "%placeholder%.exception"
+    model_path: str = "%placeholder%.model"
+    repository_path: str = "%placeholder%.repository"
+    service_path: str = "%placeholder%.service"
+    util_path: str = "%placeholder%.util"
 
     # used for dactite enum casting
     _dactive_casts = [Database, IDTYPE]
+
+    def __post_init__(self):
+        self.api_path = self.api_path.replace("%placeholder%", self.base_package)
+        self.config_path = self.config_path.replace("%placeholder%", self.base_package)
+        self.controller_path = self.controller_path.replace("%placeholder%", self.base_package)
+        self.domain_path = self.domain_path.replace("%placeholder%", self.base_package)
+        self.enum_path = self.enum_path.replace("%placeholder%", self.base_package)
+        self.exception_path = self.exception_path.replace("%placeholder%", self.base_package)
+        self.model_path = self.model_path.replace("%placeholder%", self.base_package)
+        self.repository_path = self.repository_path.replace("%placeholder%", self.base_package)
+        self.service_path = self.service_path.replace("%placeholder%", self.base_package)
+        self.util_path = self.util_path.replace("%placeholder%", self.base_package)

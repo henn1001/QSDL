@@ -24,8 +24,8 @@ public interface RoleApi {
    * GET /projects/{project_id}/roles : List Roles
    */
   @GetMapping(
-    value = "/projects/{project_id}/roles",
-    produces = { "application/json" }
+      value = "/projects/{project_id}/roles",
+      produces = {"application/json"}
   )
   default ResponseEntity<CursorPage> getRoles(@PathVariable("project_id") Long projectId, CursorPageable pageable) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -35,9 +35,9 @@ public interface RoleApi {
    * POST /projects/{project_id}/roles : Create a Role
    */
   @PostMapping(
-    value = "/projects/{project_id}/roles",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/projects/{project_id}/roles",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<Role> createRole(@PathVariable("project_id") Long projectId, @Valid @RequestBody Role body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -47,8 +47,8 @@ public interface RoleApi {
    * GET /projects/{project_id}/roles/{id} : Read the specified Role
    */
   @GetMapping(
-    value = "/projects/{project_id}/roles/{id}",
-    produces = { "application/json" }
+      value = "/projects/{project_id}/roles/{id}",
+      produces = {"application/json"}
   )
   default ResponseEntity<Role> getRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -58,9 +58,9 @@ public interface RoleApi {
    * PUT /projects/{project_id}/roles/{id} : Replace the specified Role
    */
   @PutMapping(
-    value = "/projects/{project_id}/roles/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/projects/{project_id}/roles/{id}",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<Role> replaceRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @Valid @RequestBody Role body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -70,9 +70,9 @@ public interface RoleApi {
    * PATCH /projects/{project_id}/roles/{id} : Update the specified Role
    */
   @PatchMapping(
-    value = "/projects/{project_id}/roles/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/projects/{project_id}/roles/{id}",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<Role> updateRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody Role body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -82,7 +82,7 @@ public interface RoleApi {
    * DELETE /projects/{project_id}/roles/{id} : Delete the specified Role
    */
   @DeleteMapping(
-    value = "/projects/{project_id}/roles/{id}"
+      value = "/projects/{project_id}/roles/{id}"
   )
   default ResponseEntity<Void> deleteRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

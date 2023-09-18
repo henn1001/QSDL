@@ -24,8 +24,8 @@ public interface ProjectApi {
    * GET /projects : List Projects
    */
   @GetMapping(
-    value = "/projects",
-    produces = { "application/json" }
+      value = "/projects",
+      produces = {"application/json"}
   )
   default ResponseEntity<CursorPage> getProjects(CursorPageable pageable) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -35,9 +35,9 @@ public interface ProjectApi {
    * POST /projects : Create a Project
    */
   @PostMapping(
-    value = "/projects",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/projects",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<Project> createProject(@Valid @RequestBody Project body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -47,8 +47,8 @@ public interface ProjectApi {
    * GET /projects/{id} : Read the specified Project
    */
   @GetMapping(
-    value = "/projects/{id}",
-    produces = { "application/json" }
+      value = "/projects/{id}",
+      produces = {"application/json"}
   )
   default ResponseEntity<Project> getProject(@PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -58,9 +58,9 @@ public interface ProjectApi {
    * PUT /projects/{id} : Replace the specified Project
    */
   @PutMapping(
-    value = "/projects/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/projects/{id}",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @Valid @RequestBody Project body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -70,9 +70,9 @@ public interface ProjectApi {
    * PATCH /projects/{id} : Update the specified Project
    */
   @PatchMapping(
-    value = "/projects/{id}",
-    produces = { "application/json" },
-    consumes = { "application/json" }
+      value = "/projects/{id}",
+      produces = {"application/json"},
+      consumes = {"application/json"}
   )
   default ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -82,7 +82,7 @@ public interface ProjectApi {
    * DELETE /projects/{id} : Delete the specified Project
    */
   @DeleteMapping(
-    value = "/projects/{id}"
+      value = "/projects/{id}"
   )
   default ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

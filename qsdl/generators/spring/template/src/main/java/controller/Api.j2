@@ -36,12 +36,12 @@ public interface {{api.name}}Api {
   {% endif %}
    */
   @{{operation.method|capitalize}}Mapping(
-    value = "{{operation.path}}"
+      value = "{{operation.path}}"
   {%- if operation.produces -%}
-    {{",\n"}}    produces = {{ "{ \"" + operation.produces + "\" }"}}
+      {{",\n"}}      produces = {{ "{\"" + operation.produces + "\"}"}}
   {%- endif %}
   {%- if operation.consumes -%}
-    {{",\n"}}    consumes = {{ "{ \"" + operation.consumes + "\" }"}}
+      {{",\n"}}      consumes = {{ "{\"" + operation.consumes + "\"}"}}
   {%- endif %}
 
   )
