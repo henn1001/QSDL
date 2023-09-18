@@ -20,9 +20,12 @@ from typing import List, Union
 import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
+from qsdl import logger
 from qsdl.filter import pluralize
 
 from . import CrudGeneratorEnum as CrudEnum
+
+log = logger.getLogger(__name__)
 
 
 def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
@@ -107,7 +110,9 @@ def get_query_fields(obj: dsl.Object) -> List[dsl.Field]:
 
 
 def get_all_fields_as_list(entity: dsl.Object) -> List[dsl.Field]:
-    """Returns all fields ob a object including its supertype as list and prevents duplicates.
+    """Returns all fields ob a object including its supertype as list.
+
+    Fields that are redefined in a child, overwrite the parent definition.
 
     Args:
         entity (object): entity.dsl.Object
@@ -115,20 +120,30 @@ def get_all_fields_as_list(entity: dsl.Object) -> List[dsl.Field]:
     Returns:
         list: [entity.dsl.Field]
     """
-    tmp = entity
-    fields = []
+    fields: List[dsl.Field] = []
 
-    while True:
-        tmp_list = []
-        for field in tmp.fields:
-            if field not in fields:
-                tmp_list.append(field)
+    if entity.supertype:
+        tmp = get_all_fields_as_list(entity.supertype)
+        fields.extend(tmp)
 
-        fields = tmp_list + fields
-        if not tmp.supertype:
-            break
+    for field in entity.fields:
 
-        tmp = tmp.supertype
+        # check if attribute was already defined within a supertype
+        duplicate = [x for x in fields if x.name == field.name]
+        duplicate = duplicate[0] if duplicate else None
+
+        if not duplicate:
+            fields.append(field)
+        else:
+            index = fields.index(duplicate)
+            fields[index] = field
+
+            log.warning(
+                "The inherited field '%s' of '%s' was redefined and replaced by '%s'.",
+                duplicate.name,
+                duplicate.parent.name,
+                entity.name,
+            )
 
     return fields
 

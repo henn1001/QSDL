@@ -24,7 +24,6 @@ from textx.exceptions import TextXSemanticError
 import qsdl.dsl.textx as xtx
 
 from . import CrudGeneratorEnum as CrudEnum
-from .model_parser import get_all_fields_as_list
 
 if TYPE_CHECKING:
     from textx.metamodel import TextXMetaModel
@@ -47,7 +46,6 @@ def validate(schema: Schema, metamodel: TextXMetaModel):
     validate_custom_operations_path(schema, metamodel)
     validate_crud_generator_directive(schema, metamodel)
     validate_field_directives(schema, metamodel)
-    validate_field_duplications(schema, metamodel)
 
 
 def validate_server_url(schema: Schema, metamodel: TextXMetaModel):
@@ -256,34 +254,6 @@ def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
             # verify that the relation is not self referencing
             if field.value == entity:
                 msg = f"The Field {field.name} for {field.parent.name} references itself."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-
-def validate_field_duplications(schema: Schema, metamodel: TextXMetaModel):
-    """Checks that there are no field name duplicates.
-
-    Args:
-        schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
-
-    Raises:
-        TextXSemanticError: Exception for logical errors.
-    """
-    _ = metamodel
-
-    bases = xtx.get_children_of_base(schema)
-    objects = xtx.get_children_of_object(schema)
-
-    for entity in bases + objects:
-        duplicate_field_names = []
-
-        entity.fields = get_all_fields_as_list(entity)
-        for field in entity.fields:
-
-            if field.name not in duplicate_field_names:
-                duplicate_field_names.append(field.name)
-            else:
-                msg = f"A Field with the name '{field.name}' for '{field.parent.name}' already exists."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
