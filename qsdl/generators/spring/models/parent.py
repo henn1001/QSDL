@@ -17,25 +17,22 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
+from .. import models as spring
 from .. import util
-
-if TYPE_CHECKING:
-    from . import HibernateParentInfo, ModelClass, ModelField
 
 
 @dataclass
 class Parent:
-    """Contains the ModelClass and specifies the relation type"""
+    """Contains the spring.ModelClass and specifies the relation type"""
 
-    model: ModelClass = None
-    field: ModelField = None
-    hibernate: HibernateParentInfo = None
+    model: spring.ModelClass = None
+    field: spring.ModelField = None
+    hibernate: spring.HibernateParentInfo = None
     predicate: str = None
 
-    def build(self, parent: ModelClass, child: ModelClass) -> Parent:
-        """Builds self from Parent and Child ModelClass"""
+    def build(self, parent: spring.ModelClass, child: spring.ModelClass) -> Parent:
+        """Builds self from Parent and Child spring.ModelClass"""
 
         self.model = parent
         self.field = util.get_field_for(parent, child)

@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List, Union
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Api, Argument, Base, Directive, Enum, Object, Scalar
+import qsdl.dsl.models as dsl
 
 
 @dataclass
@@ -28,13 +26,13 @@ class Operation:
     """textX Field class"""
 
     # defined in entity.tx
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
     # LHS
     name: str = None
-    arguments: List[Argument] = field(default_factory=list)
+    arguments: list[dsl.Argument] = field(default_factory=list)
     # RHS
     is_array: bool = False
-    value: Union[Scalar, Base, Object, Enum] = None
+    value: dsl.Scalar | dsl.Object | dsl.Enum = None
     is_required: bool = False
     # Special directives
     path: str = None
@@ -42,22 +40,22 @@ class Operation:
     is_pageable: bool = False
     consumes: str = None
     produces: str = None
-    response_headers: List[Argument] = field(default_factory=list)
+    response_headers: list[dsl.Argument] = field(default_factory=list)
     # Custom directives
-    directives: List[Directive] = field(default_factory=list)
+    directives: list[dsl.Directive] = field(default_factory=list)
 
     # required by textX
-    parent: Api = None
+    parent: dsl.Api = None
     _tx_fqn: str = "entity.Operation"
 
     # addons
     is_generated: bool = False
     summary: str = None
     is_aggregated: bool = False
-    path_parameters: List[Argument] = field(default_factory=list)
-    query_parameters: List[Argument] = field(default_factory=list)
-    header_parameters: List[Argument] = field(default_factory=list)
-    body_parameters: List[Argument] = field(default_factory=list)
+    path_parameters: list[dsl.Argument] = field(default_factory=list)
+    query_parameters: list[dsl.Argument] = field(default_factory=list)
+    header_parameters: list[dsl.Argument] = field(default_factory=list)
+    body_parameters: list[dsl.Argument] = field(default_factory=list)
 
-    domain_object: Object = None
-    domain_parent: Object = None
+    domain_object: dsl.Object = None
+    domain_parent: dsl.Object = None

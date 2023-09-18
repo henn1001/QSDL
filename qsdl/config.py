@@ -17,12 +17,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, List
+from typing import Callable
 
+import qsdl.dsl.models as dsl
 from qsdl.generators import GENERATORS, ConfigType
-
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Schema
 
 
 class Config:
@@ -32,7 +30,7 @@ class Config:
     raw_schema: str = None
 
     # the parsed schema definition.
-    schema: Schema = None
+    schema: dsl.Schema = None
 
     # path to a input file
     input_path: Path = None
@@ -47,4 +45,4 @@ class Config:
     config: ConfigType = None
 
     # All registered generators
-    available_generators: List[str] = GENERATORS.keys()
+    available_generators: list[str] = GENERATORS.keys()

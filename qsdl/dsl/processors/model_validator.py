@@ -17,25 +17,22 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
 
+import textx.metamodel
 from textx.exceptions import TextXSemanticError
 
+import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 
 from . import CrudGeneratorEnum as CrudEnum
 
-if TYPE_CHECKING:
-    from textx.metamodel import TextXMetaModel
-    from qsdl.dsl.models import Schema
 
-
-def validate(schema: Schema, metamodel: TextXMetaModel):
+def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
     """Check for logical input errors and provide better error messages.
 
     Args:
         schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
+        metamodel (textx.metamodel.TextXMetaModel): The metamodel.
 
     Raises:
         TextXSemanticError: Exception for logical errors.
@@ -48,12 +45,12 @@ def validate(schema: Schema, metamodel: TextXMetaModel):
     validate_field_directives(schema, metamodel)
 
 
-def validate_server_url(schema: Schema, metamodel: TextXMetaModel):
+def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
     """Validate the naming convention for servers.
 
     Args:
         schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
+        metamodel (textx.metamodel.TextXMetaModel): The metamodel.
 
     Raises:
         TextXSemanticError: Exception for logical errors.
@@ -70,7 +67,7 @@ def validate_server_url(schema: Schema, metamodel: TextXMetaModel):
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
+def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
     """Validate the naming convention.
 
     Expect that NameSpaces, Scalars, Enums, Bases and Objects
@@ -80,7 +77,7 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
 
     Args:
         schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
+        metamodel (textx.metamodel.TextXMetaModel): The metamodel.
 
     Raises:
         TextXSemanticError: Exception for logical errors.
@@ -137,12 +134,12 @@ def validate_type_names(schema: Schema, metamodel: TextXMetaModel):
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_arguments(schema: Schema, metamodel: TextXMetaModel):
+def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
     """Check that reference a maximum of one Object or Base.
 
     Args:
         schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
+        metamodel (textx.metamodel.TextXMetaModel): The metamodel.
 
     Raises:
         TextXSemanticError: Exception for logical errors.
@@ -177,12 +174,12 @@ def validate_arguments(schema: Schema, metamodel: TextXMetaModel):
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
+def validate_custom_operations_path(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
     """Check that custom operations specify a path.
 
     Args:
         schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
+        metamodel (textx.metamodel.TextXMetaModel): The metamodel.
 
     Raises:
         TextXSemanticError: Exception for logical errors.
@@ -198,12 +195,12 @@ def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
+def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
     """Checks various rules that apply to field directives.
 
     Args:
         schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
+        metamodel (textx.metamodel.TextXMetaModel): The metamodel.
 
     Raises:
         TextXSemanticError: Exception for logical errors.
@@ -257,12 +254,12 @@ def validate_field_directives(schema: Schema, metamodel: TextXMetaModel):
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_crud_generator_directive(schema: Schema, metamodel: TextXMetaModel):
+def validate_crud_generator_directive(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
     """Check if the requested crud operations are valid
 
     Args:
         schema (Schema): The parsed schema definition.
-        metamodel (TextXMetaModel): The metamodel.
+        metamodel (textx.metamodel.TextXMetaModel): The metamodel.
 
     Raises:
         TextXSemanticError: Exception for logical errors.
@@ -281,7 +278,7 @@ def validate_crud_generator_directive(schema: Schema, metamodel: TextXMetaModel)
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_operations(schema: Schema):
+def validate_operations(schema: dsl.Schema):
     """Checks if we have any duplicate operation names or paths.
 
     Args:

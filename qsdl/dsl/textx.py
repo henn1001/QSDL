@@ -15,7 +15,6 @@
 """Core generation"""
 
 from pathlib import Path
-from typing import List
 
 import textx.model
 import textx.scoping.providers as scoping_providers
@@ -136,46 +135,46 @@ def parse_schema(input_path: Path = None, raw_schema: str = None) -> dsl.Schema:
     return schema
 
 
-def get_children_of_api(schema: dsl.Schema) -> List[dsl.Api]:
+def get_children_of_api(schema: dsl.Schema) -> list[dsl.Api]:
     """Proxy method for typing support"""
     return textx.model.get_children_of_type("Api", schema)
 
 
-def get_children_of_argument(schema: dsl.Schema) -> List[dsl.Argument]:
+def get_children_of_argument(schema: dsl.Schema) -> list[dsl.Argument]:
     """Proxy method for typing support"""
     return textx.model.get_children_of_type("Argument", schema)
 
 
-def get_children_of_base(schema: dsl.Schema) -> List[dsl.Base]:
+def get_children_of_base(schema: dsl.Schema) -> list[dsl.Base]:
     """Proxy method for typing support"""
     return textx.model.get_children_of_type("Base", schema)
 
 
-def get_children_of_directive(schema: dsl.Schema) -> List[dsl.Directive]:
+def get_children_of_directive(schema: dsl.Schema) -> list[dsl.Directive]:
     """Proxy method for typing support"""
     return textx.model.get_children_of_type("Directive", schema)
 
 
-def get_children_of_enum(schema: dsl.Schema) -> List[dsl.Enum]:
+def get_children_of_enum(schema: dsl.Schema) -> list[dsl.Enum]:
     """Proxy method for typing support"""
     return textx.model.get_children_of_type("Enum", schema)
 
 
-def get_children_of_field(schema: dsl.Schema) -> List[dsl.Field]:
+def get_children_of_field(schema: dsl.Schema) -> list[dsl.Field]:
     """Proxy method for typing support"""
     return textx.model.get_children_of_type("Field", schema)
 
 
-def get_children_of_object(schema: dsl.Schema) -> List[dsl.Object]:
+def get_children_of_object(schema: dsl.Schema) -> list[dsl.Object]:
     """Proxy method for typing support"""
     return textx.model.get_children_of_type("Object", schema)
 
 
-def get_children_of_operation(schema: dsl.Schema) -> List[dsl.Operation]:
+def get_children_of_operation(schema: dsl.Schema) -> list[dsl.Operation]:
     """Proxy method for typing support"""
     return textx.model.get_children_of_type("Operation", schema)
 
 
-def get_children_of_scalar(schema: dsl.Schema) -> List[dsl.Scalar]:
+def get_children_of_scalar(schema: dsl.Schema) -> list[dsl.Scalar]:
     """Proxy method for typing support"""
     return textx.model.get_children_of_type("Scalar", schema)

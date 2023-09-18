@@ -17,16 +17,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List, Union
 
 import stringcase
 
 import qsdl.dsl.models as dsl
 
+from .. import models as spring
 from .. import util
-
-if TYPE_CHECKING:
-    from . import HibernateFieldInfo, HibernateModelInfo, Parent
 
 
 @dataclass
@@ -35,7 +32,7 @@ class ModelField:
 
     name: str = None
     json_key: str = None
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
 
     type: str = None
     is_array: bool = False
@@ -60,7 +57,7 @@ class ModelField:
     foreign_key_name: str = None
     foreign_key_is_array: bool = False
 
-    hibernate: HibernateFieldInfo = None
+    hibernate: spring.HibernateFieldInfo = None
 
     getter: str = None
     setter: str = None
@@ -126,14 +123,14 @@ class ModelClass:
 
     name: str = None
     namespace: str = None
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
 
     is_enum: bool = False
     is_base: bool = False
     is_object: bool = False
 
-    fields: List[ModelField] = field(default_factory=list)
-    constants: List[str] = field(default_factory=list)
+    fields: list[ModelField] = field(default_factory=list)
+    constants: list[str] = field(default_factory=list)
 
     # addons
     is_supertype: bool = False
@@ -143,13 +140,13 @@ class ModelClass:
     has_required: bool = False
     has_query: bool = False
     has_objectnode: bool = False
-    imports: List[str] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
 
-    hibernate: HibernateModelInfo = None
+    hibernate: spring.HibernateModelInfo = None
 
-    parents: List[Parent] = field(default_factory=list)
+    parents: list[spring.Parent] = field(default_factory=list)
 
-    def build(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]) -> ModelClass:
+    def build(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> ModelClass:
         """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention
@@ -181,7 +178,7 @@ class ModelClass:
 
         return self
 
-    def _add_attributes(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
+    def _add_attributes(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
         """Creates and adds all visible attributes to a ModelClass"""
 
         # filter on base and object
@@ -196,7 +193,7 @@ class ModelClass:
 
             self.fields.append(new_model_field)
 
-    def _add_constants(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
+    def _add_constants(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
         """Adds all values for Enums"""
 
         # filter only enum
@@ -206,7 +203,7 @@ class ModelClass:
         for value in _ref.values:
             self.constants.append(value)
 
-    def _add_relations(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
+    def _add_relations(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
         """Creates and adds all explicit relation attributes to a ModelClass"""
 
         # filter on object
@@ -223,7 +220,7 @@ class ModelClass:
 
             self.fields.append(new_model_field)
 
-    def _add_foreign_keys(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
+    def _add_foreign_keys(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
         """Creates and adds all implicit relation attributes to a ModelClass"""
 
         # filter on object

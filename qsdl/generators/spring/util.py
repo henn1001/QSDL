@@ -16,8 +16,6 @@
 
 from __future__ import annotations
 
-from typing import List, Union
-
 import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
@@ -32,7 +30,7 @@ class Store:
 
     schema: dsl.Schema = None
     config: Config = None
-    models: List[ModelClass] = []
+    models: list[ModelClass] = []
     package: Package = None
     is_id_long: bool = True
 
@@ -52,7 +50,7 @@ custom_types = {
 }
 
 
-def custom_type(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> str:
+def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converter map for custom types.
 
     Args:
@@ -92,8 +90,8 @@ def get_type_override(entity: dsl.Scalar) -> str:
 
 
 def has(
-    entity: Union[dsl.Base, dsl.Object],
-    has_type: List = None,
+    entity: dsl.Base | dsl.Object,
+    has_type: list = None,
     has_list: bool = False,
     has_model: bool = False,
     has_required: bool = False,
@@ -107,7 +105,7 @@ def has(
 
     Args:
         entity (Union[Base, Object]): Either entity.Base or entity.Object.
-        has_type (List, optional): [description]. Defaults to None.
+        has_type (list, optional): [description]. Defaults to None.
         has_list (bool, optional): [description]. Defaults to False.
         has_model (bool, optional): [description]. Defaults to False.
         has_required (bool, optional): [description]. Defaults to False.
@@ -245,7 +243,7 @@ def is_supertype(entity: dsl.Base) -> bool:
     return False
 
 
-def is_used_as_field_value(entity: Union[dsl.Base, dsl.Object]) -> bool:
+def is_used_as_field_value(entity: dsl.Base | dsl.Object) -> bool:
     """Checks if the provided Base or Object is used anywhere.
 
     Args:
@@ -266,11 +264,11 @@ def is_used_as_field_value(entity: Union[dsl.Base, dsl.Object]) -> bool:
     return False
 
 
-def add_parents_to_model(models: List[ModelClass]):
+def add_parents_to_model(models: list[ModelClass]):
     """Add all Models who are a domain parent to a Model.
 
     Args:
-        models (List[ModelClass]): The list of all available models.
+        models (list[ModelClass]): The list of all available models.
     """
     for model in models:
 
@@ -295,7 +293,7 @@ def add_parents_to_model(models: List[ModelClass]):
         model.parents = parents
 
 
-def add_hibernate_info(models: List[ModelClass]):
+def add_hibernate_info(models: list[ModelClass]):
     """Add hibernate related info to model and fields"""
     if not Store.config.database == "HIBERNATE":
         return
@@ -395,7 +393,7 @@ def get_field_for(model: ModelClass, target: ModelClass) -> ModelField:
     return ret
 
 
-def get_parent_fields(obj_name: dsl.Object.name, filter_relations=True) -> List[dsl.Field]:
+def get_parent_fields(obj_name: dsl.Object.name, filter_relations=True) -> list[dsl.Field]:
     """Returns all Objects whos Field value is this Object.
 
     Args:
@@ -403,7 +401,7 @@ def get_parent_fields(obj_name: dsl.Object.name, filter_relations=True) -> List[
         filter_relations (bool, optional): Include only relation fields. Defaults to True.
 
     Returns:
-        List[dsl.Field]: The list of Fields.
+        list[dsl.Field]: The list of Fields.
     """
     fields = []
 
@@ -416,7 +414,7 @@ def get_parent_fields(obj_name: dsl.Object.name, filter_relations=True) -> List[
     return fields
 
 
-def get_api_imports(api: dsl.Api) -> List[str]:
+def get_api_imports(api: dsl.Api) -> list[str]:
     """Helper for dynamic controller imports"""
     imports = []
 
@@ -437,7 +435,7 @@ def get_api_imports(api: dsl.Api) -> List[str]:
     return imports
 
 
-def get_controller_imports(api: dsl.Api, api_name: str) -> List[str]:
+def get_controller_imports(api: dsl.Api, api_name: str) -> list[str]:
     """Helper for dynamic controller imports"""
     imports = []
 
@@ -469,7 +467,7 @@ def get_controller_imports(api: dsl.Api, api_name: str) -> List[str]:
     return imports
 
 
-def get_service_imports(api: dsl.Api) -> List[str]:
+def get_service_imports(api: dsl.Api) -> list[str]:
     """Helper for dynamic service imports"""
     imports = []
 
@@ -500,7 +498,7 @@ def get_service_imports(api: dsl.Api) -> List[str]:
     return imports
 
 
-def get_model_imports(model: ModelClass, entity: Union[dsl.Enum, dsl.Base, dsl.Object]) -> List[str]:
+def get_model_imports(model: ModelClass, entity: dsl.Enum | dsl.Base | dsl.Object) -> list[str]:
     """Helper for dynamic model imports"""
     imports = []
 

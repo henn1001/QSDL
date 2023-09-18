@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Directive, Schema
+import qsdl.dsl.models as dsl
 
 
 @dataclass
@@ -30,8 +28,8 @@ class Scalar:
     # defined in entity.tx
     name: str = None
     # Custom directives
-    directives: List[Directive] = field(default_factory=list)
+    directives: list[dsl.Directive] = field(default_factory=list)
 
     # required by textX
-    parent: Schema = None
+    parent: dsl.Schema = None
     _tx_fqn: str = "entity.Scalar"

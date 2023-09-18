@@ -106,8 +106,8 @@ class entity.Directive  {
 }
 
 
-entity.Schema *-- "0..*" entity.Import
-entity.Schema *-- "0..*" entity.Type
+entity.Schema *--> entity.Import: imports 0..*
+entity.Schema *--> entity.Type: types 0..*
 entity.Type <|-- entity.Scalar
 entity.Type <|-- entity.Enum
 entity.Type <|-- entity.Base
@@ -117,33 +117,33 @@ entity.ValueType <|-- entity.Scalar
 entity.ValueType <|-- entity.Enum
 entity.ValueType <|-- entity.Base
 entity.ValueType <|-- entity.Object
-entity.Scalar *-- "0..*" entity.Directive
-entity.Enum *-- "0..*" entity.Directive
-entity.Base o-- entity.Base
-entity.Base *-- "0..*" entity.Directive
-entity.Base *-- "1..*" entity.Field
-entity.Object o-- entity.Base
-entity.Object *-- "0..*" entity.Directive
-entity.Object *-- "0..*" entity.Field
-entity.Object *-- entity.Api
-entity.Field o-- entity.ValueType
-entity.Field *-- "0..*" entity.Directive
-entity.Api *-- "0..*" entity.Directive
-entity.Api *-- "0..*" entity.Operation
-entity.Operation *-- "1..*" entity.Argument
-entity.Operation o-- entity.ValueType
-entity.Operation *-- "1..*" entity.Argument
-entity.Operation *-- "0..*" entity.Directive
-entity.Argument o-- entity.ValueType
+entity.Scalar *--> entity.Directive: directives 0..*
+entity.Enum *--> entity.Directive: directives 0..*
+entity.Base o--> entity.Base: supertype
+entity.Base *--> entity.Directive: directives 0..*
+entity.Base *--> entity.Field: fields 1..*
+entity.Object o--> entity.Base: supertype
+entity.Object *--> entity.Directive: directives 0..*
+entity.Object *--> entity.Field: fields 0..*
+entity.Object *--> entity.Api: api
+entity.Field o--> entity.ValueType: value
+entity.Field *--> entity.Directive: directives 0..*
+entity.Api *--> entity.Directive: directives 0..*
+entity.Api *--> entity.Operation: operations 0..*
+entity.Operation *--> entity.Argument: arguments 1..*
+entity.Operation o--> entity.ValueType: value
+entity.Operation *--> entity.Argument: response_headers 1..*
+entity.Operation *--> entity.Directive: directives 0..*
+entity.Argument o--> entity.ValueType: value
 
 legend
   Match rules:
   |= Name  |= Rule details |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Description |  |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
 end legend
 
 @enduml

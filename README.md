@@ -21,11 +21,9 @@ Currently the following generators are available:
 
 ### Requirements
 
-The QSDL package has been developed and tested on Python version:
+The QSDL package currently supports the Python version:
 
-* 3.6.x
-* 3.7.x
-* 3.9.x
+* 3.11.x
 
 ### Installation
 

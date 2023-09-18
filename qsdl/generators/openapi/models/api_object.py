@@ -17,12 +17,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List
+
+import qsdl.dsl.models as dsl
 
 from .. import util
-
-if TYPE_CHECKING:
-    import qsdl.dsl.models as dsl
 
 
 @dataclass
@@ -83,21 +81,21 @@ class Operation:
     name: str = None
     tag: str = None
     summary: str = None
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
     path: str = None
     method: str = None
     is_deprecated: bool = False
     is_generated: bool = False
     is_pageable: bool = False
 
-    parameters: List[Parameter] = field(default_factory=list)
-    path_parameters: List[Parameter] = field(default_factory=list)
-    query_parameters: List[Parameter] = field(default_factory=list)
-    header_parameters: List[Parameter] = field(default_factory=list)
-    body_parameters: List[Parameter] = field(default_factory=list)
+    parameters: list[Parameter] = field(default_factory=list)
+    path_parameters: list[Parameter] = field(default_factory=list)
+    query_parameters: list[Parameter] = field(default_factory=list)
+    header_parameters: list[Parameter] = field(default_factory=list)
+    body_parameters: list[Parameter] = field(default_factory=list)
 
     response: Parameter = None
-    response_headers: List[Parameter] = field(default_factory=list)
+    response_headers: list[Parameter] = field(default_factory=list)
 
     consumes: str = None
     produces: str = None
@@ -186,8 +184,8 @@ class ApiObject:
     # computed attributes
     name: str = None
     tag: str = None
-    description: List[str] = field(default_factory=list)
-    operations: List = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
+    operations: list = field(default_factory=list)
 
     def build(self, _ref: dsl.Api) -> ApiObject:
         """Builds self from dsl.Api"""
@@ -200,9 +198,9 @@ class ApiObject:
 
         return self
 
-    def _add_operations(self, operations: List[Operation]):
+    def _add_operations(self, operations: list[Operation]):
 
-        new_operations: List[Operation] = []
+        new_operations: list[Operation] = []
 
         for operation in operations:
             new_operation = Operation().build(operation)

@@ -16,21 +16,16 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Union
-
+import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
-
-if TYPE_CHECKING:
-    import qsdl.dsl.models as dsl
-
 
 # the parsed schema definition.
 schema: dsl.Schema = None
 
 # used to flag paths as used in order to prevent path duplicates in
 # OpenAPI
-used_paths: List[str] = []
+used_paths: list[str] = []
 
 custom_types = {
     "Int": "integer",
@@ -59,11 +54,11 @@ custom_type_formats = {
 }
 
 
-def custom_type(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> str:
+def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converter map for custom types.
 
     Args:
-        entity (Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]): The type to map.
+        entity (dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object): The type to map.
 
     Returns:
         str: The mapped type name or the input_type if it does not exist.
@@ -77,11 +72,11 @@ def custom_type(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> st
     return custom_types.get(name, name) if not override else override
 
 
-def custom_type_format(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> str:
+def custom_type_format(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converter map for custom formats.
 
     Args:
-        entity (Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]): The type to map.
+        entity (dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object): The type to map.
 
     Returns:
         str: The mapped type_format name or input_type_format if it does not exist.
@@ -95,11 +90,11 @@ def custom_type_format(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]
     return custom_type_formats.get(name, None) if not override else override
 
 
-def custom_type_pattern(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> str:
+def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converter map for custom pattern.
 
     Args:
-        entity (Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]): The type to map.
+        entity (dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object): The type to map.
 
     Returns:
         str: The mapped type_format name or input_type_format if it does not exist.
@@ -151,7 +146,7 @@ def get_type_override(entity: dsl.Scalar) -> str:
     return o_type, o_format, o_pattern
 
 
-def is_supertype(entity: Union[dsl.Base, dsl.Object]) -> bool:
+def is_supertype(entity: dsl.Base | dsl.Object) -> bool:
     """Checks if the Base or Object is used somewhere as a supertype.
 
     Args:
@@ -170,7 +165,7 @@ def is_supertype(entity: Union[dsl.Base, dsl.Object]) -> bool:
     return False
 
 
-def is_nested(entity: Union[dsl.Base, dsl.Object]) -> bool:
+def is_nested(entity: dsl.Base | dsl.Object) -> bool:
     """Checks if the provided Base or Object is nested into another Base or Object.
 
     Args:
@@ -190,14 +185,14 @@ def is_nested(entity: Union[dsl.Base, dsl.Object]) -> bool:
     return False
 
 
-def get_enum_values(entity: dsl.Enum) -> List[dsl.Enum]:
+def get_enum_values(entity: dsl.Enum) -> list[dsl.Enum]:
     """Returns all enum values.
 
     Args:
         entity (Enum): entity.Enum
 
     Returns:
-        List[Enum]: All enum values.
+        list[Enum]: All enum values.
     """
     values = []
 

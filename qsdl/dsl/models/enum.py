@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Schema, Directive
+import qsdl.dsl.models as dsl
 
 
 @dataclass
@@ -28,14 +26,14 @@ class Enum:
     """textX Enum class"""
 
     # defined in entity.tx
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
     name: str = None
     # Special directives
     namespace: str = None
     # Custom directives
-    directives: List[Directive] = field(default_factory=list)
-    values: List[str] = field(default_factory=list)
+    directives: list[dsl.Directive] = field(default_factory=list)
+    values: list[str] = field(default_factory=list)
 
     # required by textX
-    parent: Schema = None
+    parent: dsl.Schema = None
     _tx_fqn: str = "entity.Enum"

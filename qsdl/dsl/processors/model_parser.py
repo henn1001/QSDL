@@ -15,7 +15,6 @@
 """Model domain parser"""
 
 import re
-from typing import List, Union
 
 import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
@@ -28,7 +27,7 @@ from . import CrudGeneratorEnum as CrudEnum
 log = logger.getLogger(__name__)
 
 
-def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
+def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
     """Return all Fields who are using this dsl.Object as composition.
 
     Args:
@@ -36,7 +35,7 @@ def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
         obj (dsl.Object): entity.dsl.Object
 
     Returns:
-        List[dsl.Field]
+        list[dsl.Field]
     """
     comp_fields = []
 
@@ -48,7 +47,7 @@ def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
     return comp_fields
 
 
-def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
+def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
     """Return all Fields who are using this dsl.Object as aggregation.
 
     Args:
@@ -56,7 +55,7 @@ def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
         obj (dsl.Object): entity.dsl.Object
 
     Returns:
-        List[dsl.Field]
+        list[dsl.Field]
     """
     agg_fields = []
 
@@ -68,7 +67,7 @@ def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
     return agg_fields
 
 
-def get_parents(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
+def get_parents(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
     """Returns all Fields whose value is this dsl.Object.
 
     Args:
@@ -76,7 +75,7 @@ def get_parents(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
         obj (dsl.Object): entity.dsl.Object
 
     Returns:
-        List[dsl.Field]
+        list[dsl.Field]
     """
     parents = []
 
@@ -88,7 +87,7 @@ def get_parents(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
     return parents
 
 
-def get_query_fields(obj: dsl.Object) -> List[dsl.Field]:
+def get_query_fields(obj: dsl.Object) -> list[dsl.Field]:
     """Returns a list of all query parameters.
 
     For the default CRUD operations this will return the fields flagged with
@@ -98,7 +97,7 @@ def get_query_fields(obj: dsl.Object) -> List[dsl.Field]:
         obj (dsl.Object): entity.dsl.Object
 
     Returns:
-        List[dsl.Field]
+        list[dsl.Field]
     """
     fields = []
 
@@ -109,7 +108,7 @@ def get_query_fields(obj: dsl.Object) -> List[dsl.Field]:
     return fields
 
 
-def get_all_fields_as_list(entity: Union[dsl.Object, dsl.Base]) -> List[dsl.Field]:
+def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
     """Returns all fields ob a object including its supertype as list.
 
     Fields that are redefined in a child, overwrite the parent definition.
@@ -120,7 +119,7 @@ def get_all_fields_as_list(entity: Union[dsl.Object, dsl.Base]) -> List[dsl.Fiel
     Returns:
         list: [entity.dsl.Field]
     """
-    fields: List[dsl.Field] = []
+    fields: list[dsl.Field] = []
 
     # skip already flattened entities
     if entity.flattened:
@@ -202,14 +201,14 @@ def name_builder(
 
 
 def path_builder(
-    entity: Union[dsl.Field, dsl.Object],
+    entity: dsl.Field | dsl.Object,
     parent_obj: dsl.Object = None,
     append_id: bool = False,
 ) -> str:
     """Creates and returns the path string for a operation.
 
     Args:
-        entity (Union[dsl.Field, dsl.Object]): Either entity.dsl.Object or entity.dsl.Field.
+        entity (dsl.Field | dsl.Object): Either entity.dsl.Object or entity.dsl.Field.
         parent (dsl.Object, optional): The parent, entity.dsl.Object.
             Defaults to None.
         include_id (bool, optional): Enables the inclusion of the own ID.
@@ -244,7 +243,7 @@ def path_builder(
     return path.lower()
 
 
-def path_argument_builder(operation: dsl.Operation) -> List[dsl.Argument]:
+def path_argument_builder(operation: dsl.Operation) -> list[dsl.Argument]:
     """Creates and returns the path arguments for a operation path.
 
     ID arguments are identified within {brackets}.
@@ -253,7 +252,7 @@ def path_argument_builder(operation: dsl.Operation) -> List[dsl.Argument]:
         operation (dsl.Operation): The entity.dsl.Operation.
 
     Returns:
-        List[dsl.Argument]: [entity.dsl.Argument]
+        list[dsl.Argument]: [entity.dsl.Argument]
     """
     arguments = []
 
@@ -274,7 +273,7 @@ def path_argument_builder(operation: dsl.Operation) -> List[dsl.Argument]:
     return arguments
 
 
-def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> List[dsl.Argument]:
+def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[dsl.Argument]:
     """Creates and returns the query arguments for a operation.
 
     Args:
@@ -282,7 +281,7 @@ def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> List[ds
         obj (dsl.Object): The entity.dsl.Object the entity.dsl.Operation belongs to.
 
     Returns:
-        List[dsl.Argument]: [entity.dsl.Argument]
+        list[dsl.Argument]: [entity.dsl.Argument]
     """
     arguments = []
 
@@ -301,7 +300,7 @@ def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> List[ds
     return arguments
 
 
-def body_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> List[dsl.Argument]:
+def body_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[dsl.Argument]:
     """Creates and returns the query arguments for a operation.
 
     Args:
@@ -311,7 +310,7 @@ def body_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> List[dsl
             Defaults to False.
 
     Returns:
-        List[dsl.Argument]: [entity.dsl.Argument]
+        list[dsl.Argument]: [entity.dsl.Argument]
     """
     arguments = []
 
@@ -553,12 +552,12 @@ def api_builder(
     return obj
 
 
-def is_used(schema: dsl.Schema, entity: Union[dsl.Base, dsl.Enum]) -> bool:
+def is_used(schema: dsl.Schema, entity: dsl.Base | dsl.Enum) -> bool:
     """Checks if the provided dsl.Base or dsl.Enum is used anywhere.
 
     Args:
         schema (dsl.Schema): The QSDL schema model.
-        entity (Union[Base, dsl.Enum]): Either entity.Base or entity.dsl.Enum.
+        entity (dsl.Base | dsl.Enum): Either entity.Base or entity.dsl.Enum.
 
     Returns:
         bool: True when used.

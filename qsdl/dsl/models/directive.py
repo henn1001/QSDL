@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Union
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Field, Object, Api, Operation
+import qsdl.dsl.models as dsl
 
 
 @dataclass
@@ -32,5 +30,5 @@ class Directive:
     value: str = None
 
     # required by textX
-    parent: Union[Base, Api, Object, Field, Operation] = None
+    parent: dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation = None
     _tx_fqn: str = "entity.Directive"

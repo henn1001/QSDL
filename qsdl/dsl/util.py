@@ -14,7 +14,7 @@
 
 """QSDL Utility functions"""
 
-from typing import List, Union
+from typing import Union
 
 import qsdl.dsl.models as dsl
 
@@ -36,7 +36,7 @@ def get_directive_of_name(name: str, entity: ValueType) -> dsl.Directive:
     return match[0] if match else None
 
 
-def description_wrapper(raw_string: str) -> List[str]:
+def description_wrapper(raw_string: str) -> list[str]:
     """Formats a multiline string if needed"""
     strings = []
 

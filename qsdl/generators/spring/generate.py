@@ -17,7 +17,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
 
 import pathspec
 
@@ -30,14 +29,14 @@ from .config import IDTYPE, Config
 from .models import ApiClass, ModelClass, Package
 
 
-def parse_apis(schema: Schema) -> List[ApiClass]:
+def parse_apis(schema: Schema) -> list[ApiClass]:
     """Parse QSDL schema into custom apis.
 
     Args:
         schema (Schema): The QSDL schema model.
 
     Returns:
-        List[ApiClass]: The parsed apis.
+        list[ApiClass]: The parsed apis.
     """
     apis = []
 
@@ -57,13 +56,13 @@ def parse_apis(schema: Schema) -> List[ApiClass]:
     return apis
 
 
-def parse_models(schema: Schema) -> List[ModelClass]:
+def parse_models(schema: Schema) -> list[ModelClass]:
     """Parse QSDL schema into custom models.
 
     Args:
         schema (Schema): The QSDL schema model.
     Returns:
-        List[ModelClass]: The parsed models.
+        list[ModelClass]: The parsed models.
     """
     models = []
 

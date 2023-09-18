@@ -16,26 +16,21 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from textx.metamodel import TextXMetaModel
 
+import qsdl.dsl.models as dsl
 import qsdl.dsl.processors.model_parser as parser
 import qsdl.dsl.processors.model_validator as validator
 from qsdl import logger
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Schema
-
-
 log = logger.getLogger(__name__)
 
 
-def model_processor(schema: Schema, metamodel: TextXMetaModel):
+def model_processor(schema: dsl.Schema, metamodel: TextXMetaModel):
     """Callable that will be called after each successful model parse.
 
     Args:
-        schema (Schema): The QSDL schema model.
+        schema (dsl.Schema): The QSDL schema model.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
@@ -46,13 +41,13 @@ def model_processor(schema: Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
 
-def model_post_processor(schema: Schema, metamodel: TextXMetaModel):
+def model_post_processor(schema: dsl.Schema, metamodel: TextXMetaModel):
     """Callable that should be called after the schema has been generated and merged.
 
     We use this to validate and complete the schema.
 
     Args:
-        schema (Schema): The QSDL schema model.
+        schema (dsl.Schema): The QSDL schema model.
         metamodel (TextXMetaModel): The metamodel.
 
     Raises:
@@ -80,13 +75,13 @@ def model_post_processor(schema: Schema, metamodel: TextXMetaModel):
     validator.validate_operations(schema)
 
 
-def get_all_imports(schema: Schema) -> list:
+def get_all_imports(schema: dsl.Schema) -> list:
     """Recursively collect all imports"""
 
     imports = []
 
     for imprt in schema.imports:
-        loaded_schema: Schema = imprt._tx_loaded_models[0]
+        loaded_schema: dsl.Schema = imprt._tx_loaded_models[0]
 
         tmp = get_all_imports(loaded_schema)
 
@@ -112,13 +107,13 @@ def sort_all_imports(imports: list):
     return ret.values()
 
 
-def model_merger(schema: Schema):
+def model_merger(schema: dsl.Schema):
     """Callable that should be called after the schema has been generated.
 
     We use this to combine multiple schema files into one.
 
     Args:
-        schema (Schema): The QSDL schema model.
+        schema (dsl.Schema): The QSDL schema model.
     """
 
     # iterate over the imports and merge types
@@ -129,5 +124,5 @@ def model_merger(schema: Schema):
 
     # down merge all imported types into our main schema
     for imprt in imports:
-        loaded_schema: Schema = imprt._tx_loaded_models[0]
+        loaded_schema: dsl.Schema = imprt._tx_loaded_models[0]
         schema.types.extend(loaded_schema.types)

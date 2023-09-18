@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List, Union
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Scalar, Base, Directive, Object, Api, Enum
+import qsdl.dsl.models as dsl
 
 
 @dataclass
@@ -28,12 +26,12 @@ class Field:
     """textX Field class"""
 
     # defined in entity.tx
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
     # LHS
     name: str = None
     # RHS
     is_array: bool = False
-    value: Union[Scalar, Base, Object, Enum] = None
+    value: dsl.Scalar | dsl.Object | dsl.Enum = None
     is_required: bool = False
     # Special directives
     is_query: bool = False
@@ -46,10 +44,10 @@ class Field:
     min_size: int = None
     max_size: int = None
     # Custom directives
-    directives: List[Directive] = field(default_factory=list)
+    directives: list[dsl.Directive] = field(default_factory=list)
 
     # required by textX
-    parent: Union[Base, Object] = None
+    parent: dsl.Base | dsl.Object = None
     _tx_fqn: str = "entity.Field"
 
     # addons

@@ -16,12 +16,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import qsdl.dsl.models as dsl
 
 from ..util import description_wrapper
-
-if TYPE_CHECKING:
-    import qsdl.dsl.models as dsl
 
 
 def schema_processor(entity: dsl.Schema):

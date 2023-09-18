@@ -16,27 +16,23 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import stringcase
 
+from .. import models as spring
 from .. import util
-
-if TYPE_CHECKING:
-    from . import ModelClass, ModelField
 
 
 class HibernateFieldInfo:
     """Custom dataclass"""
 
-    def __init__(self, field: ModelField):
+    def __init__(self, field: spring.ModelField):
         pass
 
 
 class HibernateParentInfo:
     """Custom dataclass"""
 
-    def __init__(self, model: ModelClass, parent: ModelClass):
+    def __init__(self, model: spring.ModelClass, parent: spring.ModelClass):
         """
         Example:
           method_joined_id      = TicketIdAndId
@@ -52,7 +48,7 @@ class HibernateParentInfo:
 class HibernateModelInfo:
     """Custom dataclass"""
 
-    def __init__(self, model: ModelClass):
+    def __init__(self, model: spring.ModelClass):
         """
         Example:
           method_joined_id      = ProjectId

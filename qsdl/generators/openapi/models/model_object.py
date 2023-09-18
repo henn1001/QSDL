@@ -17,14 +17,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List, Union
 
 import stringcase
 
-from .. import util
+import qsdl.dsl.models as dsl
 
-if TYPE_CHECKING:
-    import qsdl.dsl.models as dsl
+from .. import util
 
 
 @dataclass
@@ -33,7 +31,7 @@ class ModelField:
 
     name: str = None
     json_key: str = None
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
 
     type: str = None
     is_array: bool = False
@@ -107,20 +105,20 @@ class ModelObject:
 
     # computed attributes
     name: str = None
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
     is_enum: bool = False
     is_base: bool = False
     is_object: bool = False
     extends: str = None
-    attributes: List[ModelField] = field(default_factory=list)
-    constants: List[str] = field(default_factory=list)
+    attributes: list[ModelField] = field(default_factory=list)
+    constants: list[str] = field(default_factory=list)
 
     # addons
     is_supertype: bool = False
     is_nested: bool = False
 
-    def build(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]) -> ModelObject:
-        """Builds self from Union[dsl.Enum, dsl.Base, dsl.Object]"""
+    def build(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> ModelObject:
+        """Builds self from dsl.Enum | dsl.Base | dsl.Object"""
 
         # rename to naming convention
         self.name = stringcase.pascalcase(_ref.name)
@@ -147,7 +145,7 @@ class ModelObject:
 
         return self
 
-    def _add_attributes(self, _ref: Union[dsl.Enum, dsl.Base, dsl.Object]):
+    def _add_attributes(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
 
         if _ref._tx_fqn not in ["entity.Base", "entity.Object"]:
             raise ValueError

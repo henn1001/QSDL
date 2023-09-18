@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Union
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Object, Operation, Scalar
+import qsdl.dsl.models as dsl
 
 
 @dataclass
@@ -32,13 +30,13 @@ class Argument:
     name: str = None
     # RHS
     is_array: bool = False
-    value: Union[Scalar, Base, Object, Enum] = None
+    value: dsl.Scalar | dsl.Object | dsl.Enum = None
     is_required: bool = False
     is_query: bool = False
     is_header: bool = False
 
     # required by textX
-    parent: Operation = None
+    parent: dsl.Operation = None
     _tx_fqn: str = "entity.Argument"
 
     # addons

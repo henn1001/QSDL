@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Api, Base, Directive, Field, Schema
+import qsdl.dsl.models as dsl
 
 
 @dataclass
@@ -28,19 +26,19 @@ class Object:
     """textX Object class"""
 
     # defined in entity.tx
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
     name: str = None
-    supertype: Base = None
+    supertype: dsl.Base = None
     # Special directives
     is_deprecated: bool = False
     namespace: str = None
     # Custom directives
-    directives: List[Directive] = field(default_factory=list)
-    fields: List[Field] = field(default_factory=list)
-    api: Api = None
+    directives: list[dsl.Directive] = field(default_factory=list)
+    fields: list[dsl.Field] = field(default_factory=list)
+    api: dsl.Api = None
 
     # required by textX
-    parent: Schema = None
+    parent: dsl.Schema = None
     _tx_fqn: str = "entity.Object"
 
     # addons

@@ -15,7 +15,6 @@
 """OpenAPI Generator"""
 
 from pathlib import Path
-from typing import List
 
 import stringcase
 
@@ -28,14 +27,14 @@ from .config import IDTYPE, Config
 from .models import ApiObject, ModelObject
 
 
-def parse_apis(schema: Schema) -> List[ApiObject]:
+def parse_apis(schema: Schema) -> list[ApiObject]:
     """Parse QSDL schema into custom API model.
 
     Args:
         schema (Schema): The QSDL schema model.
 
     Returns:
-        List[Api]: A list of custom API models.
+        list[Api]: A list of custom API models.
     """
     apis = []
 
@@ -53,13 +52,13 @@ def parse_apis(schema: Schema) -> List[ApiObject]:
     return apis
 
 
-def parse_models(schema: Schema) -> List[ModelObject]:
+def parse_models(schema: Schema) -> list[ModelObject]:
     """Parse QSDL schema into custom models.
 
     Args:
         schema (Schema): The QSDL schema model.
     Returns:
-        List[Model]: The parsed models.
+        list[Model]: The parsed models.
     """
     models = []
 

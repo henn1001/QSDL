@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List, Union
 
-if TYPE_CHECKING:
-    from qsdl.dsl.models import Base, Enum, Object, Api, Scalar
+import qsdl.dsl.models as dsl
 
 
 @dataclass
@@ -28,12 +26,12 @@ class Schema:
     """textX Schema class"""
 
     # defined in entity.tx
-    imports: List[any] = field(default_factory=list)
+    imports: list[any] = field(default_factory=list)
     title: str = None
     version: str = None
-    description: List[str] = field(default_factory=list)
-    servers: List[str] = field(default_factory=list)
-    types: List[Union[Scalar, Enum, Base, Api, Object]] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
+    servers: list[str] = field(default_factory=list)
+    types: list[dsl.Scalar | dsl.Enum | dsl.Base | dsl.Api | dsl.Object] = field(default_factory=list)
 
     # required by textX
     _tx_fqn: str = "entity.Schema"

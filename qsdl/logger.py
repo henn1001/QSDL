@@ -18,6 +18,7 @@ import logging
 
 
 class CustomLogRecord(logging.LogRecord):
+    "add custom keywords, like origin, that can be used as within log_format"
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.origin = f"{self.name}.{self.funcName}"
@@ -50,7 +51,6 @@ class CustomFormatter(logging.Formatter):
 # pylint: disable=invalid-name
 def getLogger(name):
     """Returns logging.getLogger"""
-    # add custom record - not used at the moment
     logging.setLogRecordFactory(CustomLogRecord)
 
     # create logger

@@ -17,17 +17,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, List
 
 import stringcase
 
 import qsdl.dsl.models as dsl
 import qsdl.dsl.util as qutil
 
+from .. import models as spring
 from .. import util
-
-if TYPE_CHECKING:
-    from . import ModelClass, Parent
 
 
 @dataclass
@@ -77,7 +74,7 @@ class Operation:
     name: str = None
     tag: str = None
     summary: str = None
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
 
     path: str = None
     method: str = None
@@ -86,16 +83,16 @@ class Operation:
     is_generated: bool = False
     is_pageable: bool = False
 
-    parent: Parent = None
+    parent: spring.Parent = None
 
-    parameters: List[Parameter] = field(default_factory=list)
-    path_parameters: List[Parameter] = field(default_factory=list)
-    query_parameters: List[Parameter] = field(default_factory=list)
-    header_parameters: List[Parameter] = field(default_factory=list)
-    body_parameters: List[Parameter] = field(default_factory=list)
+    parameters: list[Parameter] = field(default_factory=list)
+    path_parameters: list[Parameter] = field(default_factory=list)
+    query_parameters: list[Parameter] = field(default_factory=list)
+    header_parameters: list[Parameter] = field(default_factory=list)
+    body_parameters: list[Parameter] = field(default_factory=list)
 
     response: Parameter = None
-    response_headers: List[Parameter] = field(default_factory=list)
+    response_headers: list[Parameter] = field(default_factory=list)
 
     consumes: str = None
     produces: str = None
@@ -185,18 +182,18 @@ class ApiClass:
 
     name: str = None
     namespace: str = None
-    description: List[str] = field(default_factory=list)
+    description: list[str] = field(default_factory=list)
 
-    model: ModelClass = None
+    model: spring.ModelClass = None
 
-    operations: List[Operation] = field(default_factory=list)
+    operations: list[Operation] = field(default_factory=list)
 
     # addons
     has_generated: bool = False
     has_objectnode: bool = False
-    api_imports: List[str] = field(default_factory=list)
-    controller_imports: List[str] = field(default_factory=list)
-    service_imports: List[str] = field(default_factory=list)
+    api_imports: list[str] = field(default_factory=list)
+    controller_imports: list[str] = field(default_factory=list)
+    service_imports: list[str] = field(default_factory=list)
 
     def build(self, _ref: dsl.Api) -> ApiClass:
         """Builds self from dsl.Api"""
