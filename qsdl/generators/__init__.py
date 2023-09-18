@@ -19,8 +19,6 @@ from typing import Callable, Union
 
 from qsdl.dsl.models import Schema
 
-from .graphql import Config as GraphqlConfig
-from .graphql import generate as graphql_generator
 from .openapi import Config as OpenapiConfig
 from .openapi import generate as openapi_generator
 from .plantuml import Config as PlantumlConfig
@@ -30,13 +28,12 @@ from .spring import generate as spring_generator
 from .void import Config as VoidConfig
 from .void import generate as void_generator
 
-ConfigType = Union[GraphqlConfig, OpenapiConfig, PlantumlConfig, SpringConfig]
+ConfigType = Union[OpenapiConfig, PlantumlConfig, SpringConfig]
 GeneratorType = Callable[[Schema, Path, ConfigType], None]
 
 
 GENERATORS = {
     "openapi": (openapi_generator, OpenapiConfig()),
-    "graphql": (graphql_generator, GraphqlConfig()),
     "plantuml": (plantuml_generator, PlantumlConfig()),
     "spring": (spring_generator, SpringConfig()),
     "void": (void_generator, VoidConfig()),

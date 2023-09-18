@@ -16,7 +16,6 @@ import textwrap
 import uuid
 from pathlib import Path
 
-import graphql
 import yaml
 from qsdl.core import generate
 
@@ -37,20 +36,13 @@ def wrapper_generate(test_input: str) -> dict:
 
     # generate
     assert generate("openapi", test_output, raw_schema=test_input) == 0
-    assert generate("graphql", test_output, raw_schema=test_input) == 0
 
     openapi_file = Path("srcgen/" + test_seed + "/" + "openapi.yaml")
-    graphql_file = Path("srcgen/" + test_seed + "/" + "schema.graphql")
 
     assert openapi_file.is_file()
-    assert graphql_file.is_file()
 
     with open(openapi_file, encoding="utf-8") as file:
         openapi = yaml.load(file, Loader=yaml.FullLoader)
-
-    # FIXME: disabled for now
-    # with open(graphql_file) as file:
-    #     gql = graphql.build_schema(file.read())
 
     return openapi
 
@@ -68,4 +60,3 @@ def wrapper_generate_failure(test_input: str):
 
     # generate
     assert generate("openapi", test_output, raw_schema=test_input) != 0
-    assert generate("graphql", test_output, raw_schema=test_input) != 0

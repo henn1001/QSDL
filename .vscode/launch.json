@@ -17,21 +17,6 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "QSDL - GraphQL",
-            "type": "python",
-            "request": "launch",
-            "module": "qsdl",
-            "args": [
-                "util/examples/input.qsdl",
-                "-g",
-                "graphql",
-                "-o",
-                "util/examples/srcgen/"
-            ],
-            "justMyCode": false,
-            "console": "integratedTerminal"
-        },
-        {
             "name": "QSDL - PlantUML",
             "type": "python",
             "request": "launch",
