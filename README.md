@@ -387,7 +387,7 @@ Operation Rules:
 Example:
 
     extend api {
-        submitObject(body: Object): Void @path("(object)") @method(POST)
+        submitObject(body: Object): Void @path("/foo") @method(POST)
     }
 
 ## Directive
@@ -424,9 +424,9 @@ There are certain builtin directives that can be used to modify the generation b
 
 15.  `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
 
-16.  `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting minimum length of the value.
+16.  `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting minimum (length) of the value.
 
-17.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum length of the value.
+17.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum (length) of the value.
 
 18.  `Directive` `@headers` may be used on any `Api` or `Field` for adding response headers to the operation.
 
