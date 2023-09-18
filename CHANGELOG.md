@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://gitlab.com/henn1001/qsdl/compare/v3.2.0...v4.0.0) (2023-09-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* removed graphql generator
+* update dependencies and move on to python 3.11 - dropping support for older versions
+* promote the spring specific force-generate directive to a core feature. base and enum entities are now omitted by default when not used
+
+### Features
+
+* **core:** allow re-defining inherited fields from super-types ([ed7142a](https://gitlab.com/henn1001/qsdl/commit/ed7142af2edc8f22e69cd8c25cd1bfae02e9fcf3))
+* enable color coded logging :) ([5fef64f](https://gitlab.com/henn1001/qsdl/commit/5fef64f4dbd4c77f1248e0e8167f9e77cb044fa4))
+* promote the spring specific force-generate directive to a core feature. base and enum entities are now omitted by default when not used ([50358e6](https://gitlab.com/henn1001/qsdl/commit/50358e69bb63546b39ce716bb5ebdd6b630c471e))
+* removed graphql generator ([254babc](https://gitlab.com/henn1001/qsdl/commit/254babc23674ffec68652d104e67549f148bf266))
+* **spring:** [@spring-package](https://gitlab.com/spring-package) now available for more flexible domain oriented package layouts ([a3917ad](https://gitlab.com/henn1001/qsdl/commit/a3917ad0d0b4d1b707b3e8b975983a77f79317f7))
+* **spring:** config - decouple folder_paths from base_package for more flexibility ([b6affbf](https://gitlab.com/henn1001/qsdl/commit/b6affbf654ebc0be7dc249cfde0fe83058f3f1a4))
+* **spring:** downgraded AppException to a RuntimeException ([200bb4c](https://gitlab.com/henn1001/qsdl/commit/200bb4c22d63145fab86c6191de6ae33b73a2b1e))
+* **spring:** simplify enums ([3e34122](https://gitlab.com/henn1001/qsdl/commit/3e341221123a5080659af9a2bf75c3efa8cd235d))
+* **spring:** split dto and entity for hibernate generation ([6ee0a34](https://gitlab.com/henn1001/qsdl/commit/6ee0a3416405ac1af9b50bf1a5e44c37bbdf2818))
+
+
+### Bug Fixes
+
+* **spring:** add missing objectnode import when using custom scalars for api interfaces ([47c1710](https://gitlab.com/henn1001/qsdl/commit/47c17107c8fe422a5acb11ed485527d3226462b7))
+* **spring:** delete operations on uuids should now throw the correct exception by replacing the jpa deleteBy with find & delete ([9cb8a7c](https://gitlab.com/henn1001/qsdl/commit/9cb8a7c96e23c90880c07aa5ccd5b196e3059c4a))
+
+
+### build
+
+* update dependencies and move on to python 3.11 - dropping support for older versions ([411d99d](https://gitlab.com/henn1001/qsdl/commit/411d99de8f50d9d361535ed27364e1e018c73b89))
+
 ## [3.2.0](https://gitlab.com/henn1001/qsdl/compare/v3.1.0...v3.2.0) (2023-09-18)
 
 
