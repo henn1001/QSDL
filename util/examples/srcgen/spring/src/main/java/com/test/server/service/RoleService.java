@@ -12,8 +12,8 @@ import com.test.server.util.PredicateBuilder;
 import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -64,7 +64,7 @@ public class RoleService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Role createRole(Long projectId, Role body, Context context) throws AppException {
 
     // confirm existence of parent
@@ -88,7 +88,7 @@ public class RoleService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Role replaceRole(Long projectId, Long id, Role body, Context context) throws AppException {
 
     // confirm existence of parent
@@ -107,7 +107,7 @@ public class RoleService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Role updateRole(Long projectId, Long id, Role body, Context context) throws AppException {
 
     // confirm existence of parent
@@ -126,18 +126,15 @@ public class RoleService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Void deleteRole(Long projectId, Long id, Context context) throws AppException {
 
     // confirm existence of parent
-    fetchProjectFromDb(projectId);
+    Project project = fetchProjectFromDb(projectId);
 
-    try {
-      roleRepository.deleteById(id);
-    }
-    catch (DataRetrievalFailureException e) {
-      throw AppException.entityNotFound(Role.class, id);
-    }
+    Role dbEntity = fetchRoleFromProjectFromDb(project.getId(), id);
+
+    roleRepository.delete(dbEntity);
 
     return null;
   }

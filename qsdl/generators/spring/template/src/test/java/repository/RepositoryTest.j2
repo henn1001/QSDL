@@ -96,7 +96,7 @@ public class {{model.name}}RepositoryTest {
     {{model.name}} testData = prepareData(1).get(0);
 
     // When
-    {{model.name|lower}}Repository.deleteById(testData.getId());
+    {{model.name|lower}}Repository.delete(testData);
 
     // Then
     long count = {{model.name|lower}}Repository.count();
@@ -255,7 +255,7 @@ public class {{model.name}}RepositoryTest {
   {% endif %}
 
     // When
-    {{model.name|lower}}Repository.deleteById(testData.getId());
+    {{model.name|lower}}Repository.delete(testData);
 
     // Then
     BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));
@@ -277,7 +277,7 @@ public class {{model.name}}RepositoryTest {
   {% endif %}
 
     // When
-    {{parent.model.name|lower}}Repository.deleteById(parent.getId());
+    {{parent.model.name|lower}}Repository.delete(parent);
 
     // Then
     BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}.{{model.name|camel}}.{{parent.predicate}}.id.eq(parent.getId()));

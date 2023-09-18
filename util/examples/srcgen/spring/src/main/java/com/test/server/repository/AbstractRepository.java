@@ -20,6 +20,4 @@ public interface AbstractRepository<T extends AbstractPersistentObject, ID exten
 
   public boolean existsByUid(String uid);
 
-  public void deleteByUid(String uid);
-
 }

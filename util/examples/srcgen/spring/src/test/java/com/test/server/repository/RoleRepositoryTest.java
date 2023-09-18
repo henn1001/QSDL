@@ -80,7 +80,7 @@ public class RoleRepositoryTest {
     Role testData = prepareData(1).get(0);
 
     // When
-    roleRepository.deleteById(testData.getId());
+    roleRepository.delete(testData);
 
     // Then
     long count = roleRepository.count();

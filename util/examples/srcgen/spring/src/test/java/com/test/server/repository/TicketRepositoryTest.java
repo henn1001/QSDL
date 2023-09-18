@@ -74,7 +74,7 @@ public class TicketRepositoryTest {
     Ticket testData = prepareData(1).get(0);
 
     // When
-    ticketRepository.deleteById(testData.getId());
+    ticketRepository.delete(testData);
 
     // Then
     long count = ticketRepository.count();

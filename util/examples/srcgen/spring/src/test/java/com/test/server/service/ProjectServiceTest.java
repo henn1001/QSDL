@@ -212,6 +212,9 @@ public class ProjectServiceTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
+    when(repository.findById(eq(request.getId())))
+        .thenReturn(Optional.of(request));
+
     // When
     service.deleteProject(request.getId(), new Context());
 
@@ -225,8 +228,8 @@ public class ProjectServiceTest {
     // Given
     Project request = TestConfig.getRandom(Project.class);
 
-    doThrow(new EmptyResultDataAccessException(1))
-        .when(repository).deleteById(eq(request.getId()));
+    when(repository.findById(eq(request.getId())))
+        .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,

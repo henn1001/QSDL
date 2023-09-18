@@ -147,15 +147,14 @@
     #}
     {% if operation.parent %}
     // confirm existence of parent
-    fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
+    {{p_model.name}} {{ p_model.name|lower }} = fetch{{p_model.name}}FromDb({{ p_m_hibernate.parameter_joined_id }});
 
+    {{model.name}} dbEntity = fetch{{model.name}}From{{p_model.name}}FromDb({{ p_model.name|lower }}.getId(), id);
+    {% else %}
+    {{model.name}} dbEntity = fetch{{model.name}}FromDb(id);
     {% endif %}
-    try {
-      {{model.name|lower}}Repository.{{ model.hibernate.delete_by_id }}(id);
-    }
-    catch (DataRetrievalFailureException e) {
-      throw AppException.entityNotFound({{model.name}}.class, id);
-    }
+
+    {{model.name|lower}}Repository.delete(dbEntity);
 
     return null;
   {% endif %}

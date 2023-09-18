@@ -80,7 +80,7 @@ public class UserRepositoryTest {
     User testData = prepareData(1).get(0);
 
     // When
-    userRepository.deleteById(testData.getId());
+    userRepository.delete(testData);
 
     // Then
     long count = userRepository.count();
@@ -197,7 +197,7 @@ public class UserRepositoryTest {
     Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
 
     // When
-    userRepository.deleteById(testData.getId());
+    userRepository.delete(testData);
 
     // Then
     BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));
@@ -215,7 +215,7 @@ public class UserRepositoryTest {
     Ticket parent = testData.tickets.toArray(new Ticket[0])[0];
 
     // When
-    ticketRepository.deleteById(parent.getId());
+    ticketRepository.delete(parent);
 
     // Then
     BooleanBuilder predicate = new BooleanBuilder(QUser.user.tickets.any().id.eq(parent.getId()));

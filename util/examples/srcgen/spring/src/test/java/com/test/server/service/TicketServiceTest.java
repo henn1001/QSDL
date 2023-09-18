@@ -212,6 +212,9 @@ public class TicketServiceTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
+    when(repository.findById(eq(request.getId())))
+        .thenReturn(Optional.of(request));
+
     // When
     service.deleteTicket(request.getId(), new Context());
 
@@ -225,8 +228,8 @@ public class TicketServiceTest {
     // Given
     Ticket request = TestConfig.getRandom(Ticket.class);
 
-    doThrow(new EmptyResultDataAccessException(1))
-        .when(repository).deleteById(eq(request.getId()));
+    when(repository.findById(eq(request.getId())))
+        .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,

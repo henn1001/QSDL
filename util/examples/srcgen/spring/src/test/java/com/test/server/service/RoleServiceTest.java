@@ -251,6 +251,9 @@ public class RoleServiceTest {
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
+        .thenReturn(Optional.of(request));
+
     // When
     service.deleteRole(one, request.getId(), new Context());
 
@@ -268,8 +271,8 @@ public class RoleServiceTest {
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
 
-    doThrow(new EmptyResultDataAccessException(1))
-        .when(repository).deleteById(eq(request.getId()));
+    when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(request.getId())))
+        .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,

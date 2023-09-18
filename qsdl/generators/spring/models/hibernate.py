@@ -62,4 +62,3 @@ class HibernateModelInfo:
         self.parameter_joined_id = stringcase.camelcase(model.name) + "Id"
 
         self.find_by_id = "findById" if util.Store.is_id_long else "findByUid"
-        self.delete_by_id = "deleteById" if util.Store.is_id_long else "deleteByUid"

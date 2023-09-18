@@ -75,7 +75,7 @@ public class ProjectRepositoryTest {
     Project testData = prepareData(1).get(0);
 
     // When
-    projectRepository.deleteById(testData.getId());
+    projectRepository.delete(testData);
 
     // Then
     long count = projectRepository.count();

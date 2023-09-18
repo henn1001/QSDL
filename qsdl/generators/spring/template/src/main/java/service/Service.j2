@@ -12,8 +12,10 @@ package {{package.service}};
 import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+{% if api.operations|selectattr("is_generated")|rejectattr("method", "equalto", "get") | list %}
+import org.springframework.transaction.annotation.Transactional;
+{% endif %}
 {% if api.has_objectnode %}
 import com.fasterxml.jackson.databind.node.ObjectNode;
 {% endif %}
@@ -62,7 +64,7 @@ public class {{api.name}}Service {
 
 {% for operation in api.operations if operation.is_generated %}
   {% if operation.method != "get" %}
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   {% endif %}
   public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
 

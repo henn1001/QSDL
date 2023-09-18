@@ -12,8 +12,8 @@ import com.test.server.util.PredicateBuilder;
 import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -64,7 +64,7 @@ public class UserService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Void addUserToTicket(Long ticketId, Long id, Context context) throws AppException {
 
     // get and confirm existence
@@ -83,7 +83,7 @@ public class UserService {
     return null;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Void removeUserFromTicket(Long ticketId, Long id, Context context) throws AppException {
 
     // get and confirm existence
@@ -108,7 +108,7 @@ public class UserService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public User createUser(User body, Context context) throws AppException {
 
     User ret = userRepository.save(body);
@@ -123,7 +123,7 @@ public class UserService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public User replaceUser(Long id, User body, Context context) throws AppException {
 
     User dbEntity = fetchUserFromDb(id);
@@ -136,7 +136,7 @@ public class UserService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public User updateUser(Long id, User body, Context context) throws AppException {
 
     User dbEntity = fetchUserFromDb(id);
@@ -149,15 +149,12 @@ public class UserService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Void deleteUser(Long id, Context context) throws AppException {
 
-    try {
-      userRepository.deleteById(id);
-    }
-    catch (DataRetrievalFailureException e) {
-      throw AppException.entityNotFound(User.class, id);
-    }
+    User dbEntity = fetchUserFromDb(id);
+
+    userRepository.delete(dbEntity);
 
     return null;
   }

@@ -286,6 +286,9 @@ public class UserServiceTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
+    when(repository.findById(eq(request.getId())))
+        .thenReturn(Optional.of(request));
+
     // When
     service.deleteUser(request.getId(), new Context());
 
@@ -299,8 +302,8 @@ public class UserServiceTest {
     // Given
     User request = TestConfig.getRandom(User.class);
 
-    doThrow(new EmptyResultDataAccessException(1))
-        .when(repository).deleteById(eq(request.getId()));
+    when(repository.findById(eq(request.getId())))
+        .thenReturn(Optional.ofNullable(null));
 
     // When
     AppException thrown = assertThrows(AppException.class,

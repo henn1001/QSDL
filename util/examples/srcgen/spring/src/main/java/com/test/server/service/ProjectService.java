@@ -12,8 +12,8 @@ import com.test.server.util.PredicateBuilder;
 import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -46,7 +46,7 @@ public class ProjectService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Project createProject(Project body, Context context) throws AppException {
 
     Project ret = projectRepository.save(body);
@@ -61,7 +61,7 @@ public class ProjectService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Project replaceProject(Long id, Project body, Context context) throws AppException {
 
     Project dbEntity = fetchProjectFromDb(id);
@@ -74,7 +74,7 @@ public class ProjectService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Project updateProject(Long id, Project body, Context context) throws AppException {
 
     Project dbEntity = fetchProjectFromDb(id);
@@ -87,15 +87,12 @@ public class ProjectService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Void deleteProject(Long id, Context context) throws AppException {
 
-    try {
-      projectRepository.deleteById(id);
-    }
-    catch (DataRetrievalFailureException e) {
-      throw AppException.entityNotFound(Project.class, id);
-    }
+    Project dbEntity = fetchProjectFromDb(id);
+
+    projectRepository.delete(dbEntity);
 
     return null;
   }

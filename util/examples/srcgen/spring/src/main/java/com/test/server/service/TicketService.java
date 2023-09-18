@@ -12,8 +12,8 @@ import com.test.server.util.PredicateBuilder;
 import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -46,7 +46,7 @@ public class TicketService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Ticket createTicket(Ticket body, Context context) throws AppException {
 
     Ticket ret = ticketRepository.save(body);
@@ -61,7 +61,7 @@ public class TicketService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Ticket replaceTicket(Long id, Ticket body, Context context) throws AppException {
 
     Ticket dbEntity = fetchTicketFromDb(id);
@@ -74,7 +74,7 @@ public class TicketService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Ticket updateTicket(Long id, Ticket body, Context context) throws AppException {
 
     Ticket dbEntity = fetchTicketFromDb(id);
@@ -87,15 +87,12 @@ public class TicketService {
     return ret;
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public Void deleteTicket(Long id, Context context) throws AppException {
 
-    try {
-      ticketRepository.deleteById(id);
-    }
-    catch (DataRetrievalFailureException e) {
-      throw AppException.entityNotFound(Ticket.class, id);
-    }
+    Ticket dbEntity = fetchTicketFromDb(id);
+
+    ticketRepository.delete(dbEntity);
 
     return null;
   }

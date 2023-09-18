@@ -356,6 +356,13 @@ public class {{model.name}}ServiceTest {
 
     when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
         .thenReturn(Optional.of(testParent));
+
+    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq(request.{{getId}})))
+        .thenReturn(Optional.of(request));
+    {% else %}
+
+    when(repository.{{hibernate.find_by_id}}(eq(request.{{getId}})))
+        .thenReturn(Optional.of(request));
     {% endif %}
 
     // When
@@ -375,10 +382,14 @@ public class {{model.name}}ServiceTest {
 
     when({{p_model.name|lower}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
         .thenReturn(Optional.of(testParent));
-    {% endif %}
 
-    doThrow(new EmptyResultDataAccessException(1))
-        .when(repository).{{hibernate.delete_by_id}}(eq(request.{{getId}}));
+    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq(request.{{getId}})))
+        .thenReturn(Optional.ofNullable(null));
+    {% else %}
+
+    when(repository.{{hibernate.find_by_id}}(eq(request.{{getId}})))
+        .thenReturn(Optional.ofNullable(null));
+    {% endif %}
 
     // When
     AppException thrown = assertThrows(AppException.class,
