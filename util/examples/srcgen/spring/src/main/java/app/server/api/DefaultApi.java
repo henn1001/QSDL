@@ -28,7 +28,7 @@ public interface DefaultApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode body) throws Exception {
+  default ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -40,7 +40,7 @@ public interface DefaultApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<ObjectNode> action(@Valid @RequestBody BaseType arg1) throws Exception {
+  default ResponseEntity<ObjectNode> action(@Valid @RequestBody BaseType arg1) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

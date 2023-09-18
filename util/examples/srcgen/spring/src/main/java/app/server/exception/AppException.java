@@ -8,9 +8,7 @@ import app.server.model.AppError;
 
 import java.util.List;
 
-public class AppException extends Exception {
-
-  static final long serialVersionUID = 1L;
+public class AppException extends RuntimeException {
 
   private final AppError appError;
 

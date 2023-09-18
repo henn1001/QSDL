@@ -26,7 +26,7 @@ public interface ProjectApi {
       value = "/projects",
       produces = {"application/json"}
   )
-  default ResponseEntity<CursorPage> getProjects(CursorPageable pageable) throws Exception {
+  default ResponseEntity<CursorPage> getProjects(CursorPageable pageable) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -38,7 +38,7 @@ public interface ProjectApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Project> createProject(@Valid @RequestBody Project body) throws Exception {
+  default ResponseEntity<Project> createProject(@Valid @RequestBody Project body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -49,7 +49,7 @@ public interface ProjectApi {
       value = "/projects/{id}",
       produces = {"application/json"}
   )
-  default ResponseEntity<Project> getProject(@PathVariable("id") Long id) throws Exception {
+  default ResponseEntity<Project> getProject(@PathVariable("id") Long id) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -61,7 +61,7 @@ public interface ProjectApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @Valid @RequestBody Project body) throws Exception {
+  default ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @Valid @RequestBody Project body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -73,7 +73,7 @@ public interface ProjectApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) throws Exception {
+  default ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -83,7 +83,7 @@ public interface ProjectApi {
   @DeleteMapping(
       value = "/projects/{id}"
   )
-  default ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) throws Exception {
+  default ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

@@ -26,7 +26,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<CursorPage> getProjects(CursorPageable pageable) throws Exception {
+  public ResponseEntity<CursorPage> getProjects(CursorPageable pageable) {
     CursorPage response = projectService.getProjects(pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -35,7 +35,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<Project> createProject(Project body) throws Exception {
+  public ResponseEntity<Project> createProject(Project body) {
     Project response = projectService.createProject(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -44,7 +44,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<Project> getProject(Long id) throws Exception {
+  public ResponseEntity<Project> getProject(Long id) {
     Project response = projectService.getProject(id, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -53,7 +53,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<Project> replaceProject(Long id, Project body) throws Exception {
+  public ResponseEntity<Project> replaceProject(Long id, Project body) {
     Project response = projectService.replaceProject(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -62,7 +62,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<Project> updateProject(Long id, Project body) throws Exception {
+  public ResponseEntity<Project> updateProject(Long id, Project body) {
     Validator.validateExRequired(body);
     Project response = projectService.updateProject(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -72,7 +72,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<Void> deleteProject(Long id) throws Exception {
+  public ResponseEntity<Void> deleteProject(Long id) {
     projectService.deleteProject(id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }

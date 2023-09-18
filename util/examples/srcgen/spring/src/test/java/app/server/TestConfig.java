@@ -44,7 +44,7 @@ public class TestConfig {
 
   /**
    * A helper-method to deep-copy idenities for nested objects.
-   * 
+   *
    * Needed when testing repositories, as these modify the identity.
    * We assume that object a and b are equal in size/structure.
    */

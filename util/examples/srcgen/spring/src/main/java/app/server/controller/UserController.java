@@ -26,7 +26,7 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<CursorPage> getUsersForTicket(Long ticketId, CursorPageable pageable) throws Exception {
+  public ResponseEntity<CursorPage> getUsersForTicket(Long ticketId, CursorPageable pageable) {
     CursorPage response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -35,7 +35,7 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<Void> addUserToTicket(Long ticketId, Long id) throws Exception {
+  public ResponseEntity<Void> addUserToTicket(Long ticketId, Long id) {
     userService.addUserToTicket(ticketId, id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }
@@ -44,7 +44,7 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<Void> removeUserFromTicket(Long ticketId, Long id) throws Exception {
+  public ResponseEntity<Void> removeUserFromTicket(Long ticketId, Long id) {
     userService.removeUserFromTicket(ticketId, id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }
@@ -53,7 +53,7 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<CursorPage> getUsers(CursorPageable pageable) throws Exception {
+  public ResponseEntity<CursorPage> getUsers(CursorPageable pageable) {
     CursorPage response = userService.getUsers(pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -62,7 +62,7 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<User> createUser(User body) throws Exception {
+  public ResponseEntity<User> createUser(User body) {
     User response = userService.createUser(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -71,7 +71,7 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<User> getUser(Long id) throws Exception {
+  public ResponseEntity<User> getUser(Long id) {
     User response = userService.getUser(id, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -80,7 +80,7 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<User> replaceUser(Long id, User body) throws Exception {
+  public ResponseEntity<User> replaceUser(Long id, User body) {
     User response = userService.replaceUser(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -89,7 +89,7 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<User> updateUser(Long id, User body) throws Exception {
+  public ResponseEntity<User> updateUser(Long id, User body) {
     Validator.validateExRequired(body);
     User response = userService.updateUser(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -99,7 +99,7 @@ public class UserController extends BaseController implements UserApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<Void> deleteUser(Long id) throws Exception {
+  public ResponseEntity<Void> deleteUser(Long id) {
     userService.deleteUser(id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);
   }

@@ -26,7 +26,7 @@ public interface TicketApi {
       value = "/tickets",
       produces = {"application/json"}
   )
-  default ResponseEntity<CursorPage> getTickets(CursorPageable pageable) throws Exception {
+  default ResponseEntity<CursorPage> getTickets(CursorPageable pageable) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -38,7 +38,7 @@ public interface TicketApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Ticket> createTicket(@Valid @RequestBody Ticket body) throws Exception {
+  default ResponseEntity<Ticket> createTicket(@Valid @RequestBody Ticket body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -49,7 +49,7 @@ public interface TicketApi {
       value = "/tickets/{id}",
       produces = {"application/json"}
   )
-  default ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) throws Exception {
+  default ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -61,7 +61,7 @@ public interface TicketApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @Valid @RequestBody Ticket body) throws Exception {
+  default ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @Valid @RequestBody Ticket body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -73,7 +73,7 @@ public interface TicketApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) throws Exception {
+  default ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -83,7 +83,7 @@ public interface TicketApi {
   @DeleteMapping(
       value = "/tickets/{id}"
   )
-  default ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) throws Exception {
+  default ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

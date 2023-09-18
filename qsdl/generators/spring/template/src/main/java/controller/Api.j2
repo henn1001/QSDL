@@ -47,7 +47,7 @@ public interface {{api.name}}Api {
   {%- endif %}
 
   )
-  default ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsApi(operation)}}) throws Exception {
+  default ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsApi(operation)}}) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

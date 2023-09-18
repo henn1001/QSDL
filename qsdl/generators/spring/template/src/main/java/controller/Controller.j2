@@ -34,7 +34,7 @@ public class {{api.name}}Controller extends BaseController implements {{api.name
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) throws Exception {
+  public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) {
   {% if operation.is_generated and operation.response %}
     {% if operation.method == "patch" %}
     Validator.validateExRequired(body);

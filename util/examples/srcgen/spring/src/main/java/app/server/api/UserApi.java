@@ -26,7 +26,7 @@ public interface UserApi {
       value = "/tickets/{ticket_id}/users",
       produces = {"application/json"}
   )
-  default ResponseEntity<CursorPage> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) throws Exception {
+  default ResponseEntity<CursorPage> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -36,7 +36,7 @@ public interface UserApi {
   @PostMapping(
       value = "/tickets/{ticket_id}/users/{id}/add"
   )
-  default ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
+  default ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -46,7 +46,7 @@ public interface UserApi {
   @PostMapping(
       value = "/tickets/{ticket_id}/users/{id}/remove"
   )
-  default ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) throws Exception {
+  default ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -57,7 +57,7 @@ public interface UserApi {
       value = "/users",
       produces = {"application/json"}
   )
-  default ResponseEntity<CursorPage> getUsers(CursorPageable pageable) throws Exception {
+  default ResponseEntity<CursorPage> getUsers(CursorPageable pageable) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -69,7 +69,7 @@ public interface UserApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<User> createUser(@Valid @RequestBody User body) throws Exception {
+  default ResponseEntity<User> createUser(@Valid @RequestBody User body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -80,7 +80,7 @@ public interface UserApi {
       value = "/users/{id}",
       produces = {"application/json"}
   )
-  default ResponseEntity<User> getUser(@PathVariable("id") Long id) throws Exception {
+  default ResponseEntity<User> getUser(@PathVariable("id") Long id) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -92,7 +92,7 @@ public interface UserApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<User> replaceUser(@PathVariable("id") Long id, @Valid @RequestBody User body) throws Exception {
+  default ResponseEntity<User> replaceUser(@PathVariable("id") Long id, @Valid @RequestBody User body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -104,7 +104,7 @@ public interface UserApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User body) throws Exception {
+  default ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -114,7 +114,7 @@ public interface UserApi {
   @DeleteMapping(
       value = "/users/{id}"
   )
-  default ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) throws Exception {
+  default ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
