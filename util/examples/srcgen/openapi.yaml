@@ -1784,7 +1784,8 @@ components:
           format: int32
           minimum: 0
         issuer_body:
-          $ref: '#/components/schemas/User'
+          allOf:
+            - $ref: '#/components/schemas/User'
           readOnly: true
         body:
           type: string

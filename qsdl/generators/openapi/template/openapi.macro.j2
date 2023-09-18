@@ -131,7 +131,11 @@
 
 
 {% macro get_parameter_type(field, response=false) %}
-{% if field.is_object or field.is_base or field.is_enum %}
+{# workaround until openapi 3.1 is used #}
+{% if (field.is_read_only or field.is_write_only) and (field.is_object or field.is_base or field.is_enum) %}
+  allOf:
+    - $ref: '#/components/schemas/{{ field.type }}'
+{% elif field.is_object or field.is_base or field.is_enum %}
   $ref: '#/components/schemas/{{ field.type }}'
 {% else %}
   type: {{ field.type }}

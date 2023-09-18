@@ -122,9 +122,9 @@ class TestDirective:
         assert properties["name"]["readOnly"]
         assert properties["world"]["readOnly"]
         assert properties["enum"]["readOnly"]
-        assert properties["enum"]["$ref"]
+        assert properties["enum"]["allOf"][0]["$ref"]
         assert properties["base"]["readOnly"]
-        assert properties["base"]["$ref"]
+        assert properties["base"]["allOf"][0]["$ref"]
 
     def test_directive_05_positive(self):
         """Verify usage of @writeOnly"""
@@ -154,9 +154,9 @@ class TestDirective:
         assert properties["name"]["writeOnly"]
         assert properties["world"]["writeOnly"]
         assert properties["enum"]["writeOnly"]
-        assert properties["enum"]["$ref"]
+        assert properties["enum"]["allOf"][0]["$ref"]
         assert properties["base"]["writeOnly"]
-        assert properties["base"]["$ref"]
+        assert properties["base"]["allOf"][0]["$ref"]
 
     def test_directive_06_positive(self):
         """Verify usage of @composition"""
