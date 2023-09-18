@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://gitlab.com/henn1001/qsdl/compare/v3.1.0...v3.2.0) (2023-09-18)
+
+
+### Features
+
+* **core:** introduce a new date-time scalar type that supports the old date type ([bfb8fb7](https://gitlab.com/henn1001/qsdl/commit/bfb8fb7f393ea3e485fc0b6189876e20f6d09b54))
+* **spring:** add a spring-force-generate directive to force generation of unused base types ([57a3a25](https://gitlab.com/henn1001/qsdl/commit/57a3a255edc9ca22184de0b007babb35566747d6))
+* **spring:** add new parameter 'base_package' for specifying the package location. ([f2dfff1](https://gitlab.com/henn1001/qsdl/commit/f2dfff15e3af0f9988637df46d1b971c70737bc0))
+* **spring:** add Override to all controllers for better alignment with the interface ([dedbbb0](https://gitlab.com/henn1001/qsdl/commit/dedbbb0e16f28b13a4d844bd9e22f81cb3921794))
+* **spring:** add transactional to all modifying service layer methods ([e96a18e](https://gitlab.com/henn1001/qsdl/commit/e96a18efd74b8462aa51523111869313adba8767))
+* user is informed that body parameters are not allowed for delete operations ([6db6821](https://gitlab.com/henn1001/qsdl/commit/6db682102cea14f7dc475957868c2e939d4c6fc4))
+
+
+### Bug Fixes
+
+* **core:** allow server path to start other paths than /api ([1851b1b](https://gitlab.com/henn1001/qsdl/commit/1851b1bcc0fcd6683f4b71ae5b2f254f2802e068))
+* **core:** prevent field name duplications ([5b0a757](https://gitlab.com/henn1001/qsdl/commit/5b0a757c7301be8af8b604125bec29b9410983c9))
+* **openapi:** resolve compatibility issue with readOnly and writeOnly refs ([43b36a4](https://gitlab.com/henn1001/qsdl/commit/43b36a400079d03a8a5ef41f89fa69dd87873345))
+* **openapi:** sort operations by path to prevent a wrong path assignment - while qsdl does not care about the order of the paths, openapi does ([326f4dd](https://gitlab.com/henn1001/qsdl/commit/326f4dd4924e1df6fa617b4824b682b1b6c49ac4))
+* **openapi:** wrap truthy/falsy yaml enum values into quotes for yaml 1.1 compatibility ([a189937](https://gitlab.com/henn1001/qsdl/commit/a189937c4afc993cd1099c2af73006c1da4b34b9))
+* resolved more issues in multiline comment padding ([0c9f970](https://gitlab.com/henn1001/qsdl/commit/0c9f970c981b2ba8927f8324712476249f3da81a))
+* **spring:** remove additional curly brace for inheritDoc within controllers ([01e72b3](https://gitlab.com/henn1001/qsdl/commit/01e72b342105d979e2f9d73d2c499f10d083e6d4))
+* **spring:** resolve issue when generating operations with request bodies with exactly one scalar/enum value ([13ce644](https://gitlab.com/henn1001/qsdl/commit/13ce644de89d7777fe80cb57dd9bad2c7ed5923e))
+
 ## [3.1.0](https://gitlab.com/henn1001/qsdl/compare/v3.0.0...v3.1.0) (2022-06-08)
 
 
