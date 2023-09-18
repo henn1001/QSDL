@@ -37,7 +37,6 @@ public class Json {
     mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 
     // Ignore null values when writing json.
-    // mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
     mapper.configOverride(Map.class).setInclude(Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY));
     mapper.setSerializationInclusion(Include.NON_EMPTY);
 
