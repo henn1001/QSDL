@@ -275,7 +275,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "title": config.title,
         "group_id": config.group_id,
         "artifact_id": config.artifact_id,
-        "base_package": config.group_id,
+        "base_package": config.base_package,
         "package": package,
         "basePath": schema.servers[0] if schema.servers else "/api/v1",
         "database": config.database,

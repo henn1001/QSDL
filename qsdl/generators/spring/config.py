@@ -40,6 +40,7 @@ class Config(BaseConfig):
 
     title: str = "SpringBootApp"
     group_id: str = "com.test"
+    base_package: str = "com.test.server"
     artifact_id: str = "app"
     database: Database = Database.HIBERNATE
     encapsulation: bool = False

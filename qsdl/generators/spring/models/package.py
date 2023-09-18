@@ -56,7 +56,7 @@ class Package:
     @property
     def base(self) -> str:
         """property helper method"""
-        ret = self._config.group_id
+        ret = self._config.base_package
         return ret.replace(".", "/") if self.slashed else ret.replace("/", ".")
 
     @property
