@@ -51,7 +51,7 @@ public class UserService {
 
   public CursorPage getUsersForTicket(Long ticketId, CursorPageable pageable, Context context) throws AppException {
 
-    // confirm existance of parent
+    // confirm existence of parent
     // should be optimized with something like getReferenceById
     Ticket ticket = fetchTicketFromDb(ticketId);
 
@@ -67,7 +67,7 @@ public class UserService {
   @org.springframework.transaction.annotation.Transactional
   public Void addUserToTicket(Long ticketId, Long id, Context context) throws AppException {
 
-    // get and confirm existance
+    // get and confirm existence
     Ticket ticket = fetchTicketFromDb(ticketId);
 
     User user = fetchUserFromDb(id);
@@ -86,7 +86,7 @@ public class UserService {
   @org.springframework.transaction.annotation.Transactional
   public Void removeUserFromTicket(Long ticketId, Long id, Context context) throws AppException {
 
-    // get and confirm existance
+    // get and confirm existence
     Ticket ticket = fetchTicketFromDb(ticketId);
 
     User user = fetchUserFromTicketFromDb(ticket.getId(), id);

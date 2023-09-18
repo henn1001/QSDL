@@ -131,6 +131,8 @@ def parse_schema(input_path: Path = None, raw_schema: str = None) -> dsl.Schema:
     # run post processing
     model_post_processor(schema, metamodel)
 
+    log.info("schema successfully loaded")
+
     return schema
 
 

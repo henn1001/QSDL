@@ -17,22 +17,23 @@
 import re
 from typing import List, Union
 
+import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
-from qsdl.dsl.models import Api, Argument, Field, Object, Scalar, Schema, Operation
+import qsdl.dsl.util as qutil
 from qsdl.filter import pluralize
 
 from . import CrudGeneratorEnum as CrudEnum
 
 
-def get_compositions(schema: Schema, obj: Object) -> List[Field]:
-    """Return all Fields who are using this Object as composition.
+def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
+    """Return all Fields who are using this dsl.Object as composition.
 
     Args:
-        schema (Schema): The QSDL schema model.
-        obj (Object): entity.Object
+        schema (dsl.Schema): The QSDL schema model.
+        obj (dsl.Object): entity.dsl.Object
 
     Returns:
-        List[Field]: [entity.Field]
+        List[dsl.Field]
     """
     comp_fields = []
 
@@ -44,15 +45,15 @@ def get_compositions(schema: Schema, obj: Object) -> List[Field]:
     return comp_fields
 
 
-def get_aggregation(schema: Schema, obj: Object) -> List[Field]:
-    """Return all Fields who are using this Object as aggregation.
+def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
+    """Return all Fields who are using this dsl.Object as aggregation.
 
     Args:
-        schema (Schema): The QSDL schema model.
-        obj (Object): entity.Object
+        schema (dsl.Schema): The QSDL schema model.
+        obj (dsl.Object): entity.dsl.Object
 
     Returns:
-        List[Field]: [entity.Field]
+        List[dsl.Field]
     """
     agg_fields = []
 
@@ -64,15 +65,15 @@ def get_aggregation(schema: Schema, obj: Object) -> List[Field]:
     return agg_fields
 
 
-def get_parents(schema: Schema, obj: Object) -> List[Field]:
-    """Returns all Fields whose value is this Object.
+def get_parents(schema: dsl.Schema, obj: dsl.Object) -> List[dsl.Field]:
+    """Returns all Fields whose value is this dsl.Object.
 
     Args:
-        schema (Schema): The QSDL schema model.
-        obj (Object): entity.Object
+        schema (dsl.Schema): The QSDL schema model.
+        obj (dsl.Object): entity.dsl.Object
 
     Returns:
-        List[Field]: [entity.Field]
+        List[dsl.Field]
     """
     parents = []
 
@@ -84,17 +85,17 @@ def get_parents(schema: Schema, obj: Object) -> List[Field]:
     return parents
 
 
-def get_query_fields(obj: Object) -> List[Field]:
+def get_query_fields(obj: dsl.Object) -> List[dsl.Field]:
     """Returns a list of all query parameters.
 
     For the default CRUD operations this will return the fields flagged with
     a query-directive.
 
     Args:
-        obj (Object): entity.Object
+        obj (dsl.Object): entity.dsl.Object
 
     Returns:
-        List[Field]: [entity.Field]
+        List[dsl.Field]
     """
     fields = []
 
@@ -105,14 +106,14 @@ def get_query_fields(obj: Object) -> List[Field]:
     return fields
 
 
-def get_all_fields_as_list(entity: Object) -> List[Field]:
+def get_all_fields_as_list(entity: dsl.Object) -> List[dsl.Field]:
     """Returns all fields ob a object including its supertype as list and prevents duplicates.
 
     Args:
-        entity (object): entity.Object
+        entity (object): entity.dsl.Object
 
     Returns:
-        list: [entity.Field]
+        list: [entity.dsl.Field]
     """
     tmp = entity
     fields = []
@@ -132,18 +133,18 @@ def get_all_fields_as_list(entity: Object) -> List[Field]:
     return fields
 
 
-def id_builder(obj: Object) -> Field:
+def id_builder(obj: dsl.Object) -> dsl.Field:
     """Creates and returns a ID field.
 
     Args:
-        obj (Object): entity.Object
+        obj (dsl.Object): entity.dsl.Object
 
     Returns:
-        Field: entity.Field
+        dsl.Field: entity.dsl.Field
     """
-    field = Field()
+    field = dsl.Field()
     field.name = "id"
-    field.value = Scalar(name="ID")
+    field.value = dsl.Scalar(name="ID")
     field.is_read_only = True
     field.is_required = True
     field.parent = obj
@@ -152,16 +153,16 @@ def id_builder(obj: Object) -> Field:
 
 
 def name_builder(
-    obj: Object,
-    parent_obj: Object = None,
+    obj: dsl.Object,
+    parent_obj: dsl.Object = None,
     combiner: str = "For",
     append: str = "",
 ) -> str:
     """Returns the operation name for CRUD Objects.
 
     Args:
-        obj (Object): The Object this operations belongs to.
-        parent_obj (Object, optional): The parent Object if any.
+        obj (dsl.Object): The dsl.Object this operations belongs to.
+        parent_obj (dsl.Object, optional): The parent dsl.Object if any.
             Defaults to None.
         combiner (str, optional): Word that combines the Objects.
             Defaults to "For".
@@ -182,15 +183,15 @@ def name_builder(
 
 
 def path_builder(
-    entity: Union[Field, Object],
-    parent_obj: Object = None,
+    entity: Union[dsl.Field, dsl.Object],
+    parent_obj: dsl.Object = None,
     append_id: bool = False,
 ) -> str:
     """Creates and returns the path string for a operation.
 
     Args:
-        entity (Union[Field, Object]): Either entity.Object or entity.Field.
-        parent (Object, optional): The parent, entity.Object.
+        entity (Union[dsl.Field, dsl.Object]): Either entity.dsl.Object or entity.dsl.Field.
+        parent (dsl.Object, optional): The parent, entity.dsl.Object.
             Defaults to None.
         include_id (bool, optional): Enables the inclusion of the own ID.
             Defaults to False.
@@ -224,16 +225,16 @@ def path_builder(
     return path.lower()
 
 
-def path_argument_builder(operation: Operation) -> List[Argument]:
+def path_argument_builder(operation: dsl.Operation) -> List[dsl.Argument]:
     """Creates and returns the path arguments for a operation path.
 
     ID arguments are identified within {brackets}.
 
     Args:
-        operation (Operation): The entity.Operation.
+        operation (dsl.Operation): The entity.dsl.Operation.
 
     Returns:
-        List[Argument]: [entity.Argument]
+        List[dsl.Argument]: [entity.dsl.Argument]
     """
     arguments = []
 
@@ -241,11 +242,11 @@ def path_argument_builder(operation: Operation) -> List[Argument]:
     matches = re.findall(regex, operation.path)
 
     for match in matches:
-        argument = Argument()
+        argument = dsl.Argument()
         argument.parent = operation
 
         argument.name = match.lower()
-        argument.value = Scalar(name="ID")
+        argument.value = dsl.Scalar(name="ID")
         argument.is_path = True
         argument.is_required = True
 
@@ -254,22 +255,22 @@ def path_argument_builder(operation: Operation) -> List[Argument]:
     return arguments
 
 
-def query_argument_builder(operation: Operation, obj: Object) -> List[Argument]:
+def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> List[dsl.Argument]:
     """Creates and returns the query arguments for a operation.
 
     Args:
-        operation (Operation): The entity.Operation.
-        obj (Object): The entity.Object the entity.Operation belongs to.
+        operation (dsl.Operation): The entity.dsl.Operation.
+        obj (dsl.Object): The entity.dsl.Object the entity.dsl.Operation belongs to.
 
     Returns:
-        List[Argument]: [entity.Argument]
+        List[dsl.Argument]: [entity.dsl.Argument]
     """
     arguments = []
 
     query_fields = get_query_fields(obj)
 
     for field in query_fields:
-        argument = Argument()
+        argument = dsl.Argument()
         argument.parent = operation
 
         argument.name = field.name
@@ -281,21 +282,21 @@ def query_argument_builder(operation: Operation, obj: Object) -> List[Argument]:
     return arguments
 
 
-def body_argument_builder(operation: Operation, obj: Object) -> List[Argument]:
+def body_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> List[dsl.Argument]:
     """Creates and returns the query arguments for a operation.
 
     Args:
-        operation (Operation): The entity.Operation.
-        obj (Object): The entity.Object the entity.Operation belongs to.
+        operation (dsl.Operation): The entity.dsl.Operation.
+        obj (dsl.Object): The entity.dsl.Object the entity.dsl.Operation belongs to.
         aggregation (bool, optional): For aggregations, the body containts the aggregated Objects ID.
             Defaults to False.
 
     Returns:
-        List[Argument]: [entity.Argument]
+        List[dsl.Argument]: [entity.dsl.Argument]
     """
     arguments = []
 
-    argument = Argument()
+    argument = dsl.Argument()
     argument.parent = operation
     argument.name = "body"
     argument.value = obj
@@ -307,31 +308,31 @@ def body_argument_builder(operation: Operation, obj: Object) -> List[Argument]:
 
 
 def operation_builder(
-    obj: Object,
-    parent_obj: Object = None,
+    obj: dsl.Object,
+    parent_obj: dsl.Object = None,
     duplicate: bool = False,
     method: str = None,
-) -> Operation:
-    """Creates and returns the Operation for an Object.
+) -> dsl.Operation:
+    """Creates and returns the dsl.Operation for an dsl.Object.
 
     Args:
-        obj (Object): The entity.Object.
-        parent_obj (Object, optional): The parent Object if any.
+        obj (dsl.Object): The entity.dsl.Object.
+        parent_obj (dsl.Object, optional): The parent dsl.Object if any.
             Defaults to None.
-        duplicate (bool, optional): Wether we want to dervice the Operation name from a parent.
+        duplicate (bool, optional): Wether we want to dervice the dsl.Operation name from a parent.
             Defaults to False.
         method (str, optional): The Operations method.
             Defaults to None.
 
     Returns:
-        Field: The created Operation
+        dsl.Field: The created dsl.Operation
     """
     # parse parameters
     api = obj.api
 
     obj = api.parent
 
-    operation = Operation()
+    operation = dsl.Operation()
     operation.parent = api
     operation.domain_object = obj
     operation.domain_parent = parent_obj
@@ -475,24 +476,24 @@ def operation_builder(
 
 
 def api_builder(
-    obj: Object,
-    parent_obj: Object = None,
+    obj: dsl.Object,
+    parent_obj: dsl.Object = None,
     aggregation: bool = False,
     duplicate: bool = False,
-) -> Object:
-    """Creates and adds Operations for an Object.
+) -> dsl.Object:
+    """Creates and adds Operations for an dsl.Object.
 
     Args:
-        obj (Object): The entity.Object.
-        parent_obj (Object, optional):  The parent Object if any.
+        obj (dsl.Object): The entity.dsl.Object.
+        parent_obj (dsl.Object, optional):  The parent dsl.Object if any.
             Defaults to None.
         aggregation (bool, optional): Aggregations don't follow the CRUD pattern.
             Defaults to False.
-        duplicate (bool, optional): Wether we want to dervice the Operation name from a parent.
+        duplicate (bool, optional): Wether we want to derive the dsl.Operation name from a parent.
             Defaults to False.
 
     Returns:
-        Object: The entity.Object.
+        dsl.Object: The entity.dsl.Object.
     """
     methods = []
 
@@ -520,7 +521,7 @@ def api_builder(
     # we might loop multiple times over this object to add
     # aggregations and compositions
     if not obj.api:
-        obj.api = Api()
+        obj.api = dsl.Api()
         obj.api.namespace = obj.namespace
         obj.api.parent = obj
 
@@ -533,13 +534,97 @@ def api_builder(
     return obj
 
 
-def parse_objects(schema: Schema):
-    """Completes the parsed QSDL schema by creating Operations for each Object.
+def is_used(schema: dsl.Schema, entity: Union[dsl.Base, dsl.Enum]) -> bool:
+    """Checks if the provided dsl.Base or dsl.Enum is used anywhere.
+
+    Args:
+        schema (dsl.Schema): The QSDL schema model.
+        entity (Union[Base, dsl.Enum]): Either entity.Base or entity.dsl.Enum.
+
+    Returns:
+        bool: True when used.
+    """
+    entity_list = []
+
+    # handle @force-generate
+    # we generate this regardless
+    is_force_used = qutil.get_directive_of_name("force-generate", entity)
+
+    if is_force_used:
+        return True
+
+    # we can safely check the direct usage for api operations
+    entity_list += xtx.get_children_of_operation(schema)
+    entity_list += xtx.get_children_of_argument(schema)
+
+    # for objects, we first check all fields
+    obj_list = xtx.get_children_of_object(schema)
+
+    for obj in obj_list:
+        entity_list += obj.fields
+
+    for itr in entity_list:
+        if itr.value == entity:
+            return True
+
+        # for nested entities, we extend the base.fields to the list
+        # Note: we modify the list we are iterating on purpose
+        if itr.value and itr.value._tx_fqn == "entity.Base":
+            entity_list.extend(itr.value.fields)
+
+    return False
+
+
+def remove_unused(schema: dsl.Schema):
+    """Get rid of all dangling Base and Enum entities.
+
+    Args:
+        schema (dsl.Schema): The QSDL schema model.
+    """
+    bases = xtx.get_children_of_base(schema)
+    enums = xtx.get_children_of_enum(schema)
+
+    for entity in bases + enums:
+        used = is_used(schema, entity)
+
+        if not used:
+            schema.types.remove(entity)
+
+    enums = xtx.get_children_of_enum(schema)
+
+
+def inherit_force_generation(schema: dsl.Schema):
+    """Inherits the force-generate directive to all childs
+
+    Args:
+        schema (dsl.Schema): The QSDL schema model.
+    """
+    bases = xtx.get_children_of_base(schema)
+
+    forced_bases = [x for x in bases if qutil.get_directive_of_name("force-generate", x)]
+
+    def recurser(base: dsl.Base):
+        matched_entity = [
+            x.value for x in base.fields if x.value._tx_fqn == "entity.Base" or x.value._tx_fqn == "entity.Enum"
+        ]
+
+        for entity in matched_entity:
+            entity.directives.append(dsl.Directive(name="force-generate"))
+
+            if entity._tx_fqn == "entity.Base":
+                recurser(entity)
+
+    for base in forced_bases:
+        recurser(base)
+
+
+def parse_objects(schema: dsl.Schema):
+    """Completes the parsed QSDL schema by creating Operations for each dsl.Object.
 
     Needs to be called before parse_operations.
 
     Args:
-        schema (Schema): The QSDL schema model.
+        schema (dsl.Schema): The QSDL schema model.
     """
     objects = xtx.get_children_of_object(schema)
     bases = xtx.get_children_of_base(schema)
@@ -579,13 +664,13 @@ def parse_objects(schema: Schema):
             obj = api_builder(obj)
 
 
-def parse_operations(schema: Schema):
+def parse_operations(schema: dsl.Schema):
     """Completes the parsed QSDL schema by adding default and missing information to Apis.
 
     Needs to be called before parse_objects.
 
     Args:
-        schema (Schema): The QSDL schema model.
+        schema (dsl.Schema): The QSDL schema model.
     """
     apis = xtx.get_children_of_api(schema)
 

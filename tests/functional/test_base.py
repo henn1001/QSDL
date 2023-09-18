@@ -80,7 +80,7 @@ class TestBase:
                 bananaaa: Int
             }
 
-            base Bar extends Foo {
+            base Bar extends Foo @force-generate {
                 name: String
             }
         """

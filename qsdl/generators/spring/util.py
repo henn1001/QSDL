@@ -240,7 +240,7 @@ def is_supertype(entity: dsl.Base) -> bool:
     return False
 
 
-def is_used(entity: Union[dsl.Base, dsl.Object], field_only: bool = False) -> bool:
+def is_used_as_field_value(entity: Union[dsl.Base, dsl.Object]) -> bool:
     """Checks if the provided Base or Object is used anywhere.
 
     Args:
@@ -252,18 +252,8 @@ def is_used(entity: Union[dsl.Base, dsl.Object], field_only: bool = False) -> bo
     """
     entity_list = []
 
-    # handle @spring-force-generate
-    # we generate this regardless
-    is_force_used = qutil.get_directive_of_name("spring-force-generate", entity)
-
-    if is_force_used:
-        return True
 
     entity_list += xtx.get_children_of_field(Store.schema)
-
-    if not field_only:
-        entity_list += xtx.get_children_of_operation(Store.schema)
-        entity_list += xtx.get_children_of_argument(Store.schema)
 
     for itr in entity_list:
         if itr.value == entity:

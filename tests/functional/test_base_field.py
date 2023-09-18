@@ -44,7 +44,7 @@ class TestBaseField:
         """Verify that we can use basic types"""
 
         test_input = """\
-            base Foo {
+            base Foo @force-generate {
                 int: Int
                 long: Long
                 float: Float
@@ -97,7 +97,7 @@ class TestBaseField:
                 CLOSED
             }
 
-            base Bar {
+            base Bar @force-generate {
                 field: Foo
             }
         """
@@ -115,7 +115,7 @@ class TestBaseField:
                 field: Int
             }
 
-            base Bar {
+            base Bar @force-generate {
                 field: Foo
             }
         """
@@ -133,7 +133,7 @@ class TestBaseField:
                 field: Int
             }
 
-            base Bar {
+            base Bar @force-generate {
                 field: Foo
             }
         """
@@ -148,7 +148,7 @@ class TestBaseField:
         """Verify that we can use array types"""
 
         test_input = """\
-            base Foo {
+            base Foo @force-generate {
                 int: [Int]
                 float: [Float]
                 string: [String]
@@ -195,7 +195,7 @@ class TestBaseField:
     def test_field_base_07_positive(self):
         """Verify required"""
         test_input = """\
-            base Foo {
+            base Foo @force-generate {
                 field1: String!
                 field2: [String]!
             }

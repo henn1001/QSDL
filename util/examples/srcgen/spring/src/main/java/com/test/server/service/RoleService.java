@@ -51,7 +51,7 @@ public class RoleService {
 
   public CursorPage getRoles(Long projectId, CursorPageable pageable, Context context) throws AppException {
 
-    // confirm existance of parent
+    // confirm existence of parent
     // should be optimized with something like getReferenceById
     Project project = fetchProjectFromDb(projectId);
 
@@ -67,7 +67,7 @@ public class RoleService {
   @org.springframework.transaction.annotation.Transactional
   public Role createRole(Long projectId, Role body, Context context) throws AppException {
 
-    // confirm existance of parent
+    // confirm existence of parent
     Project project = fetchProjectFromDb(projectId);
 
     // add parent relation
@@ -80,7 +80,7 @@ public class RoleService {
 
   public Role getRole(Long projectId, Long id, Context context) throws AppException {
 
-    // confirm existance of parent
+    // confirm existence of parent
     Project project = fetchProjectFromDb(projectId);
 
     Role ret = fetchRoleFromProjectFromDb(project.getId(), id);
@@ -91,7 +91,7 @@ public class RoleService {
   @org.springframework.transaction.annotation.Transactional
   public Role replaceRole(Long projectId, Long id, Role body, Context context) throws AppException {
 
-    // confirm existance of parent
+    // confirm existence of parent
     Project project = fetchProjectFromDb(projectId);
 
     // add parent relation
@@ -110,7 +110,7 @@ public class RoleService {
   @org.springframework.transaction.annotation.Transactional
   public Role updateRole(Long projectId, Long id, Role body, Context context) throws AppException {
 
-    // confirm existance of parent
+    // confirm existence of parent
     Project project = fetchProjectFromDb(projectId);
 
     // add parent relation
@@ -129,7 +129,7 @@ public class RoleService {
   @org.springframework.transaction.annotation.Transactional
   public Void deleteRole(Long projectId, Long id, Context context) throws AppException {
 
-    // confirm existance of parent
+    // confirm existence of parent
     fetchProjectFromDb(projectId);
 
     try {

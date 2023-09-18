@@ -140,8 +140,8 @@ legend
   Match rules:
   |= Name  |= Rule details |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Description |  |
   | Comment | \\/\\/.*$ |
+  | Description |  |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
 end legend

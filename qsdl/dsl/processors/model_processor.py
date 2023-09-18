@@ -20,9 +20,9 @@ from typing import TYPE_CHECKING
 
 from textx.metamodel import TextXMetaModel
 
+import qsdl.dsl.processors.model_parser as parser
+import qsdl.dsl.processors.model_validator as validator
 from qsdl import logger
-from qsdl.dsl.processors.model_parser import parse_objects, parse_operations
-from qsdl.dsl.processors.model_validator import validate, validate_operations
 
 if TYPE_CHECKING:
     from qsdl.dsl.models import Schema
@@ -62,19 +62,22 @@ def model_post_processor(schema: Schema, metamodel: TextXMetaModel):
     log.info("running schema validation...")
 
     # run post validation
-    validate(schema, metamodel)
+    validator.validate(schema, metamodel)
 
     # adds missing domain related information to all custom operations
     # it is important that this is done before parsing the objects
-    parse_operations(schema)
+    parser.parse_operations(schema)
 
     # creates and adds operations for domain objects to the schema
-    parse_objects(schema)
+    parser.parse_objects(schema)
+
+    # remove unused entities
+    # it is important that this is done after parsing all objects
+    parser.inherit_force_generation(schema)
+    parser.remove_unused(schema)
 
     # validate operation uniqueness
-    validate_operations(schema)
-
-    log.info("schema successfully loaded")
+    validator.validate_operations(schema)
 
 
 def get_all_imports(schema: Schema) -> list:

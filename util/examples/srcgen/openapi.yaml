@@ -1577,36 +1577,6 @@ components:
           items:
             $ref: '#/components/schemas/Rating'
 
-    BaseType:
-      required:
-        - name
-      type: object
-      properties:
-        name:
-          type: string
-          maxLength: 255
-        description:
-          type: string
-          maxLength: 255
-        creation_by:
-          type: string
-          readOnly: true
-          maxLength: 255
-        creation_date:
-          type: string
-          format: date
-          readOnly: true
-        last_update_by:
-          type: string
-          readOnly: true
-          maxLength: 255
-        last_update_date:
-          type: string
-          format: date-time
-          readOnly: true
-        meta_inf:
-          type: object
-
     ProjectList:
       required:
         - items

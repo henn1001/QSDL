@@ -73,10 +73,7 @@ def parse_models(schema: Schema) -> List[ModelClass]:
 
     for entity in enum_list + base_list + obj_list:
         new_model = ModelClass().build(entity)
-
-        # filter unused bases models
-        if not new_model.is_base or new_model.is_used:
-            models.append(new_model)
+        models.append(new_model)
 
     # add domain parents for each model
     util.add_parents_to_model(models)
@@ -132,7 +129,7 @@ def generate_openapi(output_path: Path):
     gen_schema_file = output_path / "src/main/resources/openapi.yaml"
     gen_schema_file.parent.mkdir(exist_ok=True, parents=True)
 
-    import qsdl.core as core  # pylint: disable=import-outside-toplevel
+    from qsdl import core  # pylint: disable=import-outside-toplevel
     from qsdl.config import Config as core_config  # pylint: disable=import-outside-toplevel
 
     core.generate(

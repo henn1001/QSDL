@@ -56,6 +56,8 @@ class TestDirective:
 
     18.  `Directive` `@headers` may be used on any `Api` `Field` for adding response headers to the operation.
 
+    19.  `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
+
     """
 
     def test_directive_01_positive(self):
@@ -343,3 +345,52 @@ class TestDirective:
         assert "Test" in openapi["paths"]["/bars/{id}"]["delete"]["tags"]
 
         assert "Test" in openapi["paths"]["/path"]["get"]["tags"]
+
+    def test_directive_18_positive(self):
+        """Verify usage of @force-generate"""
+        test_input = """\
+
+            base Foo {
+                world: String
+                fruit: String
+            }
+
+            base Apple {
+                world: String
+                fruit: String
+            }
+
+            base FooBar @force-generate {
+                world: String
+                fruit: Apple
+            }
+
+            base FruitFoo {
+                world: String
+                fruit: String
+            }
+
+            enum Fruit {
+                FOO
+                BAR
+            }
+
+            enum Fruity @force-generate {
+                FOO
+                BAR
+            }
+
+            type Bar {
+                world: FruitFoo
+            }
+        """
+
+        openapi = wrapper_generate(test_input)
+
+        assert "Foo" not in openapi["components"]["schemas"]
+        assert "Apple" in openapi["components"]["schemas"]
+        assert "FooBar" in openapi["components"]["schemas"]
+        assert "FruitFoo" in openapi["components"]["schemas"]
+        assert "Fruit" not in openapi["components"]["schemas"]
+        assert "Fruity" in openapi["components"]["schemas"]
+        assert "Bar" in openapi["components"]["schemas"]

@@ -40,7 +40,7 @@ class TestDescription:
             }
 
             "single line description"
-            base Bar{
+            base Bar @force-generate {
                 "single line description"
                 field: String
             }
@@ -92,7 +92,7 @@ class TestDescription:
             \"""
             Multi line description
             \"""
-            base Bar {
+            base Bar @force-generate {
                 \"""
                 Multi line description
                 \"""

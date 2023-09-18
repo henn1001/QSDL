@@ -33,22 +33,6 @@ extend api {
 }
 ```
 
-## @spring-force-generate
-
-Allows you to force the generation of Base Classes regardless if they are used or not
-
-```
-base BaseType @spring-force-generate {
-    name: String! @query
-    description: String
-    creation_by: String @readOnly
-    creation_date: Date @readOnly
-    last_update_by: String @readOnly
-    last_update_date: Date @readOnly
-    meta_inf: Object
-}
-```
-
 # Example Use Cases
 
 ## Read-Only Nested Object
