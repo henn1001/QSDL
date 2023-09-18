@@ -24,7 +24,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   ProjectService projectService;
 
   /**
-   * GET /projects : List Projects
+   * {@inheritDoc}}
    */
   public ResponseEntity<CursorPage> getProjects(CursorPageable pageable) throws Exception {
     CursorPage response = projectService.getProjects(pageable, super.getContext());
@@ -32,7 +32,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * POST /projects : Create a Project
+   * {@inheritDoc}}
    */
   public ResponseEntity<Project> createProject(Project body) throws Exception {
     Project response = projectService.createProject(body, super.getContext());
@@ -40,7 +40,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * GET /projects/{id} : Read the specified Project
+   * {@inheritDoc}}
    */
   public ResponseEntity<Project> getProject(Long id) throws Exception {
     Project response = projectService.getProject(id, super.getContext());
@@ -48,7 +48,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * PUT /projects/{id} : Replace the specified Project
+   * {@inheritDoc}}
    */
   public ResponseEntity<Project> replaceProject(Long id, Project body) throws Exception {
     Project response = projectService.replaceProject(id, body, super.getContext());
@@ -56,7 +56,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * PATCH /projects/{id} : Update the specified Project
+   * {@inheritDoc}}
    */
   public ResponseEntity<Project> updateProject(Long id, Project body) throws Exception {
     Validator.validateExRequired(body);
@@ -65,7 +65,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * DELETE /projects/{id} : Delete the specified Project
+   * {@inheritDoc}}
    */
   public ResponseEntity<Void> deleteProject(Long id) throws Exception {
     projectService.deleteProject(id, super.getContext());

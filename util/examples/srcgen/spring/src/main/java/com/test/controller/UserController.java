@@ -24,7 +24,7 @@ public class UserController extends BaseController implements UserApi {
   UserService userService;
 
   /**
-   * GET /tickets/{ticket_id}/users : List Users
+   * {@inheritDoc}}
    */
   public ResponseEntity<CursorPage> getUsersForTicket(Long ticketId, CursorPageable pageable) throws Exception {
     CursorPage response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
@@ -32,7 +32,7 @@ public class UserController extends BaseController implements UserApi {
   }
 
   /**
-   * POST /tickets/{ticket_id}/users/{id}/add : Add User
+   * {@inheritDoc}}
    */
   public ResponseEntity<Void> addUserToTicket(Long ticketId, Long id) throws Exception {
     userService.addUserToTicket(ticketId, id, super.getContext());
@@ -40,7 +40,7 @@ public class UserController extends BaseController implements UserApi {
   }
 
   /**
-   * POST /tickets/{ticket_id}/users/{id}/remove : Remove User
+   * {@inheritDoc}}
    */
   public ResponseEntity<Void> removeUserFromTicket(Long ticketId, Long id) throws Exception {
     userService.removeUserFromTicket(ticketId, id, super.getContext());
@@ -48,7 +48,7 @@ public class UserController extends BaseController implements UserApi {
   }
 
   /**
-   * GET /users : List Users
+   * {@inheritDoc}}
    */
   public ResponseEntity<CursorPage> getUsers(CursorPageable pageable) throws Exception {
     CursorPage response = userService.getUsers(pageable, super.getContext());
@@ -56,7 +56,7 @@ public class UserController extends BaseController implements UserApi {
   }
 
   /**
-   * POST /users : Create a User
+   * {@inheritDoc}}
    */
   public ResponseEntity<User> createUser(User body) throws Exception {
     User response = userService.createUser(body, super.getContext());
@@ -64,7 +64,7 @@ public class UserController extends BaseController implements UserApi {
   }
 
   /**
-   * GET /users/{id} : Read the specified User
+   * {@inheritDoc}}
    */
   public ResponseEntity<User> getUser(Long id) throws Exception {
     User response = userService.getUser(id, super.getContext());
@@ -72,7 +72,7 @@ public class UserController extends BaseController implements UserApi {
   }
 
   /**
-   * PUT /users/{id} : Replace the specified User
+   * {@inheritDoc}}
    */
   public ResponseEntity<User> replaceUser(Long id, User body) throws Exception {
     User response = userService.replaceUser(id, body, super.getContext());
@@ -80,7 +80,7 @@ public class UserController extends BaseController implements UserApi {
   }
 
   /**
-   * PATCH /users/{id} : Update the specified User
+   * {@inheritDoc}}
    */
   public ResponseEntity<User> updateUser(Long id, User body) throws Exception {
     Validator.validateExRequired(body);
@@ -89,7 +89,7 @@ public class UserController extends BaseController implements UserApi {
   }
 
   /**
-   * DELETE /users/{id} : Delete the specified User
+   * {@inheritDoc}}
    */
   public ResponseEntity<Void> deleteUser(Long id) throws Exception {
     userService.deleteUser(id, super.getContext());

@@ -20,14 +20,14 @@ import java.util.*;
 public class DefaultController extends BaseController implements DefaultApi {
 
   /**
-   * POST /query : submitQury
+   * {@inheritDoc}}
    */
   public ResponseEntity<ObjectNode> submitQury(ObjectNode body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
   /**
-   * POST /action : action
+   * {@inheritDoc}}
    */
   public ResponseEntity<ObjectNode> action(BaseType arg1) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

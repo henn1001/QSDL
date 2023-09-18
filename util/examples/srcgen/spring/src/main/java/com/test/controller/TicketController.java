@@ -24,7 +24,7 @@ public class TicketController extends BaseController implements TicketApi {
   TicketService ticketService;
 
   /**
-   * GET /tickets : List Tickets
+   * {@inheritDoc}}
    */
   public ResponseEntity<CursorPage> getTickets(CursorPageable pageable) throws Exception {
     CursorPage response = ticketService.getTickets(pageable, super.getContext());
@@ -32,7 +32,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * POST /tickets : Create a Ticket
+   * {@inheritDoc}}
    */
   public ResponseEntity<Ticket> createTicket(Ticket body) throws Exception {
     Ticket response = ticketService.createTicket(body, super.getContext());
@@ -40,7 +40,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * GET /tickets/{id} : Read the specified Ticket
+   * {@inheritDoc}}
    */
   public ResponseEntity<Ticket> getTicket(Long id) throws Exception {
     Ticket response = ticketService.getTicket(id, super.getContext());
@@ -48,7 +48,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * PUT /tickets/{id} : Replace the specified Ticket
+   * {@inheritDoc}}
    */
   public ResponseEntity<Ticket> replaceTicket(Long id, Ticket body) throws Exception {
     Ticket response = ticketService.replaceTicket(id, body, super.getContext());
@@ -56,7 +56,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * PATCH /tickets/{id} : Update the specified Ticket
+   * {@inheritDoc}}
    */
   public ResponseEntity<Ticket> updateTicket(Long id, Ticket body) throws Exception {
     Validator.validateExRequired(body);
@@ -65,7 +65,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * DELETE /tickets/{id} : Delete the specified Ticket
+   * {@inheritDoc}}
    */
   public ResponseEntity<Void> deleteTicket(Long id) throws Exception {
     ticketService.deleteTicket(id, super.getContext());
