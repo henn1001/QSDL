@@ -30,7 +30,7 @@
   {%- elif operation.body_parameters and operation.method == "patch" -%}
       @RequestBody {{ param_helper(operation.body_parameters[0]) }}
   {%- elif operation.body_parameters -%}
-      @Valid @RequestBody {{ param_helper(operation.body_parameters[0]) }}
+      @RequestBody {{ param_helper(operation.body_parameters[0]) }}
   {%- endif -%}
 
 {%- endmacro %}

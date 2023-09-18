@@ -12,10 +12,8 @@ import app.server.util.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
 
-@Validated
 @Controller
 public class ProjectController extends BaseController implements ProjectApi {
 
@@ -36,6 +34,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    */
   @Override
   public ResponseEntity<Project> createProject(Project body) {
+    Validator.validate(body);
     Project response = projectService.createProject(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -54,6 +53,7 @@ public class ProjectController extends BaseController implements ProjectApi {
    */
   @Override
   public ResponseEntity<Project> replaceProject(Long id, Project body) {
+    Validator.validate(body);
     Project response = projectService.replaceProject(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

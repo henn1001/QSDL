@@ -10,19 +10,15 @@ package {{api.package.api}};
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 {% if api.has_objectnode %}
 import com.fasterxml.jackson.databind.node.ObjectNode;
 {% endif %}
 
-import javax.validation.Valid;
-
 {% if api.operations|selectattr("response.is_array") | list %}
 import java.util.List;
 {% endif %}
 
-@Validated
 @RequestMapping("${server.base-path:{{basePath}}}")
 @Controller
 public interface {{api.name}}Api {

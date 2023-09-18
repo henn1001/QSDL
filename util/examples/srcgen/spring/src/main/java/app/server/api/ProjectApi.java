@@ -8,13 +8,9 @@ import app.server.model.*;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
-
-@Validated
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
 public interface ProjectApi {
@@ -38,7 +34,7 @@ public interface ProjectApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Project> createProject(@Valid @RequestBody Project body) {
+  default ResponseEntity<Project> createProject(@RequestBody Project body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -61,7 +57,7 @@ public interface ProjectApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @Valid @RequestBody Project body) {
+  default ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @RequestBody Project body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

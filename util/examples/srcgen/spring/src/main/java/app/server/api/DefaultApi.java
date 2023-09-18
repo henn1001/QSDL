@@ -8,14 +8,10 @@ import app.server.model.*;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import javax.validation.Valid;
 
-
-@Validated
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
 public interface DefaultApi {
@@ -40,7 +36,7 @@ public interface DefaultApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<ObjectNode> action(@Valid @RequestBody BaseType arg1) {
+  default ResponseEntity<ObjectNode> action(@RequestBody BaseType arg1) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

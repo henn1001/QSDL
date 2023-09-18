@@ -11,10 +11,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
 
-@Validated
 @Controller
 public class DefaultController extends BaseController implements DefaultApi {
 

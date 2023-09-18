@@ -8,13 +8,9 @@ import app.server.model.*;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
-
-@Validated
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
 public interface RoleApi {
@@ -38,7 +34,7 @@ public interface RoleApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Role> createRole(@PathVariable("project_id") Long projectId, @Valid @RequestBody Role body) {
+  default ResponseEntity<Role> createRole(@PathVariable("project_id") Long projectId, @RequestBody Role body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -61,7 +57,7 @@ public interface RoleApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Role> replaceRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @Valid @RequestBody Role body) {
+  default ResponseEntity<Role> replaceRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody Role body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

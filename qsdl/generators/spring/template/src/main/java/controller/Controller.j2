@@ -14,13 +14,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
 {% if api.operations|selectattr("response.is_array") | list %}
 import java.util.List;
 {% endif %}
 
-@Validated
 @Controller
 public class {{api.name}}Controller extends BaseController implements {{api.name}}Api {
 
@@ -36,7 +34,9 @@ public class {{api.name}}Controller extends BaseController implements {{api.name
   @Override
   public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) {
   {% if operation.is_generated and operation.response %}
-    {% if operation.method == "patch" %}
+    {% if operation.method in ["post", "put"] %}
+    Validator.validate(body);
+    {% elif operation.method == "patch" %}
     Validator.validateExRequired(body);
     {% endif %}
     {{macro.get_response(operation)}} response = {{api.name|lower}}Service.{{operation.name}}({{macro.paramsCallService(operation)}});

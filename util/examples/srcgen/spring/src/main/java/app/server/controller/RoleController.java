@@ -12,10 +12,8 @@ import app.server.util.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
 
-@Validated
 @Controller
 public class RoleController extends BaseController implements RoleApi {
 
@@ -36,6 +34,7 @@ public class RoleController extends BaseController implements RoleApi {
    */
   @Override
   public ResponseEntity<Role> createRole(Long projectId, Role body) {
+    Validator.validate(body);
     Role response = roleService.createRole(projectId, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -54,6 +53,7 @@ public class RoleController extends BaseController implements RoleApi {
    */
   @Override
   public ResponseEntity<Role> replaceRole(Long projectId, Long id, Role body) {
+    Validator.validate(body);
     Role response = roleService.replaceRole(projectId, id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

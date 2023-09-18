@@ -12,10 +12,8 @@ import app.server.util.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
 
-@Validated
 @Controller
 public class TicketController extends BaseController implements TicketApi {
 
@@ -36,6 +34,7 @@ public class TicketController extends BaseController implements TicketApi {
    */
   @Override
   public ResponseEntity<Ticket> createTicket(Ticket body) {
+    Validator.validate(body);
     Ticket response = ticketService.createTicket(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -54,6 +53,7 @@ public class TicketController extends BaseController implements TicketApi {
    */
   @Override
   public ResponseEntity<Ticket> replaceTicket(Long id, Ticket body) {
+    Validator.validate(body);
     Ticket response = ticketService.replaceTicket(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }

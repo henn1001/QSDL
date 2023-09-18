@@ -8,13 +8,9 @@ import app.server.model.*;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
-
-@Validated
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
 public interface TicketApi {
@@ -38,7 +34,7 @@ public interface TicketApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Ticket> createTicket(@Valid @RequestBody Ticket body) {
+  default ResponseEntity<Ticket> createTicket(@RequestBody Ticket body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
@@ -61,7 +57,7 @@ public interface TicketApi {
       produces = {"application/json"},
       consumes = {"application/json"}
   )
-  default ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @Valid @RequestBody Ticket body) {
+  default ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @RequestBody Ticket body) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 

@@ -12,10 +12,8 @@ import app.server.util.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 
 
-@Validated
 @Controller
 public class UserController extends BaseController implements UserApi {
 
@@ -63,6 +61,7 @@ public class UserController extends BaseController implements UserApi {
    */
   @Override
   public ResponseEntity<User> createUser(User body) {
+    Validator.validate(body);
     User response = userService.createUser(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -81,6 +80,7 @@ public class UserController extends BaseController implements UserApi {
    */
   @Override
   public ResponseEntity<User> replaceUser(Long id, User body) {
+    Validator.validate(body);
     User response = userService.replaceUser(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
