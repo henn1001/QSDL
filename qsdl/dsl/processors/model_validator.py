@@ -61,8 +61,8 @@ def validate_server_url(schema: Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
     for server in schema.servers:
-        if not server.startswith("/api"):
-            msg = f"The server {server} must start with /api"
+        if not server.startswith("/"):
+            msg = f"The server {server} must start with /"
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
         if server.endswith("/"):

@@ -52,7 +52,7 @@ public class AppConfiguration {
 
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
+        registry.addMapping("{{basePath}}/**")
             .allowedOrigins("*")
             .allowedMethods("*")
             .allowedHeaders("Content-Type");
