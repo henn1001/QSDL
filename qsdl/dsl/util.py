@@ -51,9 +51,16 @@ def description_wrapper(raw_string: str) -> List[str]:
         for string in splits:
 
             # we skip the beginning and end of the comment if it is empty
+            # we also strip the string if the first_line_detected logic does not apply
             if string.startswith('"""') or string.endswith('"""'):
+
+                # dont strip when we detected a first_line and we rather want to remove padding
+                if string.endswith('"""') and count == 0:
+                    string = string.strip()
+
                 string = string.replace('"""', "")
-                if string.isspace():
+
+                if string.isspace() or not string:
                     continue
             else:
                 # remove all quotes
