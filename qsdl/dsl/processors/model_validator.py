@@ -172,6 +172,10 @@ def validate_arguments(schema: Schema, metamodel: TextXMetaModel):
             )
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
+        if operation.method == "DELETE" and count:
+            msg = f"The DELETE Operation {operation.name} specifies a body. This is not supported."
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
+
 
 def validate_custom_operations_path(schema: Schema, metamodel: TextXMetaModel):
     """Check that custom operations specify a path.

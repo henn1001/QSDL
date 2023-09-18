@@ -36,7 +36,7 @@ class TestArgument:
 
     08. `Argument` name/value pairs for post/put/patch methods are requestBody. [OpenAPI]
 
-    09. `Argument` value is ignored for delete method. [OpenAPI]
+    09. `Argument` value is not allowed for delete method. [OpenAPI]
 
     10. `Argument` can only be used by `Operation` of `Api` only.
 
@@ -304,8 +304,8 @@ class TestArgument:
             if _path in ["/path9", "/path10"]:
                 assert schema["$ref"]
 
-    def test_argument_09_positive(self):
-        """Verify argument is only of ID for delete"""
+    def test_argument_09_negative(self):
+        """Verify argument can not be used for delete"""
         test_input = """\
             enum Bar {
                 OPEN
@@ -334,28 +334,7 @@ class TestArgument:
             }
         """
 
-        openapi = wrapper_generate(test_input)
-
-        ops = [
-            "/path1/{arg}",
-            "/path2",
-            "/path3",
-            "/path4",
-            "/path5",
-            "/path6",
-            "/path7",
-            "/path8",
-            "/path9",
-            "/path10",
-        ]
-
-        for _path in ops:
-
-            if _path in ["/path1/{arg}"]:
-                assert openapi["paths"][_path]["delete"]["parameters"][0]["in"] == "path"
-            else:
-                assert "parameters" not in openapi["paths"][_path]["delete"]
-                assert "requestBody" not in openapi["paths"][_path]["delete"]
+        wrapper_generate_failure(test_input)
 
     def test_argument_10_positive(self):
         """Verify argument is only used in operations"""
