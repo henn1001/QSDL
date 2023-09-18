@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://gitlab.com/henn1001/qsdl/compare/v4.0.0...v4.1.0) (2023-09-18)
+
+
+### Features
+
+* openapi - spring - change AppError.code from int to string for more flexibility ([0e012f5](https://gitlab.com/henn1001/qsdl/commit/0e012f5e05962bfcad11410e5ce7e3c18140b01f))
+* **spring:** remove @Validated and @Valid from api and controller in favor of calling the validator manually within the controller to offer more flexibility ([466a2d6](https://gitlab.com/henn1001/qsdl/commit/466a2d621fcd4108280f070ecb3560e3a17af9c8))
+
 ## [4.0.0](https://gitlab.com/henn1001/qsdl/compare/v3.2.0...v4.0.0) (2023-09-18)
 
 
