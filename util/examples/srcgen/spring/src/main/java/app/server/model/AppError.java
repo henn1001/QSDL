@@ -12,10 +12,10 @@ import java.util.*;
 
 public class AppError extends AbstractClass {
 
-  @JsonProperty(value = "code", required = true)
+  @JsonProperty(value = "code")
   public Integer code;
 
-  @JsonProperty(value = "message", required = true)
+  @JsonProperty(value = "message")
   public String message;
 
   @JsonProperty(value = "status")

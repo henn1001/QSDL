@@ -13,6 +13,7 @@ import javax.validation.constraints.*;
 import java.util.*;
 
 @Entity
+@Table(name = "user")
 public class UserEntity extends AbstractPersistentObject {
 
   @NotNull

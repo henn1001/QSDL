@@ -9,6 +9,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
+/**
+ * MappedSuperclass for QSDL Base-Classes.
+ *
+ * QSDL utilizes Entities over Embeddable for Base-Classes because it's compatible for most use cases.
+ * e.g. you can not use relations within a embedded collection. This should be optimized post-generation.
+ */
 @MappedSuperclass
 public abstract class AbstractPersistentBase extends AbstractClass {
 

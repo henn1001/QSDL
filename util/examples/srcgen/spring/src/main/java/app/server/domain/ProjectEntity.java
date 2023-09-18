@@ -15,6 +15,7 @@ import java.time.*;
 import java.util.*;
 
 @Entity
+@Table(name = "project")
 public class ProjectEntity extends AbstractPersistentObject {
 
   @NotNull

@@ -24,19 +24,22 @@ def pluralize(word: str) -> str:
     return word + "s" if not word.endswith("s") else word
 
 def pascalcase(word: str) -> str:
-    """Returns the Pascalcase form of a word using stringcase"""
+    """Returns the PascalCase form of a word using stringcase"""
     return stringcase.pascalcase(word)
 
 
 def camelcase(word: str) -> str:
-    """Returns the Camelcase form of a word using stringcase"""
+    """Returns the camelCase form of a word using stringcase"""
     return stringcase.camelcase(word)
 
 
 def spinalcase(word: str) -> str:
-    """Returns the SpinalCase form of a word using stringcase"""
+    """Returns the spinal-case form of a word using stringcase"""
     return stringcase.spinalcase(word)
 
+def snakecase(word: str) -> str:
+    """Returns the snake_case form of a word using stringcase"""
+    return stringcase.snakecase(word)
 
 def regex_replace(txt, find, replace):
     """Applies re.sub to a given string"""

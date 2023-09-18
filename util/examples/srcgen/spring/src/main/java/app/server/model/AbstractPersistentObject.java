@@ -14,6 +14,9 @@ import javax.persistence.*;
 import java.lang.reflect.*;
 import java.util.*;
 
+/**
+ * MappedSuperclass for QSDL Object-Classes.
+ */
 @Slf4j
 @MappedSuperclass
 public abstract class AbstractPersistentObject extends AbstractClass {
@@ -55,7 +58,7 @@ public abstract class AbstractPersistentObject extends AbstractClass {
   }
 
   /**
-   * Copies the id, uid and iv field from another Object.
+   * Copies the id, uid and iv field from another AbstractPersistentObject.
    */
   public void copyIdentiy(AbstractPersistentObject o) {
     this.id = o.getId();

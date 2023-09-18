@@ -13,12 +13,14 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
+@Table(name = "ticket")
 public class TicketEntity extends AbstractPersistentObject {
 
   public String title;
 
   public String body;
 
+  @Enumerated(EnumType.STRING)
   public Status status;
 
   @JsonIgnore

@@ -25,6 +25,12 @@
   @Column(unique = true)
   {% endif %}
   {#
+    Serialization for Enums
+  #}
+  {% if field.is_enum %}
+  @Enumerated(EnumType.STRING)
+  {% endif %}
+  {#
     Relations
   #}
   {% if field.is_relation and not field.is_relation_owner %}
@@ -62,10 +68,10 @@
   #}
   {% elif field.is_array and (field.is_object or field.is_base) %}
   @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "{{field.name|lower}}_id")
+  @JoinColumn(name = "{{field.name|snake}}_{{model.name|snake}}_id")
   {% elif not field.is_array and (field.is_object or field.is_base) %}
   @OneToOne(cascade=CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "{{field.name|lower}}_id")
+  @JoinColumn(name = "{{field.name|snake}}_{{field.type|snake}}_id")
   {% elif field.is_array %}
   @ElementCollection
   {% endif %}

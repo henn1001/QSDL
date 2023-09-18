@@ -3,48 +3,19 @@
  */
 package {{package.enum}};
 
-import com.fasterxml.jackson.annotation.*;
+import java.util.EnumSet;
 
 public enum {{model.name}} {
 
   {% for value in model.constants %}
-  {{value}}({{ "\"" + value + "\"" }}){% if not loop.last %},{% else %};{% endif %}
+  {{value}}{% if not loop.last %},{% else %};{% endif %}
 
   {% endfor %}
 
-  private final String value;
-
-  {{model.name}}(String value) {
-    this.value = value;
-  }
-
-  @JsonValue
-  public String value() {
-    return value;
-  }
-
-  @JsonCreator
-  public static {{model.name}} fromValue(String value) {
-    for ({{model.name}} e : {{model.name}}.values()) {
-      if (e.value.equals(value)) {
-        return e;
-      }
-    }
-    throw new IllegalArgumentException("Unexpected value '" + value + "'");
-  }
-
   public static boolean hasValue(String value) {
-    for ({{model.name}} e : {{model.name}}.values()) {
-      if (e.value.equals(value)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public String toString() {
-    return value;
+    return EnumSet.allOf({{model.name}}.class)
+        .stream()
+        .anyMatch(e -> e.toString().equals(value));
   }
 
 }

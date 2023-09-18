@@ -31,6 +31,7 @@ class TestSpecificsSpring:
 
     """
 
+    @pytest.mark.order(1)
     def test_specifics_01(self):
         """Test nested Base"""
         test_input = """\
@@ -49,6 +50,7 @@ class TestSpecificsSpring:
                 field2: Bar
                 field3: [Bar]
                 field4: [String]
+                field5: Bar
             }
         """
 
@@ -63,6 +65,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(2)
     def test_specifics_02(self):
         """Test nested Object"""
         test_input = """\
@@ -81,6 +84,7 @@ class TestSpecificsSpring:
                 field2: Bar
                 field3: [Bar]
                 field4: [String]
+                field5: Bar
             }
         """
 
@@ -95,6 +99,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(3)
     def test_specifics_03(self):
         """Test Composition"""
         test_input = """\
@@ -124,6 +129,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(4)
     def test_specifics_04(self):
         """Test Aggregation"""
         test_input = """\
@@ -153,6 +159,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(5)
     def test_specifics_05(self):
         """Test Composition with two parents"""
         test_input = """\
@@ -182,6 +189,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(6)
     def test_specifics_06(self):
         """Test custom operations with composition"""
         test_input = """\
@@ -212,6 +220,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(7)
     def test_specifics_07(self):
         """Test custom operations with aggregation"""
         test_input = """\
@@ -242,6 +251,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(8)
     def test_specifics_08(self):
         """Test custom operations"""
         test_input = """\
@@ -267,6 +277,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(9)
     def test_specifics_09(self):
         """Verify usage of relations without parent endpoints"""
         test_input = """\
@@ -301,6 +312,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(10)
     def test_specifics_10(self):
         """Verify usage of folder layout config"""
 
@@ -311,17 +323,17 @@ class TestSpecificsSpring:
         test_output.mkdir()
 
         config = {
-            "group_id": "com.supertest",
-            "api_path": "generated.iface",
-            "config_path": "shared.config",
-            "controller_path": "generated.api",
-            "domain_path": "generated.object",
-            "enum_path": "generated.constants",
-            "exception_path": "shared.exceptions",
-            "model_path": "shared.models",
-            "repository_path": "generated.repositorys",
-            "service_path": "generated.service",
-            "util_path": "shared.utils",
+            "base_package": "com.supertest",
+            "api_path": "com.supertest.generated.iface",
+            "config_path": "com.supertest.shared.config",
+            "controller_path": "com.supertest.generated.api",
+            "domain_path": "com.supertest.generated.object",
+            "enum_path": "com.supertest.generated.constants",
+            "exception_path": "com.supertest.shared.exceptions",
+            "model_path": "com.supertest.shared.models",
+            "repository_path": "com.supertest.generated.repositorys",
+            "service_path": "com.supertest.generated.service",
+            "util_path": "com.supertest.shared.utils",
         }
 
         # generate
@@ -330,6 +342,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(11)
     def test_specifics_11(self):
         """Verify usage of generate and controller directive"""
         test_input = """\
@@ -355,6 +368,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(12)
     def test_specifics_12(self):
         """Verify usage of string identifier"""
 
@@ -374,6 +388,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(13)
     def test_specifics_13(self):
         """Verify usage of encapsulation"""
 
@@ -393,6 +408,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    @pytest.mark.order(14)
     def test_specifics_14(self):
         """Verify usage of no database"""
 

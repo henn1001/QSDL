@@ -40,7 +40,7 @@ extend api {
 Given the following example:
 
 ```
-type Foo extends {
+type Foo {
     bar_id: Int @writeOnly
     bar: Bar @readOnly
 }

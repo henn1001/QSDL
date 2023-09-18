@@ -62,6 +62,7 @@ def render(
     jinja_env.filters["pluralize"] = qfilter.pluralize
     jinja_env.filters["pascal"] = qfilter.pascalcase
     jinja_env.filters["camel"] = qfilter.camelcase
+    jinja_env.filters["snake"] = qfilter.snakecase
     jinja_env.filters["spinal"] = qfilter.spinalcase
     jinja_env.filters["regex_replace"] = qfilter.regex_replace
 

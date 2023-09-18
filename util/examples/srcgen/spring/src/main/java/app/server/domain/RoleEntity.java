@@ -11,6 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 
 @Entity
+@Table(name = "role")
 public class RoleEntity extends AbstractPersistentObject {
 
   @NotNull
