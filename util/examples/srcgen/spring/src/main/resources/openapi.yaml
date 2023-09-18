@@ -697,33 +697,6 @@ paths:
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/query':
-    post:
-      summary: submitQury
-      operationId: submitQury
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                arg1:
-                  type: string
-                arg2:
-                  type: array
-                  items:
-                    type: integer
-                    format: int32
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-        default:
-          $ref: '#/components/responses/DefaultError'
   '/action':
     post:
       summary: action
@@ -745,6 +718,33 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BaseType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/query':
+    post:
+      summary: submitQury
+      operationId: submitQury
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                arg1:
+                  type: string
+                arg2:
+                  type: array
+                  items:
+                    type: integer
+                    format: int32
       responses:
         '200':
           description: OK

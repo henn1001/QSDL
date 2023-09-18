@@ -907,88 +907,6 @@ paths:
           description: OK
         default:
           $ref: '#/components/responses/DefaultError'
-  '/tickets/{ticket_id}/milestones':
-    get:
-      tags:
-        - Incident
-      summary: List Milestones
-      operationId: getMilestonesForTicket
-      parameters:
-        - name: ticket_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: query
-          in: query
-          required: false
-          schema:
-            type: object
-            example:
-              name: integer
-          style: form
-          explode: true
-        - $ref: '#/components/parameters/cursor'
-        - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/count'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MilestoneList'
-        default:
-          $ref: '#/components/responses/DefaultError'
-  '/tickets/{ticket_id}/milestones/{id}/add':
-    post:
-      tags:
-        - Incident
-      summary: Add Milestone
-      operationId: addMilestoneToTicket
-      parameters:
-        - name: ticket_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: OK
-        default:
-          $ref: '#/components/responses/DefaultError'
-  '/tickets/{ticket_id}/milestones/{id}/remove':
-    post:
-      tags:
-        - Incident
-      summary: Remove Milestone
-      operationId: removeMilestoneFromTicket
-      parameters:
-        - name: ticket_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: OK
-        default:
-          $ref: '#/components/responses/DefaultError'
   '/projects/{project_id}/milestones':
     get:
       tags:
@@ -1151,6 +1069,88 @@ paths:
       operationId: deleteMilestone
       parameters:
         - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets/{ticket_id}/milestones':
+    get:
+      tags:
+        - Incident
+      summary: List Milestones
+      operationId: getMilestonesForTicket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: object
+            example:
+              name: integer
+          style: form
+          explode: true
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MilestoneList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets/{ticket_id}/milestones/{id}/add':
+    post:
+      tags:
+        - Incident
+      summary: Add Milestone
+      operationId: addMilestoneToTicket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets/{ticket_id}/milestones/{id}/remove':
+    post:
+      tags:
+        - Incident
+      summary: Remove Milestone
+      operationId: removeMilestoneFromTicket
+      parameters:
+        - name: ticket_id
           in: path
           required: true
           schema:

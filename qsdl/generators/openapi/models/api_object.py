@@ -166,7 +166,6 @@ class Operation:
 
             self.response = new_param
 
-
     def _add_response_headers(self, _ref: dsl.Operation):
         """Creates and adds a response header to a Operation"""
 
@@ -197,8 +196,15 @@ class ApiObject:
 
         return self
 
-    def _add_operations(self, operations):
+    def _add_operations(self, operations: List[Operation]):
+
+        new_operations: List[Operation] = []
 
         for operation in operations:
             new_operation = Operation().build(operation)
-            self.operations.append(new_operation)
+            new_operations.append(new_operation)
+
+        # makes sure the sorting is alligned with the way openapi specifies endpoints
+        new_operations.sort(key=lambda x: x.path)
+
+        self.operations = new_operations
