@@ -31,6 +31,8 @@ public abstract class AbstractPersistentObject {
   @JsonIgnore
   private Integer iv;
 
+  private static final String UNHANDLED_EXCEPTION = "Caught unhandeled exception:";
+
   /**
    * The internal numeric identifier.
    */
@@ -77,7 +79,7 @@ public abstract class AbstractPersistentObject {
 
   /**
    * Copy all relevant fields of one object to another utilizing reflection.
-   * 
+   *
    * Ignores fields annotated with @JsonIgnore
    * Ignores fields annotated with @JsonProperty(access = JsonProperty.Access.READ_ONLY)
    */
@@ -116,7 +118,7 @@ public abstract class AbstractPersistentObject {
           }
         }
         catch (Exception e) {
-          log.error("Caught unhandeled exception:", e);
+          log.error(UNHANDLED_EXCEPTION, e);
         }
       }
     }
@@ -124,7 +126,7 @@ public abstract class AbstractPersistentObject {
 
   /**
    * Removes all relations from a give Object.
-   * 
+   *
    * Affects fields annotated with OneToOne, OneToMany, ManyToOne, ManyToMany
    */
   public void removeRelations() {
@@ -151,7 +153,7 @@ public abstract class AbstractPersistentObject {
           }
         }
         catch (Exception e) {
-          log.error("Caught unhandeled exception:", e);
+          log.error(UNHANDLED_EXCEPTION, e);
         }
       }
     }
@@ -186,23 +188,23 @@ public abstract class AbstractPersistentObject {
   }
 
   public String toString() {
-    String ret = new String();
+    String ret = "";
     try {
       ret = Json.serializer().toString(this);
     }
     catch (Json.JsonException e) {
-      log.error("Caught unhandeled exception:", e);
+      log.error(UNHANDLED_EXCEPTION, e);
     }
     return ret;
   }
 
   public String toPrettyString() {
-    String ret = new String();
+    String ret = "";
     try {
       ret = Json.serializer().toPrettyString(this);
     }
     catch (Json.JsonException e) {
-      log.error("Caught unhandeled exception:", e);
+      log.error(UNHANDLED_EXCEPTION, e);
     }
     return ret;
   }

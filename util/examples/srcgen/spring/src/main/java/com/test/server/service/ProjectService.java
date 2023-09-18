@@ -28,7 +28,7 @@ public class ProjectService {
 
   @PostConstruct
   private void init() {
-
+    // Executed after dependency injection.
   }
 
   private Project fetchProjectFromDb(Long id) throws AppException {

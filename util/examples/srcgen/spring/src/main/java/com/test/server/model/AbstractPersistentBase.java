@@ -85,7 +85,7 @@ public abstract class AbstractPersistentBase {
   }
 
   public String toString() {
-    String ret = new String();
+    String ret = "";
     try {
       ret = Json.serializer().toString(this);
     }
@@ -96,7 +96,7 @@ public abstract class AbstractPersistentBase {
   }
 
   public String toPrettyString() {
-    String ret = new String();
+    String ret = "";
     try {
       ret = Json.serializer().toPrettyString(this);
     }

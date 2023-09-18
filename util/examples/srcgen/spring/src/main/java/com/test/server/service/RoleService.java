@@ -31,7 +31,7 @@ public class RoleService {
 
   @PostConstruct
   private void init() {
-
+    // Executed after dependency injection.
   }
 
   private Role fetchRoleFromDb(Long id) throws AppException {

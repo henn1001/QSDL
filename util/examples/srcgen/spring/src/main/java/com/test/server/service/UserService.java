@@ -31,7 +31,7 @@ public class UserService {
 
   @PostConstruct
   private void init() {
-
+    // Executed after dependency injection.
   }
 
   private User fetchUserFromDb(Long id) throws AppException {

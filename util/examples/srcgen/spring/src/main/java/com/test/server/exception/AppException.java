@@ -12,25 +12,25 @@ public class AppException extends Exception {
 
   static final long serialVersionUID = 1L;
 
-  private final AppError AppError;
+  private final AppError appError;
 
   public AppException(ErrorCodes error) {
     super(error.message());
-    this.AppError = error.toAppError();
+    this.appError = error.toAppError();
   }
 
   public AppException(ErrorCodes error, String detail) {
     super(error.message());
-    this.AppError = error.toAppError(detail);
+    this.appError = error.toAppError(detail);
   }
 
   public AppException(ErrorCodes error, List<String> details) {
     super(error.message());
-    this.AppError = error.toAppError(details);
+    this.appError = error.toAppError(details);
   }
 
   public AppError getAppError() {
-    return AppError;
+    return appError;
   }
 
 

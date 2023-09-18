@@ -35,7 +35,7 @@ public class Context {
   public Context(MultiValueMap<String, String> parameterMap,
       MultiValueMap<String, String> headerMap,
       Map<String, Object> attributeMap) {
-    this.parameterMap = Objects.requireNonNullElse(headerMap, new LinkedMultiValueMap<String, String>());
+    this.parameterMap = Objects.requireNonNullElse(parameterMap, new LinkedMultiValueMap<String, String>());
     this.headerMap = Objects.requireNonNullElse(headerMap, new LinkedMultiValueMap<String, String>());
     this.attributeMap = Objects.requireNonNullElse(attributeMap, new LinkedHashMap<String, Object>());
   }
@@ -81,7 +81,7 @@ public class Context {
 
   /**
    * Use this method to load values from the HttpServletRequest.
-   * 
+   *
    * we want to do this on demand to not waste time when these values are not needed on the service layer.
    */
   public void loadFromContext(boolean loadHeaders, boolean loadAttributes) {

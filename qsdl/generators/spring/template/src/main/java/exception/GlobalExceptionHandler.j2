@@ -30,14 +30,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     dataBinder.initDirectFieldAccess();
   }
 
-  private ResponseEntity<Object> buildResponseEntity(AppError AppError,
+  private ResponseEntity<Object> buildResponseEntity(AppError appError,
       HttpServletRequest httpRequest) {
 
-    AppError.path = httpRequest.getRequestURI();
+    appError.path = httpRequest.getRequestURI();
 
-    log.warn(AppError.toString());
+    log.warn(appError.toString());
 
-    return new ResponseEntity<>(AppError, HttpStatus.valueOf(AppError.status));
+    return new ResponseEntity<>(appError, HttpStatus.valueOf(appError.status));
   }
 
   /**
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   /**
    * Fall-back handler.
-   * 
+   *
    * Catch-all other exceptions that don't have specific handlers.
    */
   @ExceptionHandler({Exception.class})
@@ -61,9 +61,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     log.error("Caught unhandeled exception:", ex);
 
-    AppError AppError = ErrorCodes.INTERNAL_SERVER_ERROR.toAppError(ex.toString());
+    AppError appError = ErrorCodes.INTERNAL_SERVER_ERROR.toAppError(ex.toString());
 
-    return buildResponseEntity(AppError, httpRequest);
+    return buildResponseEntity(appError, httpRequest);
   }
 
   /**
@@ -75,9 +75,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 
-    AppError AppError = ErrorCodes.BAD_REQEST.toAppError(ex.toString());
+    AppError appError = ErrorCodes.BAD_REQEST.toAppError(ex.toString());
 
-    return buildResponseEntity(AppError, httpRequest);
+    return buildResponseEntity(appError, httpRequest);
   }
 
   /**
@@ -98,9 +98,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
     }
 
-    AppError AppError = ErrorCodes.BAD_REQEST.toAppError(errors);
+    AppError appError = ErrorCodes.BAD_REQEST.toAppError(errors);
 
-    return buildResponseEntity(AppError, httpRequest);
+    return buildResponseEntity(appError, httpRequest);
   }
 
 }

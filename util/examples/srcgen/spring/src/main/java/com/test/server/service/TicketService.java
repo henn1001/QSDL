@@ -28,7 +28,7 @@ public class TicketService {
 
   @PostConstruct
   private void init() {
-
+    // Executed after dependency injection.
   }
 
   private Ticket fetchTicketFromDb(Long id) throws AppException {
