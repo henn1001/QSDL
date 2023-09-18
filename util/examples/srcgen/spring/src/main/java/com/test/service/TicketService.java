@@ -46,6 +46,7 @@ public class TicketService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Ticket createTicket(Ticket body, Context context) throws AppException {
 
     Ticket ret = ticketRepository.save(body);
@@ -60,6 +61,7 @@ public class TicketService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Ticket replaceTicket(Long id, Ticket body, Context context) throws AppException {
 
     Ticket dbEntity = fetchTicketFromDb(id);
@@ -72,6 +74,7 @@ public class TicketService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Ticket updateTicket(Long id, Ticket body, Context context) throws AppException {
 
     Ticket dbEntity = fetchTicketFromDb(id);
@@ -84,6 +87,7 @@ public class TicketService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Void deleteTicket(Long id, Context context) throws AppException {
 
     try {

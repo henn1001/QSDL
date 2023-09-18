@@ -64,6 +64,7 @@ public class UserService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Void addUserToTicket(Long ticketId, Long id, Context context) throws AppException {
 
     // get and confirm existance
@@ -82,6 +83,7 @@ public class UserService {
     return null;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Void removeUserFromTicket(Long ticketId, Long id, Context context) throws AppException {
 
     // get and confirm existance
@@ -106,6 +108,7 @@ public class UserService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public User createUser(User body, Context context) throws AppException {
 
     User ret = userRepository.save(body);
@@ -120,6 +123,7 @@ public class UserService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public User replaceUser(Long id, User body, Context context) throws AppException {
 
     User dbEntity = fetchUserFromDb(id);
@@ -132,6 +136,7 @@ public class UserService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public User updateUser(Long id, User body, Context context) throws AppException {
 
     User dbEntity = fetchUserFromDb(id);
@@ -144,6 +149,7 @@ public class UserService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Void deleteUser(Long id, Context context) throws AppException {
 
     try {

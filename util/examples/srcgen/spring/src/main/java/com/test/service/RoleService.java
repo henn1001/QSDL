@@ -64,6 +64,7 @@ public class RoleService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Role createRole(Long projectId, Role body, Context context) throws AppException {
 
     // confirm existance of parent
@@ -87,6 +88,7 @@ public class RoleService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Role replaceRole(Long projectId, Long id, Role body, Context context) throws AppException {
 
     // confirm existance of parent
@@ -105,6 +107,7 @@ public class RoleService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Role updateRole(Long projectId, Long id, Role body, Context context) throws AppException {
 
     // confirm existance of parent
@@ -123,6 +126,7 @@ public class RoleService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Void deleteRole(Long projectId, Long id, Context context) throws AppException {
 
     // confirm existance of parent

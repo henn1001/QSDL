@@ -46,6 +46,7 @@ public class ProjectService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Project createProject(Project body, Context context) throws AppException {
 
     Project ret = projectRepository.save(body);
@@ -60,6 +61,7 @@ public class ProjectService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Project replaceProject(Long id, Project body, Context context) throws AppException {
 
     Project dbEntity = fetchProjectFromDb(id);
@@ -72,6 +74,7 @@ public class ProjectService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Project updateProject(Long id, Project body, Context context) throws AppException {
 
     Project dbEntity = fetchProjectFromDb(id);
@@ -84,6 +87,7 @@ public class ProjectService {
     return ret;
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public Void deleteProject(Long id, Context context) throws AppException {
 
     try {

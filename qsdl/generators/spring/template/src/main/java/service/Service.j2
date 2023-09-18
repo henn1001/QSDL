@@ -61,6 +61,9 @@ public class {{api.name}}Service {
 {% endif %}
 
 {% for operation in api.operations if operation.is_generated %}
+  {% if operation.method != "get" %}
+  @org.springframework.transaction.annotation.Transactional
+  {% endif %}
   public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
 
   {% if database == "HIBERNATE" %}
