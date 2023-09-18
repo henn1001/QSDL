@@ -200,7 +200,12 @@ def controller_has(
             args = [opr.value] if opr.value else []
 
             if len(opr.body_parameters) == 1 and opr.body_parameters[0].value:
-                args.append(opr.body_parameters[0].value)
+                arg = opr.body_parameters[0].value
+                if arg._tx_fqn not in ["entity.Base", "entity.Object"]:
+                    return True
+                else:
+                    args.append(arg)
+
             elif has_objectnode and len(opr.body_parameters) > 1:
                 return True
 
@@ -251,7 +256,6 @@ def is_used_as_field_value(entity: Union[dsl.Base, dsl.Object]) -> bool:
         bool: [description]
     """
     entity_list = []
-
 
     entity_list += xtx.get_children_of_field(Store.schema)
 
