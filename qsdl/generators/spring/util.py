@@ -250,6 +250,14 @@ def is_used(entity: Union[dsl.Base, dsl.Object], field_only: bool = False) -> bo
         bool: [description]
     """
     entity_list = []
+
+    # handle @spring-force-generate
+    # we generate this regardless
+    is_force_used = qutil.get_directive_of_name("spring-force-generate", entity)
+
+    if is_force_used:
+        return True
+
     entity_list += xtx.get_children_of_field(Store.schema)
 
     if not field_only:

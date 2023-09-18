@@ -1,5 +1,13 @@
 # Custom Directives
 
+## @spring
+
+Allows you to declare the type conversion for scalars.
+
+```
+scalar Number @spring("BigInteger")
+```
+
 ## @controller
 
 Allows to move custom apis into a different controller.
@@ -13,6 +21,32 @@ Allows to move custom apis into a different controller.
         name: String!
         extend api @generate("UPDATE") {}
     }
+```
+
+## @spring-void-input
+
+Prevent argument generation for custom operations.
+
+```
+extend api {
+    uploadFile(file: MultipartFile!, docType: String, entityId: UUID!): Void @path("upload") @method(POST) @consumes("multipart/form-data") @spring-void-input
+}
+```
+
+## @spring-force-generate
+
+Allows you to force the generation of Base Classes regardless if they are used or not
+
+```
+base BaseType @spring-force-generate {
+    name: String! @query
+    description: String
+    creation_by: String @readOnly
+    creation_date: Date @readOnly
+    last_update_by: String @readOnly
+    last_update_date: Date @readOnly
+    meta_inf: Object
+}
 ```
 
 # Example Use Cases
