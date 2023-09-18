@@ -26,6 +26,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<CursorPage> getProjects(CursorPageable pageable) throws Exception {
     CursorPage response = projectService.getProjects(pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -34,6 +35,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Project> createProject(Project body) throws Exception {
     Project response = projectService.createProject(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -42,6 +44,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Project> getProject(Long id) throws Exception {
     Project response = projectService.getProject(id, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -50,6 +53,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Project> replaceProject(Long id, Project body) throws Exception {
     Project response = projectService.replaceProject(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -58,6 +62,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Project> updateProject(Long id, Project body) throws Exception {
     Validator.validateExRequired(body);
     Project response = projectService.updateProject(id, body, super.getContext());
@@ -67,6 +72,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Void> deleteProject(Long id) throws Exception {
     projectService.deleteProject(id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);

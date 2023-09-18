@@ -26,6 +26,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<CursorPage> getRoles(Long projectId, CursorPageable pageable) throws Exception {
     CursorPage response = roleService.getRoles(projectId, pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -34,6 +35,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Role> createRole(Long projectId, Role body) throws Exception {
     Role response = roleService.createRole(projectId, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -42,6 +44,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Role> getRole(Long projectId, Long id) throws Exception {
     Role response = roleService.getRole(projectId, id, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -50,6 +53,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Role> replaceRole(Long projectId, Long id, Role body) throws Exception {
     Role response = roleService.replaceRole(projectId, id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -58,6 +62,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Role> updateRole(Long projectId, Long id, Role body) throws Exception {
     Validator.validateExRequired(body);
     Role response = roleService.updateRole(projectId, id, body, super.getContext());
@@ -67,6 +72,7 @@ public class RoleController extends BaseController implements RoleApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Void> deleteRole(Long projectId, Long id) throws Exception {
     roleService.deleteRole(projectId, id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);

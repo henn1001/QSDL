@@ -26,6 +26,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<CursorPage> getTickets(CursorPageable pageable) throws Exception {
     CursorPage response = ticketService.getTickets(pageable, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -34,6 +35,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Ticket> createTicket(Ticket body) throws Exception {
     Ticket response = ticketService.createTicket(body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -42,6 +44,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Ticket> getTicket(Long id) throws Exception {
     Ticket response = ticketService.getTicket(id, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -50,6 +53,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Ticket> replaceTicket(Long id, Ticket body) throws Exception {
     Ticket response = ticketService.replaceTicket(id, body, super.getContext());
     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -58,6 +62,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Ticket> updateTicket(Long id, Ticket body) throws Exception {
     Validator.validateExRequired(body);
     Ticket response = ticketService.updateTicket(id, body, super.getContext());
@@ -67,6 +72,7 @@ public class TicketController extends BaseController implements TicketApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<Void> deleteTicket(Long id) throws Exception {
     ticketService.deleteTicket(id, super.getContext());
     return new ResponseEntity<>(HttpStatus.OK);

@@ -2,7 +2,6 @@ openapi: 3.0.3
 info:
   title: Test API
   description: |
-    
     A simple parent child relation example.
     
     Tests:
@@ -11,7 +10,6 @@ info:
       -  compositions
       -  aggregations
       -  usage of enums and generic json object
-    
   version: '1.0'
 servers:
   - url: '/api/v1'

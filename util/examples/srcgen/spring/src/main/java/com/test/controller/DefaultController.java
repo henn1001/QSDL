@@ -22,6 +22,7 @@ public class DefaultController extends BaseController implements DefaultApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<ObjectNode> submitQury(ObjectNode body) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
@@ -29,6 +30,7 @@ public class DefaultController extends BaseController implements DefaultApi {
   /**
    * {@inheritDoc}}
    */
+  @Override
   public ResponseEntity<ObjectNode> action(BaseType arg1) throws Exception {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
