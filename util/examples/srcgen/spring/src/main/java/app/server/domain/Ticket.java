@@ -3,10 +3,10 @@
  */
 package app.server.domain;
 
-import app.server.constant.*;
-import app.server.model.*;
+import app.server.constant.Status;
+import app.server.model.AbstractClass;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.*;
 

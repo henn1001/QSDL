@@ -23,8 +23,10 @@ import stringcase
 import qsdl.dsl.models as dsl
 import qsdl.dsl.util as qutil
 
+from .. import import_resolver as resolver
 from .. import models as spring
 from .. import util
+from ..config import Directive
 
 
 @dataclass
@@ -129,7 +131,7 @@ class Operation:
 
         # special spring directive for producing empty controller functions
         # the user is assumed to use the request context here
-        void_input = qutil.get_directive_of_name("spring-void-input", _ref)
+        void_input = qutil.get_directive_of_name(Directive.VOID_INPUT, _ref)
 
         for argument in _ref.arguments:
             new_param = Parameter().build(argument)
@@ -191,6 +193,8 @@ class ApiClass:
     # addons
     has_generated: bool = False
     has_objectnode: bool = False
+
+    package: spring.Package = None
     api_imports: list[str] = field(default_factory=list)
     controller_imports: list[str] = field(default_factory=list)
     service_imports: list[str] = field(default_factory=list)
@@ -204,7 +208,7 @@ class ApiClass:
         self.description = _ref.description
 
         # allow to overwrite the controller name
-        controller_dir = qutil.get_directive_of_name("controller", _ref)
+        controller_dir = qutil.get_directive_of_name(Directive.CONTROLLER, _ref)
         self.name = controller_dir.value if controller_dir else self.name
 
         # add model
@@ -216,9 +220,20 @@ class ApiClass:
 
         self.has_generated = _ref.has_generated
         self.has_objectnode = util.controller_has(_ref, has_objectnode=True)
-        self.api_imports = util.get_api_imports(_ref)
-        self.controller_imports = util.get_controller_imports(_ref, self.name)
-        self.service_imports = util.get_service_imports(_ref)
+
+        # handle package path and imports
+        if self.model:
+            self.package = self.model.package 
+        else:
+            self.package = spring.Package(util.Store.config)
+            package_directive = qutil.get_directive_of_name(Directive.PACKAGE, _ref)
+
+            if package_directive:
+                self.package.set_namespace(package_directive.value)
+
+        self.api_imports = resolver.get_api_imports(self, _ref)
+        self.controller_imports = resolver.get_controller_imports(self, _ref)
+        self.service_imports = resolver.get_service_imports(self, _ref)
 
         return self
 

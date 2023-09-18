@@ -324,16 +324,16 @@ class TestSpecificsSpring:
 
         config = {
             "base_package": "com.supertest",
-            "api_path": "com.supertest.generated.iface",
-            "config_path": "com.supertest.shared.config",
-            "controller_path": "com.supertest.generated.api",
-            "domain_path": "com.supertest.generated.object",
-            "enum_path": "com.supertest.generated.constants",
-            "exception_path": "com.supertest.shared.exceptions",
-            "model_path": "com.supertest.shared.models",
-            "repository_path": "com.supertest.generated.repositorys",
-            "service_path": "com.supertest.generated.service",
-            "util_path": "com.supertest.shared.utils",
+            "api_path": "generated.iface",
+            "config_path": "shared.config",
+            "controller_path": "generated.api",
+            "domain_path": "generated.object",
+            "enum_path": "generated.constants",
+            "exception_path": "shared.exceptions",
+            "model_path": "shared.models",
+            "repository_path": "generated.repositorys",
+            "service_path": "generated.service",
+            "util_path": "shared.utils",
         }
 
         # generate
@@ -346,7 +346,7 @@ class TestSpecificsSpring:
     def test_specifics_11(self):
         """Verify usage of generate and controller directive"""
         test_input = """\
-            extend api @controller("Buzzword") {
+            extend api @spring-controller("Buzzword") {
                 submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(PATCH)
             }
 
@@ -420,6 +420,37 @@ class TestSpecificsSpring:
 
         config = {
             "database": "NO",
+        }
+
+        # generate
+        assert generate("spring", test_output, input_path=test_input, config=config) == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    @pytest.mark.order(15)
+    def test_specifics_15(self):
+        """Verify usage of folder layout config"""
+
+        test_input = Path("util/examples/package_example.qsdl")
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+        test_output.mkdir()
+
+        config = {
+            "api_path": "{package}.api",
+            "controller_path": "{package}.api",
+            "domain_path": "{package}.dto",
+            "entity_path": "{package}.db",
+            "mapper_path": "{package}.mapper",
+            "repository_path": "{package}.db",
+            "service_path": "{package}.service",
+            "enum_path": "common.constants",
+            "exception_path": "common.exceptions",
+            "model_path": "common.models",
+            "config_path": "common.config",
+            "util_path": "common.util",
         }
 
         # generate

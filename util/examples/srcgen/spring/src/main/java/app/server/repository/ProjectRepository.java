@@ -3,7 +3,7 @@
  */
 package app.server.repository;
 
-import app.server.domain.ProjectEntity;
+import app.server.domain.entity.ProjectEntity;
 
 import org.springframework.stereotype.Repository;
 

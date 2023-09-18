@@ -21,9 +21,11 @@ from dataclasses import dataclass, field
 import stringcase
 
 import qsdl.dsl.models as dsl
+import qsdl.dsl.util as qutil
 
 from .. import models as spring
 from .. import util
+from ..config import Directive
 
 
 @dataclass
@@ -140,7 +142,9 @@ class ModelClass:
     has_required: bool = False
     has_query: bool = False
     has_objectnode: bool = False
-    imports: list[str] = field(default_factory=list)
+
+    package: spring.Package = None
+    imports: dict[str, list[str]] = field(default_factory=dict)
 
     hibernate: spring.HibernateModelInfo = None
 
@@ -168,7 +172,13 @@ class ModelClass:
         self.has_required = util.has(_ref, has_required_ignore_id=True)
         self.has_query = util.has(_ref, has_query=True)
         self.has_objectnode = util.has(_ref, has_type=["Object"])
-        self.imports = util.get_model_imports(self, _ref)
+
+        # handle package path and imports
+        self.package = spring.Package(util.Store.config)
+        package_directive = qutil.get_directive_of_name(Directive.PACKAGE, _ref)
+
+        if package_directive:
+            self.package.set_namespace(package_directive.value)
 
         # add attributes
         self._add_attributes(_ref)

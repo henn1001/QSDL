@@ -5,10 +5,14 @@ package app.server.service;
 
 import app.server.TestConfig;
 import app.server.config.ErrorCodes;
-import app.server.domain.*;
+import app.server.domain.User;
+import app.server.domain.entity.TicketEntity;
+import app.server.domain.entity.UserEntity;
+import app.server.domain.mapper.UserMapStruct;
 import app.server.exception.AppException;
 import app.server.model.*;
-import app.server.repository.*;
+import app.server.repository.TicketRepository;
+import app.server.repository.UserRepository;
 import app.server.util.Json;
 
 import com.fasterxml.jackson.databind.node.*;

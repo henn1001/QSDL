@@ -4,8 +4,11 @@
 package app.server.repository;
 
 import app.server.TestConfig;
-import app.server.domain.*;
+import app.server.domain.entity.*;
+import app.server.domain.entity.ProjectEntity;
 import app.server.model.*;
+import app.server.repository.*;
+import app.server.repository.ProjectRepository;
 import app.server.util.Json;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -23,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @Import(TestConfig.class)
-@EnableJpaRepositories(basePackages = "app.server.repository", repositoryBaseClass = BaseRepositoryImpl.class)
+@EnableJpaRepositories(basePackages = {"app.server.repository"}, repositoryBaseClass = BaseRepositoryImpl.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class RoleRepositoryTest {
 
@@ -115,7 +118,7 @@ public class RoleRepositoryTest {
     do {
       CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder();
-      CursorPage findData = roleRepository.findAll(predicate, pageable);
+      CursorPage<RoleEntity> findData = roleRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 
@@ -157,7 +160,7 @@ public class RoleRepositoryTest {
     do {
       CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder(QRoleEntity.roleEntity.project.id.eq(parentId));
-      CursorPage findData = roleRepository.findAll(predicate, pageable);
+      CursorPage<RoleEntity> findData = roleRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 

@@ -3,7 +3,7 @@
  */
 package app.server.repository;
 
-import app.server.domain.TicketEntity;
+import app.server.domain.entity.TicketEntity;
 
 import org.springframework.stereotype.Repository;
 

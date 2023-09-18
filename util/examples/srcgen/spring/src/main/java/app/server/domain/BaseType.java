@@ -3,9 +3,9 @@
  */
 package app.server.domain;
 
-import app.server.model.*;
+import app.server.model.AbstractClass;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.validation.constraints.*;

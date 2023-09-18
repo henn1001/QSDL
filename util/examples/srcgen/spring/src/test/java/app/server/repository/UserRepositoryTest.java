@@ -4,8 +4,11 @@
 package app.server.repository;
 
 import app.server.TestConfig;
-import app.server.domain.*;
+import app.server.domain.entity.*;
+import app.server.domain.entity.TicketEntity;
 import app.server.model.*;
+import app.server.repository.*;
+import app.server.repository.TicketRepository;
 import app.server.util.Json;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -23,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @Import(TestConfig.class)
-@EnableJpaRepositories(basePackages = "app.server.repository", repositoryBaseClass = BaseRepositoryImpl.class)
+@EnableJpaRepositories(basePackages = {"app.server.repository"}, repositoryBaseClass = BaseRepositoryImpl.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UserRepositoryTest {
 
@@ -115,7 +118,7 @@ public class UserRepositoryTest {
     do {
       CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder();
-      CursorPage findData = userRepository.findAll(predicate, pageable);
+      CursorPage<UserEntity> findData = userRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 
@@ -157,7 +160,7 @@ public class UserRepositoryTest {
     do {
       CursorPageable pageable = new CursorPageable(cursor, 1l, null);
       BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parentId));
-      CursorPage findData = userRepository.findAll(predicate, pageable);
+      CursorPage<UserEntity> findData = userRepository.findAll(predicate, pageable);
 
       cursor = findData.nextCursor();
 

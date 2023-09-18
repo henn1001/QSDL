@@ -5,10 +5,12 @@ package app.server.service;
 
 import app.server.TestConfig;
 import app.server.config.ErrorCodes;
-import app.server.domain.*;
+import app.server.domain.Project;
+import app.server.domain.entity.ProjectEntity;
+import app.server.domain.mapper.ProjectMapStruct;
 import app.server.exception.AppException;
 import app.server.model.*;
-import app.server.repository.*;
+import app.server.repository.ProjectRepository;
 import app.server.util.Json;
 
 import com.fasterxml.jackson.databind.node.*;

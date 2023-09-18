@@ -4,6 +4,8 @@
 package app.server.service;
 
 import app.server.domain.*;
+import app.server.domain.entity.*;
+import app.server.domain.mapper.*;
 import app.server.exception.AppException;
 import app.server.model.*;
 import app.server.repository.*;

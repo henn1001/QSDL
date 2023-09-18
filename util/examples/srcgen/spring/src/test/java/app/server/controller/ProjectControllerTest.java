@@ -5,9 +5,9 @@ package app.server.controller;
 
 import app.server.TestConfig;
 import app.server.config.ErrorCodes;
-import app.server.domain.*;
+import app.server.domain.Project;
 import app.server.model.*;
-import app.server.service.*;
+import app.server.service.ProjectService;
 import app.server.util.Json;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Spring Generator Api class"""
+"""Spring Generator Package class"""
 
 from __future__ import annotations
 
@@ -28,31 +28,23 @@ class Package:
 
     _config: Config
 
-    namespace: str = None
+    _namespace: str = None
     slashed: bool = False
 
+    def __post_init__(self):
+        self._namespace = self._config.package_placeholder_fallback
+
     def __prepare(self, string: Str) -> str:
-        # ret = self.base
-        # ret += "."
-        # ret += self.__namespace()
-        # ret += string
         ret = string
 
         # format
+        ret = ret.replace("{package}", self._namespace)
         ret = ret.replace(".", "/") if self.slashed else ret.replace("/", ".")
 
         return ret
 
-    # def __namespace(self) -> str:
-    #     ret = ""
-
-    #     if self._config.include_namespace and self.namespace:
-    #         ret = self.namespace.lower() + "."
-
-    #     elif self._config.include_namespace and not self.namespace:
-    #         ret = "shared."
-
-    #     return ret
+    def set_namespace(self, namespace: str):
+        self._namespace = namespace if namespace else self._namespace
 
     @property
     def base(self) -> str:
@@ -74,6 +66,16 @@ class Package:
     def domain(self) -> str:
         """property helper method"""
         return self.__prepare(self._config.domain_path)
+
+    @property
+    def entity(self) -> str:
+        """property helper method"""
+        return self.__prepare(self._config.entity_path)
+
+    @property
+    def mapper(self) -> str:
+        """property helper method"""
+        return self.__prepare(self._config.mapper_path)
 
     @property
     def enum(self) -> str:

@@ -19,10 +19,9 @@ from __future__ import annotations
 import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
-from qsdl.generators.spring.models import ApiClass, ModelField
 
-from .config import Config
-from .models import HibernateFieldInfo, HibernateModelInfo, HibernateParentInfo, ModelClass, Package, Parent
+from . import models as spring
+from .config import Config, Directive
 
 
 class Store:
@@ -30,8 +29,10 @@ class Store:
 
     schema: dsl.Schema = None
     config: Config = None
-    models: list[ModelClass] = []
-    package: Package = None
+    models: list[spring.ModelClass] = []
+    apis: list[spring.ApiClass] = []
+    package: spring.Package = None
+    packages: dict[str, spring.Package] = {}
     is_id_long: bool = True
 
 
@@ -80,7 +81,7 @@ def get_type_override(entity: dsl.Scalar) -> str:
     ret = None
 
     # check and fetch the spring directive
-    custom_directive = qutil.get_directive_of_name("spring", entity)
+    custom_directive = qutil.get_directive_of_name(Directive.TYPE, entity)
 
     if custom_directive:
         # strip directive
@@ -264,11 +265,11 @@ def is_used_as_field_value(entity: dsl.Base | dsl.Object) -> bool:
     return False
 
 
-def add_parents_to_model(models: list[ModelClass]):
+def add_parents_to_model(models: list[spring.ModelClass]):
     """Add all Models who are a domain parent to a Model.
 
     Args:
-        models (list[ModelClass]): The list of all available models.
+        models (list[spring.ModelClass]): The list of all available models.
     """
     for model in models:
 
@@ -286,14 +287,14 @@ def add_parents_to_model(models: list[ModelClass]):
             result = [x for x in models if x.name == obj.name and x.name not in parent_names]
             _ = [parent_names.append(x.name) for x in result]
 
-            result = [Parent().build(x, model) for x in result]
+            result = [spring.Parent().build(x, model) for x in result]
 
             parents.extend(result)
 
         model.parents = parents
 
 
-def add_hibernate_info(models: list[ModelClass]):
+def add_hibernate_info(models: list[spring.ModelClass]):
     """Add hibernate related info to model and fields"""
     if not Store.config.database == "HIBERNATE":
         return
@@ -303,21 +304,21 @@ def add_hibernate_info(models: list[ModelClass]):
         if not model.is_object:
             continue
 
-        model_info = HibernateModelInfo(model)
+        model_info = spring.HibernateModelInfo(model)
         model.hibernate = model_info
 
         for field in model.fields:
-            field_info = HibernateFieldInfo(field)
+            field_info = spring.HibernateFieldInfo(field)
             field.hibernate = field_info
 
         for parent in model.parents:
-            parent_info = HibernateParentInfo(model, parent.model)
+            parent_info = spring.HibernateParentInfo(model, parent.model)
             parent.hibernate = parent_info
 
 
-def sort_api_controller(api_list: list[ApiClass]) -> list[ApiClass]:
+def sort_api_controller(api_list: list[spring.ApiClass]) -> list[spring.ApiClass]:
     """Reorganize api controllers and merge operations if needed"""
-    api_store: dict[str, ApiClass] = {}
+    api_store: dict[str, spring.ApiClass] = {}
 
     # we work with case insensitive names here to simplify things
     for api in api_list:
@@ -336,32 +337,33 @@ def sort_api_controller(api_list: list[ApiClass]) -> list[ApiClass]:
     return list(api_store.values())
 
 
-def get_model_for(obj_name: dsl.Object.name) -> ModelClass:
-    """Returns the ModelClass for a given Object name.
+def get_model_for(obj_name: dsl.Object.name) -> spring.ModelClass:
+    """Returns the spring.ModelClass for a given Object name.
 
     Args:
         obj_name (dsl.Object.name): Name of dsl.Object
 
     Returns:
-        ModelClass: The matching ModelClass
+        spring.ModelClass: The matching spring.ModelClass
     """
     ret = None
 
     for model in Store.models:
         if obj_name == model.name:
             ret = model
+            break
 
     return ret
 
 
-def get_parent_for(obj_name: dsl.Object.name, parent_name: dsl.Object.name) -> Parent:
-    """Returns the Parent object for the given child - parent Object names.
+def get_parent_for(obj_name: dsl.Object.name, parent_name: dsl.Object.name) -> spring.Parent:
+    """Returns the spring.Parent object for the given child - parent Object names.
 
     Args:
         obj_name (dsl.Object.name): Name of dsl.Object
 
     Returns:
-        ModelClass: The matching ModelClass
+        spring.ModelClass: The matching spring.ModelClass
     """
     ret = None
 
@@ -374,15 +376,15 @@ def get_parent_for(obj_name: dsl.Object.name, parent_name: dsl.Object.name) -> P
     return ret
 
 
-def get_field_for(model: ModelClass, target: ModelClass) -> ModelField:
-    """Returns the ModelField with the type of target for the given ModelClass.
+def get_field_for(model: spring.ModelClass, target: spring.ModelClass) -> spring.ModelField:
+    """Returns the spring.ModelField with the type of target for the given spring.ModelClass.
 
     Args:
-        model (ModelClass): The ModelClass where to search.
-        target (ModelClass): The ModelClass type to search for.
+        model (spring.ModelClass): The spring.ModelClass where to search.
+        target (spring.ModelClass): The spring.ModelClass type to search for.
 
     Returns:
-        ModelField: The matching ModelField
+        spring.ModelField: The matching spring.ModelField
     """
     ret = None
 
@@ -412,106 +414,3 @@ def get_parent_fields(obj_name: dsl.Object.name, filter_relations=True) -> list[
     fields = [x for x in fields if x.is_relation] if filter_relations else fields
 
     return fields
-
-
-def get_api_imports(api: dsl.Api) -> list[str]:
-    """Helper for dynamic controller imports"""
-    imports = []
-
-    if controller_has(api, has_enum=True):
-        imprt = f"import {Store.package.enum}.*;"
-        imports.append(imprt)
-
-    imprt = f"import {Store.package.domain}.*;"
-    imports.append(imprt)
-
-    imprt = f"import {Store.package.model}.*;"
-    imports.append(imprt)
-
-    # remove duplicates and sort
-    imports = list(dict.fromkeys(imports))
-    imports.sort()
-
-    return imports
-
-
-def get_controller_imports(api: dsl.Api, api_name: str) -> list[str]:
-    """Helper for dynamic controller imports"""
-    imports = []
-
-    if controller_has(api, has_enum=True):
-        imprt = f"import {Store.package.enum}.*;"
-        imports.append(imprt)
-
-    imprt = f"import {Store.package.api}.{api_name}Api;"
-    imports.append(imprt)
-
-    imprt = f"import {Store.package.domain}.*;"
-    imports.append(imprt)
-
-    imprt = f"import {Store.package.model}.*;"
-    imports.append(imprt)
-
-    if api.has_generated:
-        imprt = f"import {Store.package.service}.{api_name}Service;"
-        imports.append(imprt)
-
-    if controller_has(api, has_gen_patch=True):
-        imprt = f"import {Store.package.util}.Validator;"
-        imports.append(imprt)
-
-    # remove duplicates and sort
-    imports = list(dict.fromkeys(imports))
-    imports.sort()
-
-    return imports
-
-
-def get_service_imports(api: dsl.Api) -> list[str]:
-    """Helper for dynamic service imports"""
-    imports = []
-
-    if controller_has(api, has_enum=True):
-        imprt = f"import {Store.package.enum}.*;"
-        imports.append(imprt)
-
-    imprt = f"import {Store.package.domain}.*;"
-    imports.append(imprt)
-
-    imprt = f"import {Store.package.model}.*;"
-    imports.append(imprt)
-
-    imprt = f"import {Store.package.exception}.AppException;"
-    imports.append(imprt)
-
-    if Store.config.database == "HIBERNATE":
-        imprt = f"import {Store.package.repository}.*;"
-        imports.append(imprt)
-
-        imprt = f"import {Store.package.util}.PredicateBuilder;"
-        imports.append(imprt)
-
-    # remove duplicates and sort
-    imports = list(dict.fromkeys(imports))
-    imports.sort()
-
-    return imports
-
-
-def get_model_imports(model: ModelClass, entity: dsl.Enum | dsl.Base | dsl.Object) -> list[str]:
-    """Helper for dynamic model imports"""
-    imports = []
-
-    if has(entity, has_enum=True):
-        imprt = f"import {Store.package.enum}.*;"
-        imports.append(imprt)
-
-
-    imprt = f"import {Store.package.model}.*;"
-    imports.append(imprt)
-
-    # remove duplicates and sort
-    imports = list(dict.fromkeys(imports))
-    imports.sort()
-
-    return imports

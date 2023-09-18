@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @TestConfiguration
-@ComponentScan("app.server.domain")
+@ComponentScan({"app.server.domain.mapper"})
 public class TestConfig {
 
   public static EasyRandom easyRandom;

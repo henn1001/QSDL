@@ -1,0 +1,61 @@
+title: "Test API"
+version: "1.0"
+description: """
+A simple parent child relation example.
+
+Tests:
+  -  extending from a base
+  -  read & writeOnly
+  -  compositions
+  -  aggregations
+  -  usage of enums and generic json object
+"""
+
+servers: ["/api/v1"]
+
+enum Status {
+    OPEN
+    TO_DO
+    CLOSED
+}
+
+base BaseType @spring-package("custom") {
+    name: String! @query
+    description: String
+    creation_by: String @readOnly
+    creation_date: Date @readOnly
+    last_update_by: String @readOnly
+    last_update_date: Datetime @readOnly
+    meta_inf: Object
+}
+
+
+// NameSpace Management
+type Project extends BaseType @namespace("Management") @spring-package("project") {
+    archive: Boolean @writeOnly
+    roles: [Role] @composition
+}
+
+type Role @namespace("Management") @spring-package("user") {
+    name: String!
+}
+
+type User @namespace("Management") @spring-package("user"){
+    name: String!
+    count: Int @hidden
+    mail: String @unique
+}
+
+
+// NameSpace Incident
+type Ticket @namespace("Incident"){
+    title: String
+    body: String
+    status: Status
+    users: [User] @aggregation
+}
+
+extend api @spring-package("custom") {
+    submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(POST)
+    action(arg1: BaseType, arg2: String?, arg4: String!?): Object @path("action") @method(POST)
+}

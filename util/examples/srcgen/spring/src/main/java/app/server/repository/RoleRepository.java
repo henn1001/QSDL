@@ -3,7 +3,7 @@
  */
 package app.server.repository;
 
-import app.server.domain.RoleEntity;
+import app.server.domain.entity.RoleEntity;
 
 import org.springframework.stereotype.Repository;
 

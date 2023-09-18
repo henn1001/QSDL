@@ -24,6 +24,7 @@ import qsdl.dsl.textx as xtx
 from qsdl.dsl.models import Schema
 from qsdl.render import render
 
+from . import import_resolver as resolver
 from . import util
 from .config import IDTYPE, Config
 from .models import ApiClass, ModelClass, Package
@@ -162,7 +163,10 @@ def generate(schema: Schema, output_path: Path, config: Config):
 
     # parse models and apis
     util.Store.models = models = parse_models(schema)
-    apis = parse_apis(schema)
+    util.Store.apis = apis = parse_apis(schema)
+
+    # resolve all dynamic imports
+    resolver.resolve_dynamic_imports()
 
     # enable slashing
     package.slashed = True
@@ -171,37 +175,42 @@ def generate(schema: Schema, output_path: Path, config: Config):
     api_files = []
 
     for api in apis:
+        api.package.slashed = True
+
         # fmt: off
-        api_files.append(("src/main/java/controller/Api.j2", f"src/main/java/{package.api}/{api.name}Api.java", api))
-        api_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{package.controller}/{api.name}Controller.java", api))
+        api_files.append(("src/main/java/controller/Api.j2", f"src/main/java/{api.package.api}/{api.name}Api.java", api))
+        api_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{api.package.controller}/{api.name}Controller.java", api))
 
         if api.model and api.has_generated:
-            api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{package.service}/{api.name}Service.java", api))
-            api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{package.controller}/{api.name}ControllerTest.java", api))
+            api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{api.package.service}/{api.name}Service.java", api))
+            api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{api.package.controller}/{api.name}ControllerTest.java", api))
 
             if config.database == "HIBERNATE":
-                api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{package.service}/{api.name}ServiceTest.java", api))
+                api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{api.package.service}/{api.name}ServiceTest.java", api))
         # fmt: on
+        api.package.slashed = False
 
     # loop and generate model files
     model_files = []
 
     for model in models:
+        model.package.slashed = True
         # fmt: off
         if model.is_enum:
-            model_files.append(("src/main/java/domain/Enum.j2", f"src/main/java/{package.enum}/{model.name}.java", model))
+            model_files.append(("src/main/java/domain/Enum.j2", f"src/main/java/{model.package.enum}/{model.name}.java", model))
         else:
-            model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{package.domain}/{model.name}.java", model))
+            model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
 
         # generate entities for both objects and base entities
         if config.database == "HIBERNATE" and (model.is_object or model.is_entity) and not model.is_enum:
-            model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{package.domain}/{model.name}Entity.java", model))
-            model_files.append(("src/main/java/domain/MapStruct.j2", f"src/main/java/{package.domain}/{model.name}MapStruct.java", model))
+            model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))
+            model_files.append(("src/main/java/domain/MapStruct.j2", f"src/main/java/{model.package.mapper}/{model.name}MapStruct.java", model))
 
         if config.database == "HIBERNATE" and model.is_object:
-            model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{package.repository}/{model.name}Repository.java", model))
-            model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{package.repository}/{model.name}RepositoryTest.java", model))
+            model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{model.package.repository}/{model.name}Repository.java", model))
+            model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{model.package.repository}/{model.name}RepositoryTest.java", model))
         # fmt: on
+        model.package.slashed = False
 
     # fmt: off
     supporting_files = [
@@ -279,6 +288,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "artifact_id": config.artifact_id,
         "base_package": config.base_package,
         "package": package,
+        "packages": util.Store.packages,
         "basePath": schema.servers[0] if schema.servers else "/api/v1",
         "database": config.database,
         "encapsulation": config.encapsulation,

@@ -1,3 +1,36 @@
+# Spring Generator
+
+This generator provides a boilerplate for a - mostly domain driven - Application with Spring Boot.
+
+## Config options
+
+These options may be applied when using the cli or via a config.json
+
+```json
+{
+    "title": "SpringBootApp",
+    "group_id": "app",
+    "base_package": "app.server",
+    "artifact_id": "app",
+    "database": "HIBERNATE | NO",
+    "encapsulation": false,
+    "id_type": "LONG | STRING",
+    "api_path": "api",
+    "controller_path": "controller",
+    "service_path": "service",
+    "domain_path": "domain.dto",
+    "entity_path": "domain.entity",
+    "mapper_path": "domain.mapper",
+    "repository_path": "repository",
+    "enum_path": "constants",
+    "exception_path": "exceptions",
+    "model_path": "models",
+    "config_path": "config",
+    "util_path": "util",
+    "package_placeholder_fallback": "global"
+}
+```
+
 # Custom Directives
 
 ## @spring
@@ -8,12 +41,69 @@ Allows you to declare the type conversion for scalars.
 scalar Number @spring("BigInteger")
 ```
 
-## @controller
+## @spring-package
+
+Allows you to use a placeholder for the relevant package paths to further customize the project layout.
+
+Given the following config and the example from [here](../../util/examples/package_example.qsdl)...
+```json
+{
+    "api_path": "{package}.api",
+    "controller_path": "{package}.api",
+    "domain_path": "{package}.dto",
+    "entity_path": "{package}.db",
+    "mapper_path": "{package}.mapper",
+    "repository_path": "{package}.db",
+    "service_path": "{package}.service",
+    "enum_path": "common.constants",
+    "exception_path": "common.exceptions",
+    "model_path": "common.models",
+    "config_path": "common.config",
+    "util_path": "common.util",
+}
+```
+
+... generates the following layout
+
+```
+.
+├── common
+│   ├── config
+│   ├── constants
+│   ├── exceptions
+│   ├── models
+│   └── util
+├── custom
+│   ├── api
+│   └── dto
+├── global
+│   ├── api
+│   ├── db
+│   ├── dto
+│   ├── mapper
+│   └── service
+├── project
+│   ├── api
+│   ├── db
+│   ├── dto
+│   ├── mapper
+│   └── service
+├── user
+│   ├── api
+│   ├── db
+│   ├── dto
+│   ├── mapper
+│   └── service
+├── SpringBootApp.java
+└── package-info.java
+```
+
+## @spring-controller
 
 Allows to move custom apis into a different controller.
 
 ```
-    extend api @controller("Buzzword") {
+    extend api @spring-controller("Buzzword") {
         submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(PATCH)
     }
 
