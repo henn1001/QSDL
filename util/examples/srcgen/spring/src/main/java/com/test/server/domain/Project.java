@@ -58,10 +58,6 @@ public class Project extends AbstractPersistentObject {
   public final Set<Role> roles = new LinkedHashSet<>();
 
 
-  @PreRemove
-  private void preRemoveHook() {
-  }
-
   public void addToRoles(Role o) {
     o.project = this;
     this.roles.add(o);

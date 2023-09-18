@@ -24,7 +24,7 @@ public class RoleController extends BaseController implements RoleApi {
   RoleService roleService;
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<CursorPage> getRoles(Long projectId, CursorPageable pageable) throws Exception {
@@ -33,7 +33,7 @@ public class RoleController extends BaseController implements RoleApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Role> createRole(Long projectId, Role body) throws Exception {
@@ -42,7 +42,7 @@ public class RoleController extends BaseController implements RoleApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Role> getRole(Long projectId, Long id) throws Exception {
@@ -51,7 +51,7 @@ public class RoleController extends BaseController implements RoleApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Role> replaceRole(Long projectId, Long id, Role body) throws Exception {
@@ -60,7 +60,7 @@ public class RoleController extends BaseController implements RoleApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Role> updateRole(Long projectId, Long id, Role body) throws Exception {
@@ -70,7 +70,7 @@ public class RoleController extends BaseController implements RoleApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Void> deleteRole(Long projectId, Long id) throws Exception {

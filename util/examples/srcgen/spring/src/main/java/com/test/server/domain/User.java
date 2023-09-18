@@ -40,10 +40,6 @@ public class User extends AbstractPersistentObject {
   public final Set<Ticket> tickets = new LinkedHashSet<>();
 
 
-  @PreRemove
-  private void preRemoveHook() {
-  }
-
   public void addToTickets(Ticket o) {
     o.users.add(this);
     this.tickets.add(o);

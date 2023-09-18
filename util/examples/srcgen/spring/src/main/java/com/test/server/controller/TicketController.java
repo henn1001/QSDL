@@ -24,7 +24,7 @@ public class TicketController extends BaseController implements TicketApi {
   TicketService ticketService;
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<CursorPage> getTickets(CursorPageable pageable) throws Exception {
@@ -33,7 +33,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Ticket> createTicket(Ticket body) throws Exception {
@@ -42,7 +42,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Ticket> getTicket(Long id) throws Exception {
@@ -51,7 +51,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Ticket> replaceTicket(Long id, Ticket body) throws Exception {
@@ -60,7 +60,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Ticket> updateTicket(Long id, Ticket body) throws Exception {
@@ -70,7 +70,7 @@ public class TicketController extends BaseController implements TicketApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Void> deleteTicket(Long id) throws Exception {

@@ -24,7 +24,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   ProjectService projectService;
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<CursorPage> getProjects(CursorPageable pageable) throws Exception {
@@ -33,7 +33,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Project> createProject(Project body) throws Exception {
@@ -42,7 +42,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Project> getProject(Long id) throws Exception {
@@ -51,7 +51,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Project> replaceProject(Long id, Project body) throws Exception {
@@ -60,7 +60,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Project> updateProject(Long id, Project body) throws Exception {
@@ -70,7 +70,7 @@ public class ProjectController extends BaseController implements ProjectApi {
   }
 
   /**
-   * {@inheritDoc}}
+   * {@inheritDoc}
    */
   @Override
   public ResponseEntity<Void> deleteProject(Long id) throws Exception {

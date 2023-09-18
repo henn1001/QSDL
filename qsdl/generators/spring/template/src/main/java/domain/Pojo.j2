@@ -94,15 +94,18 @@ public class {{model.name}} {
 
 {% endfor %}
 {% if database == "HIBERNATE" and (model.is_object or model.is_entity) %}
+  {% set removeHookList = model.fields| selectattr("is_aggregation") | rejectattr("is_relation_owner") | list %}
+  {% if removeHookList %}
 
   @PreRemove
   private void preRemoveHook() {
-    {% for field in model.fields if field.is_aggregation and not field.is_relation_owner %}
+    {% for field in removeHookList %}
     new LinkedHashSet<>(this.{{field.name}}).forEach(o -> o.removeFrom{{model.name}}s(this));
     {% endfor %}
   }
-
+  {% endif %}
 {% for field in model.fields if field.is_relation and field.is_array %}
+
   public void addTo{{field.type}}s({{field.type}} o) {
 {% if encapsulation %}
     {% if field.is_composition  %}
