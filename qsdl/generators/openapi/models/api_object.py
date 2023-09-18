@@ -43,7 +43,10 @@ class Parameter:
 
     ref: str = None
     is_ref_body: bool = False
+
+    # addon
     format: str = None
+    pattern: str = None
 
     def build(self, _ref: dsl.Argument) -> Parameter:
         """Builds self from dsl.Argument"""
@@ -53,6 +56,7 @@ class Parameter:
 
         self.type = util.custom_type(_ref.value)
         self.format = util.custom_type_format(_ref.value)
+        self.pattern = util.custom_type_pattern(_ref.value)
 
         self.is_array = _ref.is_array
         self.is_required = _ref.is_required

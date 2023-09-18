@@ -53,6 +53,7 @@ class ModelField:
 
     # addon
     format: str = None
+    pattern: str = None
     min_size: str = None
     max_size: str = None
 
@@ -66,6 +67,7 @@ class ModelField:
 
         self.type = util.custom_type(_ref.value)
         self.format = util.custom_type_format(_ref.value)
+        self.pattern = util.custom_type_pattern(_ref.value)
 
         self._add_constraints(_ref)
 

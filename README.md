@@ -168,15 +168,22 @@ There are already several builtin types available.
 
 Example:
 ```
-scalar UUID @openapi("string,uuid") @spring("UUID")
+scalar UUID @openapi("string, format: uuid, pattern: ^.*$") @spring("UUID")
 ```
 
-For openapi, two values can be provided which translate to "type" and "format".
+For openapi, three values can be provided which translate to "type", "format" and "pattern".
+
+> Note: Parsing here is a bit tricky and done by splitting via ', '. The whitespace after the comma is especially important to not split commas within the provided regex.
 
 ```
 description:
     type: string
     format: uuid
+
+// decimal with max precision of 4
+description:
+    type: string
+    pattern: ^[0-9]*(?:\.[0-9]{0,4})?$
 ```
 
 ## Enum

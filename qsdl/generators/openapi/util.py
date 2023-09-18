@@ -72,7 +72,7 @@ def custom_type(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> st
     override = None
 
     if entity._tx_fqn == "entity.Scalar":
-        override = get_type_override(entity)
+        override = get_type_override(entity)[0]
 
     return custom_types.get(name, name) if not override else override
 
@@ -90,41 +90,65 @@ def custom_type_format(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]
     override = None
 
     if entity._tx_fqn == "entity.Scalar":
-        override = get_type_override(entity, True)
+        override = get_type_override(entity)[1]
 
     return custom_type_formats.get(name, None) if not override else override
 
 
-def get_type_override(entity: dsl.Scalar, toggle: bool = False) -> str:
+def custom_type_pattern(entity: Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]) -> str:
+    """Converter map for custom pattern.
+
+    Args:
+        entity (Union[dsl.Scalar, dsl.Enum, dsl.Base, dsl.Object]): The type to map.
+
+    Returns:
+        str: The mapped type_format name or input_type_format if it does not exist.
+    """
+    override = None
+
+    if entity._tx_fqn == "entity.Scalar":
+        override = get_type_override(entity)[2]
+
+    return None if not override else override
+
+
+def get_type_override(entity: dsl.Scalar) -> str:
     """Checks and returns a custom scalar format override.
+
+    Example:
+        @openapi("type: string, format: uuid, pattern: ^.*$")
 
     Args:
         entity (dsl.Scalar): The scalar object.
-        toggle (bool, optional): Returns the first value for False, and the second for True. Defaults to False.
 
     Returns:
         str: The override if available or None
     """
-    ret = None
+    o_type = None
+    o_format = None
+    o_pattern = None
 
     # check and fetch the openapi directive
     custom_directive = qutil.get_directive_of_name("openapi", entity)
 
-    if custom_directive:
-        # split and strip directive
-        splits = [x.strip() for x in custom_directive.value.split(",")]
+    if custom_directive and ", " in custom_directive.value:
+        # more values are available
+        splits = [x.strip() for x in custom_directive.value.split(", ")]
 
-        if len(splits) > 2:
-            msg = f"invalid format for directive 'openapi' on scalar '{entity.name}'. "
-            msg += "Must contain no more than two comma seperated values."
-            raise ValueError(msg)
+        o_type = splits[0]
 
-        if not toggle and splits[0]:
-            ret = splits[0]
-        elif toggle and splits[1]:
-            ret = splits[1]
+        match = [x.replace("format:", "").strip() for x in splits if "format:" in x]
+        o_format = match[0] if match else None
 
-    return ret
+        match = [x.replace("pattern:", "").strip() for x in splits if "pattern:" in x]
+        o_pattern = match[0] if match else None
+
+    elif custom_directive:
+        # only the first value is present
+        # eg openapi("string")
+        o_type = custom_directive.value.strip()
+
+    return o_type, o_format, o_pattern
 
 
 def is_supertype(entity: Union[dsl.Base, dsl.Object]) -> bool:

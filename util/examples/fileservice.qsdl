@@ -1,6 +1,6 @@
-scalar UUID @openapi("string,uuid") @spring("UUID")
-scalar MultipartFile @openapi("string, binary") @spring("org.springframework.web.multipart.MultipartFile")
-scalar File @openapi("string, binary") @spring("org.springframework.core.io.Resource")
+scalar UUID @openapi("string, format: uuid") @spring("UUID")
+scalar MultipartFile @openapi("string, format: binary") @spring("org.springframework.web.multipart.MultipartFile")
+scalar File @openapi("string, format: binary") @spring("org.springframework.core.io.Resource")
 
 
 type Maasfile {

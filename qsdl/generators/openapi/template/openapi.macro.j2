@@ -147,6 +147,9 @@
 {% if field.format %}
   format: {{field.format}}
 {% endif %}
+{% if field.pattern %}
+  pattern: '{{field.pattern}}'
+{% endif %}
 {% if field.is_read_only %}
   readOnly: true
 {% elif field.is_write_only %}

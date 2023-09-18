@@ -92,8 +92,8 @@ https://thorben-janssen.com/avoid-cascadetype-delete-many-assocations/
 Multipart-file upload could be specified and implemented in the following way
 
 ```
-scalar UUID @openapi("string,uuid") @spring("UUID")
-scalar MultipartFile @openapi("string,binary") @spring("MultipartFile")
+scalar UUID @openapi("string, format: uuid") @spring("UUID")
+scalar MultipartFile @openapi("string, format: binary") @spring("MultipartFile")
 
 extend api  {
     uploadFile(file: MultipartFile!, docType: String, entityId: UUID!): Void @path("upload") @method(POST) @consumes("multipart/form-data") @spring-void-input
