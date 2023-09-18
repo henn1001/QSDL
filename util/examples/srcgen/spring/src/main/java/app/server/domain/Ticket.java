@@ -5,7 +5,6 @@ package app.server.domain;
 
 import app.server.constant.*;
 import app.server.model.*;
-import app.server.util.Json;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -48,9 +47,5 @@ public class Ticket extends AbstractPersistentObject {
     this.users.remove(o);
   }
 
-
-  public static Ticket fromJson(String json) throws Json.JsonException {
-    return Json.serializer().fromJson(json, Ticket.class);
-  }
 
 }

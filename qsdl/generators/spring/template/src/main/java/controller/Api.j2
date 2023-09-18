@@ -18,7 +18,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.validation.Valid;
 
-import java.util.*;
+{% if api.operations|selectattr("response.is_array") | list %}
+import java.util.List;
+{% endif %}
 
 @Validated
 @RequestMapping("${server.base-path:{{basePath}}}")

@@ -4,7 +4,6 @@
 package app.server.domain;
 
 import app.server.model.*;
-import app.server.util.Json;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -47,9 +46,5 @@ public class User extends AbstractPersistentObject {
     this.tickets.remove(o);
   }
 
-
-  public static User fromJson(String json) throws Json.JsonException {
-    return Json.serializer().fromJson(json, User.class);
-  }
 
 }

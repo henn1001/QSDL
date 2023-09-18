@@ -17,7 +17,7 @@ public class CursorPageable {
 
   /**
    * Constructor of {@code CursorPageable}.
-   * 
+   *
    * @param cursor the requested base64 encoded cursor.
    * @param limit the requested limit.
    * @param count the request to return the total count.

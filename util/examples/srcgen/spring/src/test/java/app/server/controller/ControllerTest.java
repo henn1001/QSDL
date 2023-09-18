@@ -7,6 +7,7 @@ import app.server.TestConfig;
 import app.server.config.ErrorCodes;
 import app.server.exception.AppException;
 import app.server.model.AppError;
+import app.server.util.Json;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ public class ControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    AppError error = AppError.fromJson(response);
+    AppError error = Json.serializer().fromJson(response, AppError.class);
     assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
     assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
@@ -70,7 +71,7 @@ public class ControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    AppError error = AppError.fromJson(response);
+    AppError error = Json.serializer().fromJson(response, AppError.class);
     assertEquals(ErrorCodes.BAD_REQEST.code(), error.code);
     assertEquals(ErrorCodes.BAD_REQEST.message(), error.message);
     assertEquals(ErrorCodes.BAD_REQEST.status(), error.status);

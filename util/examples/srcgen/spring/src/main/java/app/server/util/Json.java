@@ -38,8 +38,8 @@ public class Json {
 
     // Ignore null values when writing json.
     // mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-    mapper.configOverride(Map.class).setInclude(Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL));
-    mapper.setSerializationInclusion(Include.NON_NULL);
+    mapper.configOverride(Map.class).setInclude(Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY));
+    mapper.setSerializationInclusion(Include.NON_EMPTY);
 
     // Write times as a String instead of a Long so its human readable.
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -78,7 +78,8 @@ public class Json {
   public <T> T fromJson(byte[] bytes, TypeReference<T> typeRef) {
     try {
       return mapper.readValue(bytes, typeRef);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -86,7 +87,8 @@ public class Json {
   public <T> T fromJson(byte[] bytes, Class<T> type) {
     try {
       return mapper.readValue(bytes, type);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -94,7 +96,8 @@ public class Json {
   public <T> T fromJson(String json, TypeReference<T> typeRef) {
     try {
       return mapper.readValue(json, typeRef);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -102,7 +105,8 @@ public class Json {
   public <T> T fromJson(String json, Class<T> type) {
     try {
       return mapper.readValue(json, type);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -110,7 +114,8 @@ public class Json {
   public <T> T fromNode(JsonNode node, TypeReference<T> typeRef) {
     try {
       return mapper.readValue(node.toString(), typeRef);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -118,7 +123,8 @@ public class Json {
   public <T> T fromNode(JsonNode node, Class<T> type) {
     try {
       return mapper.readValue(node.toString(), type);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -126,7 +132,8 @@ public class Json {
   public <T> T fromObject(Object obj, TypeReference<T> typeRef) {
     try {
       return mapper.readValue(toString(obj), typeRef);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -134,7 +141,8 @@ public class Json {
   public <T> T fromObject(Object obj, Class<T> type) {
     try {
       return mapper.readValue(toString(obj), type);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -142,7 +150,8 @@ public class Json {
   public <T> T fromInputStream(InputStream is, TypeReference<T> typeRef) {
     try {
       return mapper.readValue(is, typeRef);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -150,7 +159,8 @@ public class Json {
   public <T> T fromInputStream(InputStream is, Class<T> type) {
     try {
       return mapper.readValue(is, type);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -158,7 +168,8 @@ public class Json {
   public String toString(Object obj) {
     try {
       return writer.writeValueAsString(obj);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -166,7 +177,8 @@ public class Json {
   public String toPrettyString(Object obj) {
     try {
       return prettyWriter.writeValueAsString(obj);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -174,34 +186,35 @@ public class Json {
   public byte[] toByteArray(Object obj) {
     try {
       return prettyWriter.writeValueAsBytes(obj);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
 
   public Map<String, Object> mapFromJson(byte[] bytes) {
     try {
-      return mapper.readValue(bytes, new TypeReference<Map<String, Object>>() {
-      });
-    } catch (IOException e) {
+      return mapper.readValue(bytes, new TypeReference<Map<String, Object>>() {});
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
 
   public Map<String, Object> mapFromJson(String json) {
     try {
-      return mapper.readValue(json, new TypeReference<Map<String, Object>>() {
-      });
-    } catch (IOException e) {
+      return mapper.readValue(json, new TypeReference<Map<String, Object>>() {});
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
 
   public Map<String, Object> mapFromObject(Object obj) {
     try {
-      return mapper.convertValue(obj, new TypeReference<Map<String, Object>>() {
-      });
-    } catch (IllegalArgumentException e) {
+      return mapper.convertValue(obj, new TypeReference<Map<String, Object>>() {});
+    }
+    catch (IllegalArgumentException e) {
       throw new JsonException(e);
     }
   }
@@ -209,7 +222,8 @@ public class Json {
   public ObjectNode nodeFromJson(String json) {
     try {
       return (ObjectNode) mapper.readTree(json);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -217,7 +231,8 @@ public class Json {
   public ObjectNode nodeFromObject(Object obj) {
     try {
       return (ObjectNode) mapper.readTree(toString(obj));
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }
@@ -225,7 +240,8 @@ public class Json {
   public ArrayNode nodeFromList(List<? extends Object> obj) {
     try {
       return (ArrayNode) mapper.readTree(toString(obj));
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new JsonException(e);
     }
   }

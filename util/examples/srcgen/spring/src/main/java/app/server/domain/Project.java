@@ -4,7 +4,6 @@
 package app.server.domain;
 
 import app.server.model.*;
-import app.server.util.Json;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -64,9 +63,5 @@ public class Project extends AbstractPersistentObject {
     this.roles.remove(o);
   }
 
-
-  public static Project fromJson(String json) throws Json.JsonException {
-    return Json.serializer().fromJson(json, Project.class);
-  }
 
 }

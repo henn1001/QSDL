@@ -36,7 +36,7 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, ID extends S
     this.queryFactory = new JPAQueryFactory(entityManager);
     this.resolver = new SimpleEntityPathResolver("");
     this.path = resolver.createPath(entityInformation.getJavaType());
-    this.entityPath = new PathBuilder<T>(entityInformation.getJavaType(), path.getMetadata());
+    this.entityPath = new PathBuilder<>(entityInformation.getJavaType(), path.getMetadata());
   }
 
   @Override
@@ -78,10 +78,10 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, ID extends S
 
   /**
   * Returns the cursor for the next CursorPage.
-  * 
+  *
   * All items after the requested limit of the provided list are removed and 
   * the id of limit + 1 is used as cursor.
-  * 
+  *
   * @param items the list of entities.
   * @return the cursor for the next CursorPage.
   */

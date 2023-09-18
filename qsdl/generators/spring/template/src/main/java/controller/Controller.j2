@@ -16,7 +16,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.*;
+{% if api.operations|selectattr("response.is_array") | list %}
+import java.util.List;
+{% endif %}
 
 @Validated
 @Controller

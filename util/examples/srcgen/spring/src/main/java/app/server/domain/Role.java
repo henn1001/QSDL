@@ -4,7 +4,6 @@
 package app.server.domain;
 
 import app.server.model.*;
-import app.server.util.Json;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -24,9 +23,5 @@ public class Role extends AbstractPersistentObject {
   @JsonIgnore
   public Project project;
 
-
-  public static Role fromJson(String json) throws Json.JsonException {
-    return Json.serializer().fromJson(json, Role.class);
-  }
 
 }

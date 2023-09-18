@@ -510,9 +510,6 @@ def get_model_imports(model: ModelClass, entity: dsl.Enum | dsl.Base | dsl.Objec
         imprt = f"import {Store.package.model}.*;"
         imports.append(imprt)
 
-    imprt = f"import {Store.package.util}.Json;"
-    imports.append(imprt)
-
     # remove duplicates and sort
     imports = list(dict.fromkeys(imports))
     imports.sort()

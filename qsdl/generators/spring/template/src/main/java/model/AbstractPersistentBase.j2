@@ -10,9 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 
-@Slf4j
 @MappedSuperclass
-public abstract class AbstractPersistentBase {
+public abstract class AbstractPersistentBase extends AbstractClass {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,7 +59,8 @@ public abstract class AbstractPersistentBase {
     if (this == o) {
       return true;
     }
-    if (o == null || !(o instanceof AbstractPersistentBase)) {
+
+    if (!(o instanceof AbstractPersistentBase)) {
       return false;
     }
 
@@ -82,28 +82,6 @@ public abstract class AbstractPersistentBase {
     else {
       return super.hashCode();
     }
-  }
-
-  public String toString() {
-    String ret = "";
-    try {
-      ret = Json.serializer().toString(this);
-    }
-    catch (Json.JsonException e) {
-      log.error("Caught unhandeled exception:", e);
-    }
-    return ret;
-  }
-
-  public String toPrettyString() {
-    String ret = "";
-    try {
-      ret = Json.serializer().toPrettyString(this);
-    }
-    catch (Json.JsonException e) {
-      log.error("Caught unhandeled exception:", e);
-    }
-    return ret;
   }
 
 }

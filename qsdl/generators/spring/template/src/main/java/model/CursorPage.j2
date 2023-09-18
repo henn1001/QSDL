@@ -10,7 +10,7 @@ import java.util.*;
 public class CursorPage {
 
   @JsonProperty(value = "items")
-  private final List<?{{" extends AbstractPersistentObject" if database == "HIBERNATE" }}> items;
+  private final List<?> items;
 
   @JsonProperty(value = "next_cursor")
   private final String nextCursor;
@@ -20,12 +20,12 @@ public class CursorPage {
 
   /**
    * Constructor of {@code CursorPage}.
-   * 
+   *
    * @param items the content of this page.
    * @param nextCursor the cursor for the next page.
    * @param totalCount the total amount of items available.
    */
-  public CursorPage(List<?{{" extends AbstractPersistentObject" if database == "HIBERNATE" }}> items, String nextCursor, Long totalCount) {
+  public CursorPage(List<?> items, String nextCursor, Long totalCount) {
     this.items = Objects.requireNonNullElse(items, new ArrayList<>());
     this.nextCursor = nextCursor;
     this.totalCount = totalCount;
@@ -36,7 +36,7 @@ public class CursorPage {
   
    * @return the CursorPage content as List.
    */
-  public List<?{{" extends AbstractPersistentObject" if database == "HIBERNATE" }}> items() {
+  public List<?> items() {
     return items;
   }
 

@@ -45,7 +45,7 @@ import java.util.*;
 {% if model.is_object or model.is_entity %}@Entity{{"\n"}}{% endif %}
 public class {{model.name}}{% if model.is_object %} extends AbstractPersistentObject{% elif model.is_base and model.is_entity %} extends AbstractPersistentBase{% endif %} {
 {% else %}
-public class {{model.name}} {
+public class {{model.name}} extends AbstractClass {
 {% endif %}
 
 {% for field in model.fields if not field.is_id or database == "NO" %}
@@ -147,10 +147,6 @@ public class {{model.name}} {
 
 {% endfor %}
 {% endif %}
-
-  public static {{model.name}} fromJson(String json) throws Json.JsonException {
-    return Json.serializer().fromJson(json, {{model.name}}.class);
-  }
 
 }
 {{""}}

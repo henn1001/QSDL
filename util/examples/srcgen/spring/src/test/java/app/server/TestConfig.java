@@ -23,7 +23,7 @@ public class TestConfig {
 
   TestConfig() {
     EasyRandomParameters parameters = new EasyRandomParameters()
-        .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}"))
+        .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}").put("test", "data"))
         .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
         .randomize(Long.class, new LongRangeRandomizer(0l, Long.MAX_VALUE));
 

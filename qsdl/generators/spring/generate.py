@@ -241,6 +241,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/exception/AppException.j2", f"src/main/java/{package.exception}/AppException.java"),
         ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{package.exception}/GlobalExceptionHandler.java"),
         # model
+        ("src/main/java/model/AbstractClass.j2", f"src/main/java/{package.model}/AbstractClass.java"),
         ("src/main/java/model/AppError.j2", f"src/main/java/{package.model}/AppError.java"),
         ("src/main/java/model/CursorPageable.j2", f"src/main/java/{package.model}/CursorPageable.java"),
         ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.OffsetDateTime;
 import java.util.*;
 
-public class AppError {
+public class AppError extends AbstractClass {
 
   @JsonProperty(value = "code", required = true)
   public Integer code;
@@ -52,20 +52,6 @@ public class AppError {
     this.message = message;
     this.status = status;
     this.details = details;
-  }
-
-
-  @Override
-  public String toString() throws Json.JsonException {
-    return Json.serializer().toString(this);
-  }
-
-  public String toPrettyString() throws Json.JsonException {
-    return Json.serializer().toPrettyString(this);
-  }
-
-  public static AppError fromJson(String json) throws Json.JsonException {
-    return Json.serializer().fromJson(json, AppError.class);
   }
 
 }

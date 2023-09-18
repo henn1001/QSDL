@@ -16,14 +16,14 @@ import java.util.*;
 
 @Slf4j
 @MappedSuperclass
-public abstract class AbstractPersistentObject {
+public abstract class AbstractPersistentObject extends AbstractClass {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
   private Long id;
 
-  @Column(unique=true, updatable = false)
+  @Column(unique = true, updatable = false)
   @JsonIgnore
   private String uid = IdGenerator.createId();
 
@@ -31,7 +31,7 @@ public abstract class AbstractPersistentObject {
   @JsonIgnore
   private Integer iv;
 
-  private static final String UNHANDLED_EXCEPTION = "Caught unhandeled exception:";
+  private static final String UNHANDLED_EXCEPTION = "Caught unhandled exception:";
 
   /**
    * The internal numeric identifier.
@@ -163,7 +163,8 @@ public abstract class AbstractPersistentObject {
     if (this == o) {
       return true;
     }
-    if (o == null || !(o instanceof AbstractPersistentObject)) {
+
+    if (!(o instanceof AbstractPersistentObject)) {
       return false;
     }
 
@@ -185,28 +186,6 @@ public abstract class AbstractPersistentObject {
     else {
       return super.hashCode();
     }
-  }
-
-  public String toString() {
-    String ret = "";
-    try {
-      ret = Json.serializer().toString(this);
-    }
-    catch (Json.JsonException e) {
-      log.error(UNHANDLED_EXCEPTION, e);
-    }
-    return ret;
-  }
-
-  public String toPrettyString() {
-    String ret = "";
-    try {
-      ret = Json.serializer().toPrettyString(this);
-    }
-    catch (Json.JsonException e) {
-      log.error(UNHANDLED_EXCEPTION, e);
-    }
-    return ret;
   }
 
 }

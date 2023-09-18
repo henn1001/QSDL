@@ -89,7 +89,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 
-    List<String> errors = new ArrayList<String>();
+    List<String> errors = new ArrayList<>();
     for (FieldError error : ex.getBindingResult().getFieldErrors()) {
       errors.add(error.getField() + ": " + error.getDefaultMessage());
     }

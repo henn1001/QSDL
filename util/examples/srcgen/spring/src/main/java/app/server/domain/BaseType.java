@@ -3,7 +3,6 @@
  */
 package app.server.domain;
 
-import app.server.util.Json;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -40,9 +39,5 @@ public class BaseType {
   @JsonProperty(value = "meta_inf")
   public ObjectNode metaInf;
 
-
-  public static BaseType fromJson(String json) throws Json.JsonException {
-    return Json.serializer().fromJson(json, BaseType.class);
-  }
 
 }
