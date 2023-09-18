@@ -198,10 +198,11 @@ class TestArgument:
                 field4(arg: String): Void @path("path4")
                 field5(arg: Boolean): Void @path("path5")
                 field6(arg: Date): Void @path("path6")
-                field7(arg: Object): Void @path("path7")
-                field8(arg: Bar): Void @path("path8")
-                field9(arg: Foo): Void @path("path9")
-                field10(arg: Fruit): Void @path("path10")
+                field7(arg: Datetime): Void @path("path7")
+                field8(arg: Object): Void @path("path8")
+                field9(arg: Bar): Void @path("path9")
+                field10(arg: Foo): Void @path("path10")
+                field11(arg: Fruit): Void @path("path11")
             }
         """
 
@@ -217,11 +218,12 @@ class TestArgument:
             ("/path3", "get", "number", "float", "query"),
             ("/path4", "get", "string", None, "query"),
             ("/path5", "get", "boolean", None, "query"),
-            ("/path6", "get", "string", "date-time", "query"),
-            ("/path7", "get", "object", None, "query"),
-            ("/path8", "get", None, None, "query"),
+            ("/path6", "get", "string", "date", "query"),
+            ("/path7", "get", "string", "date-time", "query"),
+            ("/path8", "get", "object", None, "query"),
             ("/path9", "get", None, None, "query"),
             ("/path10", "get", None, None, "query"),
+            ("/path11", "get", None, None, "query"),
         ]
 
         for _path, _method, _type, _format, _in in ops:
@@ -235,7 +237,7 @@ class TestArgument:
             if _format:
                 assert parameter["schema"]["format"] == _format
 
-            if _path in ["/path8", "/path9", "/path10"]:
+            if _path in ["/path9", "/path10", "/path11"]:
                 assert parameter["schema"]["$ref"]
 
     def test_argument_08_positive(self):
@@ -260,10 +262,11 @@ class TestArgument:
                 field4(arg: String): Void @path("path4") @method(POST)
                 field5(arg: Boolean): Void @path("path5") @method(POST)
                 field6(arg: Date): Void @path("path6") @method(POST)
-                field7(arg: Object): Void @path("path7") @method(POST)
-                field8(arg: Bar): Void @path("path8") @method(POST)
-                field9(arg: Foo): Void @path("path9") @method(POST)
-                field10(arg: Fruit): Void @path("path10") @method(POST)
+                field7(arg: Datetime): Void @path("path7") @method(POST)
+                field8(arg: Object): Void @path("path8") @method(POST)
+                field9(arg: Bar): Void @path("path9") @method(POST)
+                field10(arg: Foo): Void @path("path10") @method(POST)
+                field11(arg: Fruit): Void @path("path11") @method(POST)
             }
         """
 
@@ -278,11 +281,12 @@ class TestArgument:
             ("/path3", "post", "number", "float"),
             ("/path4", "post", "string", None),
             ("/path5", "post", "boolean", None),
-            ("/path6", "post", "string", "date-time"),
-            ("/path7", "post", None, None),
+            ("/path6", "post", "string", "date"),
+            ("/path7", "post", "string", "date-time"),
             ("/path8", "post", None, None),
             ("/path9", "post", None, None),
             ("/path10", "post", None, None),
+            ("/path11", "post", None, None),
         ]
 
         for _path, _method, _type, _format in ops:
@@ -294,14 +298,14 @@ class TestArgument:
             if _format:
                 assert schema["properties"]["arg"]["format"] == _format
 
-            if _path in ["/path7"]:
+            if _path in ["/path8"]:
                 assert schema["type"] == "object"
                 assert "properties" not in schema
 
-            if _path in ["/path8"]:
+            if _path in ["/path9"]:
                 assert schema["properties"]["arg"]["$ref"]
 
-            if _path in ["/path9", "/path10"]:
+            if _path in ["/path10", "/path11"]:
                 assert schema["$ref"]
 
     def test_argument_09_negative(self):

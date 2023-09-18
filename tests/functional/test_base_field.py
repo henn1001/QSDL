@@ -52,6 +52,7 @@ class TestBaseField:
                 string: String
                 boolean: Boolean
                 date: Date
+                datetime: Datetime
                 object: Object
             }
         """
@@ -78,6 +79,9 @@ class TestBaseField:
             elif key == "boolean":
                 assert value["type"] == "boolean"
             elif key == "date":
+                assert value["type"] == "string"
+                assert value["format"] == "date"
+            elif key == "datetime":
                 assert value["type"] == "string"
                 assert value["format"] == "date-time"
             elif key == "object":
@@ -150,6 +154,7 @@ class TestBaseField:
                 string: [String]
                 boolean: [Boolean]
                 date: [Date]
+                datetime: [Datetime]
                 object: [Object]
             }
         """
@@ -174,6 +179,10 @@ class TestBaseField:
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "boolean"
             elif key == "date":
+                assert value["type"] == "array"
+                assert value["items"]["type"] == "string"
+                assert value["format"] == "date"
+            elif key == "datetime":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "string"
                 assert value["format"] == "date-time"

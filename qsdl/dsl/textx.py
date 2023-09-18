@@ -72,6 +72,7 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
         "String": dsl.Scalar(name="String"),
         "Boolean": dsl.Scalar(name="Boolean"),
         "Date": dsl.Scalar(name="Date"),
+        "Datetime": dsl.Scalar(name="Datetime"),
         "Object": dsl.Scalar(name="Object"),
         "Void": dsl.Scalar(name="Void"),
     }

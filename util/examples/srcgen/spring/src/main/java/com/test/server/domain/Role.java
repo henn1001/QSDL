@@ -13,7 +13,7 @@ import javax.persistence.*;
 import javax.validation.*;
 import javax.validation.constraints.*;
 
-import java.time.OffsetDateTime;
+import java.time.*;
 import java.util.*;
 
 @Entity

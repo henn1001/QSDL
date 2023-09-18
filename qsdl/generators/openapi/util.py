@@ -41,6 +41,7 @@ custom_types = {
     "Boolean": "boolean",
     "ID": "integer",
     "Date": "string",
+    "Datetime": "string",
     "Object": "object",
 }
 
@@ -52,7 +53,8 @@ custom_type_formats = {
     "String": None,
     "Boolean": None,
     "ID": "int64",
-    "Date": "date-time",
+    "Date": "date",
+    "Datetime": "date-time",
     "Object": None,
 }
 

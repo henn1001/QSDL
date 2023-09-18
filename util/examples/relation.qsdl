@@ -25,7 +25,7 @@ base BaseType {
     creation_by: String @readOnly
     creation_date: Date @readOnly
     last_update_by: String @readOnly
-    last_update_date: Date @readOnly
+    last_update_date: Datetime @readOnly
     meta_inf: Object
 }
 

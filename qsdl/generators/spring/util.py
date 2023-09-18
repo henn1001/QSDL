@@ -45,7 +45,8 @@ custom_types = {
     "String": "String",
     "Boolean": "Boolean",
     "ID": "Long",
-    "Date": "OffsetDateTime",
+    "Date": "LocalDate",
+    "Datetime": "OffsetDateTime",
     "Object": "ObjectNode",
     "Void": "Void",
 }

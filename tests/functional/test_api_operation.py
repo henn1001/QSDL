@@ -53,7 +53,8 @@ class TestApiOperation:
                 string: String @path("path6")
                 boolean: Boolean @path("path7")
                 date: Date @path("path8")
-                object: Object @path("path9")
+                datetime: Datetime @path("path9")
+                object: Object @path("path10")
             }
         """
 
@@ -70,8 +71,9 @@ class TestApiOperation:
             ("/path5", "get", "number", "double"),
             ("/path6", "get", "string", None),
             ("/path7", "get", "boolean", None),
-            ("/path8", "get", "string", "date-time"),
-            ("/path9", "get", "object", None),
+            ("/path8", "get", "string", "date"),
+            ("/path9", "get", "string", "date-time"),
+            ("/path10", "get", "object", None),
         ]
 
         for _path, _method, _type, _format in ops:
@@ -153,7 +155,8 @@ class TestApiOperation:
                 string: [String] @path("path4")
                 boolean: [Boolean] @path("path5")
                 date: [Date] @path("path6")
-                object: [Object] @path("path7")
+                datetime: [Datetime] @path("path7")
+                object: [Object] @path("path8")
             }
         """
 
@@ -168,8 +171,9 @@ class TestApiOperation:
             ("/path3", "get", "number", "float"),
             ("/path4", "get", "string", None),
             ("/path5", "get", "boolean", None),
-            ("/path6", "get", "string", "date-time"),
-            ("/path7", "get", "object", None),
+            ("/path6", "get", "string", "date"),
+            ("/path7", "get", "string", "date-time"),
+            ("/path8", "get", "object", None),
         ]
 
         for _path, _method, _type, _format in ops:

@@ -52,6 +52,7 @@ class TestObjectField:
                 string: String
                 boolean: Boolean
                 date: Date
+                datetime: Datetime
                 object: Object
             }
         """
@@ -63,8 +64,7 @@ class TestObjectField:
         for key, value in properties.items():
             if key == "id":
                 assert value["type"] == "integer"
-                if "int64":
-                    assert value["format"] == "int64"
+                assert value["format"] == "int64"
             elif key == "int":
                 assert value["type"] == "integer"
                 assert value["format"] == "int32"
@@ -82,6 +82,9 @@ class TestObjectField:
             elif key == "boolean":
                 assert value["type"] == "boolean"
             elif key == "date":
+                assert value["type"] == "string"
+                assert value["format"] == "date"
+            elif key == "datetime":
                 assert value["type"] == "string"
                 assert value["format"] == "date-time"
             elif key == "object":
@@ -154,6 +157,7 @@ class TestObjectField:
                 string: [String]
                 boolean: [Boolean]
                 date: [Date]
+                datetime: [Datetime]
                 object: [Object]
             }
         """
@@ -165,8 +169,7 @@ class TestObjectField:
         for key, value in properties.items():
             if key == "id":
                 assert value["type"] == "integer"
-                if "int64":
-                    assert value["format"] == "int64"
+                assert value["format"] == "int64"
             elif key == "int":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "integer"
@@ -182,6 +185,10 @@ class TestObjectField:
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "boolean"
             elif key == "date":
+                assert value["type"] == "array"
+                assert value["items"]["type"] == "string"
+                assert value["format"] == "date"
+            elif key == "datetime":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "string"
                 assert value["format"] == "date-time"

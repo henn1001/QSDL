@@ -14,7 +14,7 @@ import javax.persistence.*;
 import javax.validation.*;
 import javax.validation.constraints.*;
 
-import java.time.OffsetDateTime;
+import java.time.*;
 import java.util.*;
 
 @Entity
@@ -35,13 +35,12 @@ public class Project extends AbstractPersistentObject {
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
-  public OffsetDateTime creationDate;
+  public LocalDate creationDate;
 
   @Size(min = 0, max = 255)
   @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
   public String lastUpdateBy;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
   public OffsetDateTime lastUpdateDate;
 

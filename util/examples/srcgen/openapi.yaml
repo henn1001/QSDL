@@ -1594,7 +1594,7 @@ components:
           maxLength: 255
         creation_date:
           type: string
-          format: date-time
+          format: date
           readOnly: true
         last_update_by:
           type: string
@@ -1647,7 +1647,7 @@ components:
           maxLength: 255
         creation_date:
           type: string
-          format: date-time
+          format: date
           readOnly: true
         last_update_by:
           type: string
