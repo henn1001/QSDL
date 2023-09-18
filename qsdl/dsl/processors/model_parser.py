@@ -109,7 +109,7 @@ def get_query_fields(obj: dsl.Object) -> List[dsl.Field]:
     return fields
 
 
-def get_all_fields_as_list(entity: dsl.Object) -> List[dsl.Field]:
+def get_all_fields_as_list(entity: Union[dsl.Object, dsl.Base]) -> List[dsl.Field]:
     """Returns all fields ob a object including its supertype as list.
 
     Fields that are redefined in a child, overwrite the parent definition.
@@ -121,6 +121,10 @@ def get_all_fields_as_list(entity: dsl.Object) -> List[dsl.Field]:
         list: [entity.dsl.Field]
     """
     fields: List[dsl.Field] = []
+
+    # skip already flattened entities
+    if entity.flattened:
+        return entity.fields
 
     if entity.supertype:
         tmp = get_all_fields_as_list(entity.supertype)
@@ -645,6 +649,7 @@ def parse_objects(schema: dsl.Schema):
     # inherit all fields of parent objects
     for entity in bases + objects:
         entity.fields = get_all_fields_as_list(entity)
+        entity.flattened = True
 
     # add id fields for all objects
     for obj in objects:

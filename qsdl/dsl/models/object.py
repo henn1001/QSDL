@@ -42,3 +42,6 @@ class Object:
     # required by textX
     parent: Schema = None
     _tx_fqn: str = "entity.Object"
+
+    # addons
+    flattened: bool = False
