@@ -8,10 +8,8 @@ import app.server.util.Json;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import javax.validation.*;
 import javax.validation.constraints.*;
 
 import java.time.*;
@@ -33,7 +31,6 @@ public class Project extends AbstractPersistentObject {
   @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
   public String creationBy;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
   public LocalDate creationDate;
 

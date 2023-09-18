@@ -46,7 +46,6 @@ class ModelField:
     is_base: bool = False
     is_object: bool = False
     is_id: bool = False
-    is_date: bool = False
 
     is_composition: bool = False
     is_aggregation: bool = False
@@ -75,7 +74,6 @@ class ModelField:
         self.is_base = _ref.value._tx_fqn in ["entity.Base"]
         self.is_object = _ref.value._tx_fqn in ["entity.Object"]
         self.is_id = _ref.value.name == "ID"
-        self.is_date = _ref.value.name == "Date"
 
         self.is_required = _ref.is_required
 

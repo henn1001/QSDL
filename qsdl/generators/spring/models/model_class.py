@@ -92,7 +92,7 @@ class ModelField:
         self.is_base = _ref.value._tx_fqn in ["entity.Base"]
         self.is_object = _ref.value._tx_fqn in ["entity.Object"]
         self.is_id = _ref.value.name == "ID"
-        self.is_date = _ref.value.name == "Date"
+        self.is_date = _ref.value.name in ["Date", "Datetime"]
 
         # relation model
         self.is_composition = _ref.is_composition
@@ -171,7 +171,7 @@ class ModelClass:
         self.has_required = util.has(_ref, has_required_ignore_id=True)
         self.has_query = util.has(_ref, has_query=True)
         self.has_objectnode = util.has(_ref, has_type=["Object"])
-        self.imports = util.get_model_imports(_ref)
+        self.imports = util.get_model_imports(self, _ref)
 
         # add attributes
         self._add_attributes(_ref)

@@ -496,7 +496,7 @@ def get_service_imports(api: dsl.Api) -> List[str]:
     return imports
 
 
-def get_model_imports(entity: Union[dsl.Enum, dsl.Base, dsl.Object]) -> List[str]:
+def get_model_imports(model: ModelClass, entity: Union[dsl.Enum, dsl.Base, dsl.Object]) -> List[str]:
     """Helper for dynamic model imports"""
     imports = []
 
@@ -504,8 +504,9 @@ def get_model_imports(entity: Union[dsl.Enum, dsl.Base, dsl.Object]) -> List[str
         imprt = f"import {Store.package.enum}.*;"
         imports.append(imprt)
 
-    imprt = f"import {Store.package.model}.*;"
-    imports.append(imprt)
+    if model.is_object or (model.is_base and model.is_entity):
+        imprt = f"import {Store.package.model}.*;"
+        imports.append(imprt)
 
     imprt = f"import {Store.package.util}.Json;"
     imports.append(imprt)
