@@ -38,7 +38,7 @@ public class Json {
 
     // Ignore null values when writing json.
     mapper.configOverride(Map.class).setInclude(Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY));
-    mapper.setSerializationInclusion(Include.NON_EMPTY);
+    mapper.setSerializationInclusion(Include.NON_NULL);
 
     // Write times as a String instead of a Long so its human readable.
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

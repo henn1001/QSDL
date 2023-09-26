@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.*;
 
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    */
   @Override
   protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
-      HttpHeaders headers, HttpStatus status, WebRequest request) {
+      HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 
@@ -85,7 +85,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    */
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-      HttpHeaders headers, HttpStatus status, WebRequest request) {
+      HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 

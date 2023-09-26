@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.*;
 import org.springframework.context.event.EventListener;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.retry.annotation.EnableRetry;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.*;
 
 @Configuration
@@ -36,14 +34,6 @@ public class AppConfiguration {
   @Bean
   public YAMLMapper yamlMapper() {
     return new YAMLMapper();
-  }
-
-  /**
-   * Required to support HttpMethod.PATCH
-   */
-  @Bean
-  public RestTemplate restTemplate() {
-    return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
   }
 
   @Bean

@@ -6,15 +6,15 @@ package app.server.util;
 import app.server.config.ErrorCodes;
 import app.server.exception.AppException;
 
-import javax.validation.*;
+import jakarta.validation.*;
 
 import java.util.*;
 
 public class Validator {
 
-  private static final javax.validation.Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+  private static final jakarta.validation.Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-  private static final String NOT_NULL_MSG = "{javax.validation.constraints.NotNull.message}";
+  private static final String NOT_NULL_MSG = "{jakarta.validation.constraints.NotNull.message}";
 
   public static final <T> void validate(T object) throws AppException {
 

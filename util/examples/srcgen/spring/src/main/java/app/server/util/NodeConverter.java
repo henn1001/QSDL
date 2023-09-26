@@ -5,7 +5,7 @@ package app.server.util;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Converter
 public class NodeConverter implements AttributeConverter<ObjectNode, String> {

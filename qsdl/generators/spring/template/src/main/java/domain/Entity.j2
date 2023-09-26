@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 {% endif %}
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 {% if model.fields|selectattr("is_required")|rejectattr("is_id") | list  %}
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 {% endif %}
 
 {% if has_date %}

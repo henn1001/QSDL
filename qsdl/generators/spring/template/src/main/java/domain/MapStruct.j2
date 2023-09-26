@@ -19,6 +19,9 @@ import org.mapstruct.*;
 )
 public interface {{model.name}}MapStruct {
 
+  {% if id_type == "String" %}
+  @Mapping(source = "uid", target = "id")
+  {% endif %}
   {{model.name}} toDto({{model.name}}Entity entity);
 
   // ignore read only attributes and relations

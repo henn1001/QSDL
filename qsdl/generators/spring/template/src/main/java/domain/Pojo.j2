@@ -18,10 +18,10 @@ import lombok.*;
 {% endif %}
 
 {% if model.fields|selectattr("is_array")|rejectattr("is_relation") | list or model.fields|selectattr("is_base")|rejectattr("is_relation") | list or model.fields|selectattr("is_object")|rejectattr("is_relation") | list %}
-import javax.validation.*;
+import jakarta.validation.*;
 {% endif %}
 {% if model.fields|selectattr("type", "in", ["String", "Integer", "Long"]) | list or model.fields|selectattr("is_required")|rejectattr("is_read_only") | list  %}
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 {% endif %}
 
 {% if has_date %}

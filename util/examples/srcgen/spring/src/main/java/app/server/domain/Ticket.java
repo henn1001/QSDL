@@ -8,7 +8,7 @@ import app.server.model.AbstractClass;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 
 public class Ticket extends AbstractClass {
 

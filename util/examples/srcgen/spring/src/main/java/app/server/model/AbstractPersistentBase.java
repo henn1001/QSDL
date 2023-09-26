@@ -7,7 +7,7 @@ import app.server.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * MappedSuperclass for QSDL Base-Classes.

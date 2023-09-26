@@ -8,7 +8,7 @@ import app.server.model.AbstractPersistentObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.util.*;
 
