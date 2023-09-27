@@ -20,9 +20,13 @@
     schema:
       type: object
   {% if operation.query_parameters %}
-      example:
+      examples:
       {% for parameter in operation.query_parameters %}
-        {{ parameter.name }}: {{ parameter.type }}
+        {% if loop.first %}
+        - {{ parameter.name }}: {{ parameter.type }}
+        {% else %}
+          {{ parameter.name }}: {{ parameter.type }}
+        {% endif %}
       {% endfor %}
   {% endif %}
     style: form
@@ -110,12 +114,12 @@
   {% if field.is_array %}
     type: array
     items:
-      {{ get_parameter_type(field) | indent(2) | trim }}
+      {{ get_parameter_type(field) | indent(4) | trim }}
         {% if get_parameter_format(field) %}
-    {{ get_parameter_format(field) | indent(2) | trim  }}
+      {{ get_parameter_format(field) | indent(4) | trim  }}
         {% endif %}
         {% if get_parameter_constraint(field) %}
-    {{ get_parameter_constraint(field) | indent(2) | trim }}
+      {{ get_parameter_constraint(field) | indent(4) | trim }}
         {% endif %}
   {% else %}
     {{ get_parameter_type(field) | indent(2) | trim }}
@@ -131,11 +135,7 @@
 
 
 {% macro get_parameter_type(field, response=false) %}
-{# workaround until openapi 3.1 is used #}
-{% if (field.is_read_only or field.is_write_only) and (field.is_object or field.is_base or field.is_enum) %}
-  allOf:
-    - $ref: '#/components/schemas/{{ field.type }}'
-{% elif field.is_object or field.is_base or field.is_enum %}
+{% if field.is_object or field.is_base or field.is_enum %}
   $ref: '#/components/schemas/{{ field.type }}'
 {% else %}
   type: {{ field.type }}

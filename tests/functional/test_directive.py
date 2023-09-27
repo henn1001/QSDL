@@ -78,8 +78,8 @@ class TestDirective:
 
         assert parameter[0]["in"] == "query"
         assert parameter[0]["name"] == "query"
-        assert parameter[0]["schema"]["example"]["name"]
-        assert parameter[0]["schema"]["example"]["world"]
+        assert parameter[0]["schema"]["examples"][0]["name"]
+        assert parameter[0]["schema"]["examples"][0]["world"]
 
     def test_directive_03_positive(self):
         """Verify usage of @hidden"""
@@ -124,9 +124,9 @@ class TestDirective:
         assert properties["name"]["readOnly"]
         assert properties["world"]["readOnly"]
         assert properties["enum"]["readOnly"]
-        assert properties["enum"]["allOf"][0]["$ref"]
+        assert properties["enum"]["$ref"]
         assert properties["base"]["readOnly"]
-        assert properties["base"]["allOf"][0]["$ref"]
+        assert properties["base"]["$ref"]
 
     def test_directive_05_positive(self):
         """Verify usage of @writeOnly"""
@@ -156,9 +156,9 @@ class TestDirective:
         assert properties["name"]["writeOnly"]
         assert properties["world"]["writeOnly"]
         assert properties["enum"]["writeOnly"]
-        assert properties["enum"]["allOf"][0]["$ref"]
+        assert properties["enum"]["$ref"]
         assert properties["base"]["writeOnly"]
-        assert properties["base"]["allOf"][0]["$ref"]
+        assert properties["base"]["$ref"]
 
     def test_directive_06_positive(self):
         """Verify usage of @composition"""

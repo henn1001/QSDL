@@ -173,11 +173,11 @@ class TestObjectField:
             elif key == "int":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "integer"
-                assert value["format"] == "int32"
+                assert value["items"]["format"] == "int32"
             elif key == "float":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "number"
-                assert value["format"] == "float"
+                assert value["items"]["format"] == "float"
             elif key == "string":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "string"
@@ -187,11 +187,11 @@ class TestObjectField:
             elif key == "date":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "string"
-                assert value["format"] == "date"
+                assert value["items"]["format"] == "date"
             elif key == "datetime":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "string"
-                assert value["format"] == "date-time"
+                assert value["items"]["format"] == "date-time"
             elif key == "object":
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "object"

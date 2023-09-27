@@ -19,7 +19,7 @@ import org.mapstruct.*;
 )
 public interface {{model.name}}MapStruct {
 
-  {% if id_type == "String" %}
+  {% if id_type == "String" and model.is_object %}
   @Mapping(source = "uid", target = "id")
   {% endif %}
   {{model.name}} toDto({{model.name}}Entity entity);

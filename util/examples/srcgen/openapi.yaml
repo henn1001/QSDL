@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Test API
   description: |
@@ -25,8 +25,8 @@ paths:
           required: false
           schema:
             type: object
-            example:
-              name: string
+            examples:
+              - name: string
           style: form
           explode: true
         - $ref: '#/components/parameters/cursor'
@@ -524,8 +524,8 @@ paths:
           required: false
           schema:
             type: object
-            example:
-              name: integer
+            examples:
+              - name: integer
           style: form
           explode: true
         - $ref: '#/components/parameters/cursor'
@@ -600,8 +600,8 @@ paths:
           required: false
           schema:
             type: object
-            example:
-              name: integer
+            examples:
+              - name: integer
           style: form
           explode: true
         - $ref: '#/components/parameters/cursor'
@@ -923,8 +923,8 @@ paths:
           required: false
           schema:
             type: object
-            example:
-              name: integer
+            examples:
+              - name: integer
           style: form
           explode: true
         - $ref: '#/components/parameters/cursor'
@@ -1101,8 +1101,8 @@ paths:
           required: false
           schema:
             type: object
-            example:
-              name: integer
+            examples:
+              - name: integer
           style: form
           explode: true
         - $ref: '#/components/parameters/cursor'
@@ -1353,8 +1353,8 @@ paths:
           required: false
           schema:
             type: object
-            example:
-              name: string
+            examples:
+              - name: string
           style: form
           explode: true
         - $ref: '#/components/parameters/cursor'
@@ -1562,8 +1562,8 @@ components:
           type: array
           items:
             type: number
-          format: float
-          minimum: 0
+            format: float
+            minimum: 0
 
     Metric:
       type: object
@@ -1709,7 +1709,7 @@ components:
           type: array
           items:
             type: string
-          maxLength: 255
+            maxLength: 255
         password:
           type: string
           maxLength: 255
@@ -1754,8 +1754,7 @@ components:
           format: int32
           minimum: 0
         issuer_body:
-          allOf:
-            - $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/User'
           readOnly: true
         body:
           type: string

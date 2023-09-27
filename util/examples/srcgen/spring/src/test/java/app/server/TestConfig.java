@@ -27,7 +27,11 @@ public class TestConfig {
     EasyRandomParameters parameters = new EasyRandomParameters()
         .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}").put("test", "data"))
         .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
-        .randomize(Long.class, new LongRangeRandomizer(0l, Long.MAX_VALUE));
+        .randomize(Long.class, new LongRangeRandomizer(0l, Long.MAX_VALUE))
+        .collectionSizeRange(1, 10)
+        // objectPoolSize works as a cache and prevents reusage of objects
+        // a small cache size could cause unique constraint errors while testing
+        .objectPoolSize(10000); 
 
     easyRandom = new EasyRandom(parameters);
   }
