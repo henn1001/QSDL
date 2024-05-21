@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://gitlab.com/henn1001/qsdl/compare/v4.1.0...v4.2.0) (2024-05-21)
+
+
+### Features
+
+* **core:** add a new default directive ([c906a9c](https://gitlab.com/henn1001/qsdl/commit/c906a9c11f0c7b7664341bd74554c341c3a8df06))
+* **spring:** update spring-boot to v3.1.3 ([8f21860](https://gitlab.com/henn1001/qsdl/commit/8f218609fae5199a7ea00e7193b61ad9df5654d4))
+* update openapi to 3.1.0 and adapt the spring and openapi generators accordingly ([cdcb276](https://gitlab.com/henn1001/qsdl/commit/cdcb276ebf1d9e0661216a7d0be5d6b091c440c8))
+
 ## [4.1.0](https://gitlab.com/henn1001/qsdl/compare/v4.0.0...v4.1.0) (2023-09-18)
 
 
