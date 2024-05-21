@@ -54,6 +54,7 @@ class ModelField:
     pattern: str = None
     min_size: str = None
     max_size: str = None
+    default: str = None
 
     def build(self, _ref: dsl.Field) -> ModelField:
         """Builds self from dsl.Field"""
@@ -66,8 +67,6 @@ class ModelField:
         self.type = util.custom_type(_ref.value)
         self.format = util.custom_type_format(_ref.value)
         self.pattern = util.custom_type_pattern(_ref.value)
-
-        self._add_constraints(_ref)
 
         self.is_array = _ref.is_array
         self.is_enum = _ref.value._tx_fqn in ["entity.Enum"]
@@ -85,18 +84,26 @@ class ModelField:
         self.is_aggregation = _ref.is_aggregation
         self.is_relation = _ref.is_relation
 
+        self._add_constraints(_ref)
+
         return self
 
     def _add_constraints(self, _ref: dsl.Field):
-        """Adds min max constraints"""
+        """Adds min max constraints and default"""
 
         if self.type == "string" and self.format not in ["date", "date-time"]:
             self.min_size = f"minLength: {_ref.min_size}" if _ref.min_size else None
-            self.max_size = f"maxLength: {_ref.max_size}" if _ref.max_size else "maxLength: 255"
+            self.max_size = (
+                f"maxLength: {_ref.max_size}" if _ref.max_size else "maxLength: 255"
+            )
 
         if self.type in ["integer", "number"]:
-            self.min_size = f"minimum: {_ref.min_size}" if _ref.min_size else "minimum: 0"
+            self.min_size = (
+                f"minimum: {_ref.min_size}" if _ref.min_size else "minimum: 0"
+            )
             self.max_size = f"maximum: {_ref.max_size}" if _ref.max_size else None
+
+        self.default = f"default: {_ref.default}" if _ref.default else None
 
 
 @dataclass

@@ -164,4 +164,7 @@
 {% if field.max_size %}
   {{field.max_size}}
 {% endif %}
+{% if field.default %}
+  {{field.default}}
+{% endif %}
 {% endmacro %}

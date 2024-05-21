@@ -983,14 +983,21 @@ components:
           format: int64
           readOnly: true
           minimum: 0
+        number:
+          type: integer
+          format: int32
+          minimum: 0
+          default: 42
         title:
           type: string
           maxLength: 255
+          default: Witty Title
         body:
           type: string
           maxLength: 255
         status:
           $ref: '#/components/schemas/Status'
+          default: OPEN
 
     AppError:
       required:

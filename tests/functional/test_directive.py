@@ -58,6 +58,7 @@ class TestDirective:
 
     19.  `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
 
+    20.  `Directive` `@default("value")` may be used on `Object Field` for setting a default value.
     """
 
     def test_directive_01_positive(self):
@@ -175,7 +176,9 @@ class TestDirective:
 
         openapi = wrapper_generate(test_input)
 
-        assert "composition" not in openapi["components"]["schemas"]["Foo"]["properties"]
+        assert (
+            "composition" not in openapi["components"]["schemas"]["Foo"]["properties"]
+        )
 
         assert "/foos/{foo_id}/bars" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}" in openapi["paths"]
@@ -224,7 +227,9 @@ class TestDirective:
 
         openapi = wrapper_generate(test_input)
 
-        assert "aggregation" not in openapi["components"]["schemas"]["Foo"]["properties"]
+        assert (
+            "aggregation" not in openapi["components"]["schemas"]["Foo"]["properties"]
+        )
 
         assert "/foos/{foo_id}/bars" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}/add" in openapi["paths"]
@@ -394,3 +399,33 @@ class TestDirective:
         assert "Fruit" not in openapi["components"]["schemas"]
         assert "Fruity" in openapi["components"]["schemas"]
         assert "Bar" in openapi["components"]["schemas"]
+
+    def test_directive_20_positive(self):
+        """Verify usage of @default"""
+        test_input = """\
+            enum Fruit {
+                APPLE
+                MELON
+            }
+            
+            type Foo {
+                field1 : String @default("test")
+                field2 : Int @default("1")
+                field3 : Long @default("1")
+                field4: Float @default("1.1")
+                field5: Double @default("1.1")
+                field6 : Boolean @default("true")
+                field7: Fruit @default("APPLE")
+            }
+        """
+
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Foo"]["properties"]
+        assert properties["field1"]["default"] == "test"
+        assert properties["field2"]["default"] == 1
+        assert properties["field3"]["default"] == 1
+        assert properties["field4"]["default"] == 1.1
+        assert properties["field5"]["default"] == 1.1
+        assert properties["field6"]["default"] == True
+        assert properties["field7"]["default"] == "APPLE"

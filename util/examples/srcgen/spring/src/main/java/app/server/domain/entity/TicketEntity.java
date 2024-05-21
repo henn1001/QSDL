@@ -16,12 +16,14 @@ import java.util.*;
 @Table(name = "ticket")
 public class TicketEntity extends AbstractPersistentObject {
 
-  public String title;
+  public Integer number = 42;
+
+  public String title = "Witty Title";
 
   public String body;
 
   @Enumerated(EnumType.STRING)
-  public Status status;
+  public Status status = Status.OPEN;
 
   @JsonIgnore
   @ManyToMany(mappedBy = "tickets", fetch = FetchType.LAZY)

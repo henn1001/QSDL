@@ -431,3 +431,5 @@ There are certain builtin directives that can be used to modify the generation b
 18.  `Directive` `@headers` may be used on any `Api` or `Field` for adding response headers to the operation.
 
 19.  `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
+
+20.  `Directive` `@default("value")` may be used on `Object Field` for setting a default value.

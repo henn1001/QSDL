@@ -66,9 +66,9 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
   {% if field.is_array and field.is_relation %}
   public final Set<{{typeName}}> {{field.name}} = new LinkedHashSet<>();
   {% elif field.is_array %}
-  {{ "private" if encapsulation else "public"}} List<{{typeName}}> {{field.name}};
+  {{ "private" if encapsulation else "public"}} List<{{typeName}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
   {% else %}
-  {{ "private" if encapsulation else "public"}} {{typeName}} {{field.name}};
+  {{ "private" if encapsulation else "public"}} {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
   {% endif %}
 
 {% endfor %}

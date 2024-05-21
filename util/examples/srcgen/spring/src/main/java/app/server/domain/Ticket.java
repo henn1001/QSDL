@@ -17,6 +17,11 @@ public class Ticket extends AbstractClass {
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
   public Long id;
 
+  @Min(0)
+  @Max(Integer.MAX_VALUE)
+  @JsonProperty(value = "number")
+  public Integer number;
+
   @Size(min = 0, max = 255)
   @JsonProperty(value = "title")
   public String title;

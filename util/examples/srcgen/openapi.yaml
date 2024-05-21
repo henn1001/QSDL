@@ -1749,10 +1749,12 @@ components:
         title:
           type: string
           maxLength: 255
+          default: Duke
         issuer_id:
           type: integer
           format: int32
           minimum: 0
+          default: 42
         issuer_body:
           $ref: '#/components/schemas/User'
           readOnly: true
@@ -1761,6 +1763,7 @@ components:
           maxLength: 255
         status:
           $ref: '#/components/schemas/Status'
+          default: OPEN
 
     MilestoneList:
       required:

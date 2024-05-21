@@ -114,6 +114,7 @@ Field:
         is_hidden?='@hidden'
         ('@minSize(' min_size=INT ')')?
         ('@maxSize(' max_size=INT ')')?
+        ('@default(' default=STRING ')')?
     )#
 
     // Custom directives

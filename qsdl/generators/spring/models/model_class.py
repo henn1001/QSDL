@@ -66,6 +66,7 @@ class ModelField:
 
     min_size: str = None
     max_size: str = None
+    default: str = None
 
     def build(self, _ref: dsl.Field) -> ModelField:
         """Init our dataclass by reading information from _ref"""
@@ -77,8 +78,6 @@ class ModelField:
 
         self.type = util.custom_type(_ref.value)
         self.is_array = _ref.is_array
-
-        self._add_constraints(_ref)
 
         self.is_required = _ref.is_required
         self.is_read_only = _ref.is_read_only
@@ -101,6 +100,8 @@ class ModelField:
         self.getter = "get" + stringcase.pascalcase(self.name)
         self.setter = "set" + stringcase.pascalcase(self.name)
 
+        self._add_constraints(_ref)
+
         return self
 
     def _add_constraints(self, _ref: dsl.Field):
@@ -118,6 +119,21 @@ class ModelField:
             self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
             self.max_size = f"{_ref.max_size}" if _ref.max_size else "Long.MAX_VALUE"
 
+        # default value is a bit tricky
+        if self.is_enum:
+            self.default = f"{self.type}.{_ref.default}" if _ref.default else None
+        elif self.type == "String":
+            self.default = f'"{_ref.default}"' if _ref.default else None
+        elif self.type == "Integer":
+            self.default = f'{_ref.default}' if _ref.default else None
+        elif self.type == "Long":
+            self.default = f'{_ref.default}l' if _ref.default else None
+        elif self.type == "Float":
+            self.default = f'{_ref.default}f' if _ref.default else None
+        elif self.type == "Double":
+            self.default = f'{_ref.default}d' if _ref.default else None
+        else:
+            self.default = f'{_ref.default}' if _ref.default else None
 
 @dataclass
 class ModelClass:

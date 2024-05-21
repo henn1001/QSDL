@@ -43,6 +43,7 @@ class Field:
     is_hidden: bool = False
     min_size: int = None
     max_size: int = None
+    default: str = None
     # Custom directives
     directives: list[dsl.Directive] = field(default_factory=list)
 

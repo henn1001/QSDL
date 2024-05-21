@@ -49,9 +49,10 @@ type User @namespace("Management"){
 
 // NameSpace Incident
 type Ticket @namespace("Incident"){
-    title: String
+    number: Int @default("42")
+    title: String @default("Witty Title")
     body: String
-    status: Status
+    status: Status @default("OPEN")
     users: [User] @aggregation
 }
 
