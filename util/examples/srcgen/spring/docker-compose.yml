@@ -2,7 +2,7 @@ name: app
 
 services:
   service:
-    image: maven:3.9-eclipse-temurin-17
+    image: maven:3.9-eclipse-temurin-21
     command:
       - mvn
       - spring-boot:run

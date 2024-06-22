@@ -21,7 +21,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.concurrent.Executor;
+import java.util.TimeZone;
 
 @Configuration
 @EnableRetry
@@ -30,25 +30,28 @@ import java.util.concurrent.Executor;
 class AppConfiguration {
 
   @Value("${server.port}")
-  private String serverPort;
+  String serverPort;
 
   @EventListener(ApplicationReadyEvent.class)
-  public void doSomethingAfterStartup() {
+  void doSomethingAfterStartup() {
     System.out.println("listening on port " + serverPort);
+
+    // set timezone to UTC
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
   }
 
   @Bean
-  public ObjectMapper objectMapper() {
+  ObjectMapper objectMapper() {
     return Json.serializer().mapper();
   }
 
   @Bean
-  public YAMLMapper yamlMapper() {
+  YAMLMapper yamlMapper() {
     return new YAMLMapper();
   }
 
   @Bean(name = "scheduleExecutor")
-  ThreadPoolTaskScheduler taskSchedulingThreadPool() {
+  ThreadPoolTaskScheduler defaultScheduleExecutor() {
     ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
     scheduler.setPoolSize(Constants.SCHEDULER_POOL_SIZE);
     scheduler.setThreadNamePrefix("SchedulerThread-");
@@ -56,8 +59,8 @@ class AppConfiguration {
     return scheduler;
   }
 
-  @Bean(name = "asyncExecutor")
-  public Executor asyncExecutor() {
+  @Bean(name = "taskExecutor")
+  ThreadPoolTaskExecutor defaultTaskExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(Constants.ASYNC_POOL_SIZE);
     executor.setThreadNamePrefix("AsyncThread-");
@@ -66,7 +69,7 @@ class AppConfiguration {
   }
 
   @Bean
-  public WebMvcConfigurer webConfigurer() {
+  WebMvcConfigurer webConfigurer() {
     return new WebMvcConfigurer() {
 
       @Override

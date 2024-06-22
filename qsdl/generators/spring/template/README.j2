@@ -9,7 +9,7 @@
 
 ## Requirements
 
--   [OpenJDK 17](https://adoptium.net/)
+-   [graalvm 21](https://www.graalvm.org/release-notes/JDK_21/)
 -   [Maven](https://maven.apache.org/)
 
 I can recommend using sdkman for the installation.
@@ -18,7 +18,7 @@ I can recommend using sdkman for the installation.
 curl -s "https://get.sdkman.io" | bash
 source ~/.sdkman/bin/sdkman-init.sh
 
-sdk install java 17.0.11-tem
+sdk install java 21-graalce
 sdk install maven
 ```
 

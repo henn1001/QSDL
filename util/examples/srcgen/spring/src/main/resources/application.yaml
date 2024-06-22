@@ -5,6 +5,7 @@ app.name: SpringBootApp
 server.port: 8080
 server.base-path: /api/v1
 spring.mvc.pathmatch.matching-strategy: ant_path_matcher
+spring.threads.virtual.enabled: true
 
 ### Monitoring service
 management.endpoints.web.base-path: /api/actuator
