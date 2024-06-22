@@ -5,13 +5,13 @@
 
   <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
     <layout class="ch.qos.logback.classic.PatternLayout">
-      <Pattern>%d{yyyy-MM-dd} | %d{HH:mm:ss.SSS} | %highlight(%-5level) | %magenta(%-10.10thread) | %-30.30(%logger{5}) | %m%n</Pattern>
+      <Pattern>%d{yyyy-MM-dd} | %d{HH:mm:ss.SSS} | %highlight(%-5level) | %magenta(%thread) | %-30.30(%logger{5}) | %m%n</Pattern>
     </layout>
   </appender>
 
   <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-      <Pattern>%d{yyyy-MM-dd} | %d{HH:mm:ss.SSS} | %-5level | %-10.10thread | %-30.30(%logger{5}) | %m%n</Pattern>
+      <Pattern>%d{yyyy-MM-dd} | %d{HH:mm:ss.SSS} | %-5level | %thread | %-30.30(%logger{5}) | %m%n</Pattern>
     </encoder>
 
     <file>${LOGS}/spring.log</file>
@@ -25,8 +25,13 @@
 
   <!-- LOG everything at INFO level -->
   <root level="info">
-    <appender-ref ref="RollingFile" />
     <appender-ref ref="Console" />
   </root>
+
+  <springProfile name="log">
+    <root level="info">
+      <appender-ref ref="RollingFile" />
+    </root>
+  </springProfile>
 
 </configuration>

@@ -12,6 +12,8 @@ REGISTRY = registry
 help:
 	@echo "make setup"
 	@echo "       prepare the environment"
+	@echo "make generate"
+	@echo "       run generators"
 	@echo "make build"
 	@echo "       builds docker image"
 	@echo "make test"
@@ -24,23 +26,26 @@ help:
 setup:
 	@echo "setup..."
 
+generate:
+	@echo "generate..."
+
 build:
 	@echo "building..."
-	@SVC_VERSION=$$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-	@export SVC_VERSION
-	@mvn spring-boot:build-image -DskipTests
-	@docker tag $(IMAGE_NAME):$${SVC_VERSION} $(IMAGE_NAME):latest
+	SVC_VERSION=$$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+	VERSION=$${VERSION:-$$SVC_VERSION}
+	mvn versions:set -B -ntp -DnewVersion=$${VERSION} -DgenerateBackupPoms=false
+	mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${REGISTRY}/${IMAGE_NAME}:$${VERSION}
 
 test:
 	@echo "testing..."
-	@docker-compose up
+	docker-compose up
 
 deploy:
 	@echo "deploy images..."
-	@docker tag $(IMAGE_NAME) $(REGISTRY)/$(IMAGE_NAME):latest
-	@docker push $(REGISTRY)/$(IMAGE_NAME)
+	docker tag $(IMAGE_NAME) $(REGISTRY)/$(IMAGE_NAME):latest
+	docker push $(REGISTRY)/$(IMAGE_NAME)
 
 clean:
 	@echo "cleaning..."
-	@docker-compose down
+	docker-compose down
 {{""}}

@@ -219,12 +219,15 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("README.j2", "README.md"),
         (".qsdl-ignore.j2", ".qsdl-ignore"),
         (".gitignore.j2", ".gitignore"),
-        ("makefile.j2", "makefile"),
+        ("Makefile.j2", "Makefile"),
         ("docker-compose.j2", "docker-compose.yml"),
+        (".google-checkstyle-suppressions.j2", ".google-checkstyle-suppressions.xml"),
+        (".google-checkstyle.j2", ".google-checkstyle.xml"),
+        (".google-style.j2", ".google-style.xml"),
         # vscode
-        (".vscode/eclipse-java-google-style.j2", ".vscode/eclipse-java-google-style.xml"),
-        (".vscode/launch.j2", ".vscode/launch.json"),
-        (".vscode/settings.j2", ".vscode/settings.json"),
+        (".vscode/extensions.j2", ".vscode/extensions.json"),
+        (".vscode/launch.j2", ".vscode/launch.json.template"),
+        (".vscode/settings.j2", ".vscode/settings.json.template"),
         # resources
         ("src/main/resources/application.j2", "src/main/resources/application.yaml"),
         ("src/main/resources/logback-spring.j2", "src/main/resources/logback-spring.xml"),
@@ -237,8 +240,6 @@ def generate(schema: Schema, output_path: Path, config: Config):
         # config
         ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
         ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),
-        ("src/main/java/config/AsyncConfig.j2", f"src/main/java/{package.config}/AsyncConfig.java"),
-        ("src/main/java/config/SchedulerConfig.j2", f"src/main/java/{package.config}/SchedulerConfig.java"),
         ("src/main/java/config/ErrorCodes.j2", f"src/main/java/{package.config}/ErrorCodes.java"),
         ("src/main/java/config/Constants.j2", f"src/main/java/{package.config}/Constants.java"),
         # api
@@ -253,6 +254,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{package.util}/PredicateBuilder.java"),
         # exception
         ("src/main/java/exception/AppException.j2", f"src/main/java/{package.exception}/AppException.java"),
+        ("src/main/java/exception/AppExceptionUtil.j2", f"src/main/java/{package.exception}/AppExceptionUtil.java"),
         ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{package.exception}/GlobalExceptionHandler.java"),
         # model
         ("src/main/java/model/AbstractClass.j2", f"src/main/java/{package.model}/AbstractClass.java"),
@@ -269,7 +271,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         # fmt: off
         supporting_files.append( ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{package.model}/AbstractPersistentObject.java"))
         supporting_files.append(("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{package.model}/AbstractPersistentBase.java"))
-        supporting_files.append(("src/main/java/config/PersistenceConfig.j2", f"src/main/java/{package.config}/PersistenceConfig.java"))
+        supporting_files.append(("src/main/java/config/AppConfigurationPersistence.j2", f"src/main/java/{package.config}/AppConfigurationPersistence.java"))
         supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))

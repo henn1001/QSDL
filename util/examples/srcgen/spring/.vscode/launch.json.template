@@ -1,0 +1,45 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run Dev",
+      "request": "launch",
+      "mainClass": "app.server.SpringBootApp",
+      "projectName": "app",
+      "args": [
+        "--spring.profiles.active=dev"
+      ]
+    },
+    {
+      "type": "java",
+      "name": "Run Local",
+      "request": "launch",
+      "mainClass": "app.server.SpringBootApp",
+      "projectName": "app",
+      "args": [
+        "--spring.profiles.active=local"
+      ]
+    },
+    {
+      "type": "java",
+      "name": "Run Production",
+      "request": "launch",
+      "mainClass": "app.server.SpringBootApp",
+      "projectName": "app",
+      "args": [
+        "--spring.profiles.active=prod"
+      ]
+    },
+    {
+      "type": "java",
+      "name": "Create Schema",
+      "request": "launch",
+      "mainClass": "app.server.SpringBootApp",
+      "projectName": "app",
+      "args": [
+        "--spring.profiles.active=prod-init"
+      ]
+    },
+  ]
+}

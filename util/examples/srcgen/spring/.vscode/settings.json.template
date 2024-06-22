@@ -1,0 +1,26 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.factorypath": true,
+    "**/.project": true,
+    "**/.settings": true
+  },
+  "java.checkstyle.configuration": "${workspaceFolder}/.google-checkstyle.xml",
+  "java.checkstyle.version": "10.17.0",
+  "java.completion.importOrder": [
+    "app.server",
+    "",
+    "jakarta",
+    "javax",
+    "java",
+    "#"
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.format.settings.url": ".google-style.xml",
+  "java.import.exclusions": [],
+  "java.sources.organizeImports.starThreshold": 99,
+  "java.sources.organizeImports.staticStarThreshold": 99
+}

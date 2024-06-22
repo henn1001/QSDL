@@ -147,7 +147,7 @@ def get_service_imports(api_class: spring.ApiClass, entity: dsl.Api) -> list[str
     imprt = f"import {util.Store.package.model}.*;"
     imports.append(imprt)
 
-    imprt = f"import {util.Store.package.exception}.AppException;"
+    imprt = f"import {util.Store.package.exception}.*;"
     imports.append(imprt)
 
     if util.Store.config.database == "HIBERNATE":

@@ -43,7 +43,7 @@
     var {{model_entity}} = fetch{{model.name}}FromDb(id);
 
     if ({{model_entity}}.{{p_model.name|lower}}s.contains({{p_model_entity}})) {
-      throw AppException.entityAlreadyAdded({{ model.name }}.class, id);
+      throw AppExceptionUtil.entityAlreadyAdded({{ model.name }}.class, id);
     }
 
     {{model_entity}}.addTo{{ p_model.name }}s({{p_model_entity}});

@@ -1,20 +1,30 @@
-version: '3'
+name: app
 
 services:
-   service:
-      image: app:latest
-      command:
-         - "--spring.profiles.active=prod"
-         - "--spring.datasource.url=jdbc:postgresql://db:5432/postgres"
-      ports:
-         - 8080:8080
-      depends_on:
-         - db
-   db:
-      image: postgres:14
-      environment:
-         POSTGRES_USER: postgres
-         POSTGRES_PASSWORD: postgres
-         POSTGRES_DB: postgres
-      ports:
-         - 5432:5432
+  service:
+    image: maven:3.9-eclipse-temurin-17
+    command:
+      - mvn
+      - spring-boot:run
+      - -Dspring-boot.run.profiles=prod
+    ports:
+      - 8080:8080
+      - 8081:8081
+    volumes:
+      - ./:/usr/src/mymaven:rw
+      - m2data:/root/.m2/repository
+    working_dir: /usr/src/mymaven
+    depends_on:
+      - db
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+
+volumes:
+  m2data:
+

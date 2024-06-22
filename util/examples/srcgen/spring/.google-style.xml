@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <profiles version="13">
-    <profile kind="CodeFormatterProfile" name="ModifiedGoogleStyle" version="13">
+    <profile kind="CodeFormatterProfile" name="GoogleStyle" version="13">
         <setting id="org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode" value="enabled"/>
         <setting id="org.eclipse.jdt.core.compiler.codegen.targetPlatform" value="1.7"/>
         <setting id="org.eclipse.jdt.core.compiler.compliance" value="1.7"/>
