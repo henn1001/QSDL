@@ -16,10 +16,10 @@ import org.springframework.data.util.ClassTypeInformation;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.util.MultiValueMap;
 
-public class PredicateBuilder {
+public final class PredicateBuilder {
 
   private PredicateBuilder() {
-    throw new IllegalStateException("Utility class");
+    // not called
   }
 
   private static final ConversionService conversionService;

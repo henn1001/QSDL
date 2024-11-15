@@ -30,15 +30,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(HomeController.class)
 @Import(TestConfig.class)
-public class ControllerTest {
+class ControllerTest {
 
   String basePath = "/api/ping";
 
   @MockBean
-  private YAMLMapper mapper;
+  YAMLMapper mapper;
 
   @Autowired
-  private MockMvc mockMvc;
+  MockMvc mockMvc;
 
   @Test
   public void whenAppException_thenError() throws Exception {

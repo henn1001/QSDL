@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(UserController.class)
 @Import(TestConfig.class)
-public class UserControllerTest {
+class UserControllerTest {
 
   @MockBean
   UserService service;
@@ -39,9 +39,9 @@ public class UserControllerTest {
   String basePath;
 
   @Autowired
-  private MockMvc mockMvc;
+  MockMvc mockMvc;
 
-  private static Long one = 1L;
+  static Long one = 1L;
 
   @Test
   public void whenGetUsersForTicket_thenOk() throws Exception {

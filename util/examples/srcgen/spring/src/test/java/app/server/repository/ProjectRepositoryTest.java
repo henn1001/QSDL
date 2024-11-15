@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Import(TestConfig.class)
 @EnableJpaRepositories(basePackages = {"app.server.repository"}, repositoryBaseClass = BaseRepositoryImpl.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class ProjectRepositoryTest {
+class ProjectRepositoryTest {
 
   @Autowired
   private ProjectRepository projectRepository;

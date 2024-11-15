@@ -4,10 +4,10 @@
 
 package app.server.config;
 
-public class Constants {
+public final class Constants {
 
   private Constants() {
-    throw new IllegalStateException("Utility class");
+    // not called
   }
 
   public static final int CURSOR_DEFAULT = 100;

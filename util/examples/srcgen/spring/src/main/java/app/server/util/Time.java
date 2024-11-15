@@ -7,10 +7,10 @@ package app.server.util;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class Time {
+public final class Time {
 
   private Time() {
-    throw new IllegalStateException("Utility class");
+    // not called
   }
 
   public static final OffsetDateTime now() {

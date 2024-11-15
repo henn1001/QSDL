@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
 @Import(TestConfig.class)
-public class ProjectServiceTest {
+class ProjectServiceTest {
 
   @Mock
   ProjectRepository repository;

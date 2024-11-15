@@ -36,7 +36,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
 @Import(TestConfig.class)
-public class UserServiceTest {
+class UserServiceTest {
 
   @Mock
   UserRepository repository;

@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ProjectController.class)
 @Import(TestConfig.class)
-public class ProjectControllerTest {
+class ProjectControllerTest {
 
   @MockBean
   ProjectService service;
@@ -39,9 +39,9 @@ public class ProjectControllerTest {
   String basePath;
 
   @Autowired
-  private MockMvc mockMvc;
+  MockMvc mockMvc;
 
-  private static Long one = 1L;
+  static Long one = 1L;
 
   @Test
   public void whenGetProjects_thenOk() throws Exception {

@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Import(TestConfig.class)
 @EnableJpaRepositories(basePackages = {{"{"}}{% for pkg in packages %}"{{pkg.repository}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}}, repositoryBaseClass = BaseRepositoryImpl.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class {{model.name}}RepositoryTest {
+class {{model.name}}RepositoryTest {
 
 {% for parent in model.parents %}
   @Autowired

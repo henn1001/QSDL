@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(RoleController.class)
 @Import(TestConfig.class)
-public class RoleControllerTest {
+class RoleControllerTest {
 
   @MockBean
   RoleService service;
@@ -39,9 +39,9 @@ public class RoleControllerTest {
   String basePath;
 
   @Autowired
-  private MockMvc mockMvc;
+  MockMvc mockMvc;
 
-  private static Long one = 1L;
+  static Long one = 1L;
 
   @Test
   public void whenGetRoles_thenOk() throws Exception {

@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest({{model.name}}Controller.class)
 @Import(TestConfig.class)
-public class {{model.name}}ControllerTest {
+class {{model.name}}ControllerTest {
 
   @MockBean
   {{model.name}}Service service;
@@ -37,9 +37,9 @@ public class {{model.name}}ControllerTest {
   String basePath;
 
   @Autowired
-  private MockMvc mockMvc;
+  MockMvc mockMvc;
 
-  private static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};
+  static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};
 
 {% for operation in api.operations if operation.is_generated %}
   {% if operation.method == "get" and operation.is_pageable %}
