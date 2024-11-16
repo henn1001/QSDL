@@ -8,6 +8,8 @@ import app.server.model.AbstractPersistentObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -32,8 +34,7 @@ public class ProjectEntity extends AbstractPersistentObject {
 
   public OffsetDateTime lastUpdateDate;
 
-  @Convert(converter = app.server.util.NodeConverter.class)
-  @Column(columnDefinition = "text")
+  @JdbcTypeCode(SqlTypes.JSON)
   public ObjectNode metaInf;
 
   public Boolean archive;

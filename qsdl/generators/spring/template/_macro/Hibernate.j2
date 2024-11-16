@@ -6,8 +6,7 @@
     Serialization for objects
   #}
   {% if field.type == "ObjectNode" %}
-  @Convert(converter = {{package.util}}.NodeConverter.class)
-  @Column(columnDefinition = "text")
+  @JdbcTypeCode(SqlTypes.JSON)
   {% endif %}
   {#
     Uniqueness

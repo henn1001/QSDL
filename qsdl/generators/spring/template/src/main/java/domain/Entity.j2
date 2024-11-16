@@ -16,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 {% endif %}
 {% if model.has_objectnode %}
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 {% endif %}
 {% if encapsulation %}
 import lombok.*;

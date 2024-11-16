@@ -13,21 +13,13 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
-import org.springframework.retry.annotation.EnableRetry;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.TimeZone;
 
 @Configuration
-@EnableRetry
-@EnableAsync
-@EnableScheduling
-class AppConfiguration {
+class AppConfig {
 
   @Value("${server.port}")
   String serverPort;
@@ -48,24 +40,6 @@ class AppConfiguration {
   @Bean
   YAMLMapper yamlMapper() {
     return new YAMLMapper();
-  }
-
-  @Bean(name = "scheduleExecutor")
-  ThreadPoolTaskScheduler defaultScheduleExecutor() {
-    ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-    scheduler.setPoolSize(Constants.SCHEDULER_POOL_SIZE);
-    scheduler.setThreadNamePrefix("SchedulerThread-");
-    scheduler.initialize();
-    return scheduler;
-  }
-
-  @Bean(name = "taskExecutor")
-  ThreadPoolTaskExecutor defaultTaskExecutor() {
-    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(Constants.ASYNC_POOL_SIZE);
-    executor.setThreadNamePrefix("AsyncThread-");
-    executor.initialize();
-    return executor;
   }
 
   @Bean

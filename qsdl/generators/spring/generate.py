@@ -239,7 +239,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/test/java/TestConfig.j2", f"src/test/java/{package.base}/TestConfig.java"),
         ("src/test/java/TestUtils.j2", f"src/test/java/{package.base}/TestUtils.java"),
         # config
-        ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
+        ("src/main/java/config/AppConfig.j2", f"src/main/java/{package.config}/AppConfig.java"),
+        ("src/main/java/config/AppConfigScheduling.j2", f"src/main/java/{package.config}/AppConfigScheduling.java"),
         ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),
         ("src/main/java/config/ErrorCodes.j2", f"src/main/java/{package.config}/ErrorCodes.java"),
         ("src/main/java/config/Constants.j2", f"src/main/java/{package.config}/Constants.java"),
@@ -251,7 +252,6 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/util/Time.j2", f"src/main/java/{package.util}/Time.java"),
         ("src/main/java/util/Validator.j2", f"src/main/java/{package.util}/Validator.java"),
         ("src/main/java/util/IdGenerator.j2", f"src/main/java/{package.util}/IdGenerator.java"),
-        ("src/main/java/util/NodeConverter.j2", f"src/main/java/{package.util}/NodeConverter.java"),
         ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{package.util}/PredicateBuilder.java"),
         # exception
         ("src/main/java/exception/AppException.j2", f"src/main/java/{package.exception}/AppException.java"),
@@ -272,7 +272,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         # fmt: off
         supporting_files.append( ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{package.model}/AbstractPersistentObject.java"))
         supporting_files.append(("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{package.model}/AbstractPersistentBase.java"))
-        supporting_files.append(("src/main/java/config/AppConfigurationPersistence.j2", f"src/main/java/{package.config}/AppConfigurationPersistence.java"))
+        supporting_files.append(("src/main/java/config/AppConfigPersistence.j2", f"src/main/java/{package.config}/AppConfigPersistence.java"))
         supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))

@@ -5,12 +5,16 @@ app.name: {{title}}
 server.port: 8080
 server.base-path: {{basePath}}
 spring.mvc.pathmatch.matching-strategy: ant_path_matcher
+
+scheduling.enabled: false
 spring.threads.virtual.enabled: true
 
 ### Monitoring service
+management.server.port: 8081
 management.endpoints.web.base-path: /api/actuator
 management.endpoint.health.show-details: always
-management.endpoints.web.exposure.include: health,info,metrics,prometheus,logfile
+management.endpoint.loggers.enabled: true
+management.endpoints.web.exposure.include: health,info,metrics,prometheus,logfile,loggers
 management.endpoints.web.exposure.exclude:
 management.endpoints.web.cors.allowed-origins: "*"
 management.endpoints.web.cors.allowed-methods: GET
