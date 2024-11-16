@@ -39,7 +39,7 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
   public BaseRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
     super(entityInformation, entityManager);
     this.entityManager = entityManager;
-    this.queryFactory = new JPAQueryFactory(entityManager);
+    this.queryFactory = new JPAQueryFactory(this.entityManager);
     this.resolver = new SimpleEntityPathResolver("");
     this.path = resolver.createPath(entityInformation.getJavaType());
     this.entityPath = new PathBuilder<>(entityInformation.getJavaType(), path.getMetadata());

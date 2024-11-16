@@ -3,15 +3,6 @@
 #}
 {% macro attribute_annotation(field) -%}
   {#
-    ID
-  #}
-  {% if field.is_id %}
-  @Id
-    {% if field.is_read_only %}
-  @GeneratedValue(generator="optimized-sequence")
-    {% endif %}
-  {% endif %}
-  {#
     Serialization for objects
   #}
   {% if field.type == "ObjectNode" %}

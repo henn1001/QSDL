@@ -4,25 +4,8 @@
 
 package {{base_package}};
 
-{% if database == "HIBERNATE" %}
-import {{package.model}}.AbstractPersistentBase;
-import {{package.model}}.AbstractPersistentObject;
-{% endif %}
-import {{package.util}}.Json;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
-import org.jeasy.random.EasyRandomParameters;
-import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
-import org.jeasy.random.randomizers.range.LongRangeRandomizer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.ComponentScan;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @TestConfiguration
 @ComponentScan({{"{"}}{% for pkg in packages %}"{{pkg.mapper}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}})

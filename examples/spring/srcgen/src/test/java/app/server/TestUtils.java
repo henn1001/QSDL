@@ -14,8 +14,6 @@ import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.range.LongRangeRandomizer;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -49,8 +47,8 @@ public class TestUtils {
   }
 
   public static <T> List<T> getRandom(Class<T> cls, int count) {
-    List<T> oList = easyRandom.objects(cls, count).collect(Collectors.toList());
-    return oList;
+    List<T> ol = easyRandom.objects(cls, count).collect(Collectors.toList());
+    return ol;
   }
 
   public static <T extends AbstractPersistentObject> T getRandomEntity(Class<T> cls) {
@@ -60,9 +58,9 @@ public class TestUtils {
   }
 
   public static <T extends AbstractPersistentObject> List<T> getRandomEntity(Class<T> cls, int count) {
-    List<T> oList = easyRandom.objects(cls, count).collect(Collectors.toList());
-    oList.forEach(o -> o.removeRelations());
-    return oList;
+    List<T> ol = easyRandom.objects(cls, count).collect(Collectors.toList());
+    ol.forEach(o -> o.removeRelations());
+    return ol;
   }
 
   /**
@@ -71,6 +69,7 @@ public class TestUtils {
    * <p>Needed when testing repositories, as these modify the identity.
    * We assume that object a and b are equal in size/structure.
    */
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public static void copyAllIdentities(Object a, Object b) throws Exception {
 
     // we only care about AbstractPersistentObject and AbstractPersistentBase types

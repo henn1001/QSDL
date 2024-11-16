@@ -4,23 +4,8 @@
 
 package app.server;
 
-import app.server.model.AbstractPersistentBase;
-import app.server.model.AbstractPersistentObject;
-import app.server.util.Json;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jeasy.random.EasyRandom;
-import org.jeasy.random.EasyRandomParameters;
-import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
-import org.jeasy.random.randomizers.range.LongRangeRandomizer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.ComponentScan;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @TestConfiguration
 @ComponentScan({"app.server.domain.mapper"})

@@ -24,8 +24,6 @@ import jakarta.persistence.Version;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 
 /**
