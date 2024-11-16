@@ -316,7 +316,7 @@ class TestSpecificsSpring:
     def test_specifics_10(self):
         """Verify usage of folder layout config"""
 
-        test_input = Path("util/examples/input.qsdl")
+        test_input = Path("examples/openapi/input.qsdl")
         test_output = Path("srcgen/")
 
         shutil.rmtree(test_output, ignore_errors=True)
@@ -372,7 +372,7 @@ class TestSpecificsSpring:
     def test_specifics_12(self):
         """Verify usage of string identifier"""
 
-        test_input = Path("util/examples/input.qsdl")
+        test_input = Path("examples/openapi/input.qsdl")
         test_output = Path("srcgen/")
 
         shutil.rmtree(test_output, ignore_errors=True)
@@ -392,7 +392,7 @@ class TestSpecificsSpring:
     def test_specifics_13(self):
         """Verify usage of encapsulation"""
 
-        test_input = Path("util/examples/input.qsdl")
+        test_input = Path("examples/openapi/input.qsdl")
         test_output = Path("srcgen/")
 
         shutil.rmtree(test_output, ignore_errors=True)
@@ -412,7 +412,7 @@ class TestSpecificsSpring:
     def test_specifics_14(self):
         """Verify usage of no database"""
 
-        test_input = Path("util/examples/input.qsdl")
+        test_input = Path("examples/openapi/input.qsdl")
         test_output = Path("srcgen/")
 
         shutil.rmtree(test_output, ignore_errors=True)
@@ -432,7 +432,7 @@ class TestSpecificsSpring:
     def test_specifics_15(self):
         """Verify usage of folder layout config"""
 
-        test_input = Path("util/examples/package_example.qsdl")
+        test_input = Path("examples/other/package_example.qsdl")
         test_output = Path("srcgen/")
 
         shutil.rmtree(test_output, ignore_errors=True)

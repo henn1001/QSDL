@@ -45,7 +45,7 @@ scalar Number @spring("BigInteger")
 
 Allows you to use a placeholder for the relevant package paths to further customize the project layout.
 
-Given the following config and the example from [here](../../util/examples/package_example.qsdl)...
+Given the following config and the example from [here](../../examples/other/package_example.qsdl)...
 ```json
 {
     "api_path": "{package}.api",

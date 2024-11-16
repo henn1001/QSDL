@@ -3,56 +3,56 @@
     "configurations": [
         {
             "name": "QSDL - OpenApi",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "qsdl",
             "args": [
-                "util/examples/input.qsdl",
+                "examples/openapi/input.qsdl",
                 "-g",
                 "openapi",
                 "-o",
-                "util/examples/srcgen/"
-            ],
-            "justMyCode": false,
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "QSDL - PlantUML",
-            "type": "python",
-            "request": "launch",
-            "module": "qsdl",
-            "args": [
-                "util/examples/input.qsdl",
-                "-g",
-                "plantuml",
-                "-o",
-                "util/examples/srcgen/"
+                "examples/openapi/srcgen/"
             ],
             "justMyCode": false,
             "console": "integratedTerminal"
         },
         {
             "name": "QSDL - Spring",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "qsdl",
             "args": [
-                "util/examples/relation.qsdl",
+                "examples/spring/relation.qsdl",
                 "-g",
                 "spring",
                 "-o",
-                "util/examples/srcgen/spring/"
+                "examples/spring/srcgen/"
+            ],
+            "justMyCode": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "QSDL - PlantUML",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "qsdl",
+            "args": [
+                "examples/openapi/input.qsdl",
+                "-g",
+                "plantuml",
+                "-o",
+                "examples/openapi/srcgen/"
             ],
             "justMyCode": false,
             "console": "integratedTerminal"
         },
         {
             "name": "QSDL - Void",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "qsdl",
             "args": [
-                "util/examples/input.qsdl",
+                "examples/openapi/input.qsdl",
                 "-g",
                 "void",
             ],

@@ -88,9 +88,9 @@ Options:
 
 ## Examples
 
-Examples can be found in `util/examples/`.
+Examples can be found in `examples/`.
 
-* [Example API](util/examples/input.qsdl)
+* [Example API](examples/openapi/input.qsdl)
 
 # Language
 
