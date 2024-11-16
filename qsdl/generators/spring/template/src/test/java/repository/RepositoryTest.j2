@@ -5,6 +5,7 @@
 package {{model.package.repository}};
 
 import {{base_package}}.TestConfig;
+import {{base_package}}.TestUtils;
 {% for imprt in model.imports.repo_tests %}
 {{imprt}}
 {% endfor %}
@@ -43,16 +44,16 @@ class {{model.name}}RepositoryTest {
 
   public List<{{model.name}}Entity> prepareData(int count) {
 
-    List<{{model.name}}Entity> testDatas = TestConfig.getRandomEntity({{model.name}}Entity.class, count);
+    List<{{model.name}}Entity> testDatas = TestUtils.getRandomEntity({{model.name}}Entity.class, count);
 
     {% for parent in model.parents %}
-    {{parent.model.name}}Entity {{parent.model.name|lower}} = {{parent.model.name|lower}}Repository.save(TestConfig.getRandomEntity({{parent.model.name}}Entity.class));
+    {{parent.model.name}}Entity {{parent.model.name|lower}} = {{parent.model.name|lower}}Repository.save(TestUtils.getRandomEntity({{parent.model.name}}Entity.class));
     {{- "\n" if loop.last }}
     {% endfor %}
     for ({{model.name}}Entity testData : testDatas) {
     {% for field in model.fields if field.is_relation %}
       {% if field.is_array and field.is_composition %}
-      testData.addTo{{field.type}}s(TestConfig.getRandomEntity({{field.type}}Entity.class));
+      testData.addTo{{field.type}}s(TestUtils.getRandomEntity({{field.type}}Entity.class));
       {% elif field.is_array and field.is_aggregation and field.is_relation_owner %}
       testData.addTo{{field.type}}s({{field.type|lower}});
       {% elif field.is_composition %}
@@ -84,7 +85,7 @@ class {{model.name}}RepositoryTest {
     // When
     {{model.name}}Entity findData = {{model.name|lower}}Repository.findById(testData.getId()).orElse(null);
 
-    TestConfig.copyAllIdentities(testData, findData);
+    TestUtils.copyAllIdentities(testData, findData);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(testData);

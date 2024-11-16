@@ -74,76 +74,10 @@ public abstract class AbstractPersistentObject extends AbstractClass {
   /**
    * Copies the id, uid and iv field from another AbstractPersistentObject.
    */
-  public void copyIdentiy(AbstractPersistentObject o) {
+  public void copyIdentity(AbstractPersistentObject o) {
     this.id = o.getId();
     this.uid = o.getUid();
     this.iv = o.getIv();
-  }
-
-  /**
-   * Updates all writeable fields.
-   */
-  public <T extends AbstractPersistentObject> void replace(T o) {
-    reflect(o, false);
-  }
-
-  /**
-   * Updates all writeable fields and ignores null values.
-   */
-  public <T extends AbstractPersistentObject> void update(T o) {
-    reflect(o, true);
-  }
-
-  /**
-   * Copy all relevant fields of one object to another utilizing reflection.
-   *
-   * <p>Ignores fields annotated with @JsonIgnore and
-   * fields annotated with @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-   */
-  private <T extends AbstractPersistentObject> void reflect(T o, boolean skipNull) {
-
-    Field[] fields = o.getClass().getDeclaredFields();
-
-    // copy fields if:
-    // not annotated with JsonIgnore
-    // not annotated with JsonProperty or JsonProperty.Access != READ_ONLY
-    for (Field field : fields) {
-      if (!field.isAnnotationPresent(JsonIgnore.class)
-          && (!field.isAnnotationPresent(JsonProperty.class)
-              || field.getAnnotation(JsonProperty.class).access() != JsonProperty.Access.READ_ONLY)) {
-
-        try {
-          {% if encapsulation %}
-          // enable field access
-          field.setAccessible(true);
-
-          {% endif %}
-          if (!skipNull || skipNull && Objects.nonNull(field.get(o))) {
-            // Special case for writeable Entity Collections
-            // Once Hibernate starts tracking a collection, we can not simply set new values
-            // we have to add or remove them
-            // otherwise it will throw a Exception
-            // > A collection with cascade=”all-delete-orphan” was no longer referenced by
-            // the owning entity instance
-            if (field.getType() == Set.class) {
-              Method clear = Set.class.getDeclaredMethod("clear");
-              Method addAll = Set.class.getDeclaredMethod("addAll", Collection.class);
-
-              Object f = this.getClass().getField(field.getName()).get(this);
-
-              clear.invoke(f);
-              addAll.invoke(f, field.get(o));
-            }
-            else {
-              FieldUtils.writeField(this, field.getName(), field.get(o), true);
-            }
-          }
-        }
-        catch (Exception e) {
-          log.error(UNHANDLED_EXCEPTION, e);
-        }
-      }
-    }
   }
 
   /**

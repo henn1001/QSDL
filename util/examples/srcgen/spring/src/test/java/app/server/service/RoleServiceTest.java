@@ -5,6 +5,7 @@
 package app.server.service;
 
 import app.server.TestConfig;
+import app.server.TestUtils;
 import app.server.config.ErrorCodes;
 import app.server.domain.Role;
 import app.server.domain.entity.ProjectEntity;
@@ -63,9 +64,9 @@ class RoleServiceTest {
   void whenGetRoles_thenOk() throws Exception {
 
     // Given
-    List<RoleEntity> roleEntityList = TestConfig.getRandomEntity(RoleEntity.class, 5);
+    List<RoleEntity> roleEntityList = TestUtils.getRandomEntity(RoleEntity.class, 5);
     List<Role> roleList = roleEntityList.stream().map(mapper::toDto).toList();
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
@@ -96,9 +97,9 @@ class RoleServiceTest {
   void whenCreateRole_thenOk() throws Exception {
 
     // Given
-    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    RoleEntity roleEntity = TestUtils.getRandomEntity(RoleEntity.class);
     Role role = mapper.toDto(roleEntity);
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
@@ -125,9 +126,9 @@ class RoleServiceTest {
   void whenGetRole_thenOk() throws Exception {
 
     // Given
-    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    RoleEntity roleEntity = TestUtils.getRandomEntity(RoleEntity.class);
     Role role = mapper.toDto(roleEntity);
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
@@ -151,8 +152,8 @@ class RoleServiceTest {
   public void whenGetRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    RoleEntity roleEntity = TestUtils.getRandomEntity(RoleEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
@@ -177,9 +178,9 @@ class RoleServiceTest {
   void whenReplaceRole_thenOk() throws Exception {
 
     // Given
-    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    RoleEntity roleEntity = TestUtils.getRandomEntity(RoleEntity.class);
     Role role = mapper.toDto(roleEntity);
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
@@ -206,9 +207,9 @@ class RoleServiceTest {
   public void whenReplaceRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    RoleEntity roleEntity = TestUtils.getRandomEntity(RoleEntity.class);
     Role role = mapper.toDto(roleEntity);
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
@@ -233,9 +234,9 @@ class RoleServiceTest {
   void whenUpdateRole_thenOk() throws Exception {
 
     // Given
-    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    RoleEntity roleEntity = TestUtils.getRandomEntity(RoleEntity.class);
     Role role = mapper.toDto(roleEntity);
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
@@ -262,9 +263,9 @@ class RoleServiceTest {
   public void whenUpdateRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
+    RoleEntity roleEntity = TestUtils.getRandomEntity(RoleEntity.class);
     Role role = mapper.toDto(roleEntity);
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
@@ -289,8 +290,8 @@ class RoleServiceTest {
   void whenDeleteRole_thenOk() throws Exception {
 
     // Given
-    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    RoleEntity roleEntity = TestUtils.getRandomEntity(RoleEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));
@@ -309,8 +310,8 @@ class RoleServiceTest {
   public void whenDeleteRoleWithInvalidId_thenError() throws Exception {
 
     // Given
-    RoleEntity roleEntity = TestConfig.getRandomEntity(RoleEntity.class);
-    ProjectEntity testParent = TestConfig.getRandomEntity(ProjectEntity.class);
+    RoleEntity roleEntity = TestUtils.getRandomEntity(RoleEntity.class);
+    ProjectEntity testParent = TestUtils.getRandomEntity(ProjectEntity.class);
 
     when(projectRepository.findById(eq(one)))
         .thenReturn(Optional.of(testParent));

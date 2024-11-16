@@ -237,6 +237,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/package-info.j2", f"src/main/java/{package.base}/package-info.java"),
         ("src/main/java/SpringBootApp.j2", f"src/main/java/{package.base}/SpringBootApp.java"),
         ("src/test/java/TestConfig.j2", f"src/test/java/{package.base}/TestConfig.java"),
+        ("src/test/java/TestUtils.j2", f"src/test/java/{package.base}/TestUtils.java"),
         # config
         ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
         ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),

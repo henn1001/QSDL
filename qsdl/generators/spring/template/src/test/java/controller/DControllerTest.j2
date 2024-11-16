@@ -50,7 +50,7 @@ class {{model.name}}ControllerTest {
   public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
+    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
     CursorPage<{{model.name}}> ret = new CursorPage<{{model.name}}>(Arrays.asList(request), null, null);
 
@@ -91,7 +91,7 @@ class {{model.name}}ControllerTest {
   public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
+    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
     when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
         .thenReturn(request);
@@ -113,7 +113,7 @@ class {{model.name}}ControllerTest {
   public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
     // Given
-    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
+    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
     when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
         .thenReturn(request);
@@ -139,7 +139,7 @@ class {{model.name}}ControllerTest {
   public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
+    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
     when(service.{{operation.name}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}, any()))
         .thenReturn(request);
@@ -162,7 +162,7 @@ class {{model.name}}ControllerTest {
   public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
+    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
     when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
         .thenReturn(request);
@@ -184,7 +184,7 @@ class {{model.name}}ControllerTest {
   public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
     // Given
-    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
+    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
     when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
         .thenReturn(request);
@@ -210,7 +210,7 @@ class {{model.name}}ControllerTest {
   public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
     // Given
-    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
+    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
     when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
         .thenReturn(request);
@@ -232,7 +232,7 @@ class {{model.name}}ControllerTest {
   public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
     // Given
-    {{model.name}} request = TestConfig.getRandom({{model.name}}.class);
+    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
     when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
         .thenReturn(request);

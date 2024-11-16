@@ -113,6 +113,7 @@ def get_controller_tests_imports(model: spring.ModelClass) -> list[str]:
 
     imprt = [
         f"import {util.Store.config.base_package}.TestConfig;",
+        f"import {util.Store.config.base_package}.TestUtils;",
         f"import {util.Store.package.config}.ErrorCodes;",
         f"import {util.Store.package.util}.Json;",
         f"import {util.Store.package.model}.*;",
@@ -187,6 +188,7 @@ def get_service_tests_imports(model: spring.ModelClass) -> list[str]:
 
     imprt = [
         f"import {util.Store.config.base_package}.TestConfig;",
+        f"import {util.Store.config.base_package}.TestUtils;",
         f"import {util.Store.package.config}.ErrorCodes;",
         f"import {util.Store.package.exception}.AppException;",
         f"import {util.Store.package.model}.*;",

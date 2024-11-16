@@ -5,6 +5,7 @@
 package app.server.controller;
 
 import app.server.TestConfig;
+import app.server.TestUtils;
 import app.server.config.ErrorCodes;
 import app.server.domain.Project;
 import app.server.model.*;
@@ -47,7 +48,7 @@ class ProjectControllerTest {
   public void whenGetProjects_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    Project request = TestUtils.getRandom(Project.class);
 
     CursorPage<Project> ret = new CursorPage<Project>(Arrays.asList(request), null, null);
 
@@ -69,7 +70,7 @@ class ProjectControllerTest {
   public void whenCreateProject_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    Project request = TestUtils.getRandom(Project.class);
 
     when(service.createProject(any(), any()))
         .thenReturn(request);
@@ -91,7 +92,7 @@ class ProjectControllerTest {
   public void whenCreateProjectWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    Project request = TestUtils.getRandom(Project.class);
 
     when(service.createProject(any(), any()))
         .thenReturn(request);
@@ -114,7 +115,7 @@ class ProjectControllerTest {
   public void whenGetProject_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    Project request = TestUtils.getRandom(Project.class);
 
     when(service.getProject(eq(one), any()))
         .thenReturn(request);
@@ -134,7 +135,7 @@ class ProjectControllerTest {
   public void whenReplaceProject_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    Project request = TestUtils.getRandom(Project.class);
 
     when(service.replaceProject(eq(one), any(), any()))
         .thenReturn(request);
@@ -156,7 +157,7 @@ class ProjectControllerTest {
   public void whenReplaceProjectWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    Project request = TestUtils.getRandom(Project.class);
 
     when(service.replaceProject(eq(one), any(), any()))
         .thenReturn(request);
@@ -179,7 +180,7 @@ class ProjectControllerTest {
   public void whenUpdateProject_thenOk() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    Project request = TestUtils.getRandom(Project.class);
 
     when(service.updateProject(eq(one), any(), any()))
         .thenReturn(request);
@@ -201,7 +202,7 @@ class ProjectControllerTest {
   public void whenUpdateProjectWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Project request = TestConfig.getRandom(Project.class);
+    Project request = TestUtils.getRandom(Project.class);
 
     when(service.updateProject(eq(one), any(), any()))
         .thenReturn(request);

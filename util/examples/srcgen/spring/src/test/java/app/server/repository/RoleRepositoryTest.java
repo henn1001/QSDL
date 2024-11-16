@@ -5,6 +5,7 @@
 package app.server.repository;
 
 import app.server.TestConfig;
+import app.server.TestUtils;
 import app.server.domain.entity.*;
 import app.server.domain.entity.ProjectEntity;
 import app.server.model.*;
@@ -43,9 +44,9 @@ class RoleRepositoryTest {
 
   public List<RoleEntity> prepareData(int count) {
 
-    List<RoleEntity> testDatas = TestConfig.getRandomEntity(RoleEntity.class, count);
+    List<RoleEntity> testDatas = TestUtils.getRandomEntity(RoleEntity.class, count);
 
-    ProjectEntity project = projectRepository.save(TestConfig.getRandomEntity(ProjectEntity.class));
+    ProjectEntity project = projectRepository.save(TestUtils.getRandomEntity(ProjectEntity.class));
 
     for (RoleEntity testData : testDatas) {
       testData.project = project;
@@ -70,7 +71,7 @@ class RoleRepositoryTest {
     // When
     RoleEntity findData = roleRepository.findById(testData.getId()).orElse(null);
 
-    TestConfig.copyAllIdentities(testData, findData);
+    TestUtils.copyAllIdentities(testData, findData);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(testData);

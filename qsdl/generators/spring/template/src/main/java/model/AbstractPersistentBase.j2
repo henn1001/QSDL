@@ -59,7 +59,7 @@ public abstract class AbstractPersistentBase extends AbstractClass {
   /**
    * Copies the id, uuid and version field from another Object.
    */
-  public void copyIdentiy(AbstractPersistentBase o) {
+  public void copyIdentity(AbstractPersistentBase o) {
     this.id = o.getId();
     this.uid = o.getUid();
     this.iv = o.getIv();

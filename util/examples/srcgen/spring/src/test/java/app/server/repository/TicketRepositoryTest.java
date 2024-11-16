@@ -5,6 +5,7 @@
 package app.server.repository;
 
 import app.server.TestConfig;
+import app.server.TestUtils;
 import app.server.domain.entity.*;
 import app.server.domain.entity.UserEntity;
 import app.server.model.*;
@@ -39,7 +40,7 @@ class TicketRepositoryTest {
 
   public List<TicketEntity> prepareData(int count) {
 
-    List<TicketEntity> testDatas = TestConfig.getRandomEntity(TicketEntity.class, count);
+    List<TicketEntity> testDatas = TestUtils.getRandomEntity(TicketEntity.class, count);
 
     for (TicketEntity testData : testDatas) {
     }
@@ -63,7 +64,7 @@ class TicketRepositoryTest {
     // When
     TicketEntity findData = ticketRepository.findById(testData.getId()).orElse(null);
 
-    TestConfig.copyAllIdentities(testData, findData);
+    TestUtils.copyAllIdentities(testData, findData);
 
     // Then
     ObjectNode node1 = Json.serializer().nodeFromObject(testData);

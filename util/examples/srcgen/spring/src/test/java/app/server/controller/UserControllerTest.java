@@ -5,6 +5,7 @@
 package app.server.controller;
 
 import app.server.TestConfig;
+import app.server.TestUtils;
 import app.server.config.ErrorCodes;
 import app.server.domain.User;
 import app.server.model.*;
@@ -47,7 +48,7 @@ class UserControllerTest {
   public void whenGetUsersForTicket_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    User request = TestUtils.getRandom(User.class);
 
     CursorPage<User> ret = new CursorPage<User>(Arrays.asList(request), null, null);
 
@@ -95,7 +96,7 @@ class UserControllerTest {
   public void whenGetUsers_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    User request = TestUtils.getRandom(User.class);
 
     CursorPage<User> ret = new CursorPage<User>(Arrays.asList(request), null, null);
 
@@ -117,7 +118,7 @@ class UserControllerTest {
   public void whenCreateUser_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    User request = TestUtils.getRandom(User.class);
 
     when(service.createUser(any(), any()))
         .thenReturn(request);
@@ -139,7 +140,7 @@ class UserControllerTest {
   public void whenCreateUserWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    User request = TestUtils.getRandom(User.class);
 
     when(service.createUser(any(), any()))
         .thenReturn(request);
@@ -162,7 +163,7 @@ class UserControllerTest {
   public void whenGetUser_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    User request = TestUtils.getRandom(User.class);
 
     when(service.getUser(eq(one), any()))
         .thenReturn(request);
@@ -182,7 +183,7 @@ class UserControllerTest {
   public void whenReplaceUser_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    User request = TestUtils.getRandom(User.class);
 
     when(service.replaceUser(eq(one), any(), any()))
         .thenReturn(request);
@@ -204,7 +205,7 @@ class UserControllerTest {
   public void whenReplaceUserWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    User request = TestUtils.getRandom(User.class);
 
     when(service.replaceUser(eq(one), any(), any()))
         .thenReturn(request);
@@ -227,7 +228,7 @@ class UserControllerTest {
   public void whenUpdateUser_thenOk() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    User request = TestUtils.getRandom(User.class);
 
     when(service.updateUser(eq(one), any(), any()))
         .thenReturn(request);
@@ -249,7 +250,7 @@ class UserControllerTest {
   public void whenUpdateUserWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    User request = TestConfig.getRandom(User.class);
+    User request = TestUtils.getRandom(User.class);
 
     when(service.updateUser(eq(one), any(), any()))
         .thenReturn(request);

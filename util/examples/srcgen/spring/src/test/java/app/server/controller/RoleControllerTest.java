@@ -5,6 +5,7 @@
 package app.server.controller;
 
 import app.server.TestConfig;
+import app.server.TestUtils;
 import app.server.config.ErrorCodes;
 import app.server.domain.Role;
 import app.server.model.*;
@@ -47,7 +48,7 @@ class RoleControllerTest {
   public void whenGetRoles_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
+    Role request = TestUtils.getRandom(Role.class);
 
     CursorPage<Role> ret = new CursorPage<Role>(Arrays.asList(request), null, null);
 
@@ -69,7 +70,7 @@ class RoleControllerTest {
   public void whenCreateRole_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
+    Role request = TestUtils.getRandom(Role.class);
 
     when(service.createRole(eq(one), any(), any()))
         .thenReturn(request);
@@ -91,7 +92,7 @@ class RoleControllerTest {
   public void whenCreateRoleWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
+    Role request = TestUtils.getRandom(Role.class);
 
     when(service.createRole(eq(one), any(), any()))
         .thenReturn(request);
@@ -114,7 +115,7 @@ class RoleControllerTest {
   public void whenGetRole_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
+    Role request = TestUtils.getRandom(Role.class);
 
     when(service.getRole(eq(one), eq(one), any()))
         .thenReturn(request);
@@ -134,7 +135,7 @@ class RoleControllerTest {
   public void whenReplaceRole_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
+    Role request = TestUtils.getRandom(Role.class);
 
     when(service.replaceRole(eq(one), eq(one), any(), any()))
         .thenReturn(request);
@@ -156,7 +157,7 @@ class RoleControllerTest {
   public void whenReplaceRoleWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
+    Role request = TestUtils.getRandom(Role.class);
 
     when(service.replaceRole(eq(one), eq(one), any(), any()))
         .thenReturn(request);
@@ -179,7 +180,7 @@ class RoleControllerTest {
   public void whenUpdateRole_thenOk() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
+    Role request = TestUtils.getRandom(Role.class);
 
     when(service.updateRole(eq(one), eq(one), any(), any()))
         .thenReturn(request);
@@ -201,7 +202,7 @@ class RoleControllerTest {
   public void whenUpdateRoleWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Role request = TestConfig.getRandom(Role.class);
+    Role request = TestUtils.getRandom(Role.class);
 
     when(service.updateRole(eq(one), eq(one), any(), any()))
         .thenReturn(request);

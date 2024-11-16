@@ -5,6 +5,7 @@
 package app.server.controller;
 
 import app.server.TestConfig;
+import app.server.TestUtils;
 import app.server.config.ErrorCodes;
 import app.server.domain.Ticket;
 import app.server.model.*;
@@ -47,7 +48,7 @@ class TicketControllerTest {
   public void whenGetTickets_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    Ticket request = TestUtils.getRandom(Ticket.class);
 
     CursorPage<Ticket> ret = new CursorPage<Ticket>(Arrays.asList(request), null, null);
 
@@ -69,7 +70,7 @@ class TicketControllerTest {
   public void whenCreateTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    Ticket request = TestUtils.getRandom(Ticket.class);
 
     when(service.createTicket(any(), any()))
         .thenReturn(request);
@@ -91,7 +92,7 @@ class TicketControllerTest {
   public void whenCreateTicketWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    Ticket request = TestUtils.getRandom(Ticket.class);
 
     when(service.createTicket(any(), any()))
         .thenReturn(request);
@@ -114,7 +115,7 @@ class TicketControllerTest {
   public void whenGetTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    Ticket request = TestUtils.getRandom(Ticket.class);
 
     when(service.getTicket(eq(one), any()))
         .thenReturn(request);
@@ -134,7 +135,7 @@ class TicketControllerTest {
   public void whenReplaceTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    Ticket request = TestUtils.getRandom(Ticket.class);
 
     when(service.replaceTicket(eq(one), any(), any()))
         .thenReturn(request);
@@ -156,7 +157,7 @@ class TicketControllerTest {
   public void whenReplaceTicketWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    Ticket request = TestUtils.getRandom(Ticket.class);
 
     when(service.replaceTicket(eq(one), any(), any()))
         .thenReturn(request);
@@ -179,7 +180,7 @@ class TicketControllerTest {
   public void whenUpdateTicket_thenOk() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    Ticket request = TestUtils.getRandom(Ticket.class);
 
     when(service.updateTicket(eq(one), any(), any()))
         .thenReturn(request);
@@ -201,7 +202,7 @@ class TicketControllerTest {
   public void whenUpdateTicketWithInvalidPayload_thenError() throws Exception {
 
     // Given
-    Ticket request = TestConfig.getRandom(Ticket.class);
+    Ticket request = TestUtils.getRandom(Ticket.class);
 
     when(service.updateTicket(eq(one), any(), any()))
         .thenReturn(request);
