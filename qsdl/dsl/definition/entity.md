@@ -67,6 +67,7 @@ class entity.Field  {
   is_hidden : optional<BOOL>
   min_size : INT
   max_size : INT
+  default : STRING
 }
 
 
@@ -139,11 +140,11 @@ entity.Argument o--> entity.ValueType: value
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Description |  |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | Comment | \\/\\/.*$ |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | Description |  |
+  | Comment | \\/\\/.*$ |
 end legend
 
 @enduml

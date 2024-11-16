@@ -20,15 +20,11 @@ paths:
       summary: List Projects
       operationId: getProjects
       parameters:
-        - name: query
+        - name: name
           in: query
           required: false
           schema:
-            type: object
-            examples:
-              - name: string
-          style: form
-          explode: true
+            type: string
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -167,13 +163,6 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: query
-          in: query
-          required: false
-          schema:
-            type: object
-          style: form
-          explode: true
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -343,13 +332,6 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: query
-          in: query
-          required: false
-          schema:
-            type: object
-          style: form
-          explode: true
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -519,15 +501,12 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: query
+        - name: name
           in: query
           required: false
           schema:
-            type: object
-            examples:
-              - name: integer
-          style: form
-          explode: true
+            type: integer
+            format: int32
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -595,15 +574,12 @@ paths:
       summary: List Users
       operationId: getUsers
       parameters:
-        - name: query
+        - name: name
           in: query
           required: false
           schema:
-            type: object
-            examples:
-              - name: integer
-          style: form
-          explode: true
+            type: integer
+            format: int32
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -742,13 +718,6 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: query
-          in: query
-          required: false
-          schema:
-            type: object
-          style: form
-          explode: true
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -918,15 +887,12 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: query
+        - name: name
           in: query
           required: false
           schema:
-            type: object
-            examples:
-              - name: integer
-          style: form
-          explode: true
+            type: integer
+            format: int32
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -1096,15 +1062,12 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: query
+        - name: name
           in: query
           required: false
           schema:
-            type: object
-            examples:
-              - name: integer
-          style: form
-          explode: true
+            type: integer
+            format: int32
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -1178,13 +1141,6 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: query
-          in: query
-          required: false
-          schema:
-            type: object
-          style: form
-          explode: true
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -1348,15 +1304,11 @@ paths:
       summary: getBuzzwords
       operationId: getBuzzwords
       parameters:
-        - name: query
+        - name: name
           in: query
           required: false
           schema:
-            type: object
-            examples:
-              - name: string
-          style: form
-          explode: true
+            type: string
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
