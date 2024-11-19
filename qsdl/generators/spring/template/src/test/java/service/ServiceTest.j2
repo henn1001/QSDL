@@ -15,22 +15,27 @@ package {{api.package.service}};
 {{imprt}}
 {% endfor %}
 
-import com.fasterxml.jackson.databind.node.*;
 import com.querydsl.core.types.Predicate;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -110,9 +115,10 @@ class {{model.name}}ServiceTest {
     assertEquals(5L, response.count());
     assertEquals(6L, response.totalCount());
 
-    ArrayNode node1 = Json.serializer().nodeFromList({{m_var}}List);
-    ArrayNode node2 = Json.serializer().nodeFromList(response.items());
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString({{m_var}}List),
+      new JSONArray(Json.serializer().toString(response.items())),
+      false);
   }
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
   {# 
@@ -175,9 +181,10 @@ class {{model.name}}ServiceTest {
     {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_var}}, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject({{m_var}});
-    ObjectNode node2 = Json.serializer().nodeFromObject(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString({{m_var}}),
+      new JSONObject(Json.serializer().toString(response)),
+      false);
   }
   {% elif operation.method == "get" %}
   {# 
@@ -210,9 +217,10 @@ class {{model.name}}ServiceTest {
     {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject({{m_var}});
-    ObjectNode node2 = Json.serializer().nodeFromObject(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString({{m_var}}),
+      new JSONObject(Json.serializer().toString(response)),
+      false);
   }
 
   @Test
@@ -280,9 +288,10 @@ class {{model.name}}ServiceTest {
     {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject({{m_var}});
-    ObjectNode node2 = Json.serializer().nodeFromObject(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString({{m_var}}),
+      new JSONObject(Json.serializer().toString(response)),
+      false);
   }
 
   @Test
@@ -351,9 +360,10 @@ class {{model.name}}ServiceTest {
     {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject({{m_var}});
-    ObjectNode node2 = Json.serializer().nodeFromObject(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString({{m_var}}),
+      new JSONObject(Json.serializer().toString(response)),
+      false);
   }
 
   @Test
@@ -411,11 +421,8 @@ class {{model.name}}ServiceTest {
         .thenReturn(Optional.of({{m_entity_var}}));
     {% endif %}
 
-    // When
+    // When & Then
     service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
-
-    // Then
-
   }
 
   @Test

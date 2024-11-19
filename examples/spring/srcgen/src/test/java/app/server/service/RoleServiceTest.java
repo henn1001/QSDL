@@ -17,22 +17,27 @@ import app.server.repository.ProjectRepository;
 import app.server.repository.RoleRepository;
 import app.server.util.Json;
 
-import com.fasterxml.jackson.databind.node.*;
 import com.querydsl.core.types.Predicate;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -88,9 +93,10 @@ class RoleServiceTest {
     assertEquals(5L, response.count());
     assertEquals(6L, response.totalCount());
 
-    ArrayNode node1 = Json.serializer().nodeFromList(roleList);
-    ArrayNode node2 = Json.serializer().nodeFromList(response.items());
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(roleList),
+      new JSONArray(Json.serializer().toString(response.items())),
+      false);
   }
 
   @Test
@@ -117,9 +123,10 @@ class RoleServiceTest {
     Role response = service.createRole(one, role, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(role);
-    ObjectNode node2 = Json.serializer().nodeFromObject(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(role),
+      new JSONObject(Json.serializer().toString(response)),
+      false);
   }
 
   @Test
@@ -143,9 +150,10 @@ class RoleServiceTest {
     Role response = service.getRole(one, roleEntity.getId(), new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(role);
-    ObjectNode node2 = Json.serializer().nodeFromObject(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(role),
+      new JSONObject(Json.serializer().toString(response)),
+      false);
   }
 
   @Test
@@ -198,9 +206,10 @@ class RoleServiceTest {
     Role response = service.replaceRole(one, roleEntity.getId(), role, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(role);
-    ObjectNode node2 = Json.serializer().nodeFromObject(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(role),
+      new JSONObject(Json.serializer().toString(response)),
+      false);
   }
 
   @Test
@@ -254,9 +263,10 @@ class RoleServiceTest {
     Role response = service.updateRole(one, roleEntity.getId(), role, new Context());
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(role);
-    ObjectNode node2 = Json.serializer().nodeFromObject(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(role),
+      new JSONObject(Json.serializer().toString(response)),
+      false);
   }
 
   @Test
@@ -299,11 +309,8 @@ class RoleServiceTest {
     when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
         .thenReturn(Optional.of(roleEntity));
 
-    // When
+    // When & Then
     service.deleteRole(one, roleEntity.getId(), new Context());
-
-    // Then
-
   }
 
   @Test

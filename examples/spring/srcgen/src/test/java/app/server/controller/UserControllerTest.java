@@ -12,9 +12,11 @@ import app.server.model.*;
 import app.server.service.UserService;
 import app.server.util.Json;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.*;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -24,9 +26,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
@@ -61,9 +68,10 @@ class UserControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(ret);
-    ObjectNode node2 = Json.serializer().nodeFromJson(response);
-    assertEquals(node1.get("items"), node2.get("items"));
+    JSONAssert.assertEquals(
+      Json.serializer().toString(ret),
+      new JSONObject(response),
+      false);
   }
 
   @Test
@@ -109,9 +117,10 @@ class UserControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(ret);
-    ObjectNode node2 = Json.serializer().nodeFromJson(response);
-    assertEquals(node1.get("items"), node2.get("items"));
+    JSONAssert.assertEquals(
+      Json.serializer().toString(ret),
+      new JSONObject(response),
+      false);
   }
 
   @Test
@@ -131,9 +140,10 @@ class UserControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
-    ObjectNode node2 = Json.serializer().nodeFromJson(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(request),
+      new JSONObject(response),
+      false);
   }
 
   @Test
@@ -174,9 +184,10 @@ class UserControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
-    ObjectNode node2 = Json.serializer().nodeFromJson(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(request),
+      new JSONObject(response),
+      false);
   }
 
   @Test
@@ -196,9 +207,10 @@ class UserControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
-    ObjectNode node2 = Json.serializer().nodeFromJson(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(request),
+      new JSONObject(response),
+      false);
   }
 
   @Test
@@ -241,9 +253,10 @@ class UserControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(request);
-    ObjectNode node2 = Json.serializer().nodeFromJson(response);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(request),
+      new JSONObject(response),
+      false);
   }
 
   @Test

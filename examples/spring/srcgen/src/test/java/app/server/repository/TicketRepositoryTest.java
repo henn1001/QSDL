@@ -12,9 +12,10 @@ import app.server.model.*;
 import app.server.repository.*;
 import app.server.util.Json;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.json.JSONObject;
 import com.querydsl.core.BooleanBuilder;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -67,9 +68,10 @@ class TicketRepositoryTest {
     TestUtils.copyAllIdentities(testData, findData);
 
     // Then
-    ObjectNode node1 = Json.serializer().nodeFromObject(testData);
-    ObjectNode node2 = Json.serializer().nodeFromObject(findData);
-    assertEquals(node1, node2);
+    JSONAssert.assertEquals(
+      Json.serializer().toString(testData),
+      new JSONObject(Json.serializer().toString(findData)),
+      false);
   }
 
   @Test
