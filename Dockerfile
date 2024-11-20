@@ -18,6 +18,7 @@ RUN poetry install
 ## Test
 FROM base as test
 COPY tests ./tests
+COPY examples ./examples
 COPY util ./util
 ENTRYPOINT [ "poetry", "run", "pytest" ]
 
