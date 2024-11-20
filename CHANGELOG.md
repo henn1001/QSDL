@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.3.0](https://gitlab.com/henn1001/qsdl/compare/v4.2.0...v4.3.0) (2024-11-20)
+
+
+### Features
+
+* **openapi:** removed extra unnecessary query when generating paginated objects due to issues in commonly generated clients ([dc0fbe3](https://gitlab.com/henn1001/qsdl/commit/dc0fbe314ba07b7377be5bc5b5ff02fe13996926))
+* **spring:** consolidate DataJapaTest annotations by introducing a abstract class - also adds support for integration test via testcontainers ([6370529](https://gitlab.com/henn1001/qsdl/commit/6370529680f6bbda9d02341327d79d32f81d3fa3))
+* **spring:** introduce auditing via hibernate envers ([9833e15](https://gitlab.com/henn1001/qsdl/commit/9833e15146c4ffcb724fdc6d13c12fec9f1a8c56))
+* **spring:** introduce builder pattern for dtos ([7e51fd9](https://gitlab.com/henn1001/qsdl/commit/7e51fd925647d35dab9038bd33c7c8b4bade89e6))
+* **spring:** introduce JSONAssert ([dfd87d4](https://gitlab.com/henn1001/qsdl/commit/dfd87d4a93b44a039a91320a539b29332dfaea47))
+* **spring:** minor class visibility changes ([95e4530](https://gitlab.com/henn1001/qsdl/commit/95e4530661948459745988c8a112ed5b2a5e4030))
+* **spring:** seperate utility methods from TestConfig into TestUtils ([af8f55a](https://gitlab.com/henn1001/qsdl/commit/af8f55a0d074d0b67967fc1010574c69c5669a0e))
+* **spring:** upgrade to java 21 ([10867f2](https://gitlab.com/henn1001/qsdl/commit/10867f21238c66d73a6d8cceeb8719e9162d0823))
+* **spring:** upgrade to spring 3.3 and general refactoring and improvements ([fb3ab9b](https://gitlab.com/henn1001/qsdl/commit/fb3ab9b125188cdc73e1ae5a736ed8b90e0fd7ac))
+* **spring:** upgrade to spring 3.3.5 ([ee958f7](https://gitlab.com/henn1001/qsdl/commit/ee958f79ce36d38b81fa22a9841da0d04955e342))
+* **spring:** use virtual thread scheduling and other modernizations ([94aa2c9](https://gitlab.com/henn1001/qsdl/commit/94aa2c96f6d54221de2a8c14a992c761f14c5bb8))
+
+
+### Bug Fixes
+
+* **spring:** add missing import statement for validator whenever service layer generation was involved but no PATCH endpoint declared ([0023776](https://gitlab.com/henn1001/qsdl/commit/002377651a10d3cbaf2ec55cf21dabde7ba3be2a))
+* **spring:** default values are now properly generated for dtos and boolean values in general ([1c69b39](https://gitlab.com/henn1001/qsdl/commit/1c69b39cdcbb18129c49538f6d306d5229ac296d))
+* **spring:** schema creation still used deprecrated javax settings instead of jakarta ([90b301a](https://gitlab.com/henn1001/qsdl/commit/90b301ade49b16031f2f9209dcf013c7f14f8998))
+
 ## [4.2.0](https://gitlab.com/henn1001/qsdl/compare/v4.1.0...v4.2.0) (2024-05-21)
 
 
