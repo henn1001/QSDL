@@ -12,7 +12,6 @@ import org.springframework.data.querydsl.SimpleEntityPathResolver;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.QuerydslBindingsFactory;
 import org.springframework.data.querydsl.binding.QuerydslPredicateBuilder;
-import org.springframework.data.util.ClassTypeInformation;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.util.MultiValueMap;
 
@@ -42,7 +41,7 @@ public final class PredicateBuilder {
    */
   public static <T> BooleanBuilder build(MultiValueMap<String, String> queryParameters, Class<T> domainClass) {
 
-    TypeInformation<?> domainType = ClassTypeInformation.from(domainClass).getActualType();
+    TypeInformation<?> domainType = TypeInformation.of(domainClass).getActualType();
     QuerydslBindings bindings = bindingsFactory.createBindingsFor(domainType);
 
     Predicate predicate = predicateBuilder.getPredicate(domainType, queryParameters, bindings);
