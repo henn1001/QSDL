@@ -50,7 +50,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
       {% elif field.is_array and field.is_aggregation and field.is_relation_owner %}
       testData.addTo{{field.type}}s({{field.type|lower}});
       {% elif field.is_composition %}
-          {% if encapsulation %}
+          {% if use_encapsulation %}
       testData.set{{field.type}}({{field.type|lower}});
           {% else %}
       testData.{{field.name}} = {{field.type|lower}};
@@ -109,7 +109,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
     BooleanBuilder predicate = new BooleanBuilder();
     {% for field in model.fields if field.is_query %}
-    predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
+    predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" if use_encapsulation else field.name}}));
     {% endfor %}
 
     // When
@@ -152,13 +152,13 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
     // Given
     {{model.name}}Entity testData = prepareData(5).get(0);
     {% if parent.field.is_aggregation %}
-      {% if encapsulation %}
+      {% if use_encapsulation %}
     {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0];
       {% else %}
     {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0];
       {% endif %}
     {% else %}
-      {% if encapsulation %}
+      {% if use_encapsulation %}
     {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}();
       {% else %}
     {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}};
@@ -167,7 +167,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
     BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{parent.predicate}}.id.eq(parent.getId()));
     {% for field in model.fields if field.is_query %}
-    predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.{{ "get" + field.name|pascal + "()" if encapsulation else field.name}}));
+    predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.{{ "get" + field.name|pascal + "()" if use_encapsulation else field.name}}));
     {% endfor %}
 
     // When
@@ -182,13 +182,13 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
     // Given
     {% if parent.field.is_aggregation %}
-      {% if encapsulation %}
+      {% if use_encapsulation %}
     Long parentId = prepareData(5).get(0).get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0].getId();
       {% else %}
     Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0].getId();
       {% endif %}
     {% else %}
-      {% if encapsulation %}
+      {% if use_encapsulation %}
     Long parentId = prepareData(5).get(0).get{{parent.model.name}}().getId();
       {% else %}
     Long parentId = prepareData(5).get(0).{{parent.model.name|lower}}.getId();
@@ -223,7 +223,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
     // Given
     {{model.name}}Entity testData = prepareData(1).get(0);
-  {% if encapsulation %}
+  {% if use_encapsulation %}
     {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0];
   {% else %}
     {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0];
@@ -246,7 +246,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
     // Given
     {{model.name}}Entity testData = prepareData(1).get(0);
-  {% if encapsulation %}
+  {% if use_encapsulation %}
     {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0];
   {% else %}
     {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0];
@@ -268,7 +268,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
     // Given
     {{model.name}}Entity testData = prepareData(1).get(0);
-  {% if encapsulation %}
+  {% if use_encapsulation %}
     {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0];
   {% else %}
     {{parent.model.name}}Entity parent = testData.{{parent.model.name|lower}}s.toArray(new {{parent.model.name}}Entity[0])[0];

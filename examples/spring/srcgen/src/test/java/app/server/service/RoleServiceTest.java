@@ -77,7 +77,7 @@ class RoleServiceTest {
         .thenReturn(Optional.of(testParent));
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<RoleEntity>(roleEntityList, null, 6l));
+        .thenReturn(new CursorPage<RoleEntity>(roleEntityList, null, 6L));
 
     when(mockedMapper.toDto(any(RoleEntity.class)))
         .thenReturn(roleList.get(0))

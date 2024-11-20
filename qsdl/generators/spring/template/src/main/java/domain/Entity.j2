@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 {% endif %}
-{% if encapsulation %}
+{% if use_encapsulation %}
 import lombok.*;
 {% endif %}
 
@@ -37,7 +37,7 @@ import java.util.*;
 {% if has_date or has_array %}
 
 {% endif %}
-{% if encapsulation %}
+{% if use_encapsulation %}
 @Getter
 @Setter
 {% endif %}
@@ -69,9 +69,9 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
   {% if field.is_array and field.is_relation %}
   public final Set<{{typeName}}> {{field.name}} = new LinkedHashSet<>();
   {% elif field.is_array %}
-  {{ "private" if encapsulation else "public"}} List<{{typeName}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
+  {{ "private" if use_encapsulation else "public"}} List<{{typeName}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
   {% else %}
-  {{ "private" if encapsulation else "public"}} {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
+  {{ "private" if use_encapsulation else "public"}} {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
   {% endif %}
 
 {% endfor %}
@@ -88,7 +88,7 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
 {% for field in model.fields if field.is_relation and field.is_array %}
 
   public void addTo{{field.type}}s({{field.type}}Entity o) {
-{% if encapsulation %}
+{% if use_encapsulation %}
     {% if field.is_composition  %}
     o.set{{model.name}}(this);
     {% else %}
@@ -105,7 +105,7 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
   }
 
   public void removeFrom{{field.type}}s({{field.type}}Entity o) {
-{% if encapsulation %}
+{% if use_encapsulation %}
     {% if field.is_composition  %}
     o.set{{model.name}}(null);
     {% else %}

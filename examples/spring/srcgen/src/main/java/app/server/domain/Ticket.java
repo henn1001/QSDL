@@ -8,9 +8,13 @@ import app.server.constant.Status;
 import app.server.model.AbstractClass;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 import jakarta.validation.constraints.*;
 
+@Builder
+@Jacksonized
 public class Ticket extends AbstractClass {
 
   @Min(0)

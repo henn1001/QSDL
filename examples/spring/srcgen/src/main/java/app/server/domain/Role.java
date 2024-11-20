@@ -7,9 +7,13 @@ package app.server.domain;
 import app.server.model.AbstractClass;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 import jakarta.validation.constraints.*;
 
+@Builder
+@Jacksonized
 public class Role extends AbstractClass {
 
   @Min(0)
@@ -17,6 +21,7 @@ public class Role extends AbstractClass {
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
   public Long id;
 
+  @NonNull
   @NotNull
   @Size(min = 0, max = 255)
   @JsonProperty(value = "name", required = true)

@@ -14,8 +14,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 {% if model.has_objectnode %}
 import com.fasterxml.jackson.databind.node.ObjectNode;
 {% endif %}
-{% if encapsulation %}
+{% if use_encapsulation or use_builder %}
 import lombok.*;
+{% endif %}
+{% if use_builder %}
+import lombok.extern.jackson.Jacksonized;
 {% endif %}
 
 {% if model.fields|selectattr("is_array")|rejectattr("is_relation") | list or model.fields|selectattr("is_base")|rejectattr("is_relation") | list or model.fields|selectattr("is_object")|rejectattr("is_relation") | list %}
@@ -34,9 +37,13 @@ import java.util.*;
 {% if has_date or has_array %}
 
 {% endif %}
-{% if encapsulation %}
+{% if use_encapsulation %}
 @Getter
 @Setter
+{% endif %}
+{% if use_builder %}
+@Builder
+@Jacksonized
 {% endif %}
 public class {{model.name}} extends AbstractClass {
 
@@ -45,6 +52,9 @@ public class {{model.name}} extends AbstractClass {
     Required fields
   #}
   {% if field.is_required and not field.is_read_only%}
+  {% if use_builder %}
+  @NonNull
+  {% endif %}
   @NotNull
   {% endif %}
   {# 
@@ -71,9 +81,9 @@ public class {{model.name}} extends AbstractClass {
     Set the Field definition
   #}
   {% if field.is_array %}
-  {{ "private" if encapsulation else "public"}} List<{{field.type}}> {{field.name}};
+  {{ "private" if use_encapsulation else "public"}} List<{{field.type}}> {{field.name}};
   {% else %}
-  {{ "private" if encapsulation else "public"}} {{field.type}} {{field.name}};
+  {{ "private" if use_encapsulation else "public"}} {{field.type}} {{field.name}};
   {% endif %}
 
 {% endfor %}

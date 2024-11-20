@@ -95,7 +95,7 @@ class {{model.name}}ServiceTest {
     {% endif %}
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<{{m_entity_type}}>({{m_entity_var}}List, null, 6l));
+        .thenReturn(new CursorPage<{{m_entity_type}}>({{m_entity_var}}List, null, 6L));
 
     when(mockedMapper.toDto(any({{m_entity_type}}.class)))
         .thenReturn({{m_var}}List.get(0))

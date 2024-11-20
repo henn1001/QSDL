@@ -295,7 +295,8 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "packages": util.Store.packages,
         "basePath": schema.servers[0] if schema.servers else "/api/v1",
         "database": config.database,
-        "encapsulation": config.encapsulation,
+        "use_encapsulation": config.use_encapsulation,
+        "use_builder": config.use_builder,
         "id_name": id_name,
         "id_type": id_type,
     }

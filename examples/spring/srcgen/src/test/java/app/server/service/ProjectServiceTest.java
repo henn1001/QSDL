@@ -66,7 +66,7 @@ class ProjectServiceTest {
     List<Project> projectList = projectEntityList.stream().map(mapper::toDto).toList();
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6l));
+        .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6L));
 
     when(mockedMapper.toDto(any(ProjectEntity.class)))
         .thenReturn(projectList.get(0))

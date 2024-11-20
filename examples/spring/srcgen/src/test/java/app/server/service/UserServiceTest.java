@@ -77,7 +77,7 @@ class UserServiceTest {
         .thenReturn(Optional.of(testParent));
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6l));
+        .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
     when(mockedMapper.toDto(any(UserEntity.class)))
         .thenReturn(userList.get(0))
@@ -153,7 +153,7 @@ class UserServiceTest {
     List<User> userList = userEntityList.stream().map(mapper::toDto).toList();
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6l));
+        .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
     when(mockedMapper.toDto(any(UserEntity.class)))
         .thenReturn(userList.get(0))

@@ -8,13 +8,18 @@ import app.server.model.AbstractClass;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 import jakarta.validation.constraints.*;
 
 import java.time.*;
 
+@Builder
+@Jacksonized
 public class BaseType extends AbstractClass {
 
+  @NonNull
   @NotNull
   @Size(min = 0, max = 255)
   @JsonProperty(value = "name", required = true)

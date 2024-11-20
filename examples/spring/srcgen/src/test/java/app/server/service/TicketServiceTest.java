@@ -66,7 +66,7 @@ class TicketServiceTest {
     List<Ticket> ticketList = ticketEntityList.stream().map(mapper::toDto).toList();
 
     when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<TicketEntity>(ticketEntityList, null, 6l));
+        .thenReturn(new CursorPage<TicketEntity>(ticketEntityList, null, 6L));
 
     when(mockedMapper.toDto(any(TicketEntity.class)))
         .thenReturn(ticketList.get(0))
