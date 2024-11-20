@@ -11,7 +11,10 @@ import app.server.domain.Project;
 import app.server.domain.entity.ProjectEntity;
 import app.server.domain.mapper.ProjectMapStruct;
 import app.server.exception.AppException;
-import app.server.model.*;
+import app.server.model.AppError;
+import app.server.model.Context;
+import app.server.model.CursorPage;
+import app.server.model.CursorPageable;
 import app.server.repository.ProjectRepository;
 import app.server.util.Json;
 

@@ -8,7 +8,8 @@ import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.config.ErrorCodes;
 import app.server.domain.Project;
-import app.server.model.*;
+import app.server.model.AppError;
+import app.server.model.CursorPage;
 import app.server.service.ProjectService;
 import app.server.util.Json;
 
