@@ -8,7 +8,8 @@ import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.config.ErrorCodes;
 import app.server.domain.Role;
-import app.server.model.*;
+import app.server.model.AppError;
+import app.server.model.CursorPage;
 import app.server.service.RoleService;
 import app.server.util.Json;
 
@@ -69,9 +70,9 @@ class RoleControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(ret),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(ret),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -92,9 +93,9 @@ class RoleControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -136,9 +137,9 @@ class RoleControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -159,9 +160,9 @@ class RoleControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -205,9 +206,9 @@ class RoleControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test

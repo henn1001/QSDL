@@ -83,9 +83,9 @@ class ProjectServiceTest {
     assertEquals(6L, response.totalCount());
 
     JSONAssert.assertEquals(
-      Json.serializer().toString(projectList),
-      new JSONArray(Json.serializer().toString(response.items())),
-      false);
+        Json.serializer().toString(projectList),
+        new JSONArray(Json.serializer().toString(response.items())),
+        false);
   }
 
   @Test
@@ -109,9 +109,9 @@ class ProjectServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(project),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(project),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -132,9 +132,9 @@ class ProjectServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(project),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(project),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -180,9 +180,9 @@ class ProjectServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(project),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(project),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -229,9 +229,9 @@ class ProjectServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(project),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(project),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test

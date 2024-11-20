@@ -94,9 +94,9 @@ class RoleServiceTest {
     assertEquals(6L, response.totalCount());
 
     JSONAssert.assertEquals(
-      Json.serializer().toString(roleList),
-      new JSONArray(Json.serializer().toString(response.items())),
-      false);
+        Json.serializer().toString(roleList),
+        new JSONArray(Json.serializer().toString(response.items())),
+        false);
   }
 
   @Test
@@ -124,9 +124,9 @@ class RoleServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(role),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(role),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -151,9 +151,9 @@ class RoleServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(role),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(role),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -207,9 +207,9 @@ class RoleServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(role),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(role),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -264,9 +264,9 @@ class RoleServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(role),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(role),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test

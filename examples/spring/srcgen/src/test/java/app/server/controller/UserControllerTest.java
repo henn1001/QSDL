@@ -69,9 +69,9 @@ class UserControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(ret),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(ret),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -118,9 +118,9 @@ class UserControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(ret),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(ret),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -141,9 +141,9 @@ class UserControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -185,9 +185,9 @@ class UserControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -208,9 +208,9 @@ class UserControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -254,9 +254,9 @@ class UserControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test

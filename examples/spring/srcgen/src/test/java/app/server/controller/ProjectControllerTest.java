@@ -69,9 +69,9 @@ class ProjectControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(ret),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(ret),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -92,9 +92,9 @@ class ProjectControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -136,9 +136,9 @@ class ProjectControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -159,9 +159,9 @@ class ProjectControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -205,9 +205,9 @@ class ProjectControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test

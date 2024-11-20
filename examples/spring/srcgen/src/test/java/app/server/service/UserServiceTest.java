@@ -94,9 +94,9 @@ class UserServiceTest {
     assertEquals(6L, response.totalCount());
 
     JSONAssert.assertEquals(
-      Json.serializer().toString(userList),
-      new JSONArray(Json.serializer().toString(response.items())),
-      false);
+        Json.serializer().toString(userList),
+        new JSONArray(Json.serializer().toString(response.items())),
+        false);
   }
 
   @Test
@@ -170,9 +170,9 @@ class UserServiceTest {
     assertEquals(6L, response.totalCount());
 
     JSONAssert.assertEquals(
-      Json.serializer().toString(userList),
-      new JSONArray(Json.serializer().toString(response.items())),
-      false);
+        Json.serializer().toString(userList),
+        new JSONArray(Json.serializer().toString(response.items())),
+        false);
   }
 
   @Test
@@ -196,9 +196,9 @@ class UserServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(user),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(user),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -219,9 +219,9 @@ class UserServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(user),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(user),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -267,9 +267,9 @@ class UserServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(user),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(user),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -316,9 +316,9 @@ class UserServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(user),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(user),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test

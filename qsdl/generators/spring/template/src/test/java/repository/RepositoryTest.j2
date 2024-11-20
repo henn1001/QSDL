@@ -4,33 +4,25 @@
 
 package {{model.package.repository}};
 
-import {{base_package}}.TestConfig;
+import {{base_package}}.AbstractDataJpaTest;
 import {{base_package}}.TestUtils;
 {% for imprt in model.imports.repo_tests %}
 {{imprt}}
 {% endfor %}
 import {{package.util}}.Json;
 
-import org.json.JSONObject;
 import com.querydsl.core.BooleanBuilder;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DataJpaTest
-@Import(TestConfig.class)
-@EnableJpaRepositories(basePackages = {{"{"}}{% for pkg in packages %}"{{pkg.repository}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}}, repositoryBaseClass = BaseRepositoryImpl.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class {{model.name}}RepositoryTest {
+class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
 {% for parent in model.parents %}
   @Autowired
@@ -90,9 +82,9 @@ class {{model.name}}RepositoryTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(testData),
-      new JSONObject(Json.serializer().toString(findData)),
-      false);
+        Json.serializer().toString(testData),
+        new JSONObject(Json.serializer().toString(findData)),
+        false);
   }
 
   @Test

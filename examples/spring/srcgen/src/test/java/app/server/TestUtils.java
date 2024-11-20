@@ -64,6 +64,24 @@ public class TestUtils {
   }
 
   /**
+   * Helper to determine whether docker is running.
+   */
+  public static boolean isDockerAvailable() {
+    try {
+      Process process = new ProcessBuilder("docker", "info")
+          .redirectErrorStream(true)
+          .start();
+
+      int exitCode = process.waitFor();
+
+      return exitCode == 0;
+    }
+    catch (Exception e) {
+      return false;
+    }
+  }
+
+  /**
    * A helper-method to deep-copy idenities for nested objects.
    *
    * <p>Needed when testing repositories, as these modify the identity.

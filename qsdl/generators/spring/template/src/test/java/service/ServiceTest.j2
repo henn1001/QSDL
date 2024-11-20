@@ -116,9 +116,9 @@ class {{model.name}}ServiceTest {
     assertEquals(6L, response.totalCount());
 
     JSONAssert.assertEquals(
-      Json.serializer().toString({{m_var}}List),
-      new JSONArray(Json.serializer().toString(response.items())),
-      false);
+        Json.serializer().toString({{m_var}}List),
+        new JSONArray(Json.serializer().toString(response.items())),
+        false);
   }
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
   {# 
@@ -182,9 +182,9 @@ class {{model.name}}ServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString({{m_var}}),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString({{m_var}}),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
   {% elif operation.method == "get" %}
   {# 
@@ -218,9 +218,9 @@ class {{model.name}}ServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString({{m_var}}),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString({{m_var}}),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -289,9 +289,9 @@ class {{model.name}}ServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString({{m_var}}),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString({{m_var}}),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -361,9 +361,9 @@ class {{model.name}}ServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString({{m_var}}),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString({{m_var}}),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test

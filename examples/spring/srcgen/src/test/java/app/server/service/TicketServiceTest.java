@@ -83,9 +83,9 @@ class TicketServiceTest {
     assertEquals(6L, response.totalCount());
 
     JSONAssert.assertEquals(
-      Json.serializer().toString(ticketList),
-      new JSONArray(Json.serializer().toString(response.items())),
-      false);
+        Json.serializer().toString(ticketList),
+        new JSONArray(Json.serializer().toString(response.items())),
+        false);
   }
 
   @Test
@@ -109,9 +109,9 @@ class TicketServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(ticket),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(ticket),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -132,9 +132,9 @@ class TicketServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(ticket),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(ticket),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -180,9 +180,9 @@ class TicketServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(ticket),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(ticket),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test
@@ -229,9 +229,9 @@ class TicketServiceTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(ticket),
-      new JSONObject(Json.serializer().toString(response)),
-      false);
+        Json.serializer().toString(ticket),
+        new JSONObject(Json.serializer().toString(response)),
+        false);
   }
 
   @Test

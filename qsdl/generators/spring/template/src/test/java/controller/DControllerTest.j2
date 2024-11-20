@@ -71,9 +71,9 @@ class {{model.name}}ControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(ret),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(ret),
+        new JSONObject(response),
+        false);
   }
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
   {# 
@@ -113,9 +113,9 @@ class {{model.name}}ControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -160,9 +160,9 @@ class {{model.name}}ControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
   {% elif operation.method == "put" %}
   {# 
@@ -186,9 +186,9 @@ class {{model.name}}ControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
@@ -235,9 +235,9 @@ class {{model.name}}ControllerTest {
 
     // Then
     JSONAssert.assertEquals(
-      Json.serializer().toString(request),
-      new JSONObject(response),
-      false);
+        Json.serializer().toString(request),
+        new JSONObject(response),
+        false);
   }
 
   @Test
