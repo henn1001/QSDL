@@ -19,6 +19,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 {% endif %}
+{% if use_auditing %}
+import org.hibernate.envers.Audited;
+{% endif %}
 {% if use_encapsulation %}
 import lombok.*;
 {% endif %}
@@ -42,6 +45,7 @@ import java.util.*;
 @Setter
 {% endif %}
 {% if model.is_object or model.is_entity %}@Entity{{"\n"}}{% endif %}
+{% if use_auditing and (model.is_object or model.is_entity) %}@Audited{{"\n"}}{% endif %}
 @Table(name = "{{model.name|snake}}")
 public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersistentObject{% else %} extends AbstractPersistentBase{% endif %} {
 

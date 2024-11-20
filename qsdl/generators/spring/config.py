@@ -54,6 +54,7 @@ class Config(BaseConfig):
     database: Database = Database.HIBERNATE
     use_encapsulation: bool = False
     use_builder: bool = True
+    use_auditing: bool = False
 
     # used to change the OpenAPI type for ID between "String" and "Long"
     id_type: IDTYPE = IDTYPE.LONG

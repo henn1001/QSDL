@@ -37,6 +37,9 @@ spring.h2.console.path: /api/h2
 ### Flyway
 spring.flyway.enabled: false
 
+### Audits
+spring.jpa.properties.org.hibernate.envers.audit_strategy: ValidityAuditStrategy
+
 # Springdocs
 springdoc.api-docs.path: /api/docs/generated
 springdoc.packagesToScan: X

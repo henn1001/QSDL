@@ -297,6 +297,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         "database": config.database,
         "use_encapsulation": config.use_encapsulation,
         "use_builder": config.use_builder,
+        "use_auditing": config.use_auditing,
         "id_name": id_name,
         "id_type": id_type,
     }
