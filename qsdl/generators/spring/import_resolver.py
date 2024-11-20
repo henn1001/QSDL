@@ -94,7 +94,7 @@ def get_controller_imports(api_class: spring.ApiClass, entity: dsl.Api) -> list[
         imprt = f"import {api_class.package.service}.{api_class.name}Service;"
         imports.append(imprt)
 
-    if util.controller_has(entity, has_gen_patch=True):
+    if entity.has_generated:
         imprt = f"import {util.Store.package.util}.Validator;"
         imports.append(imprt)
 
