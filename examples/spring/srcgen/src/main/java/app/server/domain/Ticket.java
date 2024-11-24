@@ -24,10 +24,12 @@ public class Ticket extends AbstractClass {
 
   @Min(0)
   @Max(Integer.MAX_VALUE)
+  @Builder.Default
   @JsonProperty(value = "number")
   public Integer number = 42;
 
   @Size(min = 0, max = 255)
+  @Builder.Default
   @JsonProperty(value = "title")
   public String title = "Witty Title";
 
@@ -35,6 +37,7 @@ public class Ticket extends AbstractClass {
   @JsonProperty(value = "body")
   public String body;
 
+  @Builder.Default
   @JsonProperty(value = "status")
   public Status status = Status.OPEN;
 
