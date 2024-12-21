@@ -47,12 +47,13 @@ min-similarity-lines = 10
 
 [tool.pylint.messages_control]
 disable = [
+    "broad-exception-raised",
+    "cyclic-import",
+    "duplicate-code",
+    "line-too-long",
     "protected-access",
     "too-few-public-methods",
     "too-many-instance-attributes",
-    "line-too-long",
-    "duplicate-code",
-    "cyclic-import",
 ]
 
 [tool.black]

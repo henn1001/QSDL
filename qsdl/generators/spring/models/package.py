@@ -44,70 +44,71 @@ class Package:
         return ret
 
     def set_namespace(self, namespace: str):
+        """Sets the namespace for this package"""
         self._namespace = namespace if namespace else self._namespace
 
     @property
     def base(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         ret = self._config.base_package
         return ret.replace(".", "/") if self.slashed else ret.replace("/", ".")
 
     @property
     def api(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.api_path)
 
     @property
     def controller(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.controller_path)
 
     @property
     def domain(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.domain_path)
 
     @property
     def entity(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.entity_path)
 
     @property
     def mapper(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.mapper_path)
 
     @property
     def enum(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.enum_path)
 
     @property
     def repository(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.repository_path)
 
     @property
     def service(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.service_path)
 
     @property
     def model(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.model_path)
 
     @property
     def config(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.config_path)
 
     @property
     def exception(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.exception_path)
 
     @property
     def util(self) -> str:
-        """property helper method"""
+        """Property helper method"""
         return self.__prepare(self._config.util_path)

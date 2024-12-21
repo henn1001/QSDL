@@ -14,30 +14,46 @@
 
 """QSDL - Generator interface"""
 
+import importlib
 from pathlib import Path
-from typing import Callable, Union
+from typing import Callable, Type
 
 from qsdl.dsl.models import Schema
+from qsdl.generators.base_config import BaseConfig
 
-from .openapi import Config as OpenapiConfig
-from .openapi import generate as openapi_generator
-from .plantuml import Config as PlantumlConfig
-from .plantuml import generate as plantuml_generator
-from .spring import Config as SpringConfig
-from .spring import generate as spring_generator
-from .void import Config as VoidConfig
-from .void import generate as void_generator
-
-ConfigType = Union[OpenapiConfig, PlantumlConfig, SpringConfig]
+ConfigType = Type[BaseConfig]
 GeneratorType = Callable[[Schema, Path, ConfigType], None]
 
 
-GENERATORS = {
-    "openapi": (openapi_generator, OpenapiConfig()),
-    "plantuml": (plantuml_generator, PlantumlConfig()),
-    "spring": (spring_generator, SpringConfig()),
-    "void": (void_generator, VoidConfig()),
-}
+def load_generators() -> dict[str, tuple[GeneratorType, BaseConfig]]:
+    """Loads all generators from the generators directory."""
+    generators = {}
+
+    # Path to the folder containing your generator modules
+    generators_dir = Path(__file__).parent
+
+    # Dynamically load modules
+    for folder in generators_dir.iterdir():
+        if folder.is_dir() and (folder / "__init__.py").exists():
+            try:
+                # Dynamically import the module
+                module = importlib.import_module(f".{folder.name}", package=__name__)
+
+                # Check for required exports
+                generate = getattr(module, "generate", None)
+                config_class = getattr(module, "Config", None)
+
+                if generate and config_class:
+                    # Instantiate the config and add to GENERATORS
+                    generators[folder.name] = (generate, config_class())
+            except ImportError as e:
+                print(f"Error loading module '{folder.name}': {e}")
+
+    return generators
+
+
+# Initialize the GENERATORS dictionary
+GENERATORS = load_generators()
 
 
 def get_generator(generator_name: str) -> GeneratorType:

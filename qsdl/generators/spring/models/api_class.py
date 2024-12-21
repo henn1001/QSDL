@@ -223,7 +223,7 @@ class ApiClass:
 
         # handle package path and imports
         if self.model:
-            self.package = self.model.package 
+            self.package = self.model.package
         else:
             self.package = spring.Package(util.Store.config)
             package_directive = qutil.get_directive_of_name(Directive.PACKAGE, _ref)
