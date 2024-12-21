@@ -35,7 +35,7 @@ class IDTYPE(str, Enum):
 
 
 class Directive(str, Enum):
-    """Available Options for database"""
+    """Available directives"""
 
     TYPE = "spring"
     PACKAGE = "spring-package"

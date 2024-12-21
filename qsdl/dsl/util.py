@@ -82,3 +82,68 @@ def description_wrapper(raw_string: str) -> list[str]:
             strings.append(string)
 
     return strings
+
+
+def map_custom_type(
+    entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object,
+    mapping: dict[str, str | None],
+    default: str,
+    directive: str,
+    args: list[str],
+    arg_picker: str = "type",
+) -> str | None:
+    """
+    Generic converter for custom mappings.
+
+    Args:
+        entity: The entity object to map.
+        mapping: The dict that contains the mapping between builtin types and custom types of a generator.
+        override_index: Index of the override to fetch from get_type_override.
+
+    Returns:
+        The mapped value or the entity name if no mapping exists.
+    """
+    name = entity.name
+    override = None
+
+    if entity._tx_fqn == "entity.Scalar":
+        override = get_type_override(entity, directive, args).get(arg_picker)
+
+    return mapping.get(name, default) if not override else override
+
+
+def get_type_override(
+    entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object,
+    directive: str,
+    keys: list[str],
+) -> dict[str, str]:
+    """
+    Checks and returns custom scalar overrides.
+
+    Args:
+        entity: The scalar object.
+
+    Returns:
+        A tuple containing the type, format, and pattern overrides.
+    """
+    ret = {"type": None}
+
+    # Check and fetch the openapi directive
+    custom_directive = get_directive_of_name(directive, entity)
+
+    if custom_directive and ", " in custom_directive.value:
+        # Split multiple values
+        splits = [x.strip() for x in custom_directive.value.split(", ")]
+
+        # First value is always without key accessor
+        ret["type"] = splits[0]
+
+        # Check for other keys dynamically
+        for key in keys or []:
+            ret[key] = next((x.replace(f"{key}:", "").strip() for x in splits if x.startswith(f"{key}:")), None)
+
+    elif custom_directive:
+        # Only the first value is present
+        ret["type"] = custom_directive.value.strip()
+
+    return ret

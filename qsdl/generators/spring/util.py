@@ -52,42 +52,18 @@ custom_types = {
 
 
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
-    """Converter map for custom types.
-
-    Args:
-        input_type (str): The type to map.
-
-    Returns:
-        str: The mapped type name or the input_type if it does not exist.
-    """
-    name = entity.name
-    override = None
-
-    if entity._tx_fqn == "entity.Scalar":
-        override = get_type_override(entity)
-
-    return custom_types.get(name, name) if not override else override
+    """Converts builtin types to generator specific types."""
+    return qutil.map_custom_type(entity, custom_types, entity.name, Directive.TYPE, ["entity", "pattern"], "type")
 
 
-def get_type_override(entity: dsl.Scalar) -> str:
-    """Checks and returns a custom scalar format override.
+def custom_type_entity(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
+    """Converts builtin types to generator specific types."""
+    return qutil.map_custom_type(entity, {}, None, Directive.TYPE, ["entity", "pattern"], "entity")
 
-    Args:
-        entity (dsl.Scalar): The scalar object.
 
-    Returns:
-        str: The override if available or None
-    """
-    ret = None
-
-    # check and fetch the spring directive
-    custom_directive = qutil.get_directive_of_name(Directive.TYPE, entity)
-
-    if custom_directive:
-        # strip directive
-        ret = custom_directive.value.strip()
-
-    return ret
+def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
+    """Converts builtin types to generator specific types."""
+    return qutil.map_custom_type(entity, {}, None, Directive.TYPE, ["entity", "pattern"], "pattern")
 
 
 def has(

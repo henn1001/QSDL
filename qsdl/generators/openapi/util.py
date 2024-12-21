@@ -20,6 +20,8 @@ import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
 
+from .config import Directive
+
 # the parsed schema definition.
 schema: dsl.Schema = None
 
@@ -55,95 +57,18 @@ custom_type_formats = {
 
 
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
-    """Converter map for custom types.
-
-    Args:
-        entity (dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object): The type to map.
-
-    Returns:
-        str: The mapped type name or the input_type if it does not exist.
-    """
-    name = entity.name
-    override = None
-
-    if entity._tx_fqn == "entity.Scalar":
-        override = get_type_override(entity)[0]
-
-    return custom_types.get(name, name) if not override else override
+    """Converts builtin types to generator specific types."""
+    return qutil.map_custom_type(entity, custom_types, entity.name, Directive.TYPE, ["format", "pattern"], "type")
 
 
-def custom_type_format(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
-    """Converter map for custom formats.
-
-    Args:
-        entity (dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object): The type to map.
-
-    Returns:
-        str: The mapped type_format name or input_type_format if it does not exist.
-    """
-    name = entity.name
-    override = None
-
-    if entity._tx_fqn == "entity.Scalar":
-        override = get_type_override(entity)[1]
-
-    return custom_type_formats.get(name, None) if not override else override
+def custom_type_format(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
+    """Converts builtin types to generator specific types."""
+    return qutil.map_custom_type(entity, custom_type_formats, None, Directive.TYPE, ["format", "pattern"], "format")
 
 
-def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
-    """Converter map for custom pattern.
-
-    Args:
-        entity (dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object): The type to map.
-
-    Returns:
-        str: The mapped type_format name or input_type_format if it does not exist.
-    """
-    override = None
-
-    if entity._tx_fqn == "entity.Scalar":
-        override = get_type_override(entity)[2]
-
-    return None if not override else override
-
-
-def get_type_override(entity: dsl.Scalar) -> str:
-    """Checks and returns a custom scalar format override.
-
-    Example:
-        @openapi("type: string, format: uuid, pattern: ^.*$")
-
-    Args:
-        entity (dsl.Scalar): The scalar object.
-
-    Returns:
-        str: The override if available or None
-    """
-    o_type = None
-    o_format = None
-    o_pattern = None
-
-    # check and fetch the openapi directive
-    custom_directive = qutil.get_directive_of_name("openapi", entity)
-
-    if custom_directive and ", " in custom_directive.value:
-        # more values are available
-        splits = [x.strip() for x in custom_directive.value.split(", ")]
-
-        o_type = splits[0]
-
-        match = [x.replace("format:", "").strip() for x in splits if "format:" in x]
-        o_format = match[0] if match else None
-
-        match = [x.replace("pattern:", "").strip() for x in splits if "pattern:" in x]
-        o_pattern = match[0] if match else None
-
-    elif custom_directive:
-        # only the first value is present
-        # eg openapi("string")
-        o_type = custom_directive.value.strip()
-
-    return o_type, o_format, o_pattern
+def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
+    """Converts builtin types to generator specific types."""
+    return qutil.map_custom_type(entity, {}, None, Directive.TYPE, ["format", "pattern"], "pattern")
 
 
 def is_supertype(entity: dsl.Base | dsl.Object) -> bool:

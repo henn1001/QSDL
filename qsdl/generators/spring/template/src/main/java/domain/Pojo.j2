@@ -80,6 +80,12 @@ public class {{model.name}} extends AbstractClass {
   @Builder.Default
   {% endif %}
   {# 
+    Pattern
+  #}
+  {% if field.pattern  %}
+  @Pattern(regexp = "{{field.pattern}}")
+  {% endif %}
+  {# 
     Set JsonIgnore for relations
   #}
   @JsonProperty(value = "{{field.json_key}}"{% if field.is_required %}, required = true{% endif %}{% if field.is_read_only %}, access = JsonProperty.Access.READ_ONLY{% endif %}{% if field.is_write_only %}, access = JsonProperty.Access.WRITE_ONLY{% endif %})

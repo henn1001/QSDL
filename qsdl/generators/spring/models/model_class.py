@@ -37,6 +37,8 @@ class ModelField:
     description: list[str] = field(default_factory=list)
 
     type: str = None
+    entity_type: str = None
+    pattern: str = None
     is_array: bool = False
 
     is_required: bool = False
@@ -77,6 +79,8 @@ class ModelField:
         self.description = _ref.description
 
         self.type = util.custom_type(_ref.value)
+        self.entity_type = util.custom_type_entity(_ref.value) or self.type
+        self.pattern = util.custom_type_pattern(_ref.value)
         self.is_array = _ref.is_array
 
         self.is_required = _ref.is_required
@@ -125,17 +129,18 @@ class ModelField:
         elif self.type == "String":
             self.default = f'"{_ref.default}"' if _ref.default else None
         elif self.type == "Integer":
-            self.default = f'{_ref.default}' if _ref.default else None
+            self.default = f"{_ref.default}" if _ref.default else None
         elif self.type == "Long":
-            self.default = f'{_ref.default}l' if _ref.default else None
+            self.default = f"{_ref.default}l" if _ref.default else None
         elif self.type == "Float":
-            self.default = f'{_ref.default}f' if _ref.default else None
+            self.default = f"{_ref.default}f" if _ref.default else None
         elif self.type == "Double":
-            self.default = f'{_ref.default}d' if _ref.default else None
+            self.default = f"{_ref.default}d" if _ref.default else None
         elif self.type == "Boolean":
             self.default = "true" if _ref.default else "false"
         else:
-            self.default = f'{_ref.default}' if _ref.default else None
+            self.default = f"{_ref.default}" if _ref.default else None
+
 
 @dataclass
 class ModelClass:
