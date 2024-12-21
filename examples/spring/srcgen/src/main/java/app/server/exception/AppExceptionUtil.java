@@ -63,5 +63,5 @@ public class AppExceptionUtil {
         "Entity %s with id %s not attached!"
             .formatted(cls.getSimpleName(), id));
   }
-}
 
+}
