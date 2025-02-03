@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.4.0](https://gitlab.com/henn1001/qsdl/compare/v4.3.0...v4.4.0) (2025-02-03)
+
+
+### Features
+
+* **spring:** scalar [@spring](https://gitlab.com/spring) anotation - allow defining a seperate type of database entities and regex pattern on api dtos ([44d48c0](https://gitlab.com/henn1001/qsdl/commit/44d48c030c1bf79b8db4d92a0750b8b8eb16ef10))
+
+
+### Bug Fixes
+
+* **spring:** added missing builder default annotation ([7b5fb66](https://gitlab.com/henn1001/qsdl/commit/7b5fb66a2afc2a710ff277f39f81bf65c731096e))
+
 ## [4.3.0](https://gitlab.com/henn1001/qsdl/compare/v4.2.0...v4.3.0) (2024-11-20)
 
 
