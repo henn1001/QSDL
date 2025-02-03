@@ -2,11 +2,11 @@
   "bumpFiles": [
     {
       "filename": "pyproject.toml",
-      "updater": "util/scripts/release/standard-version-pyproject.js"
+      "updater": "util/scripts/standard-version-pyproject.js"
     },
     {
       "filename": "qsdl/__init__.py",
-      "updater": "util/scripts/release/standard-version-init.js"
+      "updater": "util/scripts/standard-version-init.js"
     }
   ]
 }
