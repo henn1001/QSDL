@@ -32,7 +32,6 @@ def camelcase(word: str) -> str:
     """Returns the camelCase form of a word using stringcase"""
     return stringcase.camelcase(word)
 
-
 def spinalcase(word: str) -> str:
     """Returns the spinal-case form of a word using stringcase"""
     return stringcase.spinalcase(word)

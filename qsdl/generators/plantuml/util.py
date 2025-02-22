@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""PlantUML Generator Utility functions"""
+"""Generator Utility functions"""
 
 import qsdl.dsl.textx as xtx
 from qsdl.dsl.models import Schema

@@ -1,3 +1,3 @@
-"""PlantUML Generator"""
+"""QSDL Generator"""
 from .config import Config
 from .generate import generate

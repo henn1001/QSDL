@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Void Generator"""
+"""Generator Main entrypoint"""
 
 from pathlib import Path
 

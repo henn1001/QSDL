@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generator specific parameters"""
+"""Generator Configuration"""
 
 from dataclasses import dataclass
 from enum import Enum
