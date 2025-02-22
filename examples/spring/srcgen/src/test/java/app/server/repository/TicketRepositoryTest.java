@@ -87,12 +87,13 @@ class TicketRepositoryTest extends AbstractDataJpaTest {
     List<TicketEntity> testData = prepareData(5);
 
     BooleanBuilder predicate = new BooleanBuilder();
+    predicate.and(QTicketEntity.ticketEntity.status.eq(testData.get(0).status));
 
     // When
     long count = ticketRepository.count(predicate);
 
     // Then
-    assertEquals(5, count);
+    assertEquals(1, count);
   }
 
   @Test

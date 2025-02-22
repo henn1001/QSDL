@@ -42,7 +42,7 @@ public class TicketService {
 
   public CursorPage<Ticket> getTickets(CursorPageable pageable, Context context) throws AppException {
 
-    var queryParameters = Arrays.<String>asList();
+    var queryParameters = Arrays.<String>asList("status");
     var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), TicketEntity.class);
 
     var cursorPage = ticketRepository.findAll(predicate, pageable);

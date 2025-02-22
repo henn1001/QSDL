@@ -18,6 +18,7 @@ public interface TicketMapStruct {
   Ticket toDto(TicketEntity entity);
 
   // ignore read only attributes and relations
+  @Mapping(target = "uid", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "users", ignore = true)
   TicketEntity toEntity(Ticket dto);

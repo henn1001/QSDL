@@ -18,6 +18,7 @@ public interface UserMapStruct {
   User toDto(UserEntity entity);
 
   // ignore read only attributes and relations
+  @Mapping(target = "uid", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "count", ignore = true)
   @Mapping(target = "tickets", ignore = true)

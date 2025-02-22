@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Version;
 
 /**
@@ -29,7 +30,7 @@ public abstract class AbstractPersistentBase extends AbstractClass {
   private Long id;
 
   @JsonIgnore
-  private String uid = IdGenerator.createId();
+  private String uid;
 
   @Version
   @JsonIgnore
@@ -43,10 +44,17 @@ public abstract class AbstractPersistentBase extends AbstractClass {
   }
 
   /**
-   * The (external) UUID.
+   * The (external) unique identifier.
    */
   public String getUid() {
     return uid;
+  }
+
+  /**
+   * Set the (external) unique identifier.
+   */
+  public void setUid(String uid) {
+    this.uid = uid;
   }
 
   /**
@@ -54,6 +62,13 @@ public abstract class AbstractPersistentBase extends AbstractClass {
    */
   public Integer getIv() {
     return iv;
+  }
+
+  @PrePersist
+  private void ensureUid() {
+    if (this.uid == null) {
+      this.uid = IdGenerator.createId();
+    }
   }
 
   /**

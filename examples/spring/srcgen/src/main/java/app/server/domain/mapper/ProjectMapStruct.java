@@ -18,6 +18,7 @@ public interface ProjectMapStruct {
   Project toDto(ProjectEntity entity);
 
   // ignore read only attributes and relations
+  @Mapping(target = "uid", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "creationBy", ignore = true)
   @Mapping(target = "creationDate", ignore = true)

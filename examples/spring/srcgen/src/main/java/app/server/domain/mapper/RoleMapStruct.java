@@ -18,6 +18,7 @@ public interface RoleMapStruct {
   Role toDto(RoleEntity entity);
 
   // ignore read only attributes and relations
+  @Mapping(target = "uid", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "project", ignore = true)
   RoleEntity toEntity(Role dto);

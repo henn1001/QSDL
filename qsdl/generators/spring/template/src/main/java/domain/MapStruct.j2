@@ -26,6 +26,7 @@ public interface {{model.name}}MapStruct {
   {{model.name}} toDto({{model.name}}Entity entity);
 
   // ignore read only attributes and relations
+  @Mapping(target = "uid", ignore = true)
   {% for field in model.fields if field.is_read_only or field.is_relation or field.is_hidden %}
   @Mapping(target = "{{field.name}}", ignore = true)
   {% endfor %}

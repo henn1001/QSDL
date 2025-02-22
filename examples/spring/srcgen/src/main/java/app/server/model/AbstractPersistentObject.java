@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Version;
 
 import java.lang.reflect.Field;
@@ -40,7 +41,7 @@ public abstract class AbstractPersistentObject extends AbstractClass {
 
   @Column(unique = true, updatable = false)
   @JsonIgnore
-  private String uid = IdGenerator.createId();
+  private String uid;
 
   @Version
   @JsonIgnore
@@ -56,10 +57,17 @@ public abstract class AbstractPersistentObject extends AbstractClass {
   }
 
   /**
-   * The (external) UUID.
+   * The (external) unique identifier.
    */
   public String getUid() {
     return uid;
+  }
+
+  /**
+   * Set the (external) unique identifier.
+   */
+  public void setUid(String uid) {
+    this.uid = uid;
   }
 
   /**
@@ -67,6 +75,13 @@ public abstract class AbstractPersistentObject extends AbstractClass {
    */
   public Integer getIv() {
     return iv;
+  }
+
+  @PrePersist
+  private void ensureUid() {
+    if (this.uid == null) {
+      this.uid = IdGenerator.createId();
+    }
   }
 
   /**
