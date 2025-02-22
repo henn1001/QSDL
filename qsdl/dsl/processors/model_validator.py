@@ -215,7 +215,7 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
         for field in entity.fields:
 
             # verify that queries are only used on scalars
-            if field.is_query and not field.value._tx_fqn == "entity.Scalar":
+            if field.is_query and field.value._tx_fqn not in ["entity.Scalar", "entity.Enum"]:
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as query."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
