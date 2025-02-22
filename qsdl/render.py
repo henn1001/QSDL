@@ -24,7 +24,7 @@ from qsdl import logger
 log = logger.getLogger(__name__)
 
 
-def render(
+def render(  # pylint: disable=too-many-arguments
     output_file: Path,
     context: dict,
     template_path: Path,

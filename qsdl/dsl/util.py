@@ -84,7 +84,7 @@ def description_wrapper(raw_string: str) -> list[str]:
     return strings
 
 
-def map_custom_type(
+def map_custom_type(  # pylint: disable=too-many-arguments
     entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object,
     mapping: dict[str, str | None],
     default: str,
