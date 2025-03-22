@@ -26,16 +26,16 @@ import java.util.*;
 @AllArgsConstructor
 public class ProjectService {
 
-  private final ProjectRepository projectRepository;
+  final ProjectRepository projectRepository;
 
-  private final ProjectMapStruct projectMapStruct;
+  final ProjectMapStruct projectMapStruct;
 
   @PostConstruct
-  private void init() {
+  void init() {
     // Executed after dependency injection.
   }
 
-  private ProjectEntity fetchProjectFromDb(Long id) throws AppException {
+  ProjectEntity fetchProjectFromDb(Long id) throws AppException {
     return projectRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));
   }

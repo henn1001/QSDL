@@ -41,7 +41,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ExtendWith(MockitoExtension.class)
 @Import(TestConfig.class)
 class TicketServiceTest {
 
@@ -54,7 +53,7 @@ class TicketServiceTest {
   TicketService service;
 
   @Autowired
-  private TicketMapStruct mapper;
+  TicketMapStruct mapper;
 
   @BeforeEach
   void setUp() {

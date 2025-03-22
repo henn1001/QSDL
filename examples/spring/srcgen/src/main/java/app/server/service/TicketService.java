@@ -26,16 +26,16 @@ import java.util.*;
 @AllArgsConstructor
 public class TicketService {
 
-  private final TicketRepository ticketRepository;
+  final TicketRepository ticketRepository;
 
-  private final TicketMapStruct ticketMapStruct;
+  final TicketMapStruct ticketMapStruct;
 
   @PostConstruct
-  private void init() {
+  void init() {
     // Executed after dependency injection.
   }
 
-  private TicketEntity fetchTicketFromDb(Long id) throws AppException {
+  TicketEntity fetchTicketFromDb(Long id) throws AppException {
     return ticketRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
   }

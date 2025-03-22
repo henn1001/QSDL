@@ -26,28 +26,28 @@ import java.util.*;
 @AllArgsConstructor
 public class RoleService {
 
-  private final ProjectRepository projectRepository;
+  final ProjectRepository projectRepository;
 
-  private final RoleRepository roleRepository;
+  final RoleRepository roleRepository;
 
-  private final RoleMapStruct roleMapStruct;
+  final RoleMapStruct roleMapStruct;
 
   @PostConstruct
-  private void init() {
+  void init() {
     // Executed after dependency injection.
   }
 
-  private RoleEntity fetchRoleFromDb(Long id) throws AppException {
+  RoleEntity fetchRoleFromDb(Long id) throws AppException {
     return roleRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Role.class, id));
   }
 
-  private RoleEntity fetchRoleFromProjectFromDb(Long projectId, Long id) throws AppException {
+  RoleEntity fetchRoleFromProjectFromDb(Long projectId, Long id) throws AppException {
     return roleRepository.findByProjectIdAndId(projectId, id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Role.class, id));
   }
 
-  private ProjectEntity fetchProjectFromDb(Long id) throws AppException {
+  ProjectEntity fetchProjectFromDb(Long id) throws AppException {
     return projectRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));
   }

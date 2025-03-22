@@ -6,9 +6,28 @@ package {{package.exception}};
 
 import {{package.config}}.ErrorCodes;
 
+import org.springframework.util.function.ThrowingConsumer;
 import org.springframework.util.function.ThrowingSupplier;
 
 public class AppExceptionUtil {
+
+  public static void request(ThrowingConsumer<Void> operation) throws AppException {
+    try {
+      operation.accept(null);
+    }
+    catch (Exception e) {
+      throw new AppException(ErrorCodes.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+  }
+
+  public static void request(ThrowingConsumer<Void> operation, ErrorCodes code) throws AppException {
+    try {
+      operation.accept(null);
+    }
+    catch (Exception e) {
+      throw new AppException(code, e.getMessage());
+    }
+  }
 
   public static <T> T request(ThrowingSupplier<T> operation) throws AppException {
     try {

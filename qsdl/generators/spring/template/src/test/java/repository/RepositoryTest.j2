@@ -26,14 +26,14 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
 {% for parent in model.parents %}
   @Autowired
-  private {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
+  {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
 
 {% endfor %}
   @Autowired
-  private {{model.name}}Repository {{model.name|lower}}Repository;
+  {{model.name}}Repository {{model.name|lower}}Repository;
 
   @Autowired
-  private TestEntityManager testEntityManager;
+  TestEntityManager testEntityManager;
 
   public List<{{model.name}}Entity> prepareData(int count) {
 

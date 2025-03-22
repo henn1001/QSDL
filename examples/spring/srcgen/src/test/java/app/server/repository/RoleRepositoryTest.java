@@ -27,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class RoleRepositoryTest extends AbstractDataJpaTest {
 
   @Autowired
-  private ProjectRepository projectRepository;
+  ProjectRepository projectRepository;
 
   @Autowired
-  private RoleRepository roleRepository;
+  RoleRepository roleRepository;
 
   @Autowired
-  private TestEntityManager testEntityManager;
+  TestEntityManager testEntityManager;
 
   public List<RoleEntity> prepareData(int count) {
 

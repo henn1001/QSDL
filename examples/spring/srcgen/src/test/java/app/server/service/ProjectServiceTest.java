@@ -41,7 +41,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ExtendWith(MockitoExtension.class)
 @Import(TestConfig.class)
 class ProjectServiceTest {
 
@@ -54,7 +53,7 @@ class ProjectServiceTest {
   ProjectService service;
 
   @Autowired
-  private ProjectMapStruct mapper;
+  ProjectMapStruct mapper;
 
   @BeforeEach
   void setUp() {

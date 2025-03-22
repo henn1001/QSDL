@@ -31,32 +31,32 @@ public class {{api.name}}Service {
 
 {% if database == "HIBERNATE" and model %}
 {% for parent in model.parents %}
-  private final {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
+  final {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
 
 {% endfor %}
-  private final {{api.name}}Repository {{api.name|lower}}Repository;
+  final {{api.name}}Repository {{api.name|lower}}Repository;
 
-  private final {{api.name}}MapStruct {{api.name|lower}}MapStruct;
+  final {{api.name}}MapStruct {{api.name|lower}}MapStruct;
 
 {% endif %}
   @PostConstruct
-  private void init() {
+  void init() {
     // Executed after dependency injection.
   }
 {% if database == "HIBERNATE" and model %}
 
-  private {{model.name}}Entity fetch{{model.name}}FromDb({{id_type}} id) throws AppException {
+  {{model.name}}Entity fetch{{model.name}}FromDb({{id_type}} id) throws AppException {
     return {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}.class, id));
   }
 {% for parent in model.parents %}
 
-  private {{model.name}}Entity fetch{{model.name}}From{{parent.model.name}}FromDb(Long {{ parent.model.hibernate.parameter_joined_id }}, {{id_type}} id) throws AppException {
+  {{model.name}}Entity fetch{{model.name}}From{{parent.model.name}}FromDb(Long {{ parent.model.hibernate.parameter_joined_id }}, {{id_type}} id) throws AppException {
     return {{model.name|lower}}Repository.{{ parent.hibernate.find_by_parentid_and_id }}({{ parent.model.hibernate.parameter_joined_id }}, id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}.class, id));
   }
 
-  private {{parent.model.name}}Entity fetch{{parent.model.name}}FromDb({{id_type}} id) throws AppException {
+  {{parent.model.name}}Entity fetch{{parent.model.name}}FromDb({{id_type}} id) throws AppException {
     return {{parent.model.name|lower}}Repository.{{ parent.model.hibernate.find_by_id }}(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound({{parent.model.name}}.class, id));
   }

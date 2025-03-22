@@ -43,7 +43,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ExtendWith(MockitoExtension.class)
 @Import(TestConfig.class)
 class UserServiceTest {
 
@@ -59,9 +58,9 @@ class UserServiceTest {
   UserService service;
 
   @Autowired
-  private UserMapStruct mapper;
+  UserMapStruct mapper;
 
-  private static Long one = 1L;
+  static Long one = 1L;
 
   @BeforeEach
   void setUp() {

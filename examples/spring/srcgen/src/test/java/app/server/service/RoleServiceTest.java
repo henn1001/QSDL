@@ -43,7 +43,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ExtendWith(MockitoExtension.class)
 @Import(TestConfig.class)
 class RoleServiceTest {
 
@@ -59,9 +58,9 @@ class RoleServiceTest {
   RoleService service;
 
   @Autowired
-  private RoleMapStruct mapper;
+  RoleMapStruct mapper;
 
-  private static Long one = 1L;
+  static Long one = 1L;
 
   @BeforeEach
   void setUp() {

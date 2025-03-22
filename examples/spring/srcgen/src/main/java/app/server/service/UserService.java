@@ -26,28 +26,28 @@ import java.util.*;
 @AllArgsConstructor
 public class UserService {
 
-  private final TicketRepository ticketRepository;
+  final TicketRepository ticketRepository;
 
-  private final UserRepository userRepository;
+  final UserRepository userRepository;
 
-  private final UserMapStruct userMapStruct;
+  final UserMapStruct userMapStruct;
 
   @PostConstruct
-  private void init() {
+  void init() {
     // Executed after dependency injection.
   }
 
-  private UserEntity fetchUserFromDb(Long id) throws AppException {
+  UserEntity fetchUserFromDb(Long id) throws AppException {
     return userRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(User.class, id));
   }
 
-  private UserEntity fetchUserFromTicketFromDb(Long ticketId, Long id) throws AppException {
+  UserEntity fetchUserFromTicketFromDb(Long ticketId, Long id) throws AppException {
     return userRepository.findByTicketsIdAndId(ticketId, id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(User.class, id));
   }
 
-  private TicketEntity fetchTicketFromDb(Long id) throws AppException {
+  TicketEntity fetchTicketFromDb(Long id) throws AppException {
     return ticketRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
   }

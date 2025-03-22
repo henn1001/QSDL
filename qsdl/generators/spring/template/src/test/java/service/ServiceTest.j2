@@ -38,7 +38,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ExtendWith(MockitoExtension.class)
 @Import(TestConfig.class)
 class {{model.name}}ServiceTest {
 
@@ -56,10 +55,10 @@ class {{model.name}}ServiceTest {
   {{model.name}}Service service;
 
   @Autowired
-  private {{model.name}}MapStruct mapper;
+  {{model.name}}MapStruct mapper;
 {% if  model.parents %}
 
-  private static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};
+  static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};
 {% endif %}
 
   @BeforeEach

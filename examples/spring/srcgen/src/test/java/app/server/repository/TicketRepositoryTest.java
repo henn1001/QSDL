@@ -26,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TicketRepositoryTest extends AbstractDataJpaTest {
 
   @Autowired
-  private TicketRepository ticketRepository;
+  TicketRepository ticketRepository;
 
   @Autowired
-  private TestEntityManager testEntityManager;
+  TestEntityManager testEntityManager;
 
   public List<TicketEntity> prepareData(int count) {
 
