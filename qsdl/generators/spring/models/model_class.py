@@ -137,7 +137,7 @@ class ModelField:
         elif self.type == "Double":
             self.default = f"{_ref.default}d" if _ref.default else None
         elif self.type == "Boolean":
-            self.default = "true" if _ref.default else "false"
+            self.default = "true" if _ref.default.lower() == "true" else "false"
         else:
             self.default = f"{_ref.default}" if _ref.default else None
 
