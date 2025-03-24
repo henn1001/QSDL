@@ -108,7 +108,7 @@ class ProjectRepositoryTest extends AbstractDataJpaTest {
     int idx = 0;
 
     do {
-      CursorPageable pageable = new CursorPageable(cursor, 1L, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1, null);
       BooleanBuilder predicate = new BooleanBuilder();
       CursorPage<ProjectEntity> findData = projectRepository.findAll(predicate, pageable);
 

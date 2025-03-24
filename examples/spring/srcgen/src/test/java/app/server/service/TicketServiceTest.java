@@ -78,7 +78,7 @@ class TicketServiceTest {
         .thenReturn(ticketList.get(4));
 
     // When
-    CursorPage<Ticket> response = service.getTickets(new CursorPageable(null, 5L, true), new Context());
+    CursorPage<Ticket> response = service.getTickets(new CursorPageable(null, 5, true), new Context());
 
     // Then
     assertEquals(5L, response.count());

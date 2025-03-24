@@ -130,7 +130,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
     int idx = 0;
 
     do {
-      CursorPageable pageable = new CursorPageable(cursor, 1L, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1, null);
       BooleanBuilder predicate = new BooleanBuilder();
       CursorPage<{{model.name}}Entity> findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
 
@@ -200,7 +200,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
     int idx = 0;
 
     do {
-      CursorPageable pageable = new CursorPageable(cursor, 1L, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1, null);
       BooleanBuilder predicate = new BooleanBuilder(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{parent.predicate}}.id.eq(parentId));
       CursorPage<{{model.name}}Entity> findData = {{model.name|lower}}Repository.findAll(predicate, pageable);
 

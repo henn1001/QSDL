@@ -538,11 +538,6 @@ paths:
       summary: List Tickets
       operationId: getTickets
       parameters:
-        - name: status
-          in: query
-          required: false
-          schema:
-            $ref: '#/components/schemas/Status'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -758,7 +753,7 @@ components:
       required: false
       schema:
         type: integer
-        format: int64
+        format: 32
     count:
       name: count
       description: |

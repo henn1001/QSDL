@@ -87,13 +87,12 @@ class TicketRepositoryTest extends AbstractDataJpaTest {
     List<TicketEntity> testData = prepareData(5);
 
     BooleanBuilder predicate = new BooleanBuilder();
-    predicate.and(QTicketEntity.ticketEntity.status.eq(testData.get(0).status));
 
     // When
     long count = ticketRepository.count(predicate);
 
     // Then
-    assertEquals(1, count);
+    assertEquals(5, count);
   }
 
   @Test
@@ -107,7 +106,7 @@ class TicketRepositoryTest extends AbstractDataJpaTest {
     int idx = 0;
 
     do {
-      CursorPageable pageable = new CursorPageable(cursor, 1L, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1, null);
       BooleanBuilder predicate = new BooleanBuilder();
       CursorPage<TicketEntity> findData = ticketRepository.findAll(predicate, pageable);
 

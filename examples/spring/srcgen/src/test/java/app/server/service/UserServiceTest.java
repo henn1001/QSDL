@@ -89,7 +89,7 @@ class UserServiceTest {
         .thenReturn(userList.get(4));
 
     // When
-    CursorPage<User> response = service.getUsersForTicket(one, new CursorPageable(null, 5L, true), new Context());
+    CursorPage<User> response = service.getUsersForTicket(one, new CursorPageable(null, 5, true), new Context());
 
     // Then
     assertEquals(5L, response.count());
@@ -165,7 +165,7 @@ class UserServiceTest {
         .thenReturn(userList.get(4));
 
     // When
-    CursorPage<User> response = service.getUsers(new CursorPageable(null, 5L, true), new Context());
+    CursorPage<User> response = service.getUsers(new CursorPageable(null, 5, true), new Context());
 
     // Then
     assertEquals(5L, response.count());

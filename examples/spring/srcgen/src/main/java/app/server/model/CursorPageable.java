@@ -14,7 +14,7 @@ public class CursorPageable {
 
   private final long decodedCursor;
 
-  private final long limit;
+  private final int limit;
 
   private final boolean count;
 
@@ -25,7 +25,7 @@ public class CursorPageable {
    * @param limit the requested limit.
    * @param count the request to return the total count.
    */
-  public CursorPageable(String cursor, Long limit, Boolean count) {
+  public CursorPageable(String cursor, Integer limit, Boolean count) {
     Long parsedCursor = null;
 
     // try parsing the cursor
@@ -56,7 +56,7 @@ public class CursorPageable {
   *
   * @return the requested limit.
   */
-  public long limit() {
+  public int limit() {
     return limit;
   }
 

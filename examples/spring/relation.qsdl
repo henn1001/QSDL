@@ -52,7 +52,7 @@ type Ticket @namespace("Incident"){
     number: Int @default("42")
     title: String @default("Witty Title")
     body: String
-    status: Status @default("OPEN") @query
+    status: Status @default("OPEN")
     users: [User] @aggregation
 }
 

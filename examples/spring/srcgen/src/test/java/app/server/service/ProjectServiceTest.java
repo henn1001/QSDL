@@ -78,7 +78,7 @@ class ProjectServiceTest {
         .thenReturn(projectList.get(4));
 
     // When
-    CursorPage<Project> response = service.getProjects(new CursorPageable(null, 5L, true), new Context());
+    CursorPage<Project> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
 
     // Then
     assertEquals(5L, response.count());

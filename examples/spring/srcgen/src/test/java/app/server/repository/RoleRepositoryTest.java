@@ -113,7 +113,7 @@ class RoleRepositoryTest extends AbstractDataJpaTest {
     int idx = 0;
 
     do {
-      CursorPageable pageable = new CursorPageable(cursor, 1L, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1, null);
       BooleanBuilder predicate = new BooleanBuilder();
       CursorPage<RoleEntity> findData = roleRepository.findAll(predicate, pageable);
 
@@ -155,7 +155,7 @@ class RoleRepositoryTest extends AbstractDataJpaTest {
     int idx = 0;
 
     do {
-      CursorPageable pageable = new CursorPageable(cursor, 1L, null);
+      CursorPageable pageable = new CursorPageable(cursor, 1, null);
       BooleanBuilder predicate = new BooleanBuilder(QRoleEntity.roleEntity.project.id.eq(parentId));
       CursorPage<RoleEntity> findData = roleRepository.findAll(predicate, pageable);
 

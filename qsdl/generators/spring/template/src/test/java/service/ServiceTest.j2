@@ -105,9 +105,9 @@ class {{model.name}}ServiceTest {
 
     // When
     {% if operation.parent %}
-    CursorPage<{{m_type}}> response = service.{{operation.name}}(one, new CursorPageable(null, 5L, true), new Context());
+    CursorPage<{{m_type}}> response = service.{{operation.name}}(one, new CursorPageable(null, 5, true), new Context());
     {% else %}
-    CursorPage<{{m_type}}> response = service.{{operation.name}}(new CursorPageable(null, 5L, true), new Context());
+    CursorPage<{{m_type}}> response = service.{{operation.name}}(new CursorPageable(null, 5, true), new Context());
     {% endif %}
 
     // Then

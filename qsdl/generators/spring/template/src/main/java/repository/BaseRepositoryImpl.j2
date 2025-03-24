@@ -67,7 +67,7 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
 
     // for paging, we always want to request one extra item
     // the id of this extra item will be the new cursor
-    long limit = pageable.limit() + 1;
+    int limit = pageable.limit() + 1;
 
     List<T> items = queryFactory.selectFrom(entityPath)
         .where(predicate)

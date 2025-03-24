@@ -89,7 +89,7 @@ class RoleServiceTest {
         .thenReturn(roleList.get(4));
 
     // When
-    CursorPage<Role> response = service.getRoles(one, new CursorPageable(null, 5L, true), new Context());
+    CursorPage<Role> response = service.getRoles(one, new CursorPageable(null, 5, true), new Context());
 
     // Then
     assertEquals(5L, response.count());
