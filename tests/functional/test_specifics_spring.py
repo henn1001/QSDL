@@ -458,3 +458,26 @@ class TestSpecificsSpring:
 
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+
+    @pytest.mark.order(16)
+    def test_specifics_16(self):
+        """Test nested Object"""
+        test_input = """\
+            scalar Decimal @spring("String, entity: java.math.BigDecimal, pattern: ^(-)?[0-9][0-9]*(?:.[0-9]{1,18})?$")
+
+            type Foo {
+                field1: Decimal
+                field2: [Decimal]
+            }
+        """
+
+        test_input = textwrap.dedent(test_input)
+        test_output = Path("srcgen/")
+
+        shutil.rmtree(test_output, ignore_errors=True)
+
+        # generate
+        assert generate("spring", test_output, raw_schema=test_input) == 0
+
+        # run tests
+        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
