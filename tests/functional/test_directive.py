@@ -418,6 +418,7 @@ class TestDirective:
                 field5: Double @default("1.1")
                 field6 : Boolean @default("true")
                 field7: Fruit @default("APPLE")
+                field8 : Boolean @default("false")
             }
         """
 
@@ -429,5 +430,6 @@ class TestDirective:
         assert properties["field3"]["default"] == 1
         assert properties["field4"]["default"] == 1.1
         assert properties["field5"]["default"] == 1.1
-        assert properties["field6"]["default"] == True
+        assert properties["field6"]["default"]
         assert properties["field7"]["default"] == "APPLE"
+        assert not properties["field8"]["default"]

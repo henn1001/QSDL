@@ -37,7 +37,7 @@ public class ProjectEntity extends AbstractPersistentObject {
   @JdbcTypeCode(SqlTypes.JSON)
   public ObjectNode metaInf;
 
-  public Boolean archive = false;
+  public Boolean archive;
 
   @JsonIgnore
   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

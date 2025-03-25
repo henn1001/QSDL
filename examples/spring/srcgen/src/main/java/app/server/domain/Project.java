@@ -51,8 +51,7 @@ public class Project extends AbstractClass {
   @JsonProperty(value = "meta_inf")
   public ObjectNode metaInf;
 
-  @Builder.Default
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
-  public Boolean archive = false;
+  public Boolean archive;
 
 }
