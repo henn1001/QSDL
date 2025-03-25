@@ -32,11 +32,6 @@ public class RoleService {
 
   final RoleMapStruct roleMapStruct;
 
-  @PostConstruct
-  void init() {
-    // Executed after dependency injection.
-  }
-
   RoleEntity fetchRoleFromDb(Long id) throws AppException {
     return roleRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Role.class, id));

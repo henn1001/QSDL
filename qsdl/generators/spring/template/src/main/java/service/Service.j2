@@ -37,12 +37,7 @@ public class {{api.name}}Service {
   final {{api.name}}Repository {{api.name|lower}}Repository;
 
   final {{api.name}}MapStruct {{api.name|lower}}MapStruct;
-
 {% endif %}
-  @PostConstruct
-  void init() {
-    // Executed after dependency injection.
-  }
 {% if database == "HIBERNATE" and model %}
 
   {{model.name}}Entity fetch{{model.name}}FromDb({{id_type}} id) throws AppException {

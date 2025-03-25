@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
 @AllArgsConstructor
 public class ProjectController extends BaseController implements ProjectApi {
 
-  private final ProjectService projectService;
+  final ProjectService projectService;
 
   /**
    * {@inheritDoc}.

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
 @AllArgsConstructor
 public class UserController extends BaseController implements UserApi {
 
-  private final UserService userService;
+  final UserService userService;
 
   /**
    * {@inheritDoc}.

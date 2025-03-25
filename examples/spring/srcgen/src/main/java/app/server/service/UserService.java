@@ -32,11 +32,6 @@ public class UserService {
 
   final UserMapStruct userMapStruct;
 
-  @PostConstruct
-  void init() {
-    // Executed after dependency injection.
-  }
-
   UserEntity fetchUserFromDb(Long id) throws AppException {
     return userRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(User.class, id));

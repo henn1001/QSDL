@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
 @AllArgsConstructor
 public class RoleController extends BaseController implements RoleApi {
 
-  private final RoleService roleService;
+  final RoleService roleService;
 
   /**
    * {@inheritDoc}.

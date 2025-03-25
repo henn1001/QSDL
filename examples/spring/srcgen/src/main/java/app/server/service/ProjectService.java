@@ -30,11 +30,6 @@ public class ProjectService {
 
   final ProjectMapStruct projectMapStruct;
 
-  @PostConstruct
-  void init() {
-    // Executed after dependency injection.
-  }
-
   ProjectEntity fetchProjectFromDb(Long id) throws AppException {
     return projectRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));

@@ -28,10 +28,10 @@ import java.nio.charset.Charset;
 public class HomeController {
 
   @Autowired
-  private YAMLMapper yamlMapper;
+  YAMLMapper yamlMapper;
 
   @Value("classpath:/openapi.yaml")
-  private Resource openapi;
+  Resource openapi;
 
   @Bean
   public String openapiContent() throws IOException {

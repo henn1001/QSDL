@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
 @AllArgsConstructor
 public class TicketController extends BaseController implements TicketApi {
 
-  private final TicketService ticketService;
+  final TicketService ticketService;
 
   /**
    * {@inheritDoc}.

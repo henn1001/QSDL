@@ -30,11 +30,6 @@ public class TicketService {
 
   final TicketMapStruct ticketMapStruct;
 
-  @PostConstruct
-  void init() {
-    // Executed after dependency injection.
-  }
-
   TicketEntity fetchTicketFromDb(Long id) throws AppException {
     return ticketRepository.findById(id)
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));

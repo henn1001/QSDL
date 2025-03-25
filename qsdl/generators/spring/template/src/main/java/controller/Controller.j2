@@ -25,7 +25,7 @@ import java.util.List;
 public class {{api.name}}Controller extends BaseController implements {{api.name}}Api {
 
 {% if api.has_generated %}
-  private final {{api.name}}Service {{api.name|lower}}Service;
+  final {{api.name}}Service {{api.name|lower}}Service;
 
 {% endif %}
 {% for operation in api.operations %}
