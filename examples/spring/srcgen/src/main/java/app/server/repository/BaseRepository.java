@@ -9,8 +9,11 @@ import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 
 import com.querydsl.core.types.Predicate;
+import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+
+import jakarta.persistence.EntityManager;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,6 +21,10 @@ import java.util.List;
 @NoRepositoryBean
 public interface BaseRepository<T extends AbstractPersistentObject, S extends Serializable>
     extends JpaRepository<T, S> {
+
+  public EntityManager entityManager();
+
+  public JPAQuery<T> query();
 
   public long count(Predicate predicate);
 

@@ -30,24 +30,30 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
 
   private final JPAQueryFactory queryFactory;
 
-  private final SimpleEntityPathResolver resolver;
-
-  private final EntityPath<T> path;
-
   private final PathBuilder<T> entityPath;
 
   public BaseRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
     super(entityInformation, entityManager);
     this.entityManager = entityManager;
     this.queryFactory = new JPAQueryFactory(this.entityManager);
-    this.resolver = new SimpleEntityPathResolver("");
-    this.path = resolver.createPath(entityInformation.getJavaType());
+
+    var resolver = new SimpleEntityPathResolver("");
+    var path = resolver.createPath(entityInformation.getJavaType());
     this.entityPath = new PathBuilder<>(entityInformation.getJavaType(), path.getMetadata());
   }
 
   @Override
-  public long count(Predicate predicate) {
+  public EntityManager entityManager() {
+    return entityManager;
+  }
 
+  @Override
+  public JPAQuery<T> query() {
+    return queryFactory.selectFrom(entityPath);
+  }
+
+  @Override
+  public long count(Predicate predicate) {
     return queryFactory.selectFrom(entityPath)
         .where(predicate)
         .fetchCount();
@@ -55,7 +61,6 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
 
   @Override
   public List<T> findAll(Predicate predicate) {
-
     return queryFactory.selectFrom(entityPath)
         .where(predicate)
         .orderBy(entityPath.getNumber("id", Long.class).desc())
@@ -64,7 +69,6 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
 
   @Override
   public CursorPage<T> findAll(Predicate predicate, CursorPageable pageable) {
-
     // for paging, we always want to request one extra item
     // the id of this extra item will be the new cursor
     int limit = pageable.limit() + 1;
