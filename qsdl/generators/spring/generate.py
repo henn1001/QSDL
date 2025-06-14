@@ -253,6 +253,7 @@ def generate(schema: Schema, output_path: Path, config: Config):
         ("src/main/java/util/Validator.j2", f"src/main/java/{package.util}/Validator.java"),
         ("src/main/java/util/IdGenerator.j2", f"src/main/java/{package.util}/IdGenerator.java"),
         ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{package.util}/PredicateBuilder.java"),
+        ("src/main/java/util/TaskScheduler.j2", f"src/main/java/{package.util}/TaskScheduler.java"),
         # exception
         ("src/main/java/exception/AppException.j2", f"src/main/java/{package.exception}/AppException.java"),
         ("src/main/java/exception/AppExceptionUtil.j2", f"src/main/java/{package.exception}/AppExceptionUtil.java"),

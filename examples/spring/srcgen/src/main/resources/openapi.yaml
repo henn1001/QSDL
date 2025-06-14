@@ -757,7 +757,7 @@ components:
     count:
       name: count
       description: |
-        Returns the total number of items in the collection.
+        Returns the total number of items available.
       in: query
       required: false
       schema:

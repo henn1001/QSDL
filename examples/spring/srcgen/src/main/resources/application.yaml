@@ -97,6 +97,8 @@ spring.datasource.password: postgres
 spring.flyway.enabled: true
 spring.flyway.schemas: spring
 spring.flyway.locations: classpath:db/migration
+spring.flyway.out-of-order: true
+spring.flyway.ignoreMigrationPatterns: "*:missing"
 
 ---
 ################################################################################
