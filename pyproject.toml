@@ -23,6 +23,7 @@ stringcase = "^1.2.0"
 pyfiglet = "^1.0.2"
 dacite = "^1.8.1"
 inquirer = "^3.2.4"
+flatten-json = "^0.1.13"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.2.0"
