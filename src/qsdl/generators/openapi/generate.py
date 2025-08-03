@@ -41,7 +41,6 @@ def parse_apis(schema: Schema) -> list[ApiObject]:
     api_list = xtx.get_children_of_api(schema)
 
     for api in api_list:
-
         # we can skip empty apis
         if not api.operations:
             continue
@@ -137,10 +136,10 @@ def get_paginated_object(obj: Object, model_name: str) -> ModelObject:
     return model
 
 
-def generate(schema: Schema, output_path: Path, config: Config):
+def generate(schema: Schema, output_path: Path, config: Config) -> None:
     """Generator func for OpenAPI"""
 
-    if not config.id_type in IDTYPE.__members__:
+    if config.id_type not in IDTYPE.__members__:
         raise ValueError("id_type must be `LONG` or `STRING`")
 
     if config.id_type == IDTYPE.LONG:

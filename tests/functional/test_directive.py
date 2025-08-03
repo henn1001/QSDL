@@ -61,7 +61,7 @@ class TestDirective:
     20.  `Directive` `@default("value")` may be used on `Object Field` for setting a default value.
     """
 
-    def test_directive_01_positive(self):
+    def test_directive_01_positive(self) -> None:
         """Verify usage of @query"""
         test_input = """\
             base Foo {
@@ -83,8 +83,7 @@ class TestDirective:
         assert parameter[1]["in"] == "query"
         assert parameter[1]["name"] == "world"
 
-
-    def test_directive_03_positive(self):
+    def test_directive_03_positive(self) -> None:
         """Verify usage of @hidden"""
         test_input = """\
 
@@ -99,7 +98,7 @@ class TestDirective:
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
         assert "fruit" not in properties
 
-    def test_directive_04_positive(self):
+    def test_directive_04_positive(self) -> None:
         """Verify usage of @readOnly"""
         test_input = """\
             enum Fruit {
@@ -131,7 +130,7 @@ class TestDirective:
         assert properties["base"]["readOnly"]
         assert properties["base"]["$ref"]
 
-    def test_directive_05_positive(self):
+    def test_directive_05_positive(self) -> None:
         """Verify usage of @writeOnly"""
         test_input = """\
             enum Fruit {
@@ -163,7 +162,7 @@ class TestDirective:
         assert properties["base"]["writeOnly"]
         assert properties["base"]["$ref"]
 
-    def test_directive_06_positive(self):
+    def test_directive_06_positive(self) -> None:
         """Verify usage of @composition"""
         test_input = """\
             type Foo {
@@ -178,14 +177,12 @@ class TestDirective:
 
         openapi = wrapper_generate(test_input)
 
-        assert (
-            "composition" not in openapi["components"]["schemas"]["Foo"]["properties"]
-        )
+        assert "composition" not in openapi["components"]["schemas"]["Foo"]["properties"]
 
         assert "/foos/{foo_id}/bars" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}" in openapi["paths"]
 
-    def test_directive_06_negative(self):
+    def test_directive_06_negative(self) -> None:
         """Verify usage of @composition"""
         inputs = []
 
@@ -215,7 +212,7 @@ class TestDirective:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_directive_07_positive(self):
+    def test_directive_07_positive(self) -> None:
         """Verify usage of @aggregation"""
         test_input = """\
             type Foo {
@@ -229,15 +226,13 @@ class TestDirective:
 
         openapi = wrapper_generate(test_input)
 
-        assert (
-            "aggregation" not in openapi["components"]["schemas"]["Foo"]["properties"]
-        )
+        assert "aggregation" not in openapi["components"]["schemas"]["Foo"]["properties"]
 
         assert "/foos/{foo_id}/bars" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}/add" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}/remove" in openapi["paths"]
 
-    def test_directive_07_negative(self):
+    def test_directive_07_negative(self) -> None:
         """Verify usage of @aggregation"""
         inputs = []
 
@@ -266,7 +261,7 @@ class TestDirective:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_directive_08_positive(self):
+    def test_directive_08_positive(self) -> None:
         """Verify usage of @path"""
         test_input = """\
             extend api {
@@ -278,7 +273,7 @@ class TestDirective:
 
         assert openapi["paths"]["/objects"]["get"]["operationId"] == "getObjects"
 
-    def test_directive_08_negative(self):
+    def test_directive_08_negative(self) -> None:
         """Verify usage of @path"""
         test_input = """\
             extend api {
@@ -288,7 +283,7 @@ class TestDirective:
 
         wrapper_generate_failure(test_input)
 
-    def test_directive_09_positive(self):
+    def test_directive_09_positive(self) -> None:
         """Verify usage of @path"""
         test_input = """\
             type Foo {
@@ -306,7 +301,7 @@ class TestDirective:
         assert openapi["paths"]["/foos"]["get"]["operationId"] == "getObject"
         assert openapi["paths"]["/objects"]["get"]["operationId"] == "getObjects"
 
-    def test_directive_10_positive(self):
+    def test_directive_10_positive(self) -> None:
         """Verify usage of @method"""
         test_input = """\
             extend api {
@@ -326,7 +321,7 @@ class TestDirective:
         assert openapi["paths"]["/path"]["patch"]["operationId"] == "field4"
         assert openapi["paths"]["/path"]["delete"]["operationId"] == "field5"
 
-    def test_directive_11_positive(self):
+    def test_directive_11_positive(self) -> None:
         """Verify usage of @namespace"""
         test_input = """\
             base Foo @namespace("Test") {
@@ -353,7 +348,7 @@ class TestDirective:
 
         assert "Test" in openapi["paths"]["/path"]["get"]["tags"]
 
-    def test_directive_18_positive(self):
+    def test_directive_18_positive(self) -> None:
         """Verify usage of @force-generate"""
         test_input = """\
 
@@ -402,7 +397,7 @@ class TestDirective:
         assert "Fruity" in openapi["components"]["schemas"]
         assert "Bar" in openapi["components"]["schemas"]
 
-    def test_directive_20_positive(self):
+    def test_directive_20_positive(self) -> None:
         """Verify usage of @default"""
         test_input = """\
             enum Fruit {

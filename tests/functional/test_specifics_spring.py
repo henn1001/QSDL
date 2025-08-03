@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import shutil
 import subprocess
 import textwrap
@@ -32,7 +31,7 @@ class TestSpecificsSpring:
     """
 
     @pytest.mark.order(1)
-    def test_specifics_01(self):
+    def test_specifics_01(self) -> None:
         """Test nested Base"""
         test_input = """\
             base Fruit {
@@ -66,7 +65,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(2)
-    def test_specifics_02(self):
+    def test_specifics_02(self) -> None:
         """Test nested Object"""
         test_input = """\
             type Fruit {
@@ -100,7 +99,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(3)
-    def test_specifics_03(self):
+    def test_specifics_03(self) -> None:
         """Test Composition"""
         test_input = """\
             type Fruit {
@@ -130,7 +129,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(4)
-    def test_specifics_04(self):
+    def test_specifics_04(self) -> None:
         """Test Aggregation"""
         test_input = """\
             type Fruit {
@@ -160,7 +159,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(5)
-    def test_specifics_05(self):
+    def test_specifics_05(self) -> None:
         """Test Composition with two parents"""
         test_input = """\
             type Fruit {
@@ -190,7 +189,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(6)
-    def test_specifics_06(self):
+    def test_specifics_06(self) -> None:
         """Test custom operations with composition"""
         test_input = """\
             type Bar {
@@ -221,7 +220,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(7)
-    def test_specifics_07(self):
+    def test_specifics_07(self) -> None:
         """Test custom operations with aggregation"""
         test_input = """\
             type Bar {
@@ -252,7 +251,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(8)
-    def test_specifics_08(self):
+    def test_specifics_08(self) -> None:
         """Test custom operations"""
         test_input = """\
 
@@ -278,7 +277,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(9)
-    def test_specifics_09(self):
+    def test_specifics_09(self) -> None:
         """Verify usage of relations without parent endpoints"""
         test_input = """\
             type Foo {
@@ -313,7 +312,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(10)
-    def test_specifics_10(self):
+    def test_specifics_10(self) -> None:
         """Verify usage of folder layout config"""
 
         test_input = Path("examples/openapi/input.qsdl")
@@ -343,7 +342,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(11)
-    def test_specifics_11(self):
+    def test_specifics_11(self) -> None:
         """Verify usage of generate and controller directive"""
         test_input = """\
             extend api @spring-controller("Buzzword") {
@@ -369,7 +368,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(12)
-    def test_specifics_12(self):
+    def test_specifics_12(self) -> None:
         """Verify usage of string identifier"""
 
         test_input = Path("examples/openapi/input.qsdl")
@@ -389,7 +388,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(13)
-    def test_specifics_13(self):
+    def test_specifics_13(self) -> None:
         """Verify usage of encapsulation"""
 
         test_input = Path("examples/openapi/input.qsdl")
@@ -409,7 +408,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(14)
-    def test_specifics_14(self):
+    def test_specifics_14(self) -> None:
         """Verify usage of no database"""
 
         test_input = Path("examples/openapi/input.qsdl")
@@ -429,7 +428,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(15)
-    def test_specifics_15(self):
+    def test_specifics_15(self) -> None:
         """Verify usage of folder layout config"""
 
         test_input = Path("examples/other/package_example.qsdl")
@@ -460,7 +459,7 @@ class TestSpecificsSpring:
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
     @pytest.mark.order(16)
-    def test_specifics_16(self):
+    def test_specifics_16(self) -> None:
         """Test nested Object"""
         test_input = """\
             scalar Decimal @spring("String, entity: java.math.BigDecimal, pattern: ^(-)?[0-9][0-9]*(?:.[0-9]{1,18})?$")

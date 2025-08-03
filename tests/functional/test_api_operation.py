@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate
 
 
 class TestApiOperation:
@@ -41,7 +41,7 @@ class TestApiOperation:
 
     """
 
-    def test_api_operation_01_positive(self):
+    def test_api_operation_01_positive(self) -> None:
         """Verify that we can use basic types"""
 
         test_input = """\
@@ -60,7 +60,7 @@ class TestApiOperation:
 
         openapi = wrapper_generate(test_input)
 
-        def get_schema(openapi, path, method):
+        def get_schema(openapi: dict, path: str, method: str) -> dict:
             var = openapi["paths"][path][method]["responses"]
             return var["200"]["content"]["application/json"]["schema"]
 
@@ -84,7 +84,7 @@ class TestApiOperation:
             if _format:
                 assert schema["format"] == _format
 
-    def test_api_operation_02_positive(self):
+    def test_api_operation_02_positive(self) -> None:
         """Verify enum usage."""
         test_input = """\
             enum Foo {
@@ -99,13 +99,13 @@ class TestApiOperation:
 
         openapi = wrapper_generate(test_input)
 
-        def get_schema(openapi, path):
+        def get_schema(openapi: dict, path: str) -> dict:
             var = openapi["paths"][path]["get"]["responses"]
             return var["200"]["content"]["application/json"]["schema"]
 
         assert get_schema(openapi, "/path")["$ref"]
 
-    def test_api_operation_03_positive(self):
+    def test_api_operation_03_positive(self) -> None:
         """Verify base usage"""
         test_input = """\
             base Foo {
@@ -119,13 +119,13 @@ class TestApiOperation:
 
         openapi = wrapper_generate(test_input)
 
-        def get_schema(openapi, path):
+        def get_schema(openapi: dict, path: str) -> dict:
             var = openapi["paths"][path]["get"]["responses"]
             return var["200"]["content"]["application/json"]["schema"]
 
         assert get_schema(openapi, "/path")["$ref"] == "#/components/schemas/Foo"
 
-    def test_api_operation_04_positive(self):
+    def test_api_operation_04_positive(self) -> None:
         """Verify object usage"""
         test_input = """\
             type Foo {
@@ -139,13 +139,13 @@ class TestApiOperation:
 
         openapi = wrapper_generate(test_input)
 
-        def get_schema(openapi, path):
+        def get_schema(openapi: dict, path: str) -> dict:
             var = openapi["paths"][path]["get"]["responses"]
             return var["200"]["content"]["application/json"]["schema"]
 
         assert get_schema(openapi, "/path")["$ref"] == "#/components/schemas/Foo"
 
-    def test_api_operation_05_positive(self):
+    def test_api_operation_05_positive(self) -> None:
         """Verify that we can use array types"""
 
         test_input = """\
@@ -162,7 +162,7 @@ class TestApiOperation:
 
         openapi = wrapper_generate(test_input)
 
-        def get_schema(openapi, path, method):
+        def get_schema(openapi: dict, path: str, method: str) -> dict:
             var = openapi["paths"][path][method]["responses"]
             return var["200"]["content"]["application/json"]["schema"]
 
@@ -185,7 +185,7 @@ class TestApiOperation:
             if _format:
                 assert schema["items"]["format"] == _format
 
-    def test_api_operation_07_positive(self):
+    def test_api_operation_07_positive(self) -> None:
         """Verify required"""
         test_input = """\
             extend api {

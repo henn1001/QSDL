@@ -19,6 +19,7 @@ from enum import Enum
 
 class CrudGeneratorEnum(str, Enum):
     """Supported crud operations"""
+
     GET_ALL = "GET_ALL"
     CREATE = "CREATE"
     GET = "GET"
@@ -29,6 +30,6 @@ class CrudGeneratorEnum(str, Enum):
     REMOVE = "REMOVE"
 
     @classmethod
-    def has_member_key(cls, key):
+    def has_member_key(cls, key: str) -> bool:
         """Helper to find enum member"""
         return key in cls.__members__

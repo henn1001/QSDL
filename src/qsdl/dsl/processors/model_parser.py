@@ -130,7 +130,6 @@ def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
         fields.extend(tmp)
 
     for field in entity.fields:
-
         # check if attribute was already defined within a supertype
         duplicate = [x for x in fields if x.name == field.name]
         duplicate = duplicate[0] if duplicate else None
@@ -218,7 +217,6 @@ def path_builder(
         str: The path string as used by OpenApi.
     """
     if entity._tx_fqn == "entity.Object":
-
         path = pluralize(entity.name)
 
         if not path.startswith("/"):
@@ -231,7 +229,6 @@ def path_builder(
             path = "/" + pluralize(parent_obj.name) + "/{" + parent_obj.name + "_id}" + path
 
     elif entity._tx_fqn == "entity.Operation":
-
         path = entity.path
 
         if not path.startswith("/"):
@@ -593,7 +590,7 @@ def is_used(schema: dsl.Schema, entity: dsl.Base | dsl.Enum) -> bool:
     return False
 
 
-def remove_unused(schema: dsl.Schema):
+def remove_unused(schema: dsl.Schema) -> None:
     """Get rid of all dangling Base and Enum entities.
 
     Args:
@@ -611,7 +608,7 @@ def remove_unused(schema: dsl.Schema):
     enums = xtx.get_children_of_enum(schema)
 
 
-def inherit_force_generation(schema: dsl.Schema):
+def inherit_force_generation(schema: dsl.Schema) -> None:
     """Inherits the force-generate directive to all childs
 
     Args:
@@ -621,7 +618,7 @@ def inherit_force_generation(schema: dsl.Schema):
 
     forced_bases = [x for x in bases if qutil.get_directive_of_name("force-generate", x)]
 
-    def recurser(base: dsl.Base):
+    def recurser(base: dsl.Base) -> None:
         matched_entity = [x.value for x in base.fields if x.value._tx_fqn in ["entity.Base", "entity.Enum"]]
 
         for entity in matched_entity:
@@ -634,7 +631,7 @@ def inherit_force_generation(schema: dsl.Schema):
         recurser(base)
 
 
-def parse_objects(schema: dsl.Schema):
+def parse_objects(schema: dsl.Schema) -> None:
     """Completes the parsed QSDL schema by creating Operations for each dsl.Object.
 
     Needs to be called before parse_operations.
@@ -659,7 +656,6 @@ def parse_objects(schema: dsl.Schema):
     # or specify the generate directive
     objects = list(filter(lambda x: not x.api or x.api.generate, objects))
     for obj in objects:
-
         # aggregations
         agg_fields = get_aggregation(schema, obj)
         duplicate = len(agg_fields) > 1
@@ -681,7 +677,7 @@ def parse_objects(schema: dsl.Schema):
             obj = api_builder(obj)
 
 
-def parse_operations(schema: dsl.Schema):
+def parse_operations(schema: dsl.Schema) -> None:
     """Completes the parsed QSDL schema by adding default and missing information to Apis.
 
     Needs to be called before parse_objects.
@@ -693,14 +689,12 @@ def parse_operations(schema: dsl.Schema):
 
     # loop over user defined APIs
     for api in apis:
-
         # pass down namespace of object to api
         if api.parent._tx_fqn == "entity.Object" and not api.namespace:
             api.namespace = api.parent.namespace
 
         # loop over operation per API
         for operation in api.operations:
-
             # assign get if no other method is specified
             if not operation.method:
                 operation.method = "GET"
@@ -717,7 +711,6 @@ def parse_operations(schema: dsl.Schema):
 
             # loop over operation arguments
             for argument in operation.arguments:
-
                 # set the argument type
                 if argument.value.name == "ID":
                     argument.is_path = True

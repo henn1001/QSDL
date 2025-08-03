@@ -126,7 +126,7 @@ class Operation:
 
         return self
 
-    def _add_parameters(self, _ref: dsl.Operation):
+    def _add_parameters(self, _ref: dsl.Operation) -> None:
         """Creates and adds all parameters to a Operation"""
 
         # special spring directive for producing empty controller functions
@@ -143,14 +143,12 @@ class Operation:
 
             if new_param.is_path:
                 self.path_parameters.append(new_param)
-            elif new_param.is_query:
+            elif new_param.is_query or new_param.is_header:
                 self.query_parameters.append(new_param)
-            elif new_param.is_header:
-                self.query_parameters.append(new_param)
-            elif new_param.is_body and not _ref.method == "DELETE":
+            elif new_param.is_body and _ref.method != "DELETE":
                 self.body_parameters.append(new_param)
 
-    def _add_response(self, _ref: dsl.Operation):
+    def _add_response(self, _ref: dsl.Operation) -> None:
         """Creates and adds a response parameter to a Operation"""
 
         if _ref.value:
@@ -169,7 +167,7 @@ class Operation:
 
             self.response = new_param
 
-    def _add_response_headers(self, _ref: dsl.Operation):
+    def _add_response_headers(self, _ref: dsl.Operation) -> None:
         """Creates and adds a response header to a Operation"""
 
         for argument in _ref.response_headers:
@@ -237,7 +235,7 @@ class ApiClass:
 
         return self
 
-    def _add_operations(self, _ref: dsl.Api):
+    def _add_operations(self, _ref: dsl.Api) -> None:
         """Creates and adds all Operations to a ApiClass"""
 
         for operation in _ref.operations:

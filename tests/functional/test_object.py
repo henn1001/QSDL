@@ -26,7 +26,7 @@ class TestObject:
 
     """
 
-    def test_object_01_positive(self):
+    def test_object_01_positive(self) -> None:
         """Verify PascalCase naming convention"""
         test_input = """\
             type Foo {
@@ -36,7 +36,7 @@ class TestObject:
 
         wrapper_generate(test_input)
 
-    def test_object_01_negative(self):
+    def test_object_01_negative(self) -> None:
         """Verify PascalCase naming convention"""
         inputs = []
 
@@ -47,7 +47,7 @@ class TestObject:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_object_03_positive(self):
+    def test_object_03_positive(self) -> None:
         """Verify object extends base"""
         test_input = """\
             base Fruit {

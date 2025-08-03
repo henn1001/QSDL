@@ -30,7 +30,7 @@ class TestApi:
 
     """
 
-    def test_api_01_positive(self):
+    def test_api_01_positive(self) -> None:
         """Verify empty Operation"""
         test_input = """\
             extend api {
@@ -41,7 +41,7 @@ class TestApi:
 
         assert not openapi["paths"]
 
-    def test_api_02_positive(self):
+    def test_api_02_positive(self) -> None:
         """Verify Api multiple usage in schema"""
         test_input = """\
             extend api {
@@ -68,7 +68,7 @@ class TestApi:
         assert "get" in openapi["paths"]["/fruit"]
         assert "getFruit" in openapi["paths"]["/fruit"]["get"]["operationId"]
 
-    def test_api_03_positive(self):
+    def test_api_03_positive(self) -> None:
         """Verify Api CRUD overwrite"""
         test_input = """\
             type Foo {
@@ -90,7 +90,7 @@ class TestApi:
         assert "patch" not in openapi["paths"]["/foos"]
         assert "delete" not in openapi["paths"]["/foos"]
 
-    def test_api_03_negative(self):
+    def test_api_03_negative(self) -> None:
         """Verify Api CRUD overwrite"""
         test_input = """\
             type Type {
@@ -108,7 +108,7 @@ class TestApi:
 
         wrapper_generate_failure(test_input)
 
-    def test_api_04_negative(self):
+    def test_api_04_negative(self) -> None:
         """Verify unique paths"""
         inputs = []
 
@@ -134,7 +134,7 @@ class TestApi:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_api_05_negative(self):
+    def test_api_05_negative(self) -> None:
         """Verify unique Api names"""
         inputs = []
 

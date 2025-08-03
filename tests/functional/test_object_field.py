@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate
 
 
 class TestObjectField:
@@ -40,7 +40,7 @@ class TestObjectField:
 
     """
 
-    def test_field_object_01_positive(self):
+    def test_field_object_01_positive(self) -> None:
         """Verify that we can use basic types"""
 
         test_input = """\
@@ -90,9 +90,9 @@ class TestObjectField:
             elif key == "object":
                 assert value["type"] == "object"
             else:
-                assert False
+                raise AssertionError()
 
-    def test_field_object_02_positive(self):
+    def test_field_object_02_positive(self) -> None:
         """Verify enum usage."""
         test_input = """\
             enum Foo {
@@ -111,7 +111,7 @@ class TestObjectField:
 
         assert properties["field"]["$ref"]
 
-    def test_field_object_03_positive(self):
+    def test_field_object_03_positive(self) -> None:
         """Verify base usage"""
         test_input = """\
             base Foo {
@@ -129,7 +129,7 @@ class TestObjectField:
 
         assert properties["field"]["$ref"] == "#/components/schemas/Foo"
 
-    def test_field_object_04_positive(self):
+    def test_field_object_04_positive(self) -> None:
         """Verify object usage"""
         test_input = """\
             type Foo {
@@ -147,7 +147,7 @@ class TestObjectField:
 
         assert properties["field"]["$ref"] == "#/components/schemas/Foo"
 
-    def test_field_object_05_positive(self):
+    def test_field_object_05_positive(self) -> None:
         """Verify that we can use array types"""
 
         test_input = """\
@@ -196,9 +196,9 @@ class TestObjectField:
                 assert value["type"] == "array"
                 assert value["items"]["type"] == "object"
             else:
-                assert False
+                raise AssertionError()
 
-    def test_field_object_07_positive(self):
+    def test_field_object_07_positive(self) -> None:
         """Verify required"""
         test_input = """\
             type Foo {

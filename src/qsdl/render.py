@@ -31,7 +31,7 @@ def render(  # pylint: disable=too-many-arguments
     macro_path: Path = None,
     type_name: str = None,
     type_def: object = None,
-):
+) -> None:
     """Pass the python object graph to jinja for template rendering.
 
     Args:

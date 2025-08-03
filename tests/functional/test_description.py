@@ -28,7 +28,7 @@ class TestDescription:
 
     """
 
-    def test_description_01_positive(self):
+    def test_description_01_positive(self) -> None:
         """Verify SingleLine for all entitys."""
 
         test_input = """\
@@ -74,7 +74,7 @@ class TestDescription:
         assert desr in schema["Fruit"]["description"]
         assert desr in schema["Fruit"]["properties"]["field"]["description"]
 
-    def test_description_02_positive(self):
+    def test_description_02_positive(self) -> None:
         """Verify MultiLine for all entitys."""
 
         test_input = """\
@@ -136,7 +136,7 @@ class TestDescription:
         assert desr in schema["Fruit"]["description"]
         assert desr in schema["Fruit"]["properties"]["field"]["description"]
 
-    def test_description_03_negative(self):
+    def test_description_03_negative(self) -> None:
         """Verify SingleLine minimum character."""
 
         test_input = """\
@@ -145,7 +145,7 @@ class TestDescription:
 
         wrapper_generate_failure(test_input)
 
-    def test_description_04_negative(self):
+    def test_description_04_negative(self) -> None:
         """Verify MultiLine minimum character."""
 
         test_input = """\

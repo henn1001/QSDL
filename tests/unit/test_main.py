@@ -14,19 +14,11 @@
 
 import os
 
-from tests import wrapper_generate
-from tests import wrapper_generate_failure
-
-import qsdl
-
 
 class TestMain:
-    """Test module main functionality.
+    """Test module main functionality."""
 
-
-    """
-
-    def test_module_call(self):
+    def test_module_call(self) -> None:
         """Verify that we can call the module"""
 
         assert os.system("python -m qsdl examples/openapi/input.qsdl -g openapi -o srcgen/") == 0

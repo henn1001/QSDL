@@ -141,11 +141,11 @@ entity.Argument -->  entity.ValueType: value
 legend
   Match rules:
   |= Name  |= Rule details |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | Comment | \\/\\/.*$ |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Description |  |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Comment | \\/\\/.*$ |
+  | Description |  |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend
 
 @enduml

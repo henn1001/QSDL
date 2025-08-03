@@ -19,13 +19,15 @@ import logging
 
 class CustomLogRecord(logging.LogRecord):
     "add custom keywords, like origin, that can be used as within log_format"
-    def __init__(self, *args, **kwargs):
+
+    def __init__(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
         super().__init__(*args, **kwargs)
         self.origin = f"{self.name}.{self.funcName}"
 
 
 class CustomFormatter(logging.Formatter):
     """Enables color coded logging"""
+
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"
     red = "\x1b[31;20m"
@@ -42,14 +44,14 @@ class CustomFormatter(logging.Formatter):
         logging.CRITICAL: bold_red + log_format + reset,
     }
 
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt, datefmt=self.date_format)
         return formatter.format(record)
 
 
 # pylint: disable=invalid-name
-def getLogger(name):
+def getLogger(name: str) -> logging.Logger:
     """Returns logging.getLogger"""
     logging.setLogRecordFactory(CustomLogRecord)
 

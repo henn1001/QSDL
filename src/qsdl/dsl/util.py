@@ -14,14 +14,12 @@
 
 """QSDL Utility functions"""
 
-from typing import Union
-
 import qsdl.dsl.models as dsl
 
-ValueType = Union[dsl.Scalar, dsl.Base, dsl.Api, dsl.Object, dsl.Field, dsl.Operation]
+ValueType = dsl.Scalar | dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation
 
 
-def get_directive_of_name(name: str, entity: ValueType) -> dsl.Directive:
+def get_directive_of_name(name: str, entity: ValueType) -> dsl.Directive | None:
     """Returns the first directive with a given name if available.
 
     Args:
@@ -49,11 +47,9 @@ def description_wrapper(raw_string: str) -> list[str]:
         count = 0
 
         for string in splits:
-
             # we skip the beginning and end of the comment if it is empty
             # we also strip the string if the first_line_detected logic does not apply
             if string.startswith('"""') or string.endswith('"""'):
-
                 # dont strip when we detected a first_line and we rather want to remove padding
                 if string.endswith('"""') and count == 0:
                     string = string.strip()
@@ -109,7 +105,7 @@ def map_custom_type(  # pylint: disable=too-many-arguments
     if entity._tx_fqn == "entity.Scalar":
         override = get_type_override(entity, directive, args).get(arg_picker)
 
-    return mapping.get(name, default) if not override else override
+    return override if override else mapping.get(name, default)
 
 
 def get_type_override(

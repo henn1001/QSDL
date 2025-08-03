@@ -44,7 +44,7 @@ class TestArgument:
 
     """
 
-    def test_argument_01_positive(self):
+    def test_argument_01_positive(self) -> None:
         """Verify TBD naming convention"""
         test_input = """\
             extend api {
@@ -54,7 +54,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_argument_01_negative(self):
+    def test_argument_01_negative(self) -> None:
         """Verify TBD naming convention"""
         inputs = []
 
@@ -63,7 +63,7 @@ class TestArgument:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_argument_02_positive(self):
+    def test_argument_02_positive(self) -> None:
         """Verify empty arguments"""
         test_input = """\
             extend api {
@@ -73,7 +73,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_argument_02_negative(self):
+    def test_argument_02_negative(self) -> None:
         """Verify empty arguments"""
         test_input = """\
             extend api {
@@ -83,7 +83,7 @@ class TestArgument:
 
         wrapper_generate_failure(test_input)
 
-    def test_argument_03_positive(self):
+    def test_argument_03_positive(self) -> None:
         """Verify  argument value types"""
         test_input = """\
             enum Bar {
@@ -115,7 +115,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_argument_03_negative(self):
+    def test_argument_03_negative(self) -> None:
         """Verify  argument value types"""
         test_input = """\
 
@@ -127,7 +127,7 @@ class TestArgument:
 
         wrapper_generate_failure(test_input)
 
-    def test_argument_05_positive(self):
+    def test_argument_05_positive(self) -> None:
         """Verify value list"""
         test_input = """\
             extend api {
@@ -140,11 +140,11 @@ class TestArgument:
 
         openapi = wrapper_generate(test_input)
 
-        def get_schema_parameters(openapi, path, method):
+        def get_schema_parameters(openapi: dict, path: str, method: str) -> dict:
             var = openapi["paths"][path][method]["parameters"]
             return var[0]["schema"]
 
-        def get_schema_request(openapi, path, method):
+        def get_schema_request(openapi: dict, path: str, method: str) -> dict:
             var = openapi["paths"][path][method]["requestBody"]
             return var["content"]["application/json"]["schema"]
 
@@ -164,7 +164,7 @@ class TestArgument:
         assert schema["properties"]["arg"]["type"] == "array"
         assert schema["properties"]["arg"]["items"]["type"] == "string"
 
-    def test_argument_06_positive(self):
+    def test_argument_06_positive(self) -> None:
         """Verify required"""
         test_input = """\
             extend api {
@@ -175,7 +175,7 @@ class TestArgument:
 
         wrapper_generate(test_input)
 
-    def test_argument_07_positive(self):
+    def test_argument_07_positive(self) -> None:
         """Verify argument is query for get"""
         test_input = """\
             enum Bar {
@@ -208,7 +208,7 @@ class TestArgument:
 
         openapi = wrapper_generate(test_input)
 
-        def get_parameter(openapi, path, method):
+        def get_parameter(openapi: dict, path: str, method: str) -> dict:
             var = openapi["paths"][path][method]["parameters"]
             return var[0]
 
@@ -240,7 +240,7 @@ class TestArgument:
             if _path in ["/path9", "/path10", "/path11"]:
                 assert parameter["schema"]["$ref"]
 
-    def test_argument_08_positive(self):
+    def test_argument_08_positive(self) -> None:
         """Verify argument is requestbody for post/put/patch"""
         test_input = """\
             enum Bar {
@@ -272,7 +272,7 @@ class TestArgument:
 
         openapi = wrapper_generate(test_input)
 
-        def get_schema_request(openapi, path, method):
+        def get_schema_request(openapi: dict, path: str, method: str) -> dict:
             var = openapi["paths"][path][method]["requestBody"]
             return var["content"]["application/json"]["schema"]
 
@@ -308,7 +308,7 @@ class TestArgument:
             if _path in ["/path10", "/path11"]:
                 assert schema["$ref"]
 
-    def test_argument_09_negative(self):
+    def test_argument_09_negative(self) -> None:
         """Verify argument can not be used for delete"""
         test_input = """\
             enum Bar {
@@ -340,7 +340,7 @@ class TestArgument:
 
         wrapper_generate_failure(test_input)
 
-    def test_argument_10_positive(self):
+    def test_argument_10_positive(self) -> None:
         """Verify argument is only used in operations"""
         test_input = """\
             base Foo {
@@ -354,7 +354,7 @@ class TestArgument:
 
         wrapper_generate_failure(test_input)
 
-    def test_argument_11_positive(self):
+    def test_argument_11_positive(self) -> None:
         """Verify argument can be market as query"""
         test_input = """\
             extend api {
@@ -364,11 +364,11 @@ class TestArgument:
 
         openapi = wrapper_generate(test_input)
 
-        def get_schema_parameters(openapi, path, method):
+        def get_schema_parameters(openapi: dict, path: str, method: str) -> dict:
             var = openapi["paths"][path][method]["parameters"]
             return var
 
-        def get_schema_request(openapi, path, method):
+        def get_schema_request(openapi: dict, path: str, method: str) -> dict:
             var = openapi["paths"][path][method]["requestBody"]
             return var["content"]["application/json"]["schema"]
 

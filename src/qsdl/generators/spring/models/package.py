@@ -31,7 +31,7 @@ class Package:
     _namespace: str = None
     slashed: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self._namespace = self._config.package_placeholder_fallback
 
     def __prepare(self, string: Str) -> str:
@@ -43,7 +43,7 @@ class Package:
 
         return ret
 
-    def set_namespace(self, namespace: str):
+    def set_namespace(self, namespace: str) -> None:
         """Sets the namespace for this package"""
         self._namespace = namespace if namespace else self._namespace
 

@@ -15,7 +15,6 @@
 """Generator Main entrypoint"""
 
 from pathlib import Path
-from typing import Union
 
 import flatten_json
 import stringcase
@@ -36,7 +35,6 @@ def dump_to_yaml(obj: dsl.Object, translate: bool) -> dict:
     data["__"] = obj.name if translate else None
 
     for field in obj.fields:
-
         if field.value._tx_fqn in ["entity.Object", "entity.Base"]:
             data[field.name] = dump_to_yaml(field.value, translate)
         elif translate:
@@ -52,7 +50,6 @@ def dump_enum_to_yaml(enum: dsl.Enum, translate: bool) -> dict:
     data = {}
 
     for value in enum.values:
-
         if translate:
             tmp = value.replace("_", " ").lower()
             data[value] = stringcase.capitalcase(tmp)
@@ -73,9 +70,8 @@ def merge_yaml(base_dict: dict, new_dict: dict) -> dict:
 
     if Config.remove_unused_keys:
         for key, value in new_dict.items():
-
             # if the key exists and is not empty, take value from origin
-            if key in base_dict and base_dict[key] != None:
+            if key in base_dict and base_dict[key] is not None:
                 ret_dict[key] = base_dict[key]
 
             # else copy as is
@@ -90,8 +86,7 @@ def merge_yaml(base_dict: dict, new_dict: dict) -> dict:
     return ret_dict
 
 
-def create_yaml(entity: Union[dsl.Base, dsl.Object, dsl.Enum], locale: str, locale_folder: str):
-
+def create_yaml(entity: dsl.Base | dsl.Object | dsl.Enum, locale: str, locale_folder: str) -> None:
     if not entity:
         return
 
@@ -106,7 +101,7 @@ def create_yaml(entity: Union[dsl.Base, dsl.Object, dsl.Enum], locale: str, loca
 
     # if the yaml already exist, attempt merging
     if output_file.exists():
-        with open(output_file, "r", encoding="utf-8") as stream:
+        with open(output_file, encoding="utf-8") as stream:
             yaml_data = yaml.safe_load(stream)
 
         output_data = merge_yaml(yaml_data, output_data)
@@ -120,12 +115,12 @@ def create_yaml(entity: Union[dsl.Base, dsl.Object, dsl.Enum], locale: str, loca
 
 
 def create_yaml_one(
-    entities: list[Union[dsl.Base, dsl.Object, dsl.Enum]],
+    entities: list[dsl.Base | dsl.Object | dsl.Enum],
     locale: str,
     locale_folder: str,
     filename: str,
     append: str = "",
-):
+) -> None:
     if not entities:
         return
 
@@ -141,7 +136,7 @@ def create_yaml_one(
 
     # if the yaml already exist, attempt merging
     if output_file.exists():
-        with open(output_file, "r", encoding="utf-8") as stream:
+        with open(output_file, encoding="utf-8") as stream:
             yaml_data = yaml.safe_load(stream)
 
         output_data = merge_yaml(yaml_data, output_data)
@@ -154,7 +149,7 @@ def create_yaml_one(
         yaml.dump(output_data, file, sort_keys=True, allow_unicode=True, width=9999)
 
 
-def generate(schema: dsl.Schema, output_path: Path, config: Config):
+def generate(schema: dsl.Schema, output_path: Path, config: Config) -> None:
     """Generator func for that does fancy stuff"""
 
     global _config
@@ -168,7 +163,6 @@ def generate(schema: dsl.Schema, output_path: Path, config: Config):
     enums = xtx.get_children_of_enum(schema) if config.enum else []
 
     for locale in [config.locale] + config.extra_locales:
-
         if not locale:
             continue
 

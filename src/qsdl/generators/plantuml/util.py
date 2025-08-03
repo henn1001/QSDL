@@ -35,9 +35,7 @@ def get_compositions(obj: object) -> list:
     fields = xtx.get_children_of_field(schema)
     parents = list(filter(lambda x: x.value == obj, fields))
 
-    comp_fields = list(
-        filter(lambda x: x.is_composition and x.value._tx_fqn == "entity.Object", parents)
-    )
+    comp_fields = list(filter(lambda x: x.is_composition and x.value._tx_fqn == "entity.Object", parents))
 
     return comp_fields
 
@@ -56,9 +54,7 @@ def get_aggregation(obj: object) -> list:
     fields = xtx.get_children_of_field(schema)
     parents = list(filter(lambda x: x.value == obj, fields))
 
-    agg_fields = list(
-        filter(lambda x: x.is_aggregation and x.value._tx_fqn == "entity.Object", parents)
-    )
+    agg_fields = list(filter(lambda x: x.is_aggregation and x.value._tx_fqn == "entity.Object", parents))
 
     return agg_fields
 

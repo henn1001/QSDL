@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate_failure
 
 
 class TestSpecifics:
@@ -22,7 +22,7 @@ class TestSpecifics:
 
     """
 
-    def test_specifics_01_negative(self):
+    def test_specifics_01_negative(self) -> None:
         """Check relation duplicates"""
         inputs = []
 

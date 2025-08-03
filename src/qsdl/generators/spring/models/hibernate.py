@@ -25,14 +25,14 @@ from .. import util
 class HibernateFieldInfo:
     """Custom dataclass"""
 
-    def __init__(self, field: spring.ModelField):
+    def __init__(self, field: spring.ModelField) -> None:
         pass
 
 
 class HibernateParentInfo:
     """Custom dataclass"""
 
-    def __init__(self, model: spring.ModelClass, parent: spring.ModelClass):
+    def __init__(self, model: spring.ModelClass, parent: spring.ModelClass) -> None:
         """
         Example:
           method_joined_id      = TicketIdAndId
@@ -48,7 +48,7 @@ class HibernateParentInfo:
 class HibernateModelInfo:
     """Custom dataclass"""
 
-    def __init__(self, model: spring.ModelClass):
+    def __init__(self, model: spring.ModelClass) -> None:
         """
         Example:
           method_joined_id      = ProjectId

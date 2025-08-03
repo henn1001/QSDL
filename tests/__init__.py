@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import textwrap
-import uuid
 from pathlib import Path
 
 import yaml
+
 from qsdl.core import generate
 
 
@@ -30,7 +30,6 @@ def wrapper_generate(test_input: str) -> dict:
         dict: The OpenAPI specification as dict.
     """
     test_seed = ""
-    # test_seed = str(uuid.uuid4())[:8] needed when we want to test in parallel
     test_input = textwrap.dedent(test_input)
     test_output = Path("srcgen/" + test_seed + "/")
 
@@ -47,7 +46,7 @@ def wrapper_generate(test_input: str) -> dict:
     return openapi
 
 
-def wrapper_generate_failure(test_input: str):
+def wrapper_generate_failure(test_input: str) -> None:
     """Expect the generation to fail.
 
     Args:

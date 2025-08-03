@@ -44,7 +44,6 @@ def parse_apis(schema: Schema) -> list[ApiClass]:
     api_list = xtx.get_children_of_api(schema)
 
     for api in api_list:
-
         # we can skip empty apis
         if not api.operations:
             continue
@@ -84,7 +83,7 @@ def parse_models(schema: Schema) -> list[ModelClass]:
     return models
 
 
-def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list):
+def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list) -> None:
     """Removes all generated files mentioned in .qsdl-ignore.
 
     Utilizes the pathspec python package.
@@ -102,7 +101,7 @@ def remove_ignored_files(output_path: Path, api_files: list, model_files: list, 
         supporting_files.remove((".qsdl-ignore.j2", ".qsdl-ignore"))
 
         # read the spec
-        with open(ignorefile_path, "r", encoding="utf-8") as infile:
+        with open(ignorefile_path, encoding="utf-8") as infile:
             spec = pathspec.PathSpec.from_lines("gitwildmatch", infile)
 
         # loop over each all files and remove matches
@@ -120,7 +119,7 @@ def remove_ignored_files(output_path: Path, api_files: list, model_files: list, 
                 supporting_files.remove((src, dest))
 
 
-def generate_openapi(output_path: Path):
+def generate_openapi(output_path: Path) -> None:
     """Helper that calls the openapi generator.
 
     Args:
@@ -141,10 +140,10 @@ def generate_openapi(output_path: Path):
     )
 
 
-def generate(schema: Schema, output_path: Path, config: Config):
+def generate(schema: Schema, output_path: Path, config: Config) -> None:
     """Generator func for spring"""
 
-    if not config.id_type in IDTYPE.__members__:
+    if config.id_type not in IDTYPE.__members__:
         raise ValueError("id_type must be `LONG` or `STRING`")
 
     if config.id_type == IDTYPE.LONG:

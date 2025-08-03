@@ -11,7 +11,6 @@ from .operation import Operation
 from .scalar import Scalar
 from .schema import Schema
 
-
 __all__ = [
     "Api",
     "Argument",
@@ -26,7 +25,7 @@ __all__ = [
 ]
 
 
-def all_dsl_models():
+def all_dsl_models():  # noqa: ANN202
     """Returns all DSL classes.
 
     Returns:

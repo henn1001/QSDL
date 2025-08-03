@@ -30,7 +30,7 @@ from qsdl.dsl.processors.obj_processors import obj_processors
 log = logger.getLogger(__name__)
 
 
-def draw_metamodel(metamodel: TextXMetaModel):
+def draw_metamodel(metamodel: TextXMetaModel) -> None:
     """Exports a PlantUml diagram of the metamodel.
 
     Args:

@@ -83,11 +83,7 @@ def is_supertype(entity: dsl.Base | dsl.Object) -> bool:
     base_list = xtx.get_children_of_base(schema)
     object_list = xtx.get_children_of_object(schema)
 
-    for itr in base_list + object_list:
-        if entity == itr.supertype:
-            return True
-
-    return False
+    return any(entity == itr.supertype for itr in base_list + object_list)
 
 
 def is_nested(entity: dsl.Base | dsl.Object) -> bool:
@@ -122,9 +118,7 @@ def get_enum_values(entity: dsl.Enum) -> list[dsl.Enum]:
     values = []
 
     if entity._tx_fqn in ["entity.Enum"]:
-
         for value in entity.values:
-
             if value.upper() in ["YES", "NO", "TRUE", "FALSE", "ON", "OFF"]:
                 value = f"'{value}'"
 

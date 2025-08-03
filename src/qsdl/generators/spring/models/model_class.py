@@ -108,7 +108,7 @@ class ModelField:
 
         return self
 
-    def _add_constraints(self, _ref: dsl.Field):
+    def _add_constraints(self, _ref: dsl.Field) -> None:
         """Adds min max constraints"""
 
         if self.type == "String":
@@ -211,7 +211,7 @@ class ModelClass:
 
         return self
 
-    def _add_attributes(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
+    def _add_attributes(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
         """Creates and adds all visible attributes to a ModelClass"""
 
         # filter on base and object
@@ -226,7 +226,7 @@ class ModelClass:
 
             self.fields.append(new_model_field)
 
-    def _add_constants(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
+    def _add_constants(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
         """Adds all values for Enums"""
 
         # filter only enum
@@ -236,7 +236,7 @@ class ModelClass:
         for value in _ref.values:
             self.constants.append(value)
 
-    def _add_relations(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
+    def _add_relations(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
         """Creates and adds all explicit relation attributes to a ModelClass"""
 
         # filter on object
@@ -253,7 +253,7 @@ class ModelClass:
 
             self.fields.append(new_model_field)
 
-    def _add_foreign_keys(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
+    def _add_foreign_keys(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
         """Creates and adds all implicit relation attributes to a ModelClass"""
 
         # filter on object

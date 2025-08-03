@@ -88,19 +88,15 @@ class ModelField:
 
         return self
 
-    def _add_constraints(self, _ref: dsl.Field):
+    def _add_constraints(self, _ref: dsl.Field) -> None:
         """Adds min max constraints and default"""
 
         if self.type == "string" and self.format not in ["date", "date-time"]:
             self.min_size = f"minLength: {_ref.min_size}" if _ref.min_size else None
-            self.max_size = (
-                f"maxLength: {_ref.max_size}" if _ref.max_size else "maxLength: 255"
-            )
+            self.max_size = f"maxLength: {_ref.max_size}" if _ref.max_size else "maxLength: 255"
 
         if self.type in ["integer", "number"]:
-            self.min_size = (
-                f"minimum: {_ref.min_size}" if _ref.min_size else "minimum: 0"
-            )
+            self.min_size = f"minimum: {_ref.min_size}" if _ref.min_size else "minimum: 0"
             self.max_size = f"maximum: {_ref.max_size}" if _ref.max_size else None
 
         self.default = f"default: {_ref.default}" if _ref.default else None
@@ -152,8 +148,7 @@ class ModelObject:
 
         return self
 
-    def _add_attributes(self, _ref: dsl.Enum | dsl.Base | dsl.Object):
-
+    def _add_attributes(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
         if _ref._tx_fqn not in ["entity.Base", "entity.Object"]:
             raise ValueError
 
@@ -163,9 +158,9 @@ class ModelObject:
                 attribute = ModelField().build(entity_field)
                 self.attributes.append(attribute)
 
-    def get_required(self):
+    def get_required(self) -> list[ModelField]:
         """Returns a list of required attributes."""
-        required = []
+        required: list[ModelField] = []
 
         for attribute in self.attributes:
             if attribute.is_required:

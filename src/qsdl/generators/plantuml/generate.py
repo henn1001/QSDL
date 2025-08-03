@@ -26,7 +26,7 @@ from . import util
 from .config import Config
 
 
-def generate_png(uml_markdown_file: Path):
+def generate_png(uml_markdown_file: Path) -> None:
     """Converts a markdown file containing PlantUml definitions to pngs.
 
     Args:
@@ -37,12 +37,11 @@ def generate_png(uml_markdown_file: Path):
     # loop over markdown file and capture each start/end uml section
     definitions = []
 
-    with open(uml_markdown_file, "r", encoding="utf-8") as file:
+    with open(uml_markdown_file, encoding="utf-8") as file:
         linereader = False
         section = ""
 
         for line in file:
-
             if line == "@startuml\n":
                 section = ""
                 linereader = True
@@ -71,7 +70,7 @@ def generate_png(uml_markdown_file: Path):
             the_file.write(png)
 
 
-def generate(schema: Schema, output_path: Path, config: Config):
+def generate(schema: Schema, output_path: Path, config: Config) -> None:
     """Generator func for PlantUML"""
 
     output_file = output_path / "plantuml.md"

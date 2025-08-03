@@ -96,12 +96,10 @@ def has(
     ret = False
 
     if entity._tx_fqn in ["entity.Base", "entity.Object"]:
-
         # for the aggregation check - we want to search the parent fields
         fields = entity.fields if not is_aggregated else get_parent_fields(entity.name)
 
         for field in fields:
-
             # checks for scalar types
             if has_type and field.value.name in has_type:
                 ret = True
@@ -167,9 +165,7 @@ def controller_has(
         bool:  Returns True on detection.
     """
     if entity._tx_fqn in ["entity.Api"]:
-
         for opr in entity.operations:
-
             # for the api imports, we only care about the operation return value
             # and if the body has exactly one parameter
             args = [opr.value] if opr.value else []
@@ -185,7 +181,6 @@ def controller_has(
                 return True
 
             for arg in args:
-
                 # checks for enum parameters
                 if has_enum and arg and arg._tx_fqn == "entity.Enum":
                     return True
@@ -213,11 +208,7 @@ def is_supertype(entity: dsl.Base) -> bool:
     base_list = xtx.get_children_of_base(Store.schema)
     object_list = xtx.get_children_of_object(Store.schema)
 
-    for itr in base_list + object_list:
-        if entity == itr.supertype:
-            return True
-
-    return False
+    return any(entity == itr.supertype for itr in base_list + object_list)
 
 
 def is_used_as_field_value(entity: dsl.Base | dsl.Object) -> bool:
@@ -234,21 +225,16 @@ def is_used_as_field_value(entity: dsl.Base | dsl.Object) -> bool:
 
     entity_list += xtx.get_children_of_field(Store.schema)
 
-    for itr in entity_list:
-        if itr.value == entity:
-            return True
-
-    return False
+    return any(itr.value == entity for itr in entity_list)
 
 
-def add_parents_to_model(models: list[spring.ModelClass]):
+def add_parents_to_model(models: list[spring.ModelClass]) -> None:
     """Add all Models who are a domain parent to a Model.
 
     Args:
         models (list[spring.ModelClass]): The list of all available models.
     """
     for model in models:
-
         if not model.is_object:
             continue
 
@@ -270,13 +256,12 @@ def add_parents_to_model(models: list[spring.ModelClass]):
         model.parents = parents
 
 
-def add_hibernate_info(models: list[spring.ModelClass]):
+def add_hibernate_info(models: list[spring.ModelClass]) -> None:
     """Add hibernate related info to model and fields"""
-    if not Store.config.database == "HIBERNATE":
+    if Store.config.database != "HIBERNATE":
         return
 
     for model in models:
-
         if not model.is_object:
             continue
 
@@ -345,7 +330,6 @@ def get_parent_for(obj_name: dsl.Object.name, parent_name: dsl.Object.name) -> s
 
     for model in Store.models:
         if obj_name == model.name:
-
             for parent in model.parents:
                 if parent_name == parent.model.name:
                     ret = parent
@@ -371,11 +355,11 @@ def get_field_for(model: spring.ModelClass, target: spring.ModelClass) -> spring
     return ret
 
 
-def get_parent_fields(obj_name: dsl.Object.name, filter_relations=True) -> list[dsl.Field]:
+def get_parent_fields(obj_name: str, filter_relations: bool = True) -> list[dsl.Field]:
     """Returns all Objects whos Field value is this Object.
 
     Args:
-        obj_name (dsl.Object.name): The Object which value the fields should have.
+        obj_name (str): The Object which value the fields should have.
         filter_relations (bool, optional): Include only relation fields. Defaults to True.
 
     Returns:

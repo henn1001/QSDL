@@ -26,7 +26,7 @@ from qsdl import logger
 log = logger.getLogger(__name__)
 
 
-def model_processor(schema: dsl.Schema, metamodel: TextXMetaModel):
+def model_processor(schema: dsl.Schema, metamodel: TextXMetaModel) -> None:
     """Callable that will be called after each successful model parse.
 
     Args:
@@ -41,7 +41,7 @@ def model_processor(schema: dsl.Schema, metamodel: TextXMetaModel):
     _ = metamodel
 
 
-def model_post_processor(schema: dsl.Schema, metamodel: TextXMetaModel):
+def model_post_processor(schema: dsl.Schema, metamodel: TextXMetaModel) -> None:
     """Callable that should be called after the schema has been generated and merged.
 
     We use this to validate and complete the schema.
@@ -91,7 +91,7 @@ def get_all_imports(schema: dsl.Schema) -> list:
     return imports
 
 
-def sort_all_imports(imports: list):
+def sort_all_imports(imports: list) -> list:
     """Remove duplicates in import list"""
 
     ret = {}
@@ -104,10 +104,10 @@ def sort_all_imports(imports: list):
         name = name.split("/")[-1].split("\\")[-1]
         ret[name] = imprt
 
-    return ret.values()
+    return list(ret.values())
 
 
-def model_merger(schema: dsl.Schema):
+def model_merger(schema: dsl.Schema) -> None:
     """Callable that should be called after the schema has been generated.
 
     We use this to combine multiple schema files into one.

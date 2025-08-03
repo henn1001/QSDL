@@ -26,7 +26,7 @@ class TestSpecificsOpenAPI:
 
     """
 
-    def test_specifics_01_positive(self):
+    def test_specifics_01_positive(self) -> None:
         """Verify usage of base reference"""
         test_input = """\
             base Foo {
@@ -49,7 +49,7 @@ class TestSpecificsOpenAPI:
         assert properties["field1"]["$ref"]
         assert properties["field2"]["items"]["$ref"]
 
-    def test_specifics_02_positive(self):
+    def test_specifics_02_positive(self) -> None:
         """Verify usage of type reference"""
         test_input = """\
             base Foo {
@@ -72,7 +72,7 @@ class TestSpecificsOpenAPI:
         assert properties["field1"]["$ref"]
         assert properties["field2"]["items"]["$ref"]
 
-    def test_specifics_03_positive(self):
+    def test_specifics_03_positive(self) -> None:
         """Verify PascalCase naming convention"""
         test_input = """\
             type Foo @namespace("Test") {
@@ -82,7 +82,7 @@ class TestSpecificsOpenAPI:
 
         wrapper_generate(test_input)
 
-    def test_specifics_03_negative(self):
+    def test_specifics_03_negative(self) -> None:
         """Verify PascalCase naming convention"""
         inputs = []
 
@@ -93,7 +93,7 @@ class TestSpecificsOpenAPI:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_specifics_04_positive(self):
+    def test_specifics_04_positive(self) -> None:
         """Verify usage of relations without parent endpoints"""
         test_input = """\
             type Foo {

@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pathlib import Path
 import shutil
 import textwrap
+from pathlib import Path
+
 from qsdl.core import generate
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate
 
 
 class TestTypeOverrides:
@@ -26,8 +27,7 @@ class TestTypeOverrides:
 
     """
 
-    def test_openapi_scalar_types(self):
-
+    def test_openapi_scalar_types(self) -> None:
         test_input = """\
             scalar Foo @openapi("aaa")
             scalar Bar @openapi("bbb, format: bla")
@@ -70,7 +70,7 @@ class TestTypeOverrides:
                 assert value.get("format") == "bla"
                 assert value.get("pattern") == "^:*$"
 
-    def test_specifics_01(self):
+    def test_specifics_01(self) -> None:
         """Test nested Base"""
 
         test_input = """\

@@ -21,7 +21,7 @@ import qsdl.dsl.models as dsl
 from ..util import description_wrapper
 
 
-def schema_processor(entity: dsl.Schema):
+def schema_processor(entity: dsl.Schema) -> None:
     """The schema post-processor.
 
     Args:
@@ -32,7 +32,7 @@ def schema_processor(entity: dsl.Schema):
     entity.servers = ["/api/v1"] if not entity.servers else entity.servers
 
 
-def scalar_processor(entity: dsl.Scalar):
+def scalar_processor(entity: dsl.Scalar) -> None:
     """The scalar post-processor.
 
     Args:
@@ -41,7 +41,7 @@ def scalar_processor(entity: dsl.Scalar):
     _ = entity
 
 
-def enum_processor(entity: dsl.Enum):
+def enum_processor(entity: dsl.Enum) -> None:
     """The enum post-processor.
 
     Args:
@@ -51,7 +51,7 @@ def enum_processor(entity: dsl.Enum):
     entity.description = description_wrapper(entity.description)
 
 
-def base_processor(entity: dsl.Base):
+def base_processor(entity: dsl.Base) -> None:
     """The base post-processor.
 
     Args:
@@ -61,7 +61,7 @@ def base_processor(entity: dsl.Base):
     entity.description = description_wrapper(entity.description)
 
 
-def object_processor(entity: dsl.Object):
+def object_processor(entity: dsl.Object) -> None:
     """The object post-processor.
 
     Args:
@@ -71,7 +71,7 @@ def object_processor(entity: dsl.Object):
     entity.description = description_wrapper(entity.description)
 
 
-def field_processor(entity: dsl.Field):
+def field_processor(entity: dsl.Field) -> None:
     """The field post-processor.
 
     Args:
@@ -82,7 +82,7 @@ def field_processor(entity: dsl.Field):
     entity.is_relation = entity.is_composition or entity.is_aggregation
 
 
-def api_processor(entity: dsl.Api):
+def api_processor(entity: dsl.Api) -> None:
     """The api post-processor.
 
     Args:
@@ -92,7 +92,7 @@ def api_processor(entity: dsl.Api):
     entity.description = description_wrapper(entity.description)
 
 
-def operation_processor(entity: dsl.Operation):
+def operation_processor(entity: dsl.Operation) -> None:
     """The operation post-processor.
 
     Args:
@@ -102,7 +102,7 @@ def operation_processor(entity: dsl.Operation):
     entity.description = description_wrapper(entity.description)
 
 
-def argument_processor(entity: dsl.Argument):
+def argument_processor(entity: dsl.Argument) -> None:
     """The parameter post-processor.
 
     Args:
@@ -111,7 +111,7 @@ def argument_processor(entity: dsl.Argument):
     _ = entity
 
 
-def directive_processor(entity: dsl.Directive):
+def directive_processor(entity: dsl.Directive) -> None:
     """The directive post-processor.
 
     Args:

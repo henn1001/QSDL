@@ -5,3 +5,14 @@ from .hibernate import HibernateFieldInfo, HibernateModelInfo, HibernateParentIn
 from .model_class import ModelClass, ModelField
 from .package import Package
 from .parent import Parent
+
+__all__ = [
+    "ApiClass",
+    "HibernateFieldInfo",
+    "HibernateModelInfo",
+    "HibernateParentInfo",
+    "ModelClass",
+    "ModelField",
+    "Package",
+    "Parent",
+]

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate_failure
 
 
 class TestEnum:
@@ -26,7 +26,7 @@ class TestEnum:
 
     """
 
-    def test_enum_01_negative(self):
+    def test_enum_01_negative(self) -> None:
         """Verify PascalCase naming convention"""
         inputs = []
 
@@ -37,7 +37,7 @@ class TestEnum:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_enum_02_negative(self):
+    def test_enum_02_negative(self) -> None:
         """Verify value naming convention"""
         inputs = []
 
@@ -49,7 +49,7 @@ class TestEnum:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
-    def test_enum_03_negative(self):
+    def test_enum_03_negative(self) -> None:
         """Verify empty enums"""
         test_input = """\
             enum Foo {

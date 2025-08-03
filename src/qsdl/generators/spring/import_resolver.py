@@ -15,17 +15,17 @@
 """Spring Generator Java import resolver"""
 
 import qsdl.dsl.models as dsl
+
 from . import models as spring
 from . import util
 
 
-def resolve_dynamic_imports():
+def resolve_dynamic_imports() -> None:
     """resolve all model related dynamic imports"""
 
     namespaced_packages = {}
 
     for model in util.Store.models:
-
         if model.package._namespace not in namespaced_packages:
             namespaced_packages[model.package._namespace] = model.package
 

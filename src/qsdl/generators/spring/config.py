@@ -78,10 +78,9 @@ class Config(BaseConfig):
     # used for dactite enum casting
     _dactive_casts = [Database, IDTYPE]
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # update all fields ending with _path
         for key, value in [x for x in vars(self).items() if x[0].endswith("_path")]:
-
             # value was probably not provided by the user - replace with placeholder
             if "%placeholder%" in value:
                 self.__setattr__(key, value.replace("%placeholder%", self.base_package))

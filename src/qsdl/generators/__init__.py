@@ -15,13 +15,13 @@
 """QSDL - Generator interface"""
 
 import importlib
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Type
 
 from qsdl.dsl.models import Schema
 from qsdl.generators.base_config import BaseConfig
 
-ConfigType = Type[BaseConfig]
+ConfigType = type[BaseConfig]
 GeneratorType = Callable[[Schema, Path, ConfigType], None]
 
 

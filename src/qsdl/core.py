@@ -17,7 +17,6 @@
 import json
 import traceback
 from pathlib import Path
-from typing import Tuple
 
 import dacite
 import inquirer
@@ -47,7 +46,7 @@ class Color:
     END = "\033[0m"
 
 
-def prompt_user() -> Tuple[GeneratorType, ConfigType]:
+def prompt_user() -> tuple[GeneratorType, ConfigType]:
     """Greets and prompts the user with a interactive interface.
 
     Provides a selectable list of generators and their respective
@@ -86,7 +85,6 @@ def prompt_user() -> Tuple[GeneratorType, ConfigType]:
     questions = []
 
     for key, value in config.__dict__.items():
-
         if isinstance(value, bool):
             question = inquirer.Confirm(
                 key,
@@ -122,7 +120,7 @@ def init(
     generator_name: str,
     config_path: Path = None,
     raw_config: ConfigType = None,
-) -> Tuple[GeneratorType, ConfigType]:
+) -> tuple[GeneratorType, ConfigType]:
     """Initialise QSDL.
 
     A user can either utilize a interactive prompt for selecting and
@@ -178,7 +176,7 @@ def init(
     return generator, config
 
 
-def generate(generator_name: str, output_path: Path, **kwargs) -> int:
+def generate(generator_name: str, output_path: Path, **kwargs) -> int:  # noqa: ANN003
     """The main function of QSDL.
 
     Generates various things from the provided schema definition.
@@ -197,10 +195,10 @@ def generate(generator_name: str, output_path: Path, **kwargs) -> int:
     """
 
     # handle optional arguments
-    input_path = kwargs.get("input_path", None)
-    raw_schema = kwargs.get("raw_schema", None)
-    config_path = kwargs.get("config_path", None)
-    raw_config = kwargs.get("config", None)
+    input_path = kwargs.get("input_path")
+    raw_schema = kwargs.get("raw_schema")
+    config_path = kwargs.get("config_path")
+    raw_config = kwargs.get("config")
 
     try:
         # initiliase the global config and fetch the generator and its parameters

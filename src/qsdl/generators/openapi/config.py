@@ -26,10 +26,12 @@ class IDTYPE(str, Enum):
     LONG = "LONG"
     STRING = "STRING"
 
+
 class Directive(str, Enum):
     """Available directives"""
 
     TYPE = "openapi"
+
 
 @dataclass
 class Config(BaseConfig):

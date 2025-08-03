@@ -21,7 +21,7 @@ from qsdl.dsl.models import Schema
 from .config import Config
 
 
-def generate(schema: Schema, output_path: Path, config: Config):
+def generate(schema: Schema, output_path: Path, config: Config) -> None:
     """Generator func for that does nothing"""
     _ = schema
     _ = output_path

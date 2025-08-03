@@ -65,7 +65,7 @@ class Parameter:
         self.is_body = _ref.is_body
 
         if _ref.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
-            self.ref = f"#/components/schemas/{ self.type }"
+            self.ref = f"#/components/schemas/{self.type}"
 
         if _ref.value._tx_fqn in ["entity.Base", "entity.Object"]:
             self.is_ref_body = True
@@ -126,7 +126,7 @@ class Operation:
 
         return self
 
-    def _add_parameters(self, _ref: dsl.Operation):
+    def _add_parameters(self, _ref: dsl.Operation) -> None:
         """Creates and adds all parameters to a Operation"""
 
         for argument in _ref.arguments:
@@ -145,7 +145,7 @@ class Operation:
             elif new_param.is_body and _ref.method != "DELETE":
                 self.body_parameters.append(new_param)
 
-    def _add_response(self, _ref: dsl.Operation):
+    def _add_response(self, _ref: dsl.Operation) -> None:
         """Creates and adds a response parameter to a Operation"""
 
         if _ref.value:
@@ -164,11 +164,11 @@ class Operation:
                 new_param.is_array = False
 
             if _ref.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
-                new_param.ref = f"#/components/schemas/{ new_param.type }"
+                new_param.ref = f"#/components/schemas/{new_param.type}"
 
             self.response = new_param
 
-    def _add_response_headers(self, _ref: dsl.Operation):
+    def _add_response_headers(self, _ref: dsl.Operation) -> None:
         """Creates and adds a response header to a Operation"""
 
         for argument in _ref.response_headers:
@@ -198,8 +198,7 @@ class ApiObject:
 
         return self
 
-    def _add_operations(self, operations: list[Operation]):
-
+    def _add_operations(self, operations: list[Operation]) -> None:
         new_operations: list[Operation] = []
 
         for operation in operations:

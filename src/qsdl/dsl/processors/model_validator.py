@@ -27,7 +27,7 @@ import qsdl.dsl.textx as xtx
 from . import CrudGeneratorEnum as CrudEnum
 
 
-def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
+def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Check for logical input errors and provide better error messages.
 
     Args:
@@ -45,7 +45,7 @@ def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
     validate_field_directives(schema, metamodel)
 
 
-def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
+def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Validate the naming convention for servers.
 
     Args:
@@ -67,7 +67,7 @@ def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
+def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Validate the naming convention.
 
     Expect that NameSpaces, Scalars, Enums, Bases and Objects
@@ -128,13 +128,12 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
     entities.extend(xtx.get_children_of_argument(schema))
 
     for entity in entities:
-
         if entity.name.lower() == "id":
             msg = f"The {entity._tx_fqn} {entity.name} uses the reserved name ID."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
+def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Check that reference a maximum of one Object or Base.
 
     Args:
@@ -154,7 +153,6 @@ def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaM
         is_ref = False
 
         for argument in operation.arguments:
-
             # we only wanty limit the request body to one value
             if not argument.is_query and not argument.is_header:
                 count = count + 1
@@ -174,7 +172,7 @@ def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaM
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_custom_operations_path(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
+def validate_custom_operations_path(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Check that custom operations specify a path.
 
     Args:
@@ -195,7 +193,7 @@ def validate_custom_operations_path(schema: dsl.Schema, metamodel: textx.metamod
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
+def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Checks various rules that apply to field directives.
 
     Args:
@@ -213,19 +211,18 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
     for entity in bases + objects:
         duplicate_relation = []
         for field in entity.fields:
-
             # verify that queries are only used on scalars
             if field.is_query and field.value._tx_fqn not in ["entity.Scalar", "entity.Enum"]:
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as query."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
             # verify that composition is used only on Objects
-            if field.is_composition and not field.value._tx_fqn == "entity.Object":
+            if field.is_composition and field.value._tx_fqn != "entity.Object":
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as composition."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
             # verify that aggregation is used only on Objects and array
-            if field.is_aggregation and not field.value._tx_fqn == "entity.Object":
+            if field.is_aggregation and field.value._tx_fqn != "entity.Object":
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as aggregation."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
@@ -244,7 +241,7 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
                     raise TextXSemanticError(msg, filename=schema._tx_filename)
 
             # verify that composition/aggregation is used only in Objects
-            if (field.is_composition or field.is_aggregation) and not entity._tx_fqn == "entity.Object":
+            if (field.is_composition or field.is_aggregation) and entity._tx_fqn != "entity.Object":
                 msg = f"The Field {field.name} for {field.parent.name} declares a relation inside a Base."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
@@ -254,7 +251,7 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_crud_generator_directive(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel):
+def validate_crud_generator_directive(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Check if the requested crud operations are valid
 
     Args:
@@ -278,7 +275,7 @@ def validate_crud_generator_directive(schema: dsl.Schema, metamodel: textx.metam
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
 
-def validate_operations(schema: dsl.Schema):
+def validate_operations(schema: dsl.Schema) -> None:
     """Checks if we have any duplicate operation names or paths.
 
     Args:
