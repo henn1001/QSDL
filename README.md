@@ -4,7 +4,7 @@ A Schema-Definition-Language Generator inspired by GraphQL.
 
 ## Overview
 
-The QSDL Generator allows a domain model based approach to generate OpenAPI and GraphQL specifications. The Language is inspired by GraphQL with minor modifications to accommodate OpenAPI and sensible QoL features.
+The QSDL Generator allows a domain model based approach to generate various specifications and boiler-code. The Language is inspired by GraphQL with minor modifications to accommodate OpenAPI and sensible QoL features.
 
 The idea is offer a minimal approach to a API definition in order to define CRUD access to a domain model graph where domain objects have parent-child like dependencies. A simple Object definition in QSDL will generate the GET ALL / POST / GET / PUT / PATCH / DELETE Operations.
 
@@ -14,15 +14,15 @@ Internally QSDL leverages [textX](https://github.com/textX/textX) for describing
 
 Currently the following generators are available:
 
-* OpenAPI
-* SpringBoot
-* PlantUML
+- OpenAPI
+- SpringBoot
+- PlantUML
 
 ### Requirements
 
 The QSDL package currently supports the Python version:
 
-* 3.11.x
+- 3.13
 
 ### Installation
 
@@ -90,7 +90,7 @@ Options:
 
 Examples can be found in `examples/`.
 
-* [Example API](examples/openapi/input.qsdl)
+- [Example API](examples/openapi/input.qsdl)
 
 # Language
 
@@ -107,7 +107,7 @@ $`~~~~          types*=Type                                                 `$
 
 A schema file starts with four optional fields. You should already be familiar with them if you know OpenAPI.
 
-> Note: The order is important. 
+> Note: The order is important.
 
 Example:
 
@@ -148,7 +148,6 @@ Example:
     scalar File;
     scalar Image;
 
-
 There are already several builtin types available.
 
 - `Int`
@@ -164,6 +163,7 @@ There are already several builtin types available.
 > Note: In order to correctly interpret new scalars for a specific generator, directives can be used to provide a conversion map.
 
 Example:
+
 ```
 scalar UUID @openapi("string, format: uuid, pattern: ^.*$") @spring("UUID")
 ```
@@ -194,11 +194,11 @@ Enum types are similar to Scalars but they represent a set of possible String va
 
 Rules:
 
-01. `Enum` names must use `PascalCase`.
+1.  `Enum` names must use `PascalCase`.
 
-02. `Enum` values must use `ALL_CAPS`.
+2.  `Enum` values must use `ALL_CAPS`.
 
-03. `Enum` must at least contain one value.
+3.  `Enum` must at least contain one value.
 
 Example:
 
@@ -232,14 +232,15 @@ Base Rules:
 Field Rules:
 
 1.  `Field` of `Base` may be a `Scalar` value with one one of the following:
-    * `Int`
-    * `Long`
-    * `Float`
-    * `Double`
-    * `String`
-    * `Boolean`
-    * `Date`
-    * `Object`
+
+    - `Int`
+    - `Long`
+    - `Float`
+    - `Double`
+    - `String`
+    - `Boolean`
+    - `Date`
+    - `Object`
 
 2.  `Field` of `Base` value may be a `Enum`.
 
@@ -294,14 +295,15 @@ Object Rules:
 Field Rules:
 
 1.  `Field` of `Object` may be a `Scalar` value with one one of the following:
-    * `Int`
-    * `Long`
-    * `Float`
-    * `Double`
-    * `String`
-    * `Boolean`
-    * `Date`
-    * `Object`
+
+    - `Int`
+    - `Long`
+    - `Float`
+    - `Double`
+    - `String`
+    - `Boolean`
+    - `Date`
+    - `Object`
 
 2.  `Field` of `Object` value may be a `Enum`.
 
@@ -364,15 +366,16 @@ Api Rules:
 Operation Rules:
 
 1.  `Operation` of `Api` value may be a `Scalar` value with one one of the following:
-    * `Int`
-    * `Long`
-    * `Float`
-    * `Double`
-    * `String`
-    * `Boolean`
-    * `Date`
-    * `Object`
-    * `Void`
+
+    - `Int`
+    - `Long`
+    - `Float`
+    - `Double`
+    - `String`
+    - `Boolean`
+    - `Date`
+    - `Object`
+    - `Void`
 
 2.  `Operation` of `Api` value may be a `Enum`.
 
@@ -394,42 +397,40 @@ Example:
 
 There are certain builtin directives that can be used to modify the generation behavior.
 
-1.  `Directive` `@query` may be use on any `Base` or `Object` `Field` to create a query parameter for the get all method.
+1.  `Directive` `@query` may be use on any `Field` to create a query parameter for the get all method.
 
-2.  `Directive` `@unique` may be use on any `Base` or `Object` `Field` to mark a `Field` as unique.
+2.  `Directive` `@unique` may be use on any `Field` to mark it as unique.
 
-3.  `Directive` `@hidden` may be use on any `Base` or `Object` `Field` to mark a `Field` as hidden.
+3.  `Directive` `@hidden` may be use on any `Field` to mark it as hidden.
 
-4.  `Directive` `@readOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
+4.  `Directive` `@readOnly` may be use on any `Field` to mark it as read only.
 
-5.  `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
+5.  `Directive` `@writeOnly` may be use on any `Field` to mark it as write only.
 
 6.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a list `Object`.
 
 7.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a list `Object`.
 
-8.  `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
+8.  `Directive` `@path` must be used on any `Operation` This specifies the API Path.
 
-9.  `Directive` `@path` must be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
+9.  `Directive` `@method` may be used on any `Operation` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
-10. `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
+10. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
 
-11. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
+11. `Directive` `@pagination` may be used on any `Operation` for converting response in a pageable object.
 
-12.  `Directive` `@pagination` may be used on any `Api` `Field` for converting response in a pageable object.
+12. `Directive` `@produce` may be used on any `Operation` for changing the mime type.
 
-13.  `Directive` `@produce` may be used on any `Api` `Field` for changing the mime type.
+13. `Directive` `@consumes` may be used on any `Operation` for changing the mime type.
 
-14.  `Directive` `@consumes` may be used on any `Api` `Field` for changing the mime type.
+14. `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
 
-15.  `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
+15. `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Field` for setting minimum (length) of the value.
 
-16.  `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting minimum (length) of the value.
+16. `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Field` for setting maximum (length) of the value.
 
-17.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum (length) of the value.
+17. `Directive` `@headers` may be used on any `Api` or `Oeration` for adding response headers to the operation.
 
-18.  `Directive` `@headers` may be used on any `Api` or `Field` for adding response headers to the operation.
+18. `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
 
-19.  `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
-
-20.  `Directive` `@default("value")` may be used on `Object Field` for setting a default value.
+19. `Directive` `@default("value")` may be used on `Object Field` for setting a default value.

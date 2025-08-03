@@ -20,45 +20,43 @@ class TestDirective:
 
     These directives change the OpenAPI generation.
 
-    01. `Directive` `@query` may be use on any `Base` or `Object` `Field` to create a query parameter for the get all method.
+    1.  `Directive` `@query` may be use on any `Field` to create a query parameter for the get all method.
 
-    02. `Directive` `@unique` may be use on any `Base` or `Object` `Field` to mark a `Field` as unique.
+    2.  `Directive` `@unique` may be use on any `Field` to mark it as unique.
 
-    03. `Directive` `@hidden` may be use on any `Base` or `Object` `Field` to mark a `Field` as hidden.
+    3.  `Directive` `@hidden` may be use on any `Field` to mark it as hidden.
 
-    04. `Directive` `@readOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as read only.
+    4.  `Directive` `@readOnly` may be use on any `Field` to mark it as read only.
 
-    05. `Directive` `@writeOnly` may be use on any `Base` or `Object` `Field` to mark a `Field` as write only.
+    5.  `Directive` `@writeOnly` may be use on any `Field` to mark it as write only.
 
-    06. `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a list `Object`.
+    6.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a list `Object`.
 
-    07. `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a list `Object`.
+    7.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a list `Object`.
 
-    08. `Directive` `@path` must be used on any `Api` `Field` which are not part of a `Object`. This specifies the API Path.
+    8.  `Directive` `@path` must be used on any `Operation` This specifies the API Path.
 
-    09. `Directive` `@path` must be used on any `Api` `Field` which is part of a `Object`. This specifies the API Path.
+    9.  `Directive` `@method` may be used on any `Operation` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
-    10. `Directive` `@method` may be used on any `Api` `Field` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
+    10. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
 
-    11. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
+    11. `Directive` `@pagination` may be used on any `Operation` for converting response in a pageable object.
 
-    12.  `Directive` `@pagination` may be used on any `Api` `Field` for converting response in a pageable object.
+    12. `Directive` `@produce` may be used on any `Operation` for changing the mime type.
 
-    13.  `Directive` `@produce` may be used on any `Api` `Field` for changing the mime type.
+    13. `Directive` `@consumes` may be used on any `Operation` for changing the mime type.
 
-    14.  `Directive` `@consumes` may be used on any `Api` `Field` for changing the mime type.
+    14. `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
 
-    15.  `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
+    15. `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Field` for setting minimum (length) of the value.
 
-    16.  `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting minimum length of the value.
+    16. `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Field` for setting maximum (length) of the value.
 
-    17.  `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Object Field` for setting maximum length of the value.
+    17. `Directive` `@headers` may be used on any `Api` or `Oeration` for adding response headers to the operation.
 
-    18.  `Directive` `@headers` may be used on any `Api` `Field` for adding response headers to the operation.
+    18. `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
 
-    19.  `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
-
-    20.  `Directive` `@default("value")` may be used on `Object Field` for setting a default value.
+    19. `Directive` `@default("value")` may be used on `Object Field` for setting a default value.
     """
 
     def test_directive_01_positive(self) -> None:
@@ -267,11 +265,22 @@ class TestDirective:
             extend api {
                 getObjects: [String] @path("objects")
             }
+            
+            type Foo {
+                field : Int
+
+                extend api {
+                    getObject: String @path("foos")
+                    getObjectss: [String] @path("objectss")
+                }
+            }
         """
 
         openapi = wrapper_generate(test_input)
 
         assert openapi["paths"]["/objects"]["get"]["operationId"] == "getObjects"
+        assert openapi["paths"]["/foos"]["get"]["operationId"] == "getObject"
+        assert openapi["paths"]["/objectss"]["get"]["operationId"] == "getObjectss"
 
     def test_directive_08_negative(self) -> None:
         """Verify usage of @path"""
@@ -279,27 +288,18 @@ class TestDirective:
             extend api {
                 getObjects: [String]
             }
-        """
 
-        wrapper_generate_failure(test_input)
-
-    def test_directive_09_positive(self) -> None:
-        """Verify usage of @path"""
-        test_input = """\
             type Foo {
                 field : Int
 
                 extend api {
-                    getObject: String @path("foos")
-                    getObjects: [String] @path("objects")
+                    getObject: String
+                    getObjects: [String]
                 }
             }
         """
 
-        openapi = wrapper_generate(test_input)
-
-        assert openapi["paths"]["/foos"]["get"]["operationId"] == "getObject"
-        assert openapi["paths"]["/objects"]["get"]["operationId"] == "getObjects"
+        wrapper_generate_failure(test_input)
 
     def test_directive_10_positive(self) -> None:
         """Verify usage of @method"""
