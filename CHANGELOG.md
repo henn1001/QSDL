@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.5.0](https://gitlab.com/henn1001/qsdl/compare/v4.4.0...v4.5.0) (2025-08-03)
+
+
+### Features
+
+* downgrade datatype for cursorpagable limit from long to int ([14728d6](https://gitlab.com/henn1001/qsdl/commit/14728d68692b8a8739103adf41e10aed3f58827a))
+* **spring:** allow changing the uid string of db entities ([9335896](https://gitlab.com/henn1001/qsdl/commit/9335896d8fdf7312784dff2a7f489cc42d8c9a0f))
+* **spring:** QueryDSL - add interface for EntityManager and JPAQuery to BaseRepository ([2cfb32a](https://gitlab.com/henn1001/qsdl/commit/2cfb32a83c17d9372196be434d140f5654fcabd9))
+
+
+### Bug Fixes
+
+* **core:** allow enums values as query parameter ([5142086](https://gitlab.com/henn1001/qsdl/commit/5142086d829cddd471f768ed7048a2efb3913c05))
+* **spring:** correctly apply regex pattern to lists ([caad1ae](https://gitlab.com/henn1001/qsdl/commit/caad1ae35315af51fb3ff5813ec235df4d770667))
+* **spring:** make sure defaults for boolean are correctly handled ([0714192](https://gitlab.com/henn1001/qsdl/commit/071419299cbf7a215751936e70dac97a4194bddc))
+* **spring:** resolve an issue with default value for booleans ([36a084a](https://gitlab.com/henn1001/qsdl/commit/36a084a5ffb5baeb1caf7f9c22b74e6890f5b740))
+
 ## [4.4.0](https://gitlab.com/henn1001/qsdl/compare/v4.3.0...v4.4.0) (2025-02-03)
 
 
