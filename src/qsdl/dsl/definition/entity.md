@@ -3,6 +3,7 @@
 set namespaceSeparator .
 
 
+
 class entity.Schema  {
   title : STRING
   version : STRING
@@ -107,8 +108,8 @@ class entity.Directive  {
 }
 
 
-entity.Schema *--> entity.Import: imports 0..*
-entity.Schema *--> entity.Type: types 0..*
+entity.Schema *--> "0..*" entity.Import: imports
+entity.Schema *--> "0..*" entity.Type: types
 entity.Type <|-- entity.Scalar
 entity.Type <|-- entity.Enum
 entity.Type <|-- entity.Base
@@ -118,33 +119,33 @@ entity.ValueType <|-- entity.Scalar
 entity.ValueType <|-- entity.Enum
 entity.ValueType <|-- entity.Base
 entity.ValueType <|-- entity.Object
-entity.Scalar *--> entity.Directive: directives 0..*
-entity.Enum *--> entity.Directive: directives 0..*
-entity.Base o--> entity.Base: supertype
-entity.Base *--> entity.Directive: directives 0..*
-entity.Base *--> entity.Field: fields 1..*
-entity.Object o--> entity.Base: supertype
-entity.Object *--> entity.Directive: directives 0..*
-entity.Object *--> entity.Field: fields 0..*
-entity.Object *--> entity.Api: api
-entity.Field o--> entity.ValueType: value
-entity.Field *--> entity.Directive: directives 0..*
-entity.Api *--> entity.Directive: directives 0..*
-entity.Api *--> entity.Operation: operations 0..*
-entity.Operation *--> entity.Argument: arguments 1..*
-entity.Operation o--> entity.ValueType: value
-entity.Operation *--> entity.Argument: response_headers 1..*
-entity.Operation *--> entity.Directive: directives 0..*
-entity.Argument o--> entity.ValueType: value
+entity.Scalar *--> "0..*" entity.Directive: directives
+entity.Enum *--> "0..*" entity.Directive: directives
+entity.Base -->  entity.Base: supertype
+entity.Base *--> "0..*" entity.Directive: directives
+entity.Base *--> "1..*" entity.Field: fields
+entity.Object -->  entity.Base: supertype
+entity.Object *--> "0..*" entity.Directive: directives
+entity.Object *--> "0..*" entity.Field: fields
+entity.Object *-->  entity.Api: api
+entity.Field -->  entity.ValueType: value
+entity.Field *--> "0..*" entity.Directive: directives
+entity.Api *--> "0..*" entity.Directive: directives
+entity.Api *--> "0..*" entity.Operation: operations
+entity.Operation *--> "1..*" entity.Argument: arguments
+entity.Operation -->  entity.ValueType: value
+entity.Operation *--> "1..*" entity.Argument: response_headers
+entity.Operation *--> "0..*" entity.Directive: directives
+entity.Argument -->  entity.ValueType: value
 
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | Description |  |
   | Comment | \\/\\/.*$ |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Description |  |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
 end legend
 
 @enduml

@@ -1,18 +1,11 @@
-image: python:3.11
-
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+image: ghcr.io/astral-sh/uv:python3.13-alpine
 
 cache:
   paths:
-    - .cache/pip
     - .venv/
 
 before_script:
-  - python -V
-  - pip install poetry
-  - poetry config virtualenvs.in-project true
-  - make setup
+  - sh dev.sh init
 
 stages:
   - test
@@ -20,7 +13,7 @@ stages:
 
 test:
   script:
-    - make test
+    - sh dev.sh tests
   only:
     - master
   artifacts:
@@ -32,10 +25,8 @@ test:
 deploy:
   stage: deploy
   script:
-    - make build
-    - poetry config repositories.gitlab $POETRY_REGISTRY
-    - poetry config http-basic.gitlab $POETRY_USER $POETRY_TOKEN
-    - poetry publish -r gitlab
+    - sh dev.sh build
+    - uv publish --publish-url $POETRY_REGISTRY --username $POETRY_USER --password $POETRY_TOKEN
   only:
     - tags
   artifacts:

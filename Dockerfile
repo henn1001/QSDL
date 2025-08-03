@@ -1,36 +1,13 @@
-## Base
-FROM python:3.11.1-alpine as base
-
-RUN apk update && apk add build-base
-RUN apk update && apk add curl
-RUN curl -sSL https://install.python-poetry.org | python -
-ENV PATH=$PATH:/root/.local/bin
+FROM ghcr.io/astral-sh/uv:python3.13-alpine
 
 WORKDIR /app
 
-COPY qsdl ./qsdl
+COPY src ./src
 COPY README.md .
 COPY pyproject.toml .
-COPY poetry.lock .
+COPY uv.lock .
 
-RUN poetry install
-
-## Test
-FROM base as test
-COPY tests ./tests
-COPY examples ./examples
-COPY util ./util
-ENTRYPOINT [ "poetry", "run", "pytest" ]
-
-## Build
-FROM base as build
-RUN poetry build
-
-## Final
-FROM python:3.11.1-alpine as final
-
-COPY --from=build /app/dist /app/dist
-RUN pip3 install /app/dist/*.whl
+RUN uv tool install .
 
 WORKDIR /generated_content
 
