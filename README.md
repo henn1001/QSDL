@@ -8,8 +8,6 @@ The QSDL Generator allows a domain model based approach to generate various spec
 
 The idea is offer a minimal approach to a API definition in order to define CRUD access to a domain model graph where domain objects have parent-child like dependencies. A simple Object definition in QSDL will generate the GET ALL / POST / GET / PUT / PATCH / DELETE Operations.
 
-![gif](https://s8.gifyu.com/images/ezgif.com-video-to-gif590dea37aa704f90.gif)
-
 Internally QSDL leverages [textX](https://github.com/textX/textX) for describing the meta-language and [Jinja2](https://github.com/pallets/jinja) as template generator.
 
 Currently the following generators are available:
@@ -26,23 +24,27 @@ The QSDL package currently supports the Python version:
 
 ### Installation
 
-The safest way to install QSDL is to use [pip](https://pip.pypa.io/en/stable/) in a `virtualenv`:
+### Using uv (Recommended)
 
-    $ pip install qsdl --extra-index-url https://@gitlab.com/api/v4/projects/20759213/packages/pypi/simple
+```bash
+# Install latest unreleased version directly from the repository
+uv tool install git+https://gitlab.com/henn1001/qsdl
 
-or, if you are not installing in a `virtualenv`, to install globally:
+# Or install in development mode for local development
+git clone https://gitlab.com/henn1001/qsdl
+cd qsdl
+uv sync
+```
 
-    $ sudo pip install qsdl --extra-index-url https://@gitlab.com/api/v4/projects/20759213/packages/pypi/simple
+### Using pip(x)
 
-or for your user:
+```bash
+# install the latest released version via pip
+pip install qsdl --extra-index-url https://@gitlab.com/api/v4/projects/20759213/packages/pypi/simple
 
-    $ pip install --user qsdl --extra-index-url https://@gitlab.com/api/v4/projects/20759213/packages/pypi/simple
-
-If you have the QSDL package installed and want to upgrade to the latest version you can run:
-
-    $ pip install --upgrade qsdl --extra-index-url https://@gitlab.com/api/v4/projects/20759213/packages/pypi/simple
-
-This will install the QSDL package as well as all dependencies.
+# or pipx
+pipx install qsdl --extra-index-url https://@gitlab.com/api/v4/projects/20759213/packages/pypi/simple
+```
 
 ### Usage
 

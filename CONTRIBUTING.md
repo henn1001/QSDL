@@ -3,7 +3,7 @@
 ## Tools
 
 * python 3.6+
-* make
+* uv
 * vscode
 
 ## Styleguides and Coding conventions
@@ -69,21 +69,17 @@ Follow (Conventional Commits)[https://www.conventionalcommits.org/en/v1.0.0/].
 
 ## Getting Started
 
-Install [poetry](https://python-poetry.org/docs/):
+Install [uv](https://docs.astral.sh/uv/):
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Create the python environment:
+Initialise the project:
 
 ```bash
-make setup
-```
+bash dev.sh init
 
-Create a copy of the vscode config files:
-
-```bash
-cp .vscode/launch.json.template .vscode/launch.json
-cp .vscode/settings.json.template .vscode/settings.json
+# or
+uv sync --all-extras
 ```
