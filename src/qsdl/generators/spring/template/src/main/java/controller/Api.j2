@@ -26,7 +26,7 @@ public interface {{api.name}}Api {
 
 {% for operation in api.operations %}
   /**
-   * {{operation.method|upper}} {{operation.path}}{% if operation.summary %} : {{operation.summary + ".\n"}}{% endif %}
+   * {{operation.method|upper}} {{operation.path}}{% if operation.summary %} : {{operation.summary + "\n"}}{% endif %}
   {% if operation.description %}
    *
     {% for line in operation.description %}

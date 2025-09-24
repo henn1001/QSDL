@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
+import org.jeasy.random.FieldPredicates;
 import org.jeasy.random.randomizers.AbstractRandomizer;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.range.LongRangeRandomizer;
@@ -38,6 +39,8 @@ public class TestUtils {
         .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
         .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
         .randomize(BigInteger.class, new MyBigIntegerRandomizer())
+        .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentObject.class)))
+        .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentBase.class)))
         .collectionSizeRange(1, 10)
         // objectPoolSize works as a cache and prevents reusage of objects
         // a small cache size could cause unique constraint errors while testing

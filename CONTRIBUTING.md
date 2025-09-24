@@ -75,7 +75,7 @@ Install [uv](https://docs.astral.sh/uv/):
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Initialise the project:
+Initialize the project:
 
 ```bash
 bash dev.sh init

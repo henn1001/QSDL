@@ -364,7 +364,8 @@ def operation_builder(
         operation.is_array = True
         operation.is_pageable = True
 
-        operation.summary = f"List {pluralize(obj.name)}"
+        operation.summary = name
+        operation.description = [f"List {pluralize(obj.name)}"]
 
         operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = query_argument_builder(operation, obj)
@@ -380,7 +381,8 @@ def operation_builder(
         operation.path = path
         operation.method = "POST"
 
-        operation.summary = f"Create a {obj.name}"
+        operation.summary = name
+        operation.description = [f"Create a {obj.name}"]
 
         operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
@@ -396,7 +398,8 @@ def operation_builder(
         operation.path = path
         operation.method = "GET"
 
-        operation.summary = f"Read the specified {obj.name}"
+        operation.summary = name
+        operation.description = [f"Read the specified {obj.name}"]
 
         operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
@@ -412,7 +415,8 @@ def operation_builder(
         operation.path = path
         operation.method = "PUT"
 
-        operation.summary = f"Replace the specified {obj.name}"
+        operation.summary = name
+        operation.description = [f"Replace the specified {obj.name}"]
 
         operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
@@ -428,7 +432,8 @@ def operation_builder(
         operation.path = path
         operation.method = "PATCH"
 
-        operation.summary = f"Update the specified {obj.name}"
+        operation.summary = name
+        operation.description = [f"Update the specified {obj.name}"]
 
         operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
@@ -444,7 +449,8 @@ def operation_builder(
         operation.path = path
         operation.method = "DELETE"
 
-        operation.summary = f"Delete the specified {obj.name}"
+        operation.summary = name
+        operation.description = [f"Delete the specified {obj.name}"]
 
         operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
@@ -460,7 +466,8 @@ def operation_builder(
         operation.path = path
         operation.method = "POST"
 
-        operation.summary = f"Add {obj.name}"
+        operation.summary = name
+        operation.description = [f"Add {obj.name}"]
 
         operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
@@ -476,7 +483,8 @@ def operation_builder(
         operation.path = path
         operation.method = "POST"
 
-        operation.summary = f"Remove {obj.name}"
+        operation.summary = name
+        operation.description = [f"Remove {obj.name}"]
 
         operation.path_parameters = path_argument_builder(operation)
         operation.query_parameters = []
