@@ -6,9 +6,6 @@ package app.server;
 
 import app.server.repository.BaseRepositoryImpl;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -16,20 +13,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @DataJpaTest
 @Import(TestConfig.class)
 @EnableJpaRepositories(basePackages = {"app.server.repository"}, repositoryBaseClass = BaseRepositoryImpl.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class AbstractDataJpaTest {
-
-  @BeforeAll
-  static void setProfile(@Value("${testing.allow-testcontainers:false}") boolean allowTestcontainers) {
-    if (allowTestcontainers && TestUtils.isDockerAvailable()) {
-      System.setProperty("spring.profiles.active", "prod,integration");
-
-      System.setProperty("spring.datasource.url", "jdbc:tc:postgresql:16.1:///spring_boot_testcontainers");
-      System.setProperty("spring.test.database.replace", "none");
-    }
-    else {
-      System.setProperty("spring.profiles.active", "dev,integration");
-    }
-  }
 
 }

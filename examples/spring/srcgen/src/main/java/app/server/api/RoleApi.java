@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public interface RoleApi {
 
   /**
-   * GET /projects/{project_id}/roles : List Roles.
+   * GET /projects/{project_id}/roles : getRoles
+   *
+   * List Roles
    */
   @GetMapping(
       value = "/projects/{project_id}/roles",
@@ -28,7 +30,9 @@ public interface RoleApi {
   }
 
   /**
-   * POST /projects/{project_id}/roles : Create a Role.
+   * POST /projects/{project_id}/roles : createRole
+   *
+   * Create a Role
    */
   @PostMapping(
       value = "/projects/{project_id}/roles",
@@ -40,7 +44,9 @@ public interface RoleApi {
   }
 
   /**
-   * GET /projects/{project_id}/roles/{id} : Read the specified Role.
+   * GET /projects/{project_id}/roles/{id} : getRole
+   *
+   * Read the specified Role
    */
   @GetMapping(
       value = "/projects/{project_id}/roles/{id}",
@@ -51,7 +57,9 @@ public interface RoleApi {
   }
 
   /**
-   * PUT /projects/{project_id}/roles/{id} : Replace the specified Role.
+   * PUT /projects/{project_id}/roles/{id} : replaceRole
+   *
+   * Replace the specified Role
    */
   @PutMapping(
       value = "/projects/{project_id}/roles/{id}",
@@ -63,7 +71,9 @@ public interface RoleApi {
   }
 
   /**
-   * PATCH /projects/{project_id}/roles/{id} : Update the specified Role.
+   * PATCH /projects/{project_id}/roles/{id} : updateRole
+   *
+   * Update the specified Role
    */
   @PatchMapping(
       value = "/projects/{project_id}/roles/{id}",
@@ -75,7 +85,9 @@ public interface RoleApi {
   }
 
   /**
-   * DELETE /projects/{project_id}/roles/{id} : Delete the specified Role.
+   * DELETE /projects/{project_id}/roles/{id} : deleteRole
+   *
+   * Delete the specified Role
    */
   @DeleteMapping(
       value = "/projects/{project_id}/roles/{id}"

@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public interface DefaultApi {
 
   /**
-   * POST /query : submitQury.
+   * POST /query : submitQury
    */
   @PostMapping(
       value = "/query",
@@ -30,7 +30,7 @@ public interface DefaultApi {
   }
 
   /**
-   * POST /action : action.
+   * POST /action : action
    */
   @PostMapping(
       value = "/action",

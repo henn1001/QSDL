@@ -33,7 +33,7 @@ class TicketRepositoryTest extends AbstractDataJpaTest {
 
   public List<TicketEntity> prepareData(int count) {
 
-    List<TicketEntity> testDatas = TestUtils.getRandomEntity(TicketEntity.class, count);
+    List<TicketEntity> testDatas = TestUtils.getRandomEntityWithNullId(TicketEntity.class, count);
 
     for (TicketEntity testData : testDatas) {
     }

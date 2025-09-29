@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public interface TicketApi {
 
   /**
-   * GET /tickets : List Tickets.
+   * GET /tickets : getTickets
+   *
+   * List Tickets
    */
   @GetMapping(
       value = "/tickets",
@@ -28,7 +30,9 @@ public interface TicketApi {
   }
 
   /**
-   * POST /tickets : Create a Ticket.
+   * POST /tickets : createTicket
+   *
+   * Create a Ticket
    */
   @PostMapping(
       value = "/tickets",
@@ -40,7 +44,9 @@ public interface TicketApi {
   }
 
   /**
-   * GET /tickets/{id} : Read the specified Ticket.
+   * GET /tickets/{id} : getTicket
+   *
+   * Read the specified Ticket
    */
   @GetMapping(
       value = "/tickets/{id}",
@@ -51,7 +57,9 @@ public interface TicketApi {
   }
 
   /**
-   * PUT /tickets/{id} : Replace the specified Ticket.
+   * PUT /tickets/{id} : replaceTicket
+   *
+   * Replace the specified Ticket
    */
   @PutMapping(
       value = "/tickets/{id}",
@@ -63,7 +71,9 @@ public interface TicketApi {
   }
 
   /**
-   * PATCH /tickets/{id} : Update the specified Ticket.
+   * PATCH /tickets/{id} : updateTicket
+   *
+   * Update the specified Ticket
    */
   @PatchMapping(
       value = "/tickets/{id}",
@@ -75,7 +85,9 @@ public interface TicketApi {
   }
 
   /**
-   * DELETE /tickets/{id} : Delete the specified Ticket.
+   * DELETE /tickets/{id} : deleteTicket
+   *
+   * Delete the specified Ticket
    */
   @DeleteMapping(
       value = "/tickets/{id}"

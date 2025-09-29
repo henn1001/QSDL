@@ -218,7 +218,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         ("README.j2", "README.md"),
         (".qsdl-ignore.j2", ".qsdl-ignore"),
         (".gitignore.j2", ".gitignore"),
-        ("Makefile.j2", "Makefile"),
+        ("dev.j2", "dev.sh"),
         ("docker-compose.j2", "docker-compose.yml"),
         (".google-checkstyle-suppressions.j2", ".google-checkstyle-suppressions.xml"),
         (".google-checkstyle.j2", ".google-checkstyle.xml"),
@@ -277,6 +277,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))
         supporting_files.append(("src/test/java/AbstractDataJpaTest.j2", f"src/test/java/{package.base}/AbstractDataJpaTest.java"))
+        supporting_files.append(("src/test/java/AbstractIntegrationTest.j2", f"src/test/java/{package.base}/AbstractIntegrationTest.java"))
         # fmt: on
 
     # remove ignored files from generator

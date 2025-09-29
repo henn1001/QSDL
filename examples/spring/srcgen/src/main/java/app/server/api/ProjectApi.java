@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public interface ProjectApi {
 
   /**
-   * GET /projects : List Projects.
+   * GET /projects : getProjects
+   *
+   * List Projects
    */
   @GetMapping(
       value = "/projects",
@@ -28,7 +30,9 @@ public interface ProjectApi {
   }
 
   /**
-   * POST /projects : Create a Project.
+   * POST /projects : createProject
+   *
+   * Create a Project
    */
   @PostMapping(
       value = "/projects",
@@ -40,7 +44,9 @@ public interface ProjectApi {
   }
 
   /**
-   * GET /projects/{id} : Read the specified Project.
+   * GET /projects/{id} : getProject
+   *
+   * Read the specified Project
    */
   @GetMapping(
       value = "/projects/{id}",
@@ -51,7 +57,9 @@ public interface ProjectApi {
   }
 
   /**
-   * PUT /projects/{id} : Replace the specified Project.
+   * PUT /projects/{id} : replaceProject
+   *
+   * Replace the specified Project
    */
   @PutMapping(
       value = "/projects/{id}",
@@ -63,7 +71,9 @@ public interface ProjectApi {
   }
 
   /**
-   * PATCH /projects/{id} : Update the specified Project.
+   * PATCH /projects/{id} : updateProject
+   *
+   * Update the specified Project
    */
   @PatchMapping(
       value = "/projects/{id}",
@@ -75,7 +85,9 @@ public interface ProjectApi {
   }
 
   /**
-   * DELETE /projects/{id} : Delete the specified Project.
+   * DELETE /projects/{id} : deleteProject
+   *
+   * Delete the specified Project
    */
   @DeleteMapping(
       value = "/projects/{id}"

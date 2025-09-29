@@ -37,9 +37,9 @@ class UserRepositoryTest extends AbstractDataJpaTest {
 
   public List<UserEntity> prepareData(int count) {
 
-    List<UserEntity> testDatas = TestUtils.getRandomEntity(UserEntity.class, count);
+    List<UserEntity> testDatas = TestUtils.getRandomEntityWithNullId(UserEntity.class, count);
 
-    TicketEntity ticket = ticketRepository.save(TestUtils.getRandomEntity(TicketEntity.class));
+    TicketEntity ticket = ticketRepository.save(TestUtils.getRandomEntityWithNullId(TicketEntity.class));
 
     for (UserEntity testData : testDatas) {
       testData.addToTickets(ticket);

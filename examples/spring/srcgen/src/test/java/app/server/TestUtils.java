@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
+import org.jeasy.random.FieldPredicates;
 import org.jeasy.random.randomizers.AbstractRandomizer;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.range.LongRangeRandomizer;
@@ -29,6 +30,7 @@ public class TestUtils {
   }
 
   public static EasyRandom easyRandom;
+  public static EasyRandom easyRandomJpa;
 
   static {
     EasyRandomParameters parameters = new EasyRandomParameters()
@@ -37,11 +39,32 @@ public class TestUtils {
         .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
         .randomize(BigInteger.class, new MyBigIntegerRandomizer())
         .collectionSizeRange(1, 10)
-        // objectPoolSize works as a cache and prevents reusage of objects
-        // a small cache size could cause unique constraint errors while testing
+        .objectPoolSize(10000);
+
+    EasyRandomParameters jpaParameters = new EasyRandomParameters()
+        .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}").put("test", "data"))
+        .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
+        .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
+        .randomize(BigInteger.class, new MyBigIntegerRandomizer())
+        .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentObject.class)))
+        .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentBase.class)))
+        .excludeField(FieldPredicates.named("uid").and(FieldPredicates.inClass(AbstractPersistentObject.class)))
+        .excludeField(FieldPredicates.named("uid").and(FieldPredicates.inClass(AbstractPersistentBase.class)))
+        .collectionSizeRange(1, 10)
         .objectPoolSize(10000);
 
     easyRandom = new EasyRandom(parameters);
+    easyRandomJpa = new EasyRandom(jpaParameters);
+  }
+
+  static class MyBigIntegerRandomizer extends AbstractRandomizer<BigInteger> {
+
+    @Override
+    public BigInteger getRandomValue() {
+      // The maximum value for numeric(38, 0) is 10^38 - 1
+      // 99999999999999999999999999999999999999
+      return new BigInteger(38 * 3 + 1, random);
+    }
   }
 
   public static <T> T getRandom(Class<T> cls) {
@@ -66,14 +89,16 @@ public class TestUtils {
     return ol;
   }
 
-  static class MyBigIntegerRandomizer extends AbstractRandomizer<BigInteger> {
+  public static <T extends AbstractPersistentObject> T getRandomEntityWithNullId(Class<T> cls) {
+    T o = easyRandomJpa.nextObject(cls);
+    o.removeRelations();
+    return o;
+  }
 
-    @Override
-    public BigInteger getRandomValue() {
-      // The maximum value for numeric(38, 0) is 10^38 - 1
-      // 99999999999999999999999999999999999999
-      return new BigInteger(38 * 3 + 1, random);
-    }
+  public static <T extends AbstractPersistentObject> List<T> getRandomEntityWithNullId(Class<T> cls, int count) {
+    List<T> ol = easyRandomJpa.objects(cls, count).collect(Collectors.toList());
+    ol.forEach(o -> o.removeRelations());
+    return ol;
   }
 
   /**

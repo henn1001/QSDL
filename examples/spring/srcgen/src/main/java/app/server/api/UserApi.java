@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public interface UserApi {
 
   /**
-   * GET /tickets/{ticket_id}/users : List Users.
+   * GET /tickets/{ticket_id}/users : getUsersForTicket
+   *
+   * List Users
    */
   @GetMapping(
       value = "/tickets/{ticket_id}/users",
@@ -28,7 +30,9 @@ public interface UserApi {
   }
 
   /**
-   * POST /tickets/{ticket_id}/users/{id}/add : Add User.
+   * POST /tickets/{ticket_id}/users/{id}/add : addUserToTicket
+   *
+   * Add User
    */
   @PostMapping(
       value = "/tickets/{ticket_id}/users/{id}/add"
@@ -38,7 +42,9 @@ public interface UserApi {
   }
 
   /**
-   * POST /tickets/{ticket_id}/users/{id}/remove : Remove User.
+   * POST /tickets/{ticket_id}/users/{id}/remove : removeUserFromTicket
+   *
+   * Remove User
    */
   @PostMapping(
       value = "/tickets/{ticket_id}/users/{id}/remove"
@@ -48,7 +54,9 @@ public interface UserApi {
   }
 
   /**
-   * GET /users : List Users.
+   * GET /users : getUsers
+   *
+   * List Users
    */
   @GetMapping(
       value = "/users",
@@ -59,7 +67,9 @@ public interface UserApi {
   }
 
   /**
-   * POST /users : Create a User.
+   * POST /users : createUser
+   *
+   * Create a User
    */
   @PostMapping(
       value = "/users",
@@ -71,7 +81,9 @@ public interface UserApi {
   }
 
   /**
-   * GET /users/{id} : Read the specified User.
+   * GET /users/{id} : getUser
+   *
+   * Read the specified User
    */
   @GetMapping(
       value = "/users/{id}",
@@ -82,7 +94,9 @@ public interface UserApi {
   }
 
   /**
-   * PUT /users/{id} : Replace the specified User.
+   * PUT /users/{id} : replaceUser
+   *
+   * Replace the specified User
    */
   @PutMapping(
       value = "/users/{id}",
@@ -94,7 +108,9 @@ public interface UserApi {
   }
 
   /**
-   * PATCH /users/{id} : Update the specified User.
+   * PATCH /users/{id} : updateUser
+   *
+   * Update the specified User
    */
   @PatchMapping(
       value = "/users/{id}",
@@ -106,7 +122,9 @@ public interface UserApi {
   }
 
   /**
-   * DELETE /users/{id} : Delete the specified User.
+   * DELETE /users/{id} : deleteUser
+   *
+   * Delete the specified User
    */
   @DeleteMapping(
       value = "/users/{id}"

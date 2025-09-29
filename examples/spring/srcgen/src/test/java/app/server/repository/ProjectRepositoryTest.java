@@ -33,10 +33,10 @@ class ProjectRepositoryTest extends AbstractDataJpaTest {
 
   public List<ProjectEntity> prepareData(int count) {
 
-    List<ProjectEntity> testDatas = TestUtils.getRandomEntity(ProjectEntity.class, count);
+    List<ProjectEntity> testDatas = TestUtils.getRandomEntityWithNullId(ProjectEntity.class, count);
 
     for (ProjectEntity testData : testDatas) {
-      testData.addToRoles(TestUtils.getRandomEntity(RoleEntity.class));
+      testData.addToRoles(TestUtils.getRandomEntityWithNullId(RoleEntity.class));
     }
 
     projectRepository.saveAll(testDatas);

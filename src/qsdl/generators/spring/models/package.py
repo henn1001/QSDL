@@ -16,7 +16,6 @@
 
 from __future__ import annotations
 
-from ast import Str
 from dataclasses import dataclass
 
 from .. import Config
@@ -34,7 +33,7 @@ class Package:
     def __post_init__(self) -> None:
         self._namespace = self._config.package_placeholder_fallback
 
-    def __prepare(self, string: Str) -> str:
+    def __prepare(self, string: str) -> str:
         ret = string
 
         # format

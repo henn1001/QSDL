@@ -24,7 +24,9 @@ paths:
     get:
       tags:
         - Management
-      summary: List Projects
+      summary: getProjects
+      description: |
+        List Projects
       operationId: getProjects
       parameters:
         - name: name
@@ -47,7 +49,9 @@ paths:
     post:
       tags:
         - Management
-      summary: Create a Project
+      summary: createProject
+      description: |
+        Create a Project
       operationId: createProject
       requestBody:
         required: true
@@ -68,7 +72,9 @@ paths:
     get:
       tags:
         - Management
-      summary: Read the specified Project
+      summary: getProject
+      description: |
+        Read the specified Project
       operationId: getProject
       parameters:
         - name: id
@@ -89,7 +95,9 @@ paths:
     put:
       tags:
         - Management
-      summary: Replace the specified Project
+      summary: replaceProject
+      description: |
+        Replace the specified Project
       operationId: replaceProject
       parameters:
         - name: id
@@ -116,7 +124,9 @@ paths:
     patch:
       tags:
         - Management
-      summary: Update the specified Project
+      summary: updateProject
+      description: |
+        Update the specified Project
       operationId: updateProject
       parameters:
         - name: id
@@ -143,7 +153,9 @@ paths:
     delete:
       tags:
         - Management
-      summary: Delete the specified Project
+      summary: deleteProject
+      description: |
+        Delete the specified Project
       operationId: deleteProject
       parameters:
         - name: id
@@ -161,7 +173,9 @@ paths:
     get:
       tags:
         - Management
-      summary: List Roles
+      summary: getRoles
+      description: |
+        List Roles
       operationId: getRoles
       parameters:
         - name: project_id
@@ -185,7 +199,9 @@ paths:
     post:
       tags:
         - Management
-      summary: Create a Role
+      summary: createRole
+      description: |
+        Create a Role
       operationId: createRole
       parameters:
         - name: project_id
@@ -213,7 +229,9 @@ paths:
     get:
       tags:
         - Management
-      summary: Read the specified Role
+      summary: getRole
+      description: |
+        Read the specified Role
       operationId: getRole
       parameters:
         - name: project_id
@@ -240,7 +258,9 @@ paths:
     put:
       tags:
         - Management
-      summary: Replace the specified Role
+      summary: replaceRole
+      description: |
+        Replace the specified Role
       operationId: replaceRole
       parameters:
         - name: project_id
@@ -273,7 +293,9 @@ paths:
     patch:
       tags:
         - Management
-      summary: Update the specified Role
+      summary: updateRole
+      description: |
+        Update the specified Role
       operationId: updateRole
       parameters:
         - name: project_id
@@ -306,7 +328,9 @@ paths:
     delete:
       tags:
         - Management
-      summary: Delete the specified Role
+      summary: deleteRole
+      description: |
+        Delete the specified Role
       operationId: deleteRole
       parameters:
         - name: project_id
@@ -330,7 +354,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: List Users
+      summary: getUsersForTicket
+      description: |
+        List Users
       operationId: getUsersForTicket
       parameters:
         - name: ticket_id
@@ -355,7 +381,9 @@ paths:
     post:
       tags:
         - Incident
-      summary: Add User
+      summary: addUserToTicket
+      description: |
+        Add User
       operationId: addUserToTicket
       parameters:
         - name: ticket_id
@@ -379,7 +407,9 @@ paths:
     post:
       tags:
         - Incident
-      summary: Remove User
+      summary: removeUserFromTicket
+      description: |
+        Remove User
       operationId: removeUserFromTicket
       parameters:
         - name: ticket_id
@@ -403,7 +433,9 @@ paths:
     get:
       tags:
         - Management
-      summary: List Users
+      summary: getUsers
+      description: |
+        List Users
       operationId: getUsers
       parameters:
         - $ref: '#/components/parameters/cursor'
@@ -421,7 +453,9 @@ paths:
     post:
       tags:
         - Management
-      summary: Create a User
+      summary: createUser
+      description: |
+        Create a User
       operationId: createUser
       requestBody:
         required: true
@@ -442,7 +476,9 @@ paths:
     get:
       tags:
         - Management
-      summary: Read the specified User
+      summary: getUser
+      description: |
+        Read the specified User
       operationId: getUser
       parameters:
         - name: id
@@ -463,7 +499,9 @@ paths:
     put:
       tags:
         - Management
-      summary: Replace the specified User
+      summary: replaceUser
+      description: |
+        Replace the specified User
       operationId: replaceUser
       parameters:
         - name: id
@@ -490,7 +528,9 @@ paths:
     patch:
       tags:
         - Management
-      summary: Update the specified User
+      summary: updateUser
+      description: |
+        Update the specified User
       operationId: updateUser
       parameters:
         - name: id
@@ -517,7 +557,9 @@ paths:
     delete:
       tags:
         - Management
-      summary: Delete the specified User
+      summary: deleteUser
+      description: |
+        Delete the specified User
       operationId: deleteUser
       parameters:
         - name: id
@@ -535,7 +577,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: List Tickets
+      summary: getTickets
+      description: |
+        List Tickets
       operationId: getTickets
       parameters:
         - $ref: '#/components/parameters/cursor'
@@ -553,7 +597,9 @@ paths:
     post:
       tags:
         - Incident
-      summary: Create a Ticket
+      summary: createTicket
+      description: |
+        Create a Ticket
       operationId: createTicket
       requestBody:
         required: true
@@ -574,7 +620,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: Read the specified Ticket
+      summary: getTicket
+      description: |
+        Read the specified Ticket
       operationId: getTicket
       parameters:
         - name: id
@@ -595,7 +643,9 @@ paths:
     put:
       tags:
         - Incident
-      summary: Replace the specified Ticket
+      summary: replaceTicket
+      description: |
+        Replace the specified Ticket
       operationId: replaceTicket
       parameters:
         - name: id
@@ -622,7 +672,9 @@ paths:
     patch:
       tags:
         - Incident
-      summary: Update the specified Ticket
+      summary: updateTicket
+      description: |
+        Update the specified Ticket
       operationId: updateTicket
       parameters:
         - name: id
@@ -649,7 +701,9 @@ paths:
     delete:
       tags:
         - Incident
-      summary: Delete the specified Ticket
+      summary: deleteTicket
+      description: |
+        Delete the specified Ticket
       operationId: deleteTicket
       parameters:
         - name: id
@@ -753,7 +807,7 @@ components:
       required: false
       schema:
         type: integer
-        format: 32
+        format: int32
     count:
       name: count
       description: |
