@@ -16,8 +16,8 @@ run() {
   docker-compose up
 }
 
-deploy() {
-  echo "deploy images..."
+push() {
+  echo "push images..."
   docker tag $(IMAGE_NAME) $(REGISTRY)/$(IMAGE_NAME):latest
   docker push $(REGISTRY)/$(IMAGE_NAME)
 }

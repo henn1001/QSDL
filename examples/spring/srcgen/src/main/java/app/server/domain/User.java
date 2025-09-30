@@ -12,6 +12,8 @@ import lombok.extern.jackson.Jacksonized;
 
 import jakarta.validation.constraints.*;
 
+@Getter
+@Setter
 @Builder
 @Jacksonized
 public class User extends AbstractClass {
@@ -19,16 +21,16 @@ public class User extends AbstractClass {
   @Min(0)
   @Max(Long.MAX_VALUE)
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  public Long id;
+  private Long id;
 
   @NonNull
   @NotNull
   @Size(min = 0, max = 255)
   @JsonProperty(value = "name", required = true)
-  public String name;
+  private String name;
 
   @Size(min = 0, max = 255)
   @JsonProperty(value = "mail")
-  public String mail;
+  private String mail;
 
 }

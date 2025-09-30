@@ -72,7 +72,7 @@ public class RoleService {
     var roleEntity = roleMapStruct.toEntity(body);
 
     // add parent relation
-    roleEntity.project = projectEntity;
+    roleEntity.setProject(projectEntity);
 
     roleEntity = roleRepository.save(roleEntity);
 

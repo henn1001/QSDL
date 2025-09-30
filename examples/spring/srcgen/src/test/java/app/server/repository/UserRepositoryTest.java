@@ -133,7 +133,7 @@ class UserRepositoryTest extends AbstractDataJpaTest {
 
     // Given
     UserEntity testData = prepareData(5).get(0);
-    TicketEntity parent = testData.tickets.toArray(new TicketEntity[0])[0];
+    TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
 
     BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parent.getId()));
 
@@ -148,7 +148,7 @@ class UserRepositoryTest extends AbstractDataJpaTest {
   public void whenFindAllByTicket_thenPaginate() throws Exception {
 
     // Given
-    Long parentId = prepareData(5).get(0).tickets.toArray(new TicketEntity[0])[0].getId();
+    Long parentId = prepareData(5).get(0).getTickets().toArray(new TicketEntity[0])[0].getId();
 
     // When
     String cursor = null;
@@ -175,7 +175,7 @@ class UserRepositoryTest extends AbstractDataJpaTest {
 
     // Given
     UserEntity testData = prepareData(1).get(0);
-    TicketEntity parent = testData.tickets.toArray(new TicketEntity[0])[0];
+    TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
 
     // When
     testData.removeFromTickets(parent);
@@ -194,7 +194,7 @@ class UserRepositoryTest extends AbstractDataJpaTest {
 
     // Given
     UserEntity testData = prepareData(1).get(0);
-    TicketEntity parent = testData.tickets.toArray(new TicketEntity[0])[0];
+    TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
 
     // When
     userRepository.delete(testData);
@@ -212,7 +212,7 @@ class UserRepositoryTest extends AbstractDataJpaTest {
 
     // Given
     UserEntity testData = prepareData(1).get(0);
-    TicketEntity parent = testData.tickets.toArray(new TicketEntity[0])[0];
+    TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
 
     // When
     ticketRepository.delete(parent);

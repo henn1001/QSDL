@@ -13,6 +13,8 @@ import lombok.extern.jackson.Jacksonized;
 
 import jakarta.validation.constraints.*;
 
+@Getter
+@Setter
 @Builder
 @Jacksonized
 public class Ticket extends AbstractClass {
@@ -20,25 +22,25 @@ public class Ticket extends AbstractClass {
   @Min(0)
   @Max(Long.MAX_VALUE)
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  public Long id;
+  private Long id;
 
   @Min(0)
   @Max(Integer.MAX_VALUE)
   @Builder.Default
   @JsonProperty(value = "number")
-  public Integer number = 42;
+  private Integer number = 42;
 
   @Size(min = 0, max = 255)
   @Builder.Default
   @JsonProperty(value = "title")
-  public String title = "Witty Title";
+  private String title = "Witty Title";
 
   @Size(min = 0, max = 255)
   @JsonProperty(value = "body")
-  public String body;
+  private String body;
 
   @Builder.Default
   @JsonProperty(value = "status")
-  public Status status = Status.OPEN;
+  private Status status = Status.OPEN;
 
 }

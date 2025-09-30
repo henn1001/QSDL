@@ -15,6 +15,8 @@ import jakarta.validation.constraints.*;
 
 import java.time.*;
 
+@Getter
+@Setter
 @Builder
 @Jacksonized
 public class Project extends AbstractClass {
@@ -22,36 +24,36 @@ public class Project extends AbstractClass {
   @Min(0)
   @Max(Long.MAX_VALUE)
   @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  public Long id;
+  private Long id;
 
   @NonNull
   @NotNull
   @Size(min = 0, max = 255)
   @JsonProperty(value = "name", required = true)
-  public String name;
+  private String name;
 
   @Size(min = 0, max = 255)
   @JsonProperty(value = "description")
-  public String description;
+  private String description;
 
   @Size(min = 0, max = 255)
   @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
-  public String creationBy;
+  private String creationBy;
 
   @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
-  public LocalDate creationDate;
+  private LocalDate creationDate;
 
   @Size(min = 0, max = 255)
   @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
-  public String lastUpdateBy;
+  private String lastUpdateBy;
 
   @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
-  public OffsetDateTime lastUpdateDate;
+  private OffsetDateTime lastUpdateDate;
 
   @JsonProperty(value = "meta_inf")
-  public ObjectNode metaInf;
+  private ObjectNode metaInf;
 
   @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
-  public Boolean archive;
+  private Boolean archive;
 
 }

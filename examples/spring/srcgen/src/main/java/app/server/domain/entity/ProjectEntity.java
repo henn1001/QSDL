@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import lombok.*;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -17,27 +18,29 @@ import jakarta.validation.constraints.NotNull;
 import java.time.*;
 import java.util.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "project")
 public class ProjectEntity extends AbstractPersistentObject {
 
   @NotNull
-  public String name;
+  private String name;
 
-  public String description;
+  private String description;
 
-  public String creationBy;
+  private String creationBy;
 
-  public LocalDate creationDate;
+  private LocalDate creationDate;
 
-  public String lastUpdateBy;
+  private String lastUpdateBy;
 
-  public OffsetDateTime lastUpdateDate;
+  private OffsetDateTime lastUpdateDate;
 
   @JdbcTypeCode(SqlTypes.JSON)
-  public ObjectNode metaInf;
+  private ObjectNode metaInf;
 
-  public Boolean archive;
+  private Boolean archive;
 
   @JsonIgnore
   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -45,12 +48,12 @@ public class ProjectEntity extends AbstractPersistentObject {
 
 
   public void addToRoles(RoleEntity o) {
-    o.project = this;
+    o.setProject(this);
     this.roles.add(o);
   }
 
   public void removeFromRoles(RoleEntity o) {
-    o.project = null;
+    o.setProject(null);
     this.roles.remove(o);
   }
 

@@ -144,6 +144,9 @@ public class TestUtils {
     // loop over all fields to check for nested objects
     for (Field field : a.getClass().getDeclaredFields()) {
 
+      // enable field access
+      field.setAccessible(true);
+
       // ignore hibernate relations
       if (field.isAnnotationPresent(JsonIgnore.class)) {
         continue;

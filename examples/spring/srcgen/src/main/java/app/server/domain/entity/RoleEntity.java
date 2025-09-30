@@ -7,20 +7,23 @@ package app.server.domain.entity;
 import app.server.model.AbstractPersistentObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "role")
 public class RoleEntity extends AbstractPersistentObject {
 
   @NotNull
-  public String name;
+  private String name;
 
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "project_id")
-  public ProjectEntity project;
+  private ProjectEntity project;
 
 }

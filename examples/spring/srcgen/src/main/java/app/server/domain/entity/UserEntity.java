@@ -7,23 +7,26 @@ package app.server.domain.entity;
 import app.server.model.AbstractPersistentObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "user")
 public class UserEntity extends AbstractPersistentObject {
 
   @NotNull
-  public String name;
+  private String name;
 
-  public Integer count;
+  private Integer count;
 
   @Column(unique = true)
-  public String mail;
+  private String mail;
 
   @JsonIgnore
   @ManyToMany(fetch = FetchType.LAZY)
@@ -32,12 +35,12 @@ public class UserEntity extends AbstractPersistentObject {
 
 
   public void addToTickets(TicketEntity o) {
-    o.users.add(this);
+    o.getUsers().add(this);
     this.tickets.add(o);
   }
 
   public void removeFromTickets(TicketEntity o) {
-    o.users.remove(this);
+    o.getUsers().remove(this);
     this.tickets.remove(o);
   }
 

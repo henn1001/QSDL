@@ -42,7 +42,7 @@ class RoleRepositoryTest extends AbstractDataJpaTest {
     ProjectEntity project = projectRepository.save(TestUtils.getRandomEntityWithNullId(ProjectEntity.class));
 
     for (RoleEntity testData : testDatas) {
-      testData.project = project;
+      testData.setProject(project);
     }
 
     roleRepository.saveAll(testDatas);
@@ -133,7 +133,7 @@ class RoleRepositoryTest extends AbstractDataJpaTest {
 
     // Given
     RoleEntity testData = prepareData(5).get(0);
-    ProjectEntity parent = testData.project;
+    ProjectEntity parent = testData.getProject();
 
     BooleanBuilder predicate = new BooleanBuilder(QRoleEntity.roleEntity.project.id.eq(parent.getId()));
 
@@ -148,7 +148,7 @@ class RoleRepositoryTest extends AbstractDataJpaTest {
   public void whenFindAllByProject_thenPaginate() throws Exception {
 
     // Given
-    Long parentId = prepareData(5).get(0).project.getId();
+    Long parentId = prepareData(5).get(0).getProject().getId();
 
     // When
     String cursor = null;

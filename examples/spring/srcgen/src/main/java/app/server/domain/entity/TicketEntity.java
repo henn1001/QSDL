@@ -8,23 +8,26 @@ import app.server.constant.Status;
 import app.server.model.AbstractPersistentObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import jakarta.persistence.*;
 
 import java.util.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "ticket")
 public class TicketEntity extends AbstractPersistentObject {
 
-  public Integer number = 42;
+  private Integer number = 42;
 
-  public String title = "Witty Title";
+  private String title = "Witty Title";
 
-  public String body;
+  private String body;
 
   @Enumerated(EnumType.STRING)
-  public Status status = Status.OPEN;
+  private Status status = Status.OPEN;
 
   @JsonIgnore
   @ManyToMany(mappedBy = "tickets", fetch = FetchType.LAZY)
@@ -37,12 +40,12 @@ public class TicketEntity extends AbstractPersistentObject {
   }
 
   public void addToUsers(UserEntity o) {
-    o.tickets.add(this);
+    o.getTickets().add(this);
     this.users.add(o);
   }
 
   public void removeFromUsers(UserEntity o) {
-    o.tickets.remove(this);
+    o.getTickets().remove(this);
     this.users.remove(o);
   }
 

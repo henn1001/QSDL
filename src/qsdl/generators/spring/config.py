@@ -52,7 +52,7 @@ class Config(BaseConfig):
     base_package: str = "app.server"
     artifact_id: str = "app"
     database: Database = Database.HIBERNATE
-    use_encapsulation: bool = False
+    use_encapsulation: bool = True
     use_builder: bool = True
     use_auditing: bool = False
 

@@ -88,7 +88,7 @@ class ProjectRepositoryTest extends AbstractDataJpaTest {
     List<ProjectEntity> testData = prepareData(5);
 
     BooleanBuilder predicate = new BooleanBuilder();
-    predicate.and(QProjectEntity.projectEntity.name.eq(testData.get(0).name));
+    predicate.and(QProjectEntity.projectEntity.name.eq(testData.get(0).getName()));
 
     // When
     long count = projectRepository.count(predicate);
