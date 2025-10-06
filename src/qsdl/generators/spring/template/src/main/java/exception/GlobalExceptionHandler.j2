@@ -85,7 +85,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 
-    AppError appError = ErrorCodes.BAD_REQEST.toAppError(ex.toString());
+    AppError appError = ErrorCodes.BAD_REQUEST.toAppError(ex.toString());
 
     return buildResponseEntity(appError, httpRequest);
   }
@@ -108,7 +108,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
     }
 
-    AppError appError = ErrorCodes.BAD_REQEST.toAppError(errors);
+    AppError appError = ErrorCodes.BAD_REQUEST.toAppError(errors);
 
     return buildResponseEntity(appError, httpRequest);
   }

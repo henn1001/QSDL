@@ -49,13 +49,13 @@ public class AppExceptionUtil {
 
   public static void isTrue(boolean expression) throws AppException {
     if (!expression) {
-      throw new AppException(ErrorCodes.BAD_REQEST);
+      throw new AppException(ErrorCodes.BAD_REQUEST);
     }
   }
 
   public static void isTrue(boolean expression, String message) throws AppException {
     if (!expression) {
-      throw new AppException(ErrorCodes.BAD_REQEST, message);
+      throw new AppException(ErrorCodes.BAD_REQUEST, message);
     }
   }
 
@@ -72,13 +72,13 @@ public class AppExceptionUtil {
   }
 
   public static AppException entityAlreadyAdded(Class<?> cls, Long id) {
-    return new AppException(ErrorCodes.BAD_REQEST,
+    return new AppException(ErrorCodes.BAD_REQUEST,
         "Entity %s with id %s already added!"
             .formatted(cls.getSimpleName(), id));
   }
 
   public static AppException entityNotAttached(Class<?> cls, Long id) {
-    return new AppException(ErrorCodes.BAD_REQEST,
+    return new AppException(ErrorCodes.BAD_REQUEST,
         "Entity %s with id %s not attached!"
             .formatted(cls.getSimpleName(), id));
   }

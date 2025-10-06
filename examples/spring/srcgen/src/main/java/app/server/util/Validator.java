@@ -33,7 +33,7 @@ public class Validator {
     }
 
     if (!errors.isEmpty()) {
-      throw new AppException(ErrorCodes.BAD_REQEST, errors);
+      throw new AppException(ErrorCodes.BAD_REQUEST, errors);
     }
   }
 
@@ -53,7 +53,7 @@ public class Validator {
     }
 
     if (!errors.isEmpty()) {
-      throw new AppException(ErrorCodes.BAD_REQEST, errors);
+      throw new AppException(ErrorCodes.BAD_REQUEST, errors);
     }
   }
 

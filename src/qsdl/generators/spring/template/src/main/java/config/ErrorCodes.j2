@@ -14,7 +14,7 @@ import java.util.Objects;
 public enum ErrorCodes {
   // @formatter:off
   // generics
-  BAD_REQEST("400", "Bad Request", HttpStatus.BAD_REQUEST),
+  BAD_REQUEST("400", "Bad Request", HttpStatus.BAD_REQUEST),
   UNAUTHORIZED("401", "Unauthorized", HttpStatus.UNAUTHORIZED),
   FORBIDDEN("403", "Forbidden", HttpStatus.FORBIDDEN),
   NOT_FOUND("404", "Not Found", HttpStatus.NOT_FOUND),
