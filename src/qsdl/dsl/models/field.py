@@ -41,6 +41,8 @@ class Field:
     is_aggregation: bool = False
     is_unique: bool = False
     is_hidden: bool = False
+    is_transient: bool = False
+    is_ignored: bool = False
     min_size: int = None
     max_size: int = None
     default: str = None

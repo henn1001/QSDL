@@ -70,6 +70,7 @@ def model_post_processor(schema: dsl.Schema, metamodel: TextXMetaModel) -> None:
     # it is important that this is done after parsing all objects
     parser.inherit_force_generation(schema)
     parser.remove_unused(schema)
+    parser.remove_ignored(schema)
 
     # validate operation uniqueness
     validator.validate_operations(schema)

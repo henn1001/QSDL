@@ -616,6 +616,27 @@ def remove_unused(schema: dsl.Schema) -> None:
     enums = xtx.get_children_of_enum(schema)
 
 
+def remove_ignored(schema: dsl.Schema) -> None:
+    """Get rid of all fields marked with the @ignore directive.
+
+    Args:
+        schema (dsl.Schema): The QSDL schema model.
+    """
+
+    bases = xtx.get_children_of_base(schema)
+    objects = xtx.get_children_of_object(schema)
+
+    for entity in objects + bases:
+        for field in entity.fields:
+            if field.is_ignored:
+                entity.fields.remove(field)
+                log.info(
+                    "The field '%s' of '%s' was marked with @ignore and removed from generation.",
+                    field.name,
+                    entity.name,
+                )
+
+
 def inherit_force_generation(schema: dsl.Schema) -> None:
     """Inherits the force-generate directive to all childs
 

@@ -10,7 +10,7 @@ class TestDirective:
 
     2.  `Directive` `@unique` may be use on any `Field` to mark it as unique.
 
-    3.  `Directive` `@hidden` may be use on any `Field` to mark it as hidden.
+    3.  `Directive` `@hidden` may be use on any `Field` exclude it from api data layer.
 
     4.  `Directive` `@readOnly` may be use on any `Field` to mark it as read only.
 
@@ -43,6 +43,10 @@ class TestDirective:
     18. `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
 
     19. `Directive` `@default("value")` may be used on `Object Field` for setting a default value.
+
+    20. `Directive` `@ignore` may be used on 'Field` to exclude it from the generation.
+
+    21. `Directive` `@transient` may be used on `Field` to exclude it from database layer.
     """
 
     def test_directive_01_positive(self) -> None:
@@ -383,7 +387,7 @@ class TestDirective:
         assert "Fruity" in openapi["components"]["schemas"]
         assert "Bar" in openapi["components"]["schemas"]
 
-    def test_directive_20_positive(self) -> None:
+    def test_directive_19_positive(self) -> None:
         """Verify usage of @default"""
         test_input = """\
             enum Fruit {
@@ -414,3 +418,32 @@ class TestDirective:
         assert properties["field6"]["default"]
         assert properties["field7"]["default"] == "APPLE"
         assert not properties["field8"]["default"]
+
+    def test_directive_20_positive(self) -> None:
+        """Verify usage of @force-generate"""
+        test_input = """\
+            base AA {
+                world: String @ignore
+            }
+            
+            base Foo extends AA {
+                world: String
+                fruit: String @ignore
+            }
+
+            type Bar {
+                world: String
+                fruit: String @ignore
+                nested: Foo
+            }
+        """
+
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Foo"]["properties"]
+        assert "world" in properties
+        assert "fruit" not in properties
+
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+        assert "world" in properties
+        assert "fruit" not in properties

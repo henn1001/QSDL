@@ -112,6 +112,8 @@ Field:
         is_aggregation?='@aggregation'
         is_unique?='@unique'
         is_hidden?='@hidden'
+        is_transient?='@transient'
+        is_ignored?='@ignore'
         ('@minSize(' min_size=INT ')')?
         ('@maxSize(' max_size=INT ')')?
         ('@default(' default=STRING ')')?

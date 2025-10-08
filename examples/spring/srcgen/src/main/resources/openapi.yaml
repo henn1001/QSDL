@@ -977,6 +977,9 @@ components:
         mail:
           type: string
           maxLength: 255
+        tmp:
+          type: string
+          maxLength: 255
 
     TicketList:
       required:

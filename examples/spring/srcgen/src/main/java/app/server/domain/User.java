@@ -33,4 +33,8 @@ public class User extends AbstractClass {
   @JsonProperty(value = "mail")
   private String mail;
 
+  @Size(min = 0, max = 255)
+  @JsonProperty(value = "tmp")
+  private String tmp;
+
 }

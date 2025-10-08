@@ -88,6 +88,7 @@ class ModelField:
         self.is_write_only = _ref.is_write_only
         self.is_unique = _ref.is_unique
         self.is_hidden = _ref.is_hidden
+        self.is_transient = _ref.is_transient
         self.is_query = _ref.is_query
 
         self.is_enum = _ref.value._tx_fqn in ["entity.Enum"]

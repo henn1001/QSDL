@@ -23,6 +23,9 @@ public interface {{model.name}}MapStruct {
   {% if id_type == "String" and model.is_object %}
   @Mapping(source = "uid", target = "id")
   {% endif %}
+  {% for field in model.fields if field.is_transient %}
+  @Mapping(target = "{{field.name}}", ignore = true)
+  {% endfor %}
   {{model.name}} toDto({{model.name}}Entity entity);
 
   // ignore read only attributes and relations

@@ -66,6 +66,8 @@ class entity.Field  {
   is_aggregation : optional<BOOL>
   is_unique : optional<BOOL>
   is_hidden : optional<BOOL>
+  is_transient : optional<BOOL>
+  is_ignored : optional<BOOL>
   min_size : INT
   max_size : INT
   default : STRING
@@ -123,7 +125,7 @@ entity.Scalar *--> "0..*" entity.Directive: directives
 entity.Enum *--> "0..*" entity.Directive: directives
 entity.Base -->  entity.Base: supertype
 entity.Base *--> "0..*" entity.Directive: directives
-entity.Base *--> "1..*" entity.Field: fields
+entity.Base *--> "0..*" entity.Field: fields
 entity.Object -->  entity.Base: supertype
 entity.Object *--> "0..*" entity.Directive: directives
 entity.Object *--> "0..*" entity.Field: fields
@@ -141,9 +143,9 @@ entity.Argument -->  entity.ValueType: value
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Comment | \\/\\/.*$ |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Description |  |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend

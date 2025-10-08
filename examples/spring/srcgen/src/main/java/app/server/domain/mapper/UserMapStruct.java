@@ -15,6 +15,7 @@ import org.mapstruct.*;
 )
 public interface UserMapStruct {
 
+  @Mapping(target = "tmp", ignore = true)
   User toDto(UserEntity entity);
 
   // ignore read only attributes and relations

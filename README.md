@@ -401,7 +401,7 @@ There are certain builtin directives that can be used to modify the generation b
 
 2.  `Directive` `@unique` may be use on any `Field` to mark it as unique.
 
-3.  `Directive` `@hidden` may be use on any `Field` to mark it as hidden.
+3.  `Directive` `@hidden` may be use on any `Field` exclude it from api data layer.
 
 4.  `Directive` `@readOnly` may be use on any `Field` to mark it as read only.
 
@@ -434,3 +434,7 @@ There are certain builtin directives that can be used to modify the generation b
 18. `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
 
 19. `Directive` `@default("value")` may be used on `Object Field` for setting a default value.
+
+20. `Directive` `@ignore` may be used on `Field` to exclude it from the generation.
+
+21. `Directive` `@transient` may be used on `Field` to exclude it from database layer.
