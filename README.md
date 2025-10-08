@@ -225,11 +225,9 @@ Base Rules:
 
 1.  `Base` names must use `PascalCase`.
 
-2.  `Base` must at least contain one `Field`.
+2.  `Base` may inherit `Field`s from a `Base`.
 
-3.  `Base` may inherit `Field`s from a `Base`.
-
-4.  `Base` name must be unique between `Object`, `Base` and `Scalar`.
+3.  `Base` name must be unique between `Object`, `Base` and `Scalar`.
 
 Field Rules:
 

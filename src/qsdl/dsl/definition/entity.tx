@@ -62,7 +62,7 @@ Base:
     directives*=Directive
 
     '{'
-        fields+=Field
+        fields*=Field
     '}'
 ;
 

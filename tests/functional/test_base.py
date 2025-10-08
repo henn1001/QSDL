@@ -6,8 +6,6 @@ class TestBase:
 
     01. `Base` names must use `PascalCase`.
 
-    02. `Base` must at least contain one `Field`.
-
     03. `Base` may inherit `Field`s from a `Base`.
 
     04. `Base` name must be unique between `Object`, `Base` and `Scalar`.
@@ -34,25 +32,6 @@ class TestBase:
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)
-
-    def test_base_02_positive(self) -> None:
-        """Verify empty fields"""
-        test_input = """\
-            base Foo {
-                field: Int
-            }
-        """
-
-        wrapper_generate(test_input)
-
-    def test_base_02_negative(self) -> None:
-        """Verify empty fields"""
-        test_input = """\
-            base Foo {
-            }
-        """
-
-        wrapper_generate_failure(test_input)
 
     def test_base_03_positive(self) -> None:
         """Verify base extends base"""
