@@ -112,7 +112,6 @@ class ModelObject:
     is_enum: bool = False
     is_base: bool = False
     is_object: bool = False
-    extends: str = None
     attributes: list[ModelField] = field(default_factory=list)
     constants: list[str] = field(default_factory=list)
 
@@ -132,9 +131,6 @@ class ModelObject:
         self.is_enum = _ref._tx_fqn in ["entity.Enum"]
         self.is_base = _ref._tx_fqn in ["entity.Base"]
         self.is_object = _ref._tx_fqn in ["entity.Object"]
-
-        if not self.is_enum and _ref.supertype:
-            self.extends = stringcase.pascalcase(_ref.supertype.name)
 
         # attributes
         if not self.is_enum:

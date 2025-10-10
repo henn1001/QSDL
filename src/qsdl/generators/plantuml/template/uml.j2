@@ -20,7 +20,7 @@ enum {{enum.name}} {
 @startuml
 
 {% for base in xtx.get_children_of_type("Base", schema) %}
-abstract class {{base.name}} {% if base.supertype %}<extends {{base.supertype.name}}> {% endif %}{
+abstract class {{base.name}}{% if base.supertypes %} <extends {% for st in base.supertypes %}{{st.name}}{{", " if not loop.last}}{% endfor %}>{% endif %} {
     {% for field in util.get_fields_as_list(base) %}
     {{field.name}}: {{"[" if field.is_array}}{{field.value.name}}{{"]" if field.is_array}}
     {% endfor %}
@@ -40,7 +40,7 @@ abstract class {{base.name}} {% if base.supertype %}<extends {{base.supertype.na
 {% if object.namespace %}
 namespace {{object.namespace}} #DDDDDD {
 {% endif %}
-class {{object.name}} {% if object.supertype %}<implements {{object.supertype.name}}> {% endif %}{
+class {{object.name}} {% if object.supertypes %}<implements {% for st in object.supertypes %}{{st.name}}{{", " if not loop.last}}{% endfor %}>{% endif %} {
     {% for field in util.get_fields_as_list(object) if not field.is_composition and not field.is_aggregation %}
     {{field.name}}: {{"[" if field.is_array}}{{field.value.name}}{{"]" if field.is_array}}
     {% endfor %}

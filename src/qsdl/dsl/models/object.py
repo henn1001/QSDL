@@ -28,7 +28,7 @@ class Object:
     # defined in entity.tx
     description: list[str] = field(default_factory=list)
     name: str = None
-    supertype: dsl.Base = None
+    supertypes: list[dsl.Base] = field(default_factory=list)
     # Special directives
     is_deprecated: bool = False
     namespace: str = None

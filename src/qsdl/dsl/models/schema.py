@@ -35,3 +35,4 @@ class Schema:
 
     # required by textX
     _tx_fqn: str = "entity.Schema"
+    _tx_filename: str = None

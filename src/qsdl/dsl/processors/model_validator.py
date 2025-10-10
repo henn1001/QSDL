@@ -43,6 +43,7 @@ def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> N
     validate_custom_operations_path(schema, metamodel)
     validate_crud_generator_directive(schema, metamodel)
     validate_field_directives(schema, metamodel)
+    validate_no_circular_supertypes(schema, metamodel)
 
 
 def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -320,3 +321,22 @@ def validate_operations(schema: dsl.Schema) -> None:
         ):
             msg = f"The Operation {operation.name} needs to return a 'type' or 'base' when @pagination is used."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+
+def validate_no_circular_supertypes(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
+    """Detects and prevents circular inheritance in supertypes for Base entities."""
+    _ = metamodel
+
+    def dfs(entity: dsl.Base | dsl.Object, path: list[dsl.Base | dsl.Object]) -> None:
+        if entity in path:
+            cycle = " -> ".join([b.name for b in path + [entity]])
+            msg = f"Circular inheritance detected in Base supertypes: {cycle}"
+            raise TextXSemanticError(msg, filename=schema._tx_filename)
+        for supertype in entity.supertypes:
+            dfs(supertype, path + [entity])
+
+    bases = xtx.get_children_of_base(schema)
+    objects = xtx.get_children_of_object(schema)
+
+    for entity in bases + objects:
+        dfs(entity, [])

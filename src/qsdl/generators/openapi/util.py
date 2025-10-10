@@ -83,7 +83,11 @@ def is_supertype(entity: dsl.Base | dsl.Object) -> bool:
     base_list = xtx.get_children_of_base(schema)
     object_list = xtx.get_children_of_object(schema)
 
-    return any(entity == itr.supertype for itr in base_list + object_list)
+    for itr in base_list + object_list:
+        supertypes = itr.supertypes
+        if supertypes and entity in supertypes:
+            return True
+    return False
 
 
 def is_nested(entity: dsl.Base | dsl.Object) -> bool:

@@ -125,9 +125,11 @@ def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
     if entity.flattened:
         return entity.fields
 
-    if entity.supertype:
-        tmp = get_all_fields_as_list(entity.supertype)
-        fields.extend(tmp)
+    # Support multiple supertypes
+    if entity.supertypes:
+        for supertype in entity.supertypes:
+            tmp = get_all_fields_as_list(supertype)
+            fields.extend(tmp)
 
     for field in entity.fields:
         # check if attribute was already defined within a supertype

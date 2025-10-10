@@ -196,11 +196,11 @@ def controller_has(
     return False
 
 
-def is_supertype(entity: dsl.Base) -> bool:
-    """Checks if the provided Base is used somewhere as a supertype.
+def is_supertype(entity: dsl.Base | dsl.Object) -> bool:
+    """Checks if the Base or Object is used somewhere as a supertype.
 
     Args:
-        entity (Base): entity.Base.
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
 
     Returns:
         bool: Returns True on detection.
@@ -208,7 +208,11 @@ def is_supertype(entity: dsl.Base) -> bool:
     base_list = xtx.get_children_of_base(Store.schema)
     object_list = xtx.get_children_of_object(Store.schema)
 
-    return any(entity == itr.supertype for itr in base_list + object_list)
+    for itr in base_list + object_list:
+        supertypes = itr.supertypes
+        if supertypes and entity in supertypes:
+            return True
+    return False
 
 
 def is_used_as_field_value(entity: dsl.Base | dsl.Object) -> bool:

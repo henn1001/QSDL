@@ -50,7 +50,7 @@ Base:
 
     'base' name=ID
 
-    ('extends' supertype=[Base])? 
+    ('extends' supertypes+=[Base][','])?
     
     // Special directives in any order
     ( 
@@ -71,7 +71,7 @@ Object:
 
     'type' name=ID
 
-    ('extends' supertype=[Base])?
+    ('extends' supertypes+=[Base][','])?
 
     // Special directives in any order
     ( 

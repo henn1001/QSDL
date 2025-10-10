@@ -6,6 +6,8 @@ class TestBase:
 
     01. `Base` names must use `PascalCase`.
 
+    02. `Base` recursion on extends must be detected and prevented.
+
     03. `Base` may inherit `Field`s from a `Base`.
 
     04. `Base` name must be unique between `Object`, `Base` and `Scalar`.
@@ -33,6 +35,24 @@ class TestBase:
         for test_input in inputs:
             wrapper_generate_failure(test_input)
 
+    def test_base_02_negative(self) -> None:
+        """Verify PascalCase naming convention"""
+        test_input = """\
+            base Fruit extends Foo {
+                bar: Int
+            }
+            
+            base AA extends Fruit {
+                foo: Int
+            }
+            
+            base Foo extends AA {
+                field: Int
+            }
+        """
+
+        wrapper_generate_failure(test_input)
+
     def test_base_03_positive(self) -> None:
         """Verify base extends base"""
         test_input = """\
@@ -46,6 +66,30 @@ class TestBase:
             }
 
             base Bar extends Foo @force-generate {
+                name: String
+            }
+        """
+
+        openapi = wrapper_generate(test_input)
+
+        properties = openapi["components"]["schemas"]["Bar"]["properties"]
+
+        assert "banana" in properties
+        assert "field" in properties
+        assert "name" in properties
+
+    def test_base_03_positive_2(self) -> None:
+        """Verify base extends base"""
+        test_input = """\
+            base Fruit {
+                banana: Int
+            }
+
+            base Foo {
+                field: Int
+            }
+
+            base Bar extends Foo, Fruit @force-generate {
                 name: String
             }
         """

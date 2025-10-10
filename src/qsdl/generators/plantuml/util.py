@@ -14,11 +14,11 @@
 
 """Generator Utility functions"""
 
+import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
-from qsdl.dsl.models import Schema
 
 # the parsed schema definition.
-schema: Schema = None
+schema: dsl.Schema = None
 
 
 def get_compositions(obj: object) -> list:
@@ -59,7 +59,7 @@ def get_aggregation(obj: object) -> list:
     return agg_fields
 
 
-def get_fields_as_list(entity: object) -> list:
+def get_fields_as_list(entity: dsl.Base | dsl.Object) -> list:
     """Returns all fields ob a object including its supertype as list.
 
     Args:
@@ -68,18 +68,20 @@ def get_fields_as_list(entity: object) -> list:
     Returns:
         list: [entity.Field]
     """
-    tmp = entity
     fields = []
 
-    while True:
-        tmp_list = []
-        for field in tmp.fields:
-            tmp_list.append(field)
+    # Support multiple supertypes
+    for supertype in entity.supertypes:
+        super_fields = get_fields_as_list(supertype)
+        fields.extend(super_fields)
 
-        fields = tmp_list + fields
-        if not tmp.supertype:
-            break
-
-        tmp = tmp.supertype
+    # Add own fields, overriding inherited ones if needed
+    for field in entity.fields:
+        duplicate = [x for x in fields if hasattr(x, "name") and x.name == getattr(field, "name", None)]
+        if not duplicate:
+            fields.append(field)
+        else:
+            index = fields.index(duplicate[0])
+            fields[index] = field
 
     return fields

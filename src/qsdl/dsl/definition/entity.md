@@ -123,10 +123,10 @@ entity.ValueType <|-- entity.Base
 entity.ValueType <|-- entity.Object
 entity.Scalar *--> "0..*" entity.Directive: directives
 entity.Enum *--> "0..*" entity.Directive: directives
-entity.Base -->  entity.Base: supertype
+entity.Base --> "1..*" entity.Base: supertypes
 entity.Base *--> "0..*" entity.Directive: directives
 entity.Base *--> "0..*" entity.Field: fields
-entity.Object -->  entity.Base: supertype
+entity.Object --> "1..*" entity.Base: supertypes
 entity.Object *--> "0..*" entity.Directive: directives
 entity.Object *--> "0..*" entity.Field: fields
 entity.Object *-->  entity.Api: api
@@ -144,9 +144,9 @@ legend
   Match rules:
   |= Name  |= Rule details |
   | Comment | \\/\\/.*$ |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Description |  |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend
 
