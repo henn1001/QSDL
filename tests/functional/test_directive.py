@@ -429,7 +429,7 @@ class TestDirective:
             }
             
             base Foo extends AA {
-                world: String
+                world: String @override
                 fruit: String @ignore
             }
 

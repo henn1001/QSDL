@@ -68,6 +68,7 @@ class entity.Field  {
   is_hidden : optional<BOOL>
   is_transient : optional<BOOL>
   is_ignored : optional<BOOL>
+  is_override : optional<BOOL>
   min_size : INT
   max_size : INT
   default : STRING
@@ -143,10 +144,10 @@ entity.Argument -->  entity.ValueType: value
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Comment | \\/\\/.*$ |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | Description |  |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Description |  |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend
 
