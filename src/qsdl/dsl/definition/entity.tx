@@ -114,6 +114,7 @@ Field:
         is_hidden?='@hidden'
         is_transient?='@transient'
         is_ignored?='@ignore'
+        is_override?='@override'
         ('@minSize(' min_size=INT ')')?
         ('@maxSize(' max_size=INT ')')?
         ('@default(' default=STRING ')')?

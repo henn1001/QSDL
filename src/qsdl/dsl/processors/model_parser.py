@@ -138,16 +138,26 @@ def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
 
         if not duplicate:
             fields.append(field)
-        else:
-            index = fields.index(duplicate)
-            fields[index] = field
-
-            log.warning(
+        elif not field.is_override:
+            log.error(
                 "The inherited field '%s' of '%s' was redefined and replaced by '%s'.",
                 duplicate.name,
                 duplicate.parent.name,
                 entity.name,
             )
+            raise Exception("Field redefinition without @override is not allowed.")
+        else:
+            index = fields.index(duplicate)
+            fields[index] = field
+
+            # log warning if type changed
+            if duplicate.value != field.value:
+                log.warning(
+                    "The inherited field '%s' of '%s' was redefined with a different type by '%s'.",
+                    duplicate.name,
+                    duplicate.parent.name,
+                    entity.name,
+                )
 
     return fields
 

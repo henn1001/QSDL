@@ -438,3 +438,5 @@ There are certain builtin directives that can be used to modify the generation b
 20. `Directive` `@ignore` may be used on `Field` to exclude it from the generation.
 
 21. `Directive` `@transient` may be used on `Field` to exclude it from database layer.
+
+22. `Directive` `@override` needs to be used on a `Field` which is redefining an inherited field.

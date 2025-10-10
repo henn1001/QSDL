@@ -17,7 +17,9 @@ paths:
     get:
       tags:
         - Management
-      summary: List Projects
+      summary: getProjects
+      description: |
+        List Projects
       operationId: getProjects
       parameters:
         - name: name
@@ -40,7 +42,9 @@ paths:
     post:
       tags:
         - Management
-      summary: Create a Project
+      summary: createProject
+      description: |
+        Create a Project
       operationId: createProject
       requestBody:
         required: true
@@ -61,7 +65,9 @@ paths:
     get:
       tags:
         - Management
-      summary: Read the specified Project
+      summary: getProject
+      description: |
+        Read the specified Project
       operationId: getProject
       parameters:
         - name: id
@@ -82,7 +88,9 @@ paths:
     put:
       tags:
         - Management
-      summary: Replace the specified Project
+      summary: replaceProject
+      description: |
+        Replace the specified Project
       operationId: replaceProject
       parameters:
         - name: id
@@ -109,7 +117,9 @@ paths:
     patch:
       tags:
         - Management
-      summary: Update the specified Project
+      summary: updateProject
+      description: |
+        Update the specified Project
       operationId: updateProject
       parameters:
         - name: id
@@ -136,7 +146,9 @@ paths:
     delete:
       tags:
         - Management
-      summary: Delete the specified Project
+      summary: deleteProject
+      description: |
+        Delete the specified Project
       operationId: deleteProject
       parameters:
         - name: id
@@ -154,7 +166,9 @@ paths:
     get:
       tags:
         - Management
-      summary: List Roles
+      summary: getRolesForProject
+      description: |
+        List Roles
       operationId: getRolesForProject
       parameters:
         - name: project_id
@@ -178,7 +192,9 @@ paths:
     post:
       tags:
         - Management
-      summary: Create a Role
+      summary: createRoleForProject
+      description: |
+        Create a Role
       operationId: createRoleForProject
       parameters:
         - name: project_id
@@ -206,7 +222,9 @@ paths:
     get:
       tags:
         - Management
-      summary: Read the specified Role
+      summary: getRoleForProject
+      description: |
+        Read the specified Role
       operationId: getRoleForProject
       parameters:
         - name: project_id
@@ -233,7 +251,9 @@ paths:
     put:
       tags:
         - Management
-      summary: Replace the specified Role
+      summary: replaceRoleForProject
+      description: |
+        Replace the specified Role
       operationId: replaceRoleForProject
       parameters:
         - name: project_id
@@ -266,7 +286,9 @@ paths:
     patch:
       tags:
         - Management
-      summary: Update the specified Role
+      summary: updateRoleForProject
+      description: |
+        Update the specified Role
       operationId: updateRoleForProject
       parameters:
         - name: project_id
@@ -299,7 +321,9 @@ paths:
     delete:
       tags:
         - Management
-      summary: Delete the specified Role
+      summary: deleteRoleForProject
+      description: |
+        Delete the specified Role
       operationId: deleteRoleForProject
       parameters:
         - name: project_id
@@ -323,7 +347,9 @@ paths:
     get:
       tags:
         - Management
-      summary: List Roles
+      summary: getRolesForSprint
+      description: |
+        List Roles
       operationId: getRolesForSprint
       parameters:
         - name: sprint_id
@@ -347,7 +373,9 @@ paths:
     post:
       tags:
         - Management
-      summary: Create a Role
+      summary: createRoleForSprint
+      description: |
+        Create a Role
       operationId: createRoleForSprint
       parameters:
         - name: sprint_id
@@ -375,7 +403,9 @@ paths:
     get:
       tags:
         - Management
-      summary: Read the specified Role
+      summary: getRoleForSprint
+      description: |
+        Read the specified Role
       operationId: getRoleForSprint
       parameters:
         - name: sprint_id
@@ -402,7 +432,9 @@ paths:
     put:
       tags:
         - Management
-      summary: Replace the specified Role
+      summary: replaceRoleForSprint
+      description: |
+        Replace the specified Role
       operationId: replaceRoleForSprint
       parameters:
         - name: sprint_id
@@ -435,7 +467,9 @@ paths:
     patch:
       tags:
         - Management
-      summary: Update the specified Role
+      summary: updateRoleForSprint
+      description: |
+        Update the specified Role
       operationId: updateRoleForSprint
       parameters:
         - name: sprint_id
@@ -468,7 +502,9 @@ paths:
     delete:
       tags:
         - Management
-      summary: Delete the specified Role
+      summary: deleteRoleForSprint
+      description: |
+        Delete the specified Role
       operationId: deleteRoleForSprint
       parameters:
         - name: sprint_id
@@ -492,7 +528,9 @@ paths:
     get:
       tags:
         - Management
-      summary: List Users
+      summary: getUsersForRole
+      description: |
+        List Users
       operationId: getUsersForRole
       parameters:
         - name: role_id
@@ -523,7 +561,9 @@ paths:
     post:
       tags:
         - Management
-      summary: Add User
+      summary: addUserToRole
+      description: |
+        Add User
       operationId: addUserToRole
       parameters:
         - name: role_id
@@ -547,7 +587,9 @@ paths:
     post:
       tags:
         - Management
-      summary: Remove User
+      summary: removeUserFromRole
+      description: |
+        Remove User
       operationId: removeUserFromRole
       parameters:
         - name: role_id
@@ -571,7 +613,9 @@ paths:
     get:
       tags:
         - Management
-      summary: List Users
+      summary: getUsers
+      description: |
+        List Users
       operationId: getUsers
       parameters:
         - name: name
@@ -595,7 +639,9 @@ paths:
     post:
       tags:
         - Management
-      summary: Create a User
+      summary: createUser
+      description: |
+        Create a User
       operationId: createUser
       requestBody:
         required: true
@@ -616,7 +662,9 @@ paths:
     get:
       tags:
         - Management
-      summary: Read the specified User
+      summary: getUser
+      description: |
+        Read the specified User
       operationId: getUser
       parameters:
         - name: id
@@ -637,7 +685,9 @@ paths:
     put:
       tags:
         - Management
-      summary: Replace the specified User
+      summary: replaceUser
+      description: |
+        Replace the specified User
       operationId: replaceUser
       parameters:
         - name: id
@@ -664,7 +714,9 @@ paths:
     patch:
       tags:
         - Management
-      summary: Update the specified User
+      summary: updateUser
+      description: |
+        Update the specified User
       operationId: updateUser
       parameters:
         - name: id
@@ -691,7 +743,9 @@ paths:
     delete:
       tags:
         - Management
-      summary: Delete the specified User
+      summary: deleteUser
+      description: |
+        Delete the specified User
       operationId: deleteUser
       parameters:
         - name: id
@@ -709,7 +763,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: List Tickets
+      summary: getTickets
+      description: |
+        List Tickets
       operationId: getTickets
       parameters:
         - name: project_id
@@ -733,7 +789,9 @@ paths:
     post:
       tags:
         - Incident
-      summary: Create a Ticket
+      summary: createTicket
+      description: |
+        Create a Ticket
       operationId: createTicket
       parameters:
         - name: project_id
@@ -761,7 +819,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: Read the specified Ticket
+      summary: getTicket
+      description: |
+        Read the specified Ticket
       operationId: getTicket
       parameters:
         - name: project_id
@@ -788,7 +848,9 @@ paths:
     put:
       tags:
         - Incident
-      summary: Replace the specified Ticket
+      summary: replaceTicket
+      description: |
+        Replace the specified Ticket
       operationId: replaceTicket
       parameters:
         - name: project_id
@@ -821,7 +883,9 @@ paths:
     patch:
       tags:
         - Incident
-      summary: Update the specified Ticket
+      summary: updateTicket
+      description: |
+        Update the specified Ticket
       operationId: updateTicket
       parameters:
         - name: project_id
@@ -854,7 +918,9 @@ paths:
     delete:
       tags:
         - Incident
-      summary: Delete the specified Ticket
+      summary: deleteTicket
+      description: |
+        Delete the specified Ticket
       operationId: deleteTicket
       parameters:
         - name: project_id
@@ -878,7 +944,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: List Milestones
+      summary: getMilestones
+      description: |
+        List Milestones
       operationId: getMilestones
       parameters:
         - name: project_id
@@ -908,7 +976,9 @@ paths:
     post:
       tags:
         - Incident
-      summary: Create a Milestone
+      summary: createMilestone
+      description: |
+        Create a Milestone
       operationId: createMilestone
       parameters:
         - name: project_id
@@ -936,7 +1006,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: Read the specified Milestone
+      summary: getMilestone
+      description: |
+        Read the specified Milestone
       operationId: getMilestone
       parameters:
         - name: project_id
@@ -963,7 +1035,9 @@ paths:
     put:
       tags:
         - Incident
-      summary: Replace the specified Milestone
+      summary: replaceMilestone
+      description: |
+        Replace the specified Milestone
       operationId: replaceMilestone
       parameters:
         - name: project_id
@@ -996,7 +1070,9 @@ paths:
     patch:
       tags:
         - Incident
-      summary: Update the specified Milestone
+      summary: updateMilestone
+      description: |
+        Update the specified Milestone
       operationId: updateMilestone
       parameters:
         - name: project_id
@@ -1029,7 +1105,9 @@ paths:
     delete:
       tags:
         - Incident
-      summary: Delete the specified Milestone
+      summary: deleteMilestone
+      description: |
+        Delete the specified Milestone
       operationId: deleteMilestone
       parameters:
         - name: project_id
@@ -1053,7 +1131,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: List Milestones
+      summary: getMilestonesForTicket
+      description: |
+        List Milestones
       operationId: getMilestonesForTicket
       parameters:
         - name: ticket_id
@@ -1084,7 +1164,9 @@ paths:
     post:
       tags:
         - Incident
-      summary: Add Milestone
+      summary: addMilestoneToTicket
+      description: |
+        Add Milestone
       operationId: addMilestoneToTicket
       parameters:
         - name: ticket_id
@@ -1108,7 +1190,9 @@ paths:
     post:
       tags:
         - Incident
-      summary: Remove Milestone
+      summary: removeMilestoneFromTicket
+      description: |
+        Remove Milestone
       operationId: removeMilestoneFromTicket
       parameters:
         - name: ticket_id
@@ -1132,7 +1216,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: List Sprints
+      summary: getSprints
+      description: |
+        List Sprints
       operationId: getSprints
       parameters:
         - name: milestone_id
@@ -1156,7 +1242,9 @@ paths:
     post:
       tags:
         - Incident
-      summary: Create a Sprint
+      summary: createSprint
+      description: |
+        Create a Sprint
       operationId: createSprint
       parameters:
         - name: milestone_id
@@ -1184,7 +1272,9 @@ paths:
     get:
       tags:
         - Incident
-      summary: Read the specified Sprint
+      summary: getSprint
+      description: |
+        Read the specified Sprint
       operationId: getSprint
       parameters:
         - name: milestone_id
@@ -1211,7 +1301,9 @@ paths:
     put:
       tags:
         - Incident
-      summary: Replace the specified Sprint
+      summary: replaceSprint
+      description: |
+        Replace the specified Sprint
       operationId: replaceSprint
       parameters:
         - name: milestone_id
@@ -1244,7 +1336,9 @@ paths:
     patch:
       tags:
         - Incident
-      summary: Update the specified Sprint
+      summary: updateSprint
+      description: |
+        Update the specified Sprint
       operationId: updateSprint
       parameters:
         - name: milestone_id
@@ -1277,7 +1371,9 @@ paths:
     delete:
       tags:
         - Incident
-      summary: Delete the specified Sprint
+      summary: deleteSprint
+      description: |
+        Delete the specified Sprint
       operationId: deleteSprint
       parameters:
         - name: milestone_id
@@ -1487,11 +1583,11 @@ components:
       required: false
       schema:
         type: integer
-        format: int64
+        format: int32
     count:
       name: count
       description: |
-        Returns the total number of items in the collection.
+        Returns the total number of items available.
       in: query
       required: false
       schema:

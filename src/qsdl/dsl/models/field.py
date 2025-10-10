@@ -43,6 +43,7 @@ class Field:
     is_hidden: bool = False
     is_transient: bool = False
     is_ignored: bool = False
+    is_override: bool = False
     min_size: int = None
     max_size: int = None
     default: str = None

@@ -47,6 +47,8 @@ class TestDirective:
     20. `Directive` `@ignore` may be used on 'Field` to exclude it from the generation.
 
     21. `Directive` `@transient` may be used on `Field` to exclude it from database layer.
+
+    22. `Directive` `@override` needs to be used on a `Field` which is redefining an inherited field.
     """
 
     def test_directive_01_positive(self) -> None:
@@ -447,3 +449,39 @@ class TestDirective:
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
         assert "world" in properties
         assert "fruit" not in properties
+
+    def test_directive_22_positive(self) -> None:
+        """Verify usage of @query"""
+        test_input = """\
+            base Fruit {
+                name: String @query
+            }
+
+            base Foo extends Fruit {
+                apple: String
+            }
+
+            type Bar extends Foo {
+                name: String @override
+            }
+        """
+
+        wrapper_generate(test_input)
+
+    def test_directive22_negative(self) -> None:
+        """Verify usage of @query"""
+        test_input = """\
+            base Fruit {
+                name: String @query
+            }
+
+            base Foo extends Fruit {
+                apple: String
+            }
+
+            type Bar extends Foo {
+                name: String
+            }
+        """
+
+        wrapper_generate_failure(test_input)
