@@ -132,8 +132,8 @@ def generate_openapi(output_path: Path) -> None:
     from qsdl.config import Config as core_config  # pylint: disable=import-outside-toplevel
 
     core.generate(
-        "openapi",
         gen_schema_file.parent,
+        generator_name="openapi",
         input_path=core_config.input_path,
         raw_schema=core_config.raw_schema,
         config={"id_type": util.Store.config.id_type},

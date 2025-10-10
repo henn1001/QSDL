@@ -15,13 +15,11 @@
 """Core generation"""
 
 import json
-import traceback
 from pathlib import Path
 
 import dacite
 import inquirer
 from pyfiglet import Figlet
-from textx.exceptions import TextXSemanticError, TextXSyntaxError
 
 from qsdl import logger
 from qsdl.config import Config
@@ -117,9 +115,9 @@ def prompt_user() -> tuple[GeneratorType, ConfigType]:
 
 
 def init(
-    generator_name: str,
-    config_path: Path = None,
-    raw_config: ConfigType = None,
+    generator_name: str | None = None,
+    config_path: Path | None = None,
+    raw_config: ConfigType | None = None,
 ) -> tuple[GeneratorType, ConfigType]:
     """Initialise QSDL.
 
@@ -176,52 +174,43 @@ def init(
     return generator, config
 
 
-def generate(generator_name: str, output_path: Path, **kwargs) -> int:  # noqa: ANN003
+def generate(output_path: Path, **kwargs) -> None:  # noqa: ANN003
     """The main function of QSDL.
 
     Generates various things from the provided schema definition.
     Expects either input_path or raw_schema.
 
     Args:
-        generator_name (str, optional): The requested generator.
         output_path (Path): Path to a output folder.
+        generator_name (str, optional): The requested generator.
         input_path (Path, optional): Path to the schema file.
         raw_schema (str, optional): The schema definition as string.
         config_path (Path, optional): Path to the config.json.
         config (dict, optional): The config.json as a dict.
-
-    Returns:
-        int: 0 on success, 1 on failure
     """
 
     # handle optional arguments
+    generator_name = kwargs.get("generator_name")
     input_path = kwargs.get("input_path")
     raw_schema = kwargs.get("raw_schema")
     config_path = kwargs.get("config_path")
     raw_config = kwargs.get("config")
 
-    try:
-        # initiliase the global config and fetch the generator and its parameters
-        Config.generator, Config.config = init(generator_name, config_path, raw_config)
+    # initiliase the global config and fetch the generator and its parameters
+    Config.generator, Config.config = init(generator_name, config_path, raw_config)
 
-        # build a model from schema definition file
-        Config.schema = parse_schema(input_path, raw_schema)
+    # build a model from schema definition file
+    Config.schema = parse_schema(input_path, raw_schema)
 
-        # set global config
-        Config.input_path = input_path
-        Config.raw_schema = raw_schema
-        Config.output_path = output_path
+    # set global config
+    Config.input_path = input_path
+    Config.raw_schema = raw_schema
+    Config.output_path = output_path
 
-        # create the output folder
-        output_path.mkdir(exist_ok=True, parents=True)
+    # create the output folder
+    output_path.mkdir(exist_ok=True, parents=True)
 
-        # call generator
-        log.info("calling generator")
-        Config.generator(Config.schema, Config.output_path, Config.config)  # pylint: disable=not-callable # fmt: skip
-        log.info("all done!")
-
-    except (TextXSyntaxError, TextXSemanticError, Exception):  # pylint: disable=W0703
-        traceback.print_exc()
-        return 1
-
-    return 0
+    # call generator
+    log.info("calling generator")
+    Config.generator(Config.schema, Config.output_path, Config.config)  # pylint: disable=not-callable # fmt: skip
+    log.info("all done!")

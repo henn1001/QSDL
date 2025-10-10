@@ -1,6 +1,7 @@
 import textwrap
 from pathlib import Path
 
+import pytest
 import yaml
 
 from qsdl.core import generate
@@ -20,7 +21,7 @@ def wrapper_generate(test_input: str) -> dict:
     test_output = Path("srcgen/" + test_seed + "/")
 
     # generate
-    assert generate("openapi", test_output, raw_schema=test_input) == 0
+    assert generate(test_output, generator_name="openapi", raw_schema=test_input) is None
 
     openapi_file = Path("srcgen/" + test_seed + "/" + "openapi.yaml")
 
@@ -44,4 +45,5 @@ def wrapper_generate_failure(test_input: str) -> None:
     test_output = Path("srcgen/" + test_seed + "/")
 
     # generate
-    assert generate("openapi", test_output, raw_schema=test_input) != 0
+    with pytest.raises(Exception):  # noqa: B017
+        generate(test_output, generator_name="openapi", raw_schema=test_input)

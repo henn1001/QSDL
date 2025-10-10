@@ -17,56 +17,49 @@
 A Schema-Definition-Language Generator inspired by GraphQL.
 """
 
-import sys
 from pathlib import Path
+from typing import Annotated
 
-import click
+import typer
 
 from qsdl import __version__
-from qsdl.config import Config
 from qsdl.core import generate
 
+app = typer.Typer(no_args_is_help=True, pretty_exceptions_show_locals=False)
 
-@click.command()
-# fmt: off
-@click.argument("input_path", type=click.Path(exists=True))
-@click.option("-g", "--generator", help="The requested generator.", type=click.Choice(Config.available_generators))
-@click.option("-c", "--config_path", help="Path to a config json file.", type=click.Path(exists=True))
-@click.option("-o", "--output_path", help="Path to a output folder. Default: 'srcgren/'", type=click.Path())
-@click.option("-pv", "--print_version", help="Prints a .qversion file to the output folder.", is_flag=True)
-@click.version_option(__version__, prog_name="QSDL")
-# fmt: on
+
+def version_callback(value: bool) -> None:
+    if value:
+        print(__version__)
+        raise typer.Exit()
+
+
+h_input_path = "The path to the schema definition file."
+h_generator = "The requested generator."
+h_config_path = "Path to a config json file."
+h_output_path = "Path to a output folder. Default: 'srcgen/'"
+h_print_version = "Prints a .qversion file to the output folder."
+
+
+@app.command()
 def entrypoint(
-    input_path: str,
-    generator: str = None,
-    config_path: str = None,
-    output_path: str = None,
-    print_version: bool = False,
-) -> int:
-    """Runs the QSDL generator with the provided schema definition file.
-
-    \b
-    Args:
-        input_path (str):   The path to the schema definition file.
-
-    \b
-    Returns:
-        int:                0 on success, 1 on failure
-    """
-    # convert to pathlib
-    input_path = Path(input_path)
-    config_path = Path(config_path) if config_path else None
-    output_path = Path(output_path) if output_path else input_path.parent / "srcgen"
-
-    ret = generate(generator, output_path, input_path=input_path, config_path=config_path)
+    input_path: Annotated[Path, typer.Argument(..., help=h_input_path, exists=True)],
+    generator: Annotated[str | None, typer.Option("-g", "--generator", help=h_generator)] = None,
+    config_path: Annotated[Path | None, typer.Option("-c", "--config_path", help=h_config_path, exists=True)] = None,
+    output_path: Annotated[Path | None, typer.Option("-o", "--output_path", help=h_output_path)] = None,
+    print_version: Annotated[bool, typer.Option("--print_version", help=h_print_version)] = False,
+    version: Annotated[bool, typer.Option("--version", callback=version_callback, is_eager=True)] = False,
+) -> None:
+    # set default output path if not provided
+    output_path = output_path or input_path.parent / "srcgen"
 
     # print version
     if print_version:
         with open(output_path / ".qversion", "w", encoding="utf-8") as file:
             file.write(__version__)
 
-    sys.exit(ret)
+    generate(output_path, generator_name=generator, input_path=input_path, config_path=config_path)
 
 
 if __name__ == "__main__":
-    entrypoint(None)
+    app()
