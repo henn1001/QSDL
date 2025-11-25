@@ -30,6 +30,10 @@ The QSDL package currently supports the Python version:
 # Install latest unreleased version directly from the repository
 uv tool install git+https://gitlab.com/henn1001/qsdl
 
+# If you want to update a previously installed version
+uv tool install git+https://gitlab.com/henn1001/qsdl
+uv tool upgrade qsdl
+
 # Or install in development mode for local development
 git clone https://gitlab.com/henn1001/qsdl
 cd qsdl
