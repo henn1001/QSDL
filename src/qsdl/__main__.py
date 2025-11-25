@@ -47,7 +47,7 @@ def entrypoint(
     generator: Annotated[str | None, typer.Option("-g", "--generator", help=h_generator)] = None,
     config_path: Annotated[Path | None, typer.Option("-c", "--config_path", help=h_config_path, exists=True)] = None,
     output_path: Annotated[Path | None, typer.Option("-o", "--output_path", help=h_output_path)] = None,
-    print_version: Annotated[bool, typer.Option("--print_version", help=h_print_version)] = False,
+    print_version: Annotated[bool, typer.Option("-pv", "--print_version", help=h_print_version)] = False,
     version: Annotated[bool, typer.Option("--version", callback=version_callback, is_eager=True)] = False,
 ) -> None:
     # set default output path if not provided
