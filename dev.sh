@@ -24,6 +24,10 @@ build() {
   uv build
 }
 
+build-docker() {
+  docker build -t qsdl .
+}
+
 release (){
   npx standard-version
 }
