@@ -1,7 +1,9 @@
 FROM ghcr.io/astral-sh/uv:python3.13-alpine
 
 RUN adduser -D -h /home/app app
+
 USER app
+
 WORKDIR /home/app
 
 COPY src ./src
@@ -9,16 +11,11 @@ COPY README.md .
 COPY pyproject.toml .
 COPY uv.lock .
 
-
 # force uv to place its symlinks here instead of /usr/local/bin
 ENV UV_TOOL_BIN_DIR=/home/app/.local/bin
 ENV PATH="/home/app/.local/bin:${PATH}"
 
 RUN uv tool install .
-
-# Ensure the installed binary is on the `PATH` and executable for all
-# RUN chmod a+rx /usr/local/bin
-# RUN chmod a+x /root/.local/share/uv/tools/qsdl/bin/qsdl
 
 WORKDIR /generated_content
 
