@@ -16,6 +16,7 @@ import jakarta.validation.constraints.*;
 @Setter
 @Builder
 @Jacksonized
+@EqualsAndHashCode(callSuper = false)
 public class User extends AbstractClass {
 
   @Min(0)

@@ -14,9 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 {% if model.has_objectnode %}
 import com.fasterxml.jackson.databind.node.ObjectNode;
 {% endif %}
-{% if use_encapsulation or use_builder %}
 import lombok.*;
-{% endif %}
 {% if use_builder %}
 import lombok.extern.jackson.Jacksonized;
 {% endif %}
@@ -45,6 +43,7 @@ import java.util.*;
 @Builder
 @Jacksonized
 {% endif %}
+@EqualsAndHashCode(callSuper = false)
 public class {{model.name}} extends AbstractClass {
 
 {% for field in model.fields if not field.is_relation and not field.is_hidden %}

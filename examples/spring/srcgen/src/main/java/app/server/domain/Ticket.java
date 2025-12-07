@@ -17,6 +17,7 @@ import jakarta.validation.constraints.*;
 @Setter
 @Builder
 @Jacksonized
+@EqualsAndHashCode(callSuper = false)
 public class Ticket extends AbstractClass {
 
   @Min(0)

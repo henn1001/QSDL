@@ -30,7 +30,7 @@
     var {{model_dto}}Entities = cursorPage.items();
     var {{model_dto}}Dtos = {{model_dto}}Entities.stream().map({{model_dto}}MapStruct::toDto).toList();
 
-    return new CursorPage<{{model.name}}>({{model_dto}}Dtos, cursorPage.nextCursor(), cursorPage.totalCount());
+    return new CursorPage<>({{model_dto}}Dtos, cursorPage.nextCursor(), cursorPage.totalCount());
   {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
     {# 
      ########################################################################################

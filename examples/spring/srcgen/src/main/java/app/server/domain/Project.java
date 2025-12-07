@@ -19,6 +19,7 @@ import java.time.*;
 @Setter
 @Builder
 @Jacksonized
+@EqualsAndHashCode(callSuper = false)
 public class Project extends AbstractClass {
 
   @Min(0)
