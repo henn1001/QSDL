@@ -177,12 +177,12 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         api.package.slashed = True
 
         # fmt: off
-        api_files.append(("src/main/java/controller/Api.j2", f"src/main/java/{api.package.api}/{api.name}Api.java", api))
-        api_files.append(("src/main/java/controller/Controller.j2", f"src/main/java/{api.package.controller}/{api.name}Controller.java", api))
+        api_files.append(("src/main/java/api/Api.j2", f"src/main/java/{api.package.api}/{api.name}Api.java", api))
+        api_files.append(("src/main/java/api/Controller.j2", f"src/main/java/{api.package.controller}/{api.name}Controller.java", api))
 
         if api.model and api.has_generated:
             api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{api.package.service}/{api.name}Service.java", api))
-            api_files.append(("src/test/java/controller/DControllerTest.j2", f"src/test/java/{api.package.controller}/{api.name}ControllerTest.java", api))
+            api_files.append(("src/test/java/api/DControllerTest.j2", f"src/test/java/{api.package.controller}/{api.name}ControllerTest.java", api))
 
             if config.database == "HIBERNATE":
                 api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{api.package.service}/{api.name}ServiceTest.java", api))
@@ -196,7 +196,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         model.package.slashed = True
         # fmt: off
         if model.is_enum:
-            model_files.append(("src/main/java/domain/Enum.j2", f"src/main/java/{model.package.enum}/{model.name}.java", model))
+            model_files.append(("src/main/java/constant/Enum.j2", f"src/main/java/{model.package.enum}/{model.name}.java", model))
         else:
             model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
 
@@ -220,9 +220,6 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         (".gitignore.j2", ".gitignore"),
         ("dev.j2", "dev.sh"),
         ("docker-compose.j2", "docker-compose.yml"),
-        (".google-checkstyle-suppressions.j2", ".google-checkstyle-suppressions.xml"),
-        (".google-checkstyle.j2", ".google-checkstyle.xml"),
-        (".google-style.j2", ".google-style.xml"),
         # vscode
         (".vscode/extensions.j2", ".vscode/extensions.json"),
         (".vscode/launch.j2", ".vscode/launch.json.template"),
@@ -238,14 +235,14 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         ("src/test/java/TestConfig.j2", f"src/test/java/{package.base}/TestConfig.java"),
         ("src/test/java/TestUtils.j2", f"src/test/java/{package.base}/TestUtils.java"),
         # config
-        ("src/main/java/config/AppConfig.j2", f"src/main/java/{package.config}/AppConfig.java"),
-        ("src/main/java/config/AppConfigScheduling.j2", f"src/main/java/{package.config}/AppConfigScheduling.java"),
+        ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
         ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),
-        ("src/main/java/config/ErrorCodes.j2", f"src/main/java/{package.config}/ErrorCodes.java"),
-        ("src/main/java/config/Constants.j2", f"src/main/java/{package.config}/Constants.java"),
+        # constants
+        ("src/main/java/constant/ErrorCode.j2", f"src/main/java/{package.enum}/ErrorCode.java"),
+        ("src/main/java/constant/Constant.j2", f"src/main/java/{package.enum}/Constant.java"),
         # api
-        ("src/main/java/controller/BaseController.j2", f"src/main/java/{package.controller}/BaseController.java"),
-        ("src/main/java/controller/HomeController.j2", f"src/main/java/{package.controller}/HomeController.java"),
+        ("src/main/java/api/BaseController.j2", f"src/main/java/{package.controller}/BaseController.java"),
+        ("src/main/java/api/HomeController.j2", f"src/main/java/{package.controller}/HomeController.java"),
         # util
         ("src/main/java/util/Json.j2", f"src/main/java/{package.util}/Json.java"),
         ("src/main/java/util/Time.j2", f"src/main/java/{package.util}/Time.java"),
@@ -264,7 +261,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),
         ("src/main/java/model/Context.j2", f"src/main/java/{package.model}/Context.java"),
         # tests
-        ("src/test/java/controller/ControllerTest.j2", f"src/test/java/{package.controller}/ControllerTest.java")
+        ("src/test/java/api/ControllerTest.j2", f"src/test/java/{package.controller}/ControllerTest.java")
     ]
     # fmt: on
 
@@ -272,7 +269,6 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         # fmt: off
         supporting_files.append( ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{package.model}/AbstractPersistentObject.java"))
         supporting_files.append(("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{package.model}/AbstractPersistentBase.java"))
-        supporting_files.append(("src/main/java/config/AppConfigPersistence.j2", f"src/main/java/{package.config}/AppConfigPersistence.java"))
         supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))

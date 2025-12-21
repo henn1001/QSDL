@@ -60,7 +60,7 @@ public class RoleService {
     var roleEntities = cursorPage.items();
     var roleDtos = roleEntities.stream().map(roleMapStruct::toDto).toList();
 
-    return new CursorPage<Role>(roleDtos, cursorPage.nextCursor(), cursorPage.totalCount());
+    return new CursorPage<>(roleDtos, cursorPage.nextCursor(), cursorPage.totalCount());
   }
 
   @Transactional

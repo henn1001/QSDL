@@ -4,7 +4,7 @@
 
 package app.server.exception;
 
-import app.server.config.ErrorCodes;
+import app.server.constant.ErrorCode;
 import app.server.model.AppError;
 
 import java.util.List;
@@ -15,17 +15,17 @@ public class AppException extends RuntimeException {
 
   private final AppError appError;
 
-  public AppException(ErrorCodes error) {
+  public AppException(ErrorCode error) {
     super(error.message());
     this.appError = error.toAppError();
   }
 
-  public AppException(ErrorCodes error, String detail) {
+  public AppException(ErrorCode error, String detail) {
     super(error.message());
     this.appError = error.toAppError(detail);
   }
 
-  public AppException(ErrorCodes error, List<String> details) {
+  public AppException(ErrorCode error, List<String> details) {
     super(error.message());
     this.appError = error.toAppError(details);
   }

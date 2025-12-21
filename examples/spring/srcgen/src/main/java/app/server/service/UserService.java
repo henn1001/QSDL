@@ -60,7 +60,7 @@ public class UserService {
     var userEntities = cursorPage.items();
     var userDtos = userEntities.stream().map(userMapStruct::toDto).toList();
 
-    return new CursorPage<User>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
+    return new CursorPage<>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
   }
 
   @Transactional
@@ -107,7 +107,7 @@ public class UserService {
     var userEntities = cursorPage.items();
     var userDtos = userEntities.stream().map(userMapStruct::toDto).toList();
 
-    return new CursorPage<User>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
+    return new CursorPage<>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
   }
 
   @Transactional

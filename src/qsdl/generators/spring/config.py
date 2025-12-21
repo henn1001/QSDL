@@ -61,8 +61,8 @@ class Config(BaseConfig):
 
     # used for changing the folder layout
     api_path: str = "%placeholder%.api"
+    controller_path: str = "%placeholder%.api"
     config_path: str = "%placeholder%.config"
-    controller_path: str = "%placeholder%.controller"
     domain_path: str = "%placeholder%.domain"
     entity_path: str = "%placeholder%.domain.entity"
     mapper_path: str = "%placeholder%.domain.mapper"

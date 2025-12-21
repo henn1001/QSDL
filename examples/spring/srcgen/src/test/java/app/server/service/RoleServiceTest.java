@@ -6,7 +6,7 @@ package app.server.service;
 
 import app.server.TestConfig;
 import app.server.TestUtils;
-import app.server.config.ErrorCodes;
+import app.server.constant.ErrorCode;
 import app.server.domain.Role;
 import app.server.domain.entity.ProjectEntity;
 import app.server.domain.entity.RoleEntity;
@@ -179,9 +179,9 @@ class RoleServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -236,9 +236,9 @@ class RoleServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -293,9 +293,9 @@ class RoleServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
   }
 
   @Test
@@ -336,9 +336,9 @@ class RoleServiceTest {
 
     // Then
     AppError error = thrown.getAppError();
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCodes.ENTITY_NOT_FOUND.status(), error.status);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
   }
 
 }

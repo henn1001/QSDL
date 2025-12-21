@@ -43,7 +43,7 @@ public class TicketService {
     var ticketEntities = cursorPage.items();
     var ticketDtos = ticketEntities.stream().map(ticketMapStruct::toDto).toList();
 
-    return new CursorPage<Ticket>(ticketDtos, cursorPage.nextCursor(), cursorPage.totalCount());
+    return new CursorPage<>(ticketDtos, cursorPage.nextCursor(), cursorPage.totalCount());
   }
 
   @Transactional

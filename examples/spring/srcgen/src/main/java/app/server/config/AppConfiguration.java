@@ -5,7 +5,7 @@
 package app.server.config;
 
 import app.server.util.Json;
-
+import app.server.repository.BaseRepositoryImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +13,16 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.TimeZone;
 
 @Configuration
+@EnableScheduling
+@EnableJpaRepositories(basePackages = "app.server.repository", repositoryBaseClass = BaseRepositoryImpl.class)
 class AppConfig {
 
   @Value("${server.port}")

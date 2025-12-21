@@ -4,7 +4,7 @@
 
 package {{package.util}};
 
-import {{package.config}}.ErrorCodes;
+import {{package.enum}}.ErrorCode;
 import {{package.exception}}.AppException;
 
 import jakarta.validation.ConstraintViolation;
@@ -35,7 +35,7 @@ public class Validator {
     }
 
     if (!errors.isEmpty()) {
-      throw new AppException(ErrorCodes.BAD_REQUEST, errors);
+      throw new AppException(ErrorCode.BAD_REQUEST, errors);
     }
   }
 
@@ -55,7 +55,7 @@ public class Validator {
     }
 
     if (!errors.isEmpty()) {
-      throw new AppException(ErrorCodes.BAD_REQUEST, errors);
+      throw new AppException(ErrorCode.BAD_REQUEST, errors);
     }
   }
 
@@ -71,7 +71,7 @@ public class Validator {
           .collect(Collectors.joining(", "));
 
       String error = String.format("Invalid value '%s' for '%s'. Valid values are: %s", value, key, validValues);
-      throw new AppException(ErrorCodes.BAD_REQUEST, List.of(error));
+      throw new AppException(ErrorCode.BAD_REQUEST, List.of(error));
     }
   }
 

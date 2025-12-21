@@ -6,9 +6,9 @@ package app.server.model;
 
 import java.util.Base64;
 
-import static app.server.config.Constants.CURSOR_DEFAULT;
-import static app.server.config.Constants.CURSOR_MAX;
-import static app.server.config.Constants.CURSOR_MIN;
+import static app.server.constant.Constant.CURSOR_DEFAULT;
+import static app.server.constant.Constant.CURSOR_MAX;
+import static app.server.constant.Constant.CURSOR_MIN;
 
 public class CursorPageable {
 

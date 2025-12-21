@@ -43,7 +43,7 @@ public class ProjectService {
     var projectEntities = cursorPage.items();
     var projectDtos = projectEntities.stream().map(projectMapStruct::toDto).toList();
 
-    return new CursorPage<Project>(projectDtos, cursorPage.nextCursor(), cursorPage.totalCount());
+    return new CursorPage<>(projectDtos, cursorPage.nextCursor(), cursorPage.totalCount());
   }
 
   @Transactional

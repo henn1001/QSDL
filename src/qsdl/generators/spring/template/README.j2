@@ -9,7 +9,7 @@
 
 ## Requirements
 
--   [graalvm 21](https://www.graalvm.org/release-notes/JDK_21/)
+-   [graalvm 25](https://www.graalvm.org/release-notes/JDK_25/)
 -   [Maven](https://maven.apache.org/)
 
 I can recommend using sdkman for the installation.
@@ -18,7 +18,7 @@ I can recommend using sdkman for the installation.
 curl -s "https://get.sdkman.io" | bash
 source ~/.sdkman/bin/sdkman-init.sh
 
-sdk install java 21-graalce
+sdk install java 25-graalce
 sdk install maven
 ```
 

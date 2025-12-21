@@ -1,6 +1,6 @@
 {
   "recommendations": [
-    "shengchen.vscode-checkstyle",
-    "vscjava.vscode-java-pack"
+    "vscjava.vscode-java-pack",
+    "vmware.vscode-spring-boot",
   ]
 }

@@ -38,6 +38,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
+      <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -206,24 +207,20 @@
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.3.2</version>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>3.1.0</version>
         <configuration>
-          <configLocation>.google-checkstyle.xml</configLocation>
-          <consoleOutput>true</consoleOutput>
-          <violationSeverity>warning</violationSeverity>
-          <failsOnError>true</failsOnError>
-          <linkXRef>false</linkXRef>
+          <java>
+            <toggleOffOn>
+              <off>@formatter:off</off>
+              <on>@formatter:on</on>
+            </toggleOffOn>'
+            <palantirJavaFormat/>
+          </java>
         </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>10.17.0</version>
-          </dependency>
-        </dependencies>
       </plugin>
+
     </plugins>
   </build>
 
