@@ -5,10 +5,8 @@ package app.server.util;
 
 import app.server.constant.ErrorCode;
 import app.server.exception.AppException;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

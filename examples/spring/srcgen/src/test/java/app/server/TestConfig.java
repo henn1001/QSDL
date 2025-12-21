@@ -8,5 +8,4 @@ import org.springframework.context.annotation.ComponentScan;
 
 @TestConfiguration
 @ComponentScan({"app.server.domain.mapper"})
-public class TestConfig {
-}
+public class TestConfig {}

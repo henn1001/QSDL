@@ -6,7 +6,6 @@ package app.server.constant;
 import java.util.EnumSet;
 
 public enum Status {
-
   OPEN,
   TO_DO,
   CLOSED;

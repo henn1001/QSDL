@@ -3,11 +3,11 @@
  */
 package app.server.model;
 
-import java.util.Base64;
-
 import static app.server.constant.Constant.CURSOR_DEFAULT;
 import static app.server.constant.Constant.CURSOR_MAX;
 import static app.server.constant.Constant.CURSOR_MIN;
+
+import java.util.Base64;
 
 public class CursorPageable {
 

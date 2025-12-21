@@ -3,6 +3,12 @@
  */
 package app.server.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
@@ -16,28 +22,19 @@ import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.repository.ProjectRepository;
 import app.server.util.Json;
-
 import com.querydsl.core.types.Predicate;
+import java.util.List;
+import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @Import(TestConfig.class)
@@ -292,5 +289,4 @@ class ProjectServiceTest {
     assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
     assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
   }
-
 }

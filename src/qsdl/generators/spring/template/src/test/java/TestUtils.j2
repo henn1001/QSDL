@@ -8,21 +8,19 @@ import {{package.model}}.AbstractPersistentBase;
 import {{package.model}}.AbstractPersistentObject;
 {% endif %}
 import {{package.util}}.Json;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.FieldPredicates;
 import org.jeasy.random.randomizers.AbstractRandomizer;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.range.LongRangeRandomizer;
-
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class TestUtils {
 
@@ -121,8 +119,7 @@ public class TestUtils {
       int exitCode = process.waitFor();
 
       return exitCode == 0;
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -139,14 +136,14 @@ public class TestUtils {
     // we only care about AbstractPersistentObject and AbstractPersistentBase types
     // evoke copyIdentity, otherwise return silently
     if (a instanceof AbstractPersistentObject && b instanceof AbstractPersistentObject) {
-      var copyIdentity = AbstractPersistentObject.class.getDeclaredMethod("copyIdentity", AbstractPersistentObject.class);
-      copyIdentity.invoke(a, b);
-    }
-    else if (a instanceof AbstractPersistentBase && b instanceof AbstractPersistentBase) {
-      var copyIdentity = AbstractPersistentBase.class.getDeclaredMethod("copyIdentity", AbstractPersistentBase.class);
-      copyIdentity.invoke(a, b);
-    }
-    else {
+      AbstractPersistentObject.class
+          .getDeclaredMethod("copyIdentity", AbstractPersistentObject.class)
+          .invoke(a, b);
+    } else if (a instanceof AbstractPersistentBase && b instanceof AbstractPersistentBase) {
+      AbstractPersistentBase.class
+          .getDeclaredMethod("copyIdentity", AbstractPersistentBase.class)
+          .invoke(a, b);
+    } else {
       return;
     }
     // loop over all fields to check for nested objects
@@ -176,7 +173,8 @@ public class TestUtils {
         }
       }
       // for nested objects, we can call self directly
-      else if (field.get(a) instanceof AbstractPersistentObject || field.get(a) instanceof AbstractPersistentBase) {
+      else if (field.get(a) instanceof AbstractPersistentObject
+          || field.get(a) instanceof AbstractPersistentBase) {
 
         Object f1 = field.get(a);
         Object f2 = field.get(b);

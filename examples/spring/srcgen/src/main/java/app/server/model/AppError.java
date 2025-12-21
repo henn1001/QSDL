@@ -4,9 +4,7 @@
 package app.server.model;
 
 import app.server.util.Time;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;

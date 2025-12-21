@@ -4,13 +4,13 @@
 package app.server;
 
 import app.server.repository.BaseRepositoryImpl;
-
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @DataJpaTest
 @Import(TestConfig.class)
-@EnableJpaRepositories(basePackages = {"app.server.repository"}, repositoryBaseClass = BaseRepositoryImpl.class)
-public abstract class AbstractDataJpaTest {
-}
+@EnableJpaRepositories(
+    basePackages = {"app.server.repository"},
+    repositoryBaseClass = BaseRepositoryImpl.class)
+public abstract class AbstractDataJpaTest {}

@@ -3,23 +3,21 @@
  */
 package {{model.package.repository}};
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import {{base_package}}.AbstractDataJpaTest;
 import {{base_package}}.TestUtils;
 {% for imprt in model.imports.repo_tests %}
 {{imprt}}
 {% endfor %}
 import {{package.util}}.Json;
-
 import com.querydsl.core.BooleanBuilder;
+import java.util.List;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
@@ -143,8 +141,8 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
     // Then
     assertEquals(5, idx);
   }
-
   {% for parent in model.parents %}
+
   @Test
   public void whenCountBy{{parent.model.name}}_thenUseQuerie() throws Exception {
 
@@ -213,9 +211,9 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
     // Then
     assertEquals(5, idx);
   }
-
   {% endfor %}
   {% if model.is_aggregated %}
+
     {% for parent in model.parents if parent.field.is_aggregation %}
   @Test
   public void whenUnlinkFromLinked{{parent.model.name}}_thenStillExist() throws Exception {
@@ -283,7 +281,6 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
     assertEquals(true, {{model.name|lower}}Repository.existsById(testData.getId()));
     assertEquals(false, {{parent.model.name|lower}}Repository.existsById(parent.getId()));
   }
-
     {% endfor %}
   {% endif %}}
 {{""}}

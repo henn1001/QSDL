@@ -4,7 +4,6 @@
 package app.server.exception;
 
 import app.server.constant.ErrorCode;
-
 import org.springframework.util.function.ThrowingConsumer;
 import org.springframework.util.function.ThrowingSupplier;
 

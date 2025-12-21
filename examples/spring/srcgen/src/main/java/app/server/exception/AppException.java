@@ -5,7 +5,6 @@ package app.server.exception;
 
 import app.server.constant.ErrorCode;
 import app.server.model.AppError;
-
 import java.util.List;
 
 public class AppException extends RuntimeException {

@@ -8,6 +8,5 @@ import org.springframework.context.annotation.ComponentScan;
 
 @TestConfiguration
 @ComponentScan({{"{"}}{% for pkg in packages %}"{{pkg.mapper}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}})
-public class TestConfig {
-}
+public class TestConfig {}
 {{""}}

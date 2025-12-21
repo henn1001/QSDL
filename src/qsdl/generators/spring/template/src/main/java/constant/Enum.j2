@@ -6,7 +6,6 @@ package {{model.package.enum}};
 import java.util.EnumSet;
 
 public enum {{model.name}} {
-
   {% for value in model.constants %}
   {{value}}{% if not loop.last %},{% else %};{% endif %}
 

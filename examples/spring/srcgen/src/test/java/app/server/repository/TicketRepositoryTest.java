@@ -3,6 +3,8 @@
  */
 package app.server.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import app.server.AbstractDataJpaTest;
 import app.server.TestUtils;
 import app.server.domain.entity.*;
@@ -10,17 +12,13 @@ import app.server.domain.entity.UserEntity;
 import app.server.model.*;
 import app.server.repository.*;
 import app.server.util.Json;
-
 import com.querydsl.core.BooleanBuilder;
+import java.util.List;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TicketRepositoryTest extends AbstractDataJpaTest {
 
@@ -119,5 +117,4 @@ class TicketRepositoryTest extends AbstractDataJpaTest {
     // Then
     assertEquals(5, idx);
   }
-
 }

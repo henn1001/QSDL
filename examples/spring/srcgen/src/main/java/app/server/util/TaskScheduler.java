@@ -3,10 +3,7 @@
  */
 package app.server.util;
 
-import lombok.extern.slf4j.Slf4j;
-
 import jakarta.annotation.PreDestroy;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +18,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class TaskScheduler {

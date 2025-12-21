@@ -5,7 +5,9 @@ package app.server.exception;
 
 import app.server.constant.ErrorCode;
 import app.server.model.AppError;
-
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,11 +23,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @ControllerAdvice

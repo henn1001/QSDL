@@ -6,20 +6,17 @@ package app.server.repository;
 import app.server.model.AbstractPersistentObject;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
-
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.jpa.repository.support.JpaEntityInformation;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.data.querydsl.SimpleEntityPathResolver;
-
 import jakarta.persistence.EntityManager;
-
 import java.io.Serializable;
 import java.util.Base64;
 import java.util.List;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
 public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Serializable>
     extends SimpleJpaRepository<T, S>

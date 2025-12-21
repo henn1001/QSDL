@@ -4,11 +4,9 @@
 package app.server.constant;
 
 import app.server.model.AppError;
-
-import org.springframework.http.HttpStatus;
-
 import java.util.List;
 import java.util.Objects;
+import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
   // @formatter:off

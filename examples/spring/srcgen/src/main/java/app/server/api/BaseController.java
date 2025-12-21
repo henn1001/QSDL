@@ -4,10 +4,8 @@
 package app.server.api;
 
 import app.server.model.Context;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class BaseController {
 

@@ -3,28 +3,6 @@
  */
 package app.server.api;
 
-import app.server.TestConfig;
-import app.server.TestUtils;
-import app.server.constant.ErrorCode;
-import app.server.domain.Role;
-import app.server.model.AppError;
-import app.server.model.CursorPage;
-import app.server.service.RoleService;
-import app.server.util.Json;
-
-import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,6 +13,26 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import app.server.TestConfig;
+import app.server.TestUtils;
+import app.server.constant.ErrorCode;
+import app.server.domain.Role;
+import app.server.model.AppError;
+import app.server.model.CursorPage;
+import app.server.service.RoleService;
+import app.server.util.Json;
+import java.util.Arrays;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(RoleController.class)
 @Import(TestConfig.class)
@@ -245,5 +243,4 @@ class RoleControllerTest {
     // Then
 
   }
-
 }

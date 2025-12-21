@@ -3,11 +3,10 @@
  */
 package {{package.config}};
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
-
-import jakarta.validation.constraints.NotEmpty;
 
 @Validated
 @AllArgsConstructor

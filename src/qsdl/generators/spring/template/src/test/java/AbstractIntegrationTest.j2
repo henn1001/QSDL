@@ -9,15 +9,13 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-
 @SpringBootTest
 @Testcontainers
 public abstract class AbstractIntegrationTest {
 
   @Container
   @SuppressWarnings("resource")
-  public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.1")
-      .withReuse(true);
+  public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.1").withReuse(true);
 
   @BeforeAll
   static void setProfile() {
@@ -27,8 +25,7 @@ public abstract class AbstractIntegrationTest {
       System.setProperty("spring.datasource.username", postgres.getUsername());
       System.setProperty("spring.datasource.password", postgres.getPassword());
       System.setProperty("spring.test.database.replace", "none");
-    }
-    else {
+    } else {
       System.setProperty("spring.profiles.active", "dev,integration");
     }
   }

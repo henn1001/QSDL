@@ -4,11 +4,9 @@
 package app.server.repository;
 
 import app.server.model.AbstractPersistentObject;
-
-import org.springframework.data.repository.NoRepositoryBean;
-
 import java.io.Serializable;
 import java.util.Optional;
+import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
 public interface AbstractRepository<T extends AbstractPersistentObject, S extends Serializable>

@@ -6,16 +6,13 @@ package app.server.repository;
 import app.server.model.AbstractPersistentObject;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
-
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.NoRepositoryBean;
-
 import jakarta.persistence.EntityManager;
-
 import java.io.Serializable;
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
 public interface BaseRepository<T extends AbstractPersistentObject, S extends Serializable>
