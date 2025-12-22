@@ -14,8 +14,6 @@
 
 """Spring Generator Java import resolver"""
 
-import qsdl.dsl.models as dsl
-
 from . import models as spring
 from . import util
 
@@ -48,62 +46,6 @@ def sort_and_remove_duplicates(imports: list[str]) -> list[str]:
     return imports
 
 
-def get_api_imports(api_class: spring.ApiClass, entity: dsl.Api) -> list[str]:
-    """Helper for dynamic imports"""
-    imports = []
-
-    if util.controller_has(entity, has_enum=True):
-        imprt = f"import {util.Store.package.enum}.*;"
-        imports.append(imprt)
-
-    imprt = f"import {api_class.package.domain}.*;"
-    imports.append(imprt)
-
-    imprt = f"import {api_class.package.model}.*;"
-    imports.append(imprt)
-
-    # remove duplicates and sort
-    imports = sort_and_remove_duplicates(imports)
-
-    return imports
-
-
-def get_controller_imports(api_class: spring.ApiClass, entity: dsl.Api) -> list[str]:
-    """Helper for dynamic imports"""
-    imports = []
-
-    if util.controller_has(entity, has_enum=True):
-        imprt = f"import {util.Store.package.enum}.*;"
-        imports.append(imprt)
-
-    if api_class.package.controller != api_class.package.api:
-        imprt = f"import {api_class.package.api}.{api_class.name}Api;"
-        imports.append(imprt)
-
-    imprt = f"import {api_class.package.domain}.*;"
-    imports.append(imprt)
-
-    imprt = f"import {api_class.package.model}.*;"
-    imports.append(imprt)
-
-    if api_class.package.controller != util.Store.package.controller:
-        imprt = f"import {util.Store.package.controller}.BaseController;"
-        imports.append(imprt)
-
-    if entity.has_generated:
-        imprt = f"import {api_class.package.service}.{api_class.name}Service;"
-        imports.append(imprt)
-
-    if entity.has_generated:
-        imprt = f"import {util.Store.package.util}.Validator;"
-        imports.append(imprt)
-
-    # remove duplicates and sort
-    imports = sort_and_remove_duplicates(imports)
-
-    return imports
-
-
 def get_controller_tests_imports(model: spring.ModelClass) -> list[str]:
     """Helper for dynamic imports"""
     imports = []
@@ -128,51 +70,6 @@ def get_controller_tests_imports(model: spring.ModelClass) -> list[str]:
     # repos = [f"import {parent.model.package.repository}.{parent.model.name}Repository;" for parent in model.parents]
 
     imports.extend(imprt)
-
-    # remove duplicates and sort
-    imports = sort_and_remove_duplicates(imports)
-
-    return imports
-
-
-def get_service_imports(api_class: spring.ApiClass, entity: dsl.Api) -> list[str]:
-    """Helper for dynamic imports"""
-    imports = []
-
-    if util.controller_has(entity, has_enum=True):
-        imprt = f"import {util.Store.package.enum}.*;"
-        imports.append(imprt)
-
-    imprt = f"import {api_class.package.domain}.*;"
-    imports.append(imprt)
-
-    imprt = f"import {util.Store.package.model}.*;"
-    imports.append(imprt)
-
-    imprt = f"import {util.Store.package.exception}.*;"
-    imports.append(imprt)
-
-    if util.Store.config.database == "HIBERNATE":
-        imprt = [
-            f"import {api_class.package.entity}.*;",
-            f"import {api_class.package.mapper}.*;",
-            f"import {api_class.package.repository}.*;",
-            f"import {util.Store.package.repository}.*;",
-            f"import {util.Store.package.util}.PredicateBuilder;",
-        ]
-
-        imports.extend(imprt)
-
-        if api_class.model:
-            for parent in api_class.model.parents:
-                imprt = [
-                    f"import {parent.model.package.domain}.*;",
-                    f"import {parent.model.package.entity}.*;",
-                    f"import {parent.model.package.mapper}.*;",
-                    f"import {parent.model.package.repository}.*;",
-                ]
-
-                imports.extend(imprt)
 
     # remove duplicates and sort
     imports = sort_and_remove_duplicates(imports)

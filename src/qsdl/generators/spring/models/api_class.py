@@ -23,7 +23,6 @@ import stringcase
 import qsdl.dsl.models as dsl
 import qsdl.dsl.util as qutil
 
-from .. import import_resolver as resolver
 from .. import models as spring
 from .. import util
 from ..config import Directive
@@ -193,9 +192,6 @@ class ApiClass:
     has_objectnode: bool = False
 
     package: spring.Package = None
-    api_imports: list[str] = field(default_factory=list)
-    controller_imports: list[str] = field(default_factory=list)
-    service_imports: list[str] = field(default_factory=list)
 
     def build(self, _ref: dsl.Api) -> ApiClass:
         """Builds self from dsl.Api"""
@@ -228,10 +224,6 @@ class ApiClass:
 
             if package_directive:
                 self.package.set_namespace(package_directive.value)
-
-        self.api_imports = resolver.get_api_imports(self, _ref)
-        self.controller_imports = resolver.get_controller_imports(self, _ref)
-        self.service_imports = resolver.get_service_imports(self, _ref)
 
         return self
 

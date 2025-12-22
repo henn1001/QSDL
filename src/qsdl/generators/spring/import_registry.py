@@ -1,8 +1,101 @@
+from qsdl.generators.spring.config import Database
+
+from . import models as spring
 from . import util
 
 
-def render_imports(template_name: str) -> list[str]:
+def render_imports(template_name: str, api_or_model: spring.ApiClass | spring.ModelClass | None) -> list[str]:
+    api_class: spring.ApiClass | None = None
+    model_class: spring.ModelClass | None = None
+
+    if api_or_model and isinstance(api_or_model, spring.ApiClass):
+        api_class = api_or_model
+    if api_or_model and isinstance(api_or_model, spring.ModelClass):
+        model_class = api_or_model
+
     import_sets = {
+        "Api.j2": [
+            *([f"import {api_class.package.domain}.*;"] if api_class else []),
+            f"import {util.Store.package.enum}.*;",
+            f"import {util.Store.package.model}.CursorPage;",
+            f"import {util.Store.package.model}.CursorPageable;",
+            "import org.springframework.http.HttpStatus;",
+            "import org.springframework.http.ResponseEntity;",
+            "import org.springframework.stereotype.Controller;",
+            "import org.springframework.web.bind.annotation.DeleteMapping;",
+            "import org.springframework.web.bind.annotation.GetMapping;",
+            "import org.springframework.web.bind.annotation.PatchMapping;",
+            "import org.springframework.web.bind.annotation.PathVariable;",
+            "import org.springframework.web.bind.annotation.PostMapping;",
+            "import org.springframework.web.bind.annotation.PutMapping;",
+            "import org.springframework.web.bind.annotation.RequestBody;",
+            "import org.springframework.web.bind.annotation.RequestMapping;",
+            "import com.fasterxml.jackson.databind.node.ObjectNode;",
+            "import java.util.List;",
+        ],
+        "Controller.j2": [
+            *([f"import {api_class.package.api}.{api_class.name}Api;"] if api_class else []),
+            *([f"import {api_class.package.domain}.*;"] if api_class else []),
+            *(
+                [f"import {api_class.package.service}.{api_class.name}Service;"]
+                if api_class and api_class.has_generated
+                else []
+            ),
+            f"import {util.Store.package.controller}.BaseController;",
+            f"import {util.Store.package.util}.Validator;",
+            f"import {util.Store.package.enum}.*;",
+            f"import {util.Store.package.model}.CursorPage;",
+            f"import {util.Store.package.model}.CursorPageable;",
+            "import org.springframework.http.HttpStatus;",
+            "import org.springframework.http.ResponseEntity;",
+            "import org.springframework.stereotype.Controller;",
+            "import org.springframework.web.bind.annotation.DeleteMapping;",
+            "import org.springframework.web.bind.annotation.GetMapping;",
+            "import org.springframework.web.bind.annotation.PatchMapping;",
+            "import org.springframework.web.bind.annotation.PathVariable;",
+            "import org.springframework.web.bind.annotation.PostMapping;",
+            "import org.springframework.web.bind.annotation.PutMapping;",
+            "import org.springframework.web.bind.annotation.RequestBody;",
+            "import org.springframework.web.bind.annotation.RequestMapping;",
+            "import com.fasterxml.jackson.databind.node.ObjectNode;",
+            "import java.util.List;",
+            "import lombok.AllArgsConstructor;",
+        ],
+        "Service.j2": [
+            *([f"import {api_class.package.domain}.*;"] if api_class else []),
+            *(
+                [
+                    f"import {api_class.package.entity}.*;",
+                    f"import {api_class.package.mapper}.*;",
+                    f"import {api_class.package.repository}.*;",
+                    f"import {util.Store.package.repository}.*;",
+                    f"import {util.Store.package.util}.PredicateBuilder;",
+                ]
+                if api_class and util.Store.config.database == Database.HIBERNATE
+                else []
+            ),
+            *(
+                [
+                    *[f"import {parent.model.package.domain}.*;" for parent in api_class.model.parents],
+                    *[f"import {parent.model.package.entity}.*;" for parent in api_class.model.parents],
+                    *[f"import {parent.model.package.mapper}.*;" for parent in api_class.model.parents],
+                    *[f"import {parent.model.package.repository}.*;" for parent in api_class.model.parents],
+                ]
+                if api_class and util.Store.config.database == Database.HIBERNATE and api_class.model
+                else []
+            ),
+            f"import {util.Store.package.enum}.*;",
+            f"import {util.Store.package.model}.Context;",
+            f"import {util.Store.package.model}.CursorPage;",
+            f"import {util.Store.package.model}.CursorPageable;",
+            f"import {util.Store.package.exception}.AppException;",
+            f"import {util.Store.package.exception}.AppExceptionUtil;",
+            "import lombok.AllArgsConstructor;",
+            "import lombok.extern.slf4j.Slf4j;",
+            "import org.springframework.stereotype.Service;",
+            "import org.springframework.transaction.annotation.Transactional;",
+            "import java.util.Arrays;",
+        ],
         "BaseController.j2": [
             f"import {util.Store.package.model}.Context;",
             "import jakarta.servlet.http.HttpServletRequest;",

@@ -32,7 +32,7 @@ class Store:
     models: list[spring.ModelClass] = []
     apis: list[spring.ApiClass] = []
     package: spring.Package = None
-    packages: dict[str, spring.Package] = {}
+    packages: list[spring.Package] = []
     is_id_long: bool = True
 
 
