@@ -503,4 +503,16 @@ def generate_imports_for_template(
     }
 
     imports = import_sets.get(template_name, [])
-    return sorted(set([imp for imp in imports if imp]))
+
+    # Filter out None values and separate static imports from regular imports
+    all_imports = [imp for imp in imports if imp]
+    static_imports = sorted(set([imp for imp in all_imports if imp.startswith("import static ")]))
+    regular_imports = sorted(set([imp for imp in all_imports if not imp.startswith("import static ")]))
+
+    # Combine with blank line separator if both groups exist
+    if static_imports and regular_imports:
+        return static_imports + [""] + regular_imports
+    elif static_imports:
+        return static_imports
+    else:
+        return regular_imports

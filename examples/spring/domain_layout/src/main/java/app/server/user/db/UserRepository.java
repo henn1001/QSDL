@@ -7,6 +7,7 @@ import app.server.common.db.*;
 import app.server.user.db.UserEntity;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
+
 @Repository
 public interface UserRepository extends AbstractRepository<UserEntity, Long> {
 

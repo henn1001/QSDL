@@ -6,6 +6,7 @@
 package {{model.package.repository}};
 
 {{ util.macro_imports(self._TemplateReference__context.name, model) }}
+
 @Repository
 public interface {{model.name}}Repository extends AbstractRepository<{{model.name}}Entity, Long> {
   {% for parent in model.parents %}

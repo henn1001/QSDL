@@ -7,6 +7,7 @@ import app.server.common.db.*;
 import app.server.user.db.RoleEntity;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
+
 @Repository
 public interface RoleRepository extends AbstractRepository<RoleEntity, Long> {
 

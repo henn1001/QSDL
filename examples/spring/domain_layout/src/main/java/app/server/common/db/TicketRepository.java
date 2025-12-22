@@ -6,6 +6,7 @@ package app.server.common.db;
 import app.server.common.db.TicketEntity;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
+
 @Repository
 public interface TicketRepository extends AbstractRepository<TicketEntity, Long> {
 }

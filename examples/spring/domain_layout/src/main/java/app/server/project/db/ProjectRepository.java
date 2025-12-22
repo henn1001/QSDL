@@ -7,6 +7,7 @@ import app.server.common.db.*;
 import app.server.project.db.ProjectEntity;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
+
 @Repository
 public interface ProjectRepository extends AbstractRepository<ProjectEntity, Long> {
 }
