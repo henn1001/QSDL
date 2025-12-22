@@ -7,6 +7,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 
 @TestConfiguration
-@ComponentScan({{"{"}}{% for pkg in packages %}"{{pkg.mapper}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}})
+@ComponentScan({{"{"}}{% for pkg in packages | map(attribute='mapper') | unique | list %}"{{pkg}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}})
 public class TestConfig {}
 {{""}}
