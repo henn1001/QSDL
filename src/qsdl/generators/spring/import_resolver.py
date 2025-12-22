@@ -43,6 +43,10 @@ def generate_imports_for_template(
     if api_or_model and isinstance(api_or_model, spring.ModelClass):
         model_class = api_or_model
 
+    # helpers
+    is_db = util.Store.config.database == Database.HIBERNATE
+
+    # import definitions
     import_sets = {
         "Api.j2": [
             f"import {api_class.package.domain}.*;" if api_class else None,
@@ -99,7 +103,7 @@ def generate_imports_for_template(
                     f"import {util.Store.package.repository}.*;",
                     f"import {util.Store.package.util}.PredicateBuilder;",
                 ]
-                if api_class and util.Store.config.database == Database.HIBERNATE
+                if api_class and is_db
                 else []
             ),
             *(
@@ -109,7 +113,7 @@ def generate_imports_for_template(
                     *[f"import {parent.model.package.mapper}.*;" for parent in api_class.model.parents],
                     *[f"import {parent.model.package.repository}.*;" for parent in api_class.model.parents],
                 ]
-                if api_class and util.Store.config.database == Database.HIBERNATE and api_class.model
+                if api_class and is_db and api_class.model
                 else []
             ),
             f"import {util.Store.package.enum}.*;",
@@ -128,16 +132,9 @@ def generate_imports_for_template(
             # Enum imports
             *(
                 [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
-                if model_class and (model_class.is_object or model_class.is_base)
+                if model_class
                 else []
             ),
-            # AbstractPersistent imports
-            f"import {util.Store.package.model}.AbstractPersistentBase;"
-            if model_class and model_class.is_base
-            else None,
-            f"import {util.Store.package.model}.AbstractPersistentObject;"
-            if model_class and model_class.is_object
-            else None,
             # Nested entity imports (including relations)
             *(
                 [
@@ -146,9 +143,11 @@ def generate_imports_for_template(
                     if (field.is_object or field.is_base)
                     and util.get_model_for(field.type).package.entity != model_class.package.entity
                 ]
-                if model_class and (model_class.is_object or model_class.is_base)
+                if model_class
                 else []
             ),
+            f"import {util.Store.package.model}.AbstractPersistentBase;",
+            f"import {util.Store.package.model}.AbstractPersistentObject;",
             "import com.fasterxml.jackson.annotation.JsonIgnore;",
             "import com.fasterxml.jackson.databind.node.ObjectNode;",
             "import org.hibernate.annotations.JdbcTypeCode;",
@@ -156,27 +155,37 @@ def generate_imports_for_template(
             "import org.hibernate.envers.Audited;" if util.Store.config.use_auditing else None,
             "import lombok.Getter;",
             "import lombok.Setter;",
-            "import jakarta.persistence.*;",
+            "import jakarta.persistence.Column;",
+            "import jakarta.persistence.CascadeType;",
+            "import jakarta.persistence.ElementCollection;",
+            "import jakarta.persistence.Entity;",
+            "import jakarta.persistence.EnumType;",
+            "import jakarta.persistence.Enumerated;",
+            "import jakarta.persistence.FetchType;",
+            "import jakarta.persistence.JoinColumn;",
+            "import jakarta.persistence.JoinTable;",
+            "import jakarta.persistence.OneToOne;",
+            "import jakarta.persistence.OneToMany;",
+            "import jakarta.persistence.ManyToMany;",
+            "import jakarta.persistence.ManyToOne;",
+            "import jakarta.persistence.PreRemove;",
+            "import jakarta.persistence.Table;",
             "import jakarta.validation.constraints.NotNull;",
-            "import java.time.*;",
-            "import java.util.*;",
-        ],
-        "MapStruct.j2": [
-            f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
-            f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
-            "import org.mapstruct.*;",
+            "import java.time.LocalDate;",
+            "import java.time.OffsetDateTime;",
+            "import java.util.LinkedHashSet;",
+            "import java.util.Set;",
+            "import java.util.List;",
         ],
         "Pojo.j2": [
             # Enum imports
             *(
                 [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
-                if model_class and (model_class.is_object or model_class.is_base)
+                if model_class
                 else []
             ),
             # AbstractClass import
-            f"import {util.Store.package.model}.AbstractClass;"
-            if model_class and (model_class.is_object or model_class.is_base)
-            else None,
+            f"import {util.Store.package.model}.AbstractClass;" if model_class else None,
             # Nested entity imports (non-relation)
             *(
                 [
@@ -186,56 +195,54 @@ def generate_imports_for_template(
                     and not field.is_relation
                     and util.get_model_for(field.type).package.domain != model_class.package.domain
                 ]
-                if model_class and (model_class.is_object or model_class.is_base)
+                if model_class
                 else []
             ),
             "import com.fasterxml.jackson.annotation.JsonProperty;",
             "import com.fasterxml.jackson.databind.node.ObjectNode;",
-            "import lombok.*;",
+            "import lombok.Builder;",
+            "import lombok.EqualsAndHashCode;",
+            "import lombok.Getter;",
+            "import lombok.NonNull;",
+            "import lombok.Setter;",
             "import lombok.extern.jackson.Jacksonized;",
-            "import jakarta.validation.*;",
-            "import jakarta.validation.constraints.*;",
-            "import java.time.*;",
-            "import java.util.*;",
+            "import jakarta.validation.constraints.Max;",
+            "import jakarta.validation.constraints.Min;",
+            "import jakarta.validation.constraints.NotNull;",
+            "import jakarta.validation.constraints.Size;",
+            "import java.time.LocalDate;",
+            "import java.time.OffsetDateTime;",
+            "import java.util.List;",
+        ],
+        "MapStruct.j2": [
+            f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
+            f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
+            "import org.mapstruct.BeanMapping;",
+            "import org.mapstruct.InheritConfiguration;",
+            "import org.mapstruct.Mapper;",
+            "import org.mapstruct.Mapping;",
+            "import org.mapstruct.MappingTarget;",
+            "import org.mapstruct.Named;",
+            "import org.mapstruct.NullValuePropertyMappingStrategy;",
         ],
         "Repository.j2": [
-            f"import {model_class.package.entity}.{model_class.name}Entity;"
-            if model_class and (model_class.is_object or model_class.is_entity)
-            else None,
+            f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
             f"import {util.Store.package.repository}.*;"
-            if model_class
-            and (model_class.is_object or model_class.is_entity)
-            and model_class.package.repository != util.Store.package.repository
+            if model_class and model_class.package.repository != util.Store.package.repository
             else None,
             "import org.springframework.stereotype.Repository;",
             "import java.util.Optional;",
         ],
         "DControllerTest.j2": [
             # Model-specific imports
-            f"import {util.Store.config.base_package}.TestConfig;"
-            if model_class and (model_class.is_object or model_class.is_base)
-            else None,
-            f"import {util.Store.config.base_package}.TestUtils;"
-            if model_class and (model_class.is_object or model_class.is_base)
-            else None,
-            f"import {util.Store.package.enum}.ErrorCode;"
-            if model_class and (model_class.is_object or model_class.is_base)
-            else None,
-            f"import {util.Store.package.util}.Json;"
-            if model_class and (model_class.is_object or model_class.is_base)
-            else None,
-            f"import {util.Store.package.model}.AppError;"
-            if model_class and (model_class.is_object or model_class.is_base)
-            else None,
-            f"import {util.Store.package.model}.CursorPage;"
-            if model_class and (model_class.is_object or model_class.is_base)
-            else None,
-            f"import {model_class.package.domain}.{model_class.name};"
-            if model_class and (model_class.is_object or model_class.is_base)
-            else None,
-            f"import {model_class.package.service}.{model_class.name}Service;"
-            if model_class and (model_class.is_object or model_class.is_base)
-            else None,
+            f"import {util.Store.config.base_package}.TestConfig;" if model_class else None,
+            f"import {util.Store.config.base_package}.TestUtils;" if model_class else None,
+            f"import {util.Store.package.enum}.ErrorCode;" if model_class else None,
+            f"import {util.Store.package.util}.Json;" if model_class else None,
+            f"import {util.Store.package.model}.AppError;" if model_class else None,
+            f"import {util.Store.package.model}.CursorPage;" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
+            f"import {model_class.package.service}.{model_class.name}Service;" if model_class else None,
             "import static org.junit.jupiter.api.Assertions.assertEquals;",
             "import static org.mockito.ArgumentMatchers.any;",
             "import static org.mockito.ArgumentMatchers.eq;",
@@ -260,19 +267,13 @@ def generate_imports_for_template(
         ],
         "RepositoryTest.j2": [
             # Package wildcards
-            f"import {model_class.package.entity}.*;"
-            if model_class and (model_class.is_object or model_class.is_entity)
-            else None,
-            f"import {util.Store.package.repository}.*;"
-            if model_class and (model_class.is_object or model_class.is_entity)
-            else None,
-            f"import {util.Store.package.model}.*;"
-            if model_class and (model_class.is_object or model_class.is_entity)
-            else None,
+            f"import {model_class.package.entity}.*;" if model_class else None,
+            f"import {util.Store.package.repository}.*;" if model_class else None,
+            f"import {util.Store.package.model}.*;" if model_class else None,
             # Parent entity and repository imports
             *(
                 [f"import {parent.model.package.entity}.{parent.model.name}Entity;" for parent in model_class.parents]
-                if model_class and (model_class.is_object or model_class.is_entity)
+                if model_class
                 else []
             ),
             *(
@@ -280,7 +281,7 @@ def generate_imports_for_template(
                     f"import {parent.model.package.repository}.{parent.model.name}Repository;"
                     for parent in model_class.parents
                 ]
-                if model_class and (model_class.is_object or model_class.is_entity)
+                if model_class
                 else []
             ),
             # Relation entity imports
@@ -290,7 +291,7 @@ def generate_imports_for_template(
                     for field in model_class.fields
                     if field.is_relation
                 ]
-                if model_class and (model_class.is_object or model_class.is_entity)
+                if model_class
                 else []
             ),
             "import static org.junit.jupiter.api.Assertions.assertEquals;",
@@ -358,7 +359,7 @@ def generate_imports_for_template(
         ],
         "AppConfiguration.j2": [
             f"import {util.Store.package.util}.Json;",
-            f"import {util.Store.package.repository}.BaseRepositoryImpl;",
+            f"import {util.Store.package.repository}.BaseRepositoryImpl;" if is_db else None,
             "import com.fasterxml.jackson.databind.ObjectMapper;",
             "import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;",
             "import java.util.TimeZone;",

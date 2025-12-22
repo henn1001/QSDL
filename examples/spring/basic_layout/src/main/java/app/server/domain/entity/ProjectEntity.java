@@ -3,13 +3,31 @@
  */
 package app.server.domain.entity;
 
+import app.server.model.AbstractPersistentBase;
 import app.server.model.AbstractPersistentObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PreRemove;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import java.time.*;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -43,7 +61,6 @@ public class ProjectEntity extends AbstractPersistentObject {
   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   public final Set<RoleEntity> roles = new LinkedHashSet<>();
 
-
   public void addToRoles(RoleEntity o) {
     o.setProject(this);
     this.roles.add(o);
@@ -53,5 +70,4 @@ public class ProjectEntity extends AbstractPersistentObject {
     o.setProject(null);
     this.roles.remove(o);
   }
-
 }

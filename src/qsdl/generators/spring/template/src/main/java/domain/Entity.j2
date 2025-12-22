@@ -17,8 +17,8 @@ package {{model.package.entity}};
 {% if use_auditing and (model.is_object or model.is_entity) %}@Audited{{"\n"}}{% endif %}
 @Table(name = "{{model.name|snake}}")
 public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersistentObject{% else %} extends AbstractPersistentBase{% endif %} {
-
 {% for field in model.fields if not field.is_id and not field.is_transient %}
+
   {# 
     Required fields
   #}
@@ -46,7 +46,6 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
   {% else %}
   {{ "private" if use_encapsulation else "public"}} {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
   {% endif %}
-
 {% endfor %}
   {% set removeHookList = model.fields| selectattr("is_aggregation") | rejectattr("is_relation_owner") | list %}
   {% if removeHookList %}
@@ -93,6 +92,5 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
 {% endif %}
     this.{{field.name}}.remove(o);
   }
-
 {% endfor %}}
 {{""}}

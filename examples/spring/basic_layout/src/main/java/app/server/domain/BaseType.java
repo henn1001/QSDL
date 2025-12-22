@@ -6,12 +6,20 @@ package app.server.domain;
 import app.server.model.AbstractClass;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import jakarta.validation.*;
-import jakarta.validation.constraints.*;
-import java.time.*;
-import java.util.*;
-import lombok.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.jackson.Jacksonized;
+
 @Getter
 @Setter
 @Builder
@@ -45,5 +53,4 @@ public class BaseType extends AbstractClass {
 
   @JsonProperty(value = "meta_inf")
   private ObjectNode metaInf;
-
 }

@@ -8,7 +8,9 @@ package {{package.config}};
 
 @Configuration
 @EnableScheduling
+{% if database == "HIBERNATE" %}
 @EnableJpaRepositories(basePackages = "{{package.repository}}", repositoryBaseClass = BaseRepositoryImpl.class)
+{% endif%}
 class AppConfig {
 
   @Value("${server.port}")

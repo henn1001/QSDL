@@ -7,6 +7,7 @@
 package {{model.package.domain}};
 
 {{ util.macro_imports(self._TemplateReference__context.name, model) }}
+
 {% if use_encapsulation %}
 @Getter
 @Setter
@@ -17,8 +18,8 @@ package {{model.package.domain}};
 {% endif %}
 @EqualsAndHashCode(callSuper = false)
 public class {{model.name}} extends AbstractClass {
-
 {% for field in model.fields if not field.is_relation and not field.is_hidden %}
+
   {# 
     Required fields
   #}
@@ -68,6 +69,5 @@ public class {{model.name}} extends AbstractClass {
   {% else %}
   {{ "private" if use_encapsulation else "public"}} {{field.type}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
   {% endif %}
-
 {% endfor %}}
 {{""}}

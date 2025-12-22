@@ -27,7 +27,7 @@ class Package:
 
     _config: Config
 
-    _namespace: str = None
+    _namespace: str = ""
     slashed: bool = False
 
     def __post_init__(self) -> None:

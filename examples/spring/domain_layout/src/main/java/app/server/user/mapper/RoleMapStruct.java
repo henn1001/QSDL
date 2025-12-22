@@ -5,7 +5,13 @@ package app.server.user.mapper;
 
 import app.server.user.db.RoleEntity;
 import app.server.user.dto.Role;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.InheritConfiguration;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
     componentModel = "spring",
