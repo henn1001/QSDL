@@ -168,7 +168,6 @@ class ModelClass:
     has_objectnode: bool = False
 
     package: spring.Package = None
-    imports: dict[str, list[str]] = field(default_factory=dict)
 
     hibernate: spring.HibernateModelInfo = None
 

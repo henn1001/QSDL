@@ -27,7 +27,6 @@ from qsdl.render import render
 from . import import_resolver as resolver
 from . import util
 from .config import IDTYPE, Config
-from .import_registry import render_imports
 from .models import ApiClass, ModelClass, Package
 
 
@@ -297,7 +296,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         "use_auditing": config.use_auditing,
         "id_name": id_name,
         "id_type": id_type,
-        "render_imports": render_imports,
+        "generate_imports_for_template": resolver.generate_imports_for_template,
     }
 
     # generate supporting files
