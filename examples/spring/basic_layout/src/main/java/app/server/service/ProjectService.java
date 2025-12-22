@@ -34,6 +34,7 @@ public class ProjectService {
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));
   }
 
+
   public CursorPage<Project> getProjects(CursorPageable pageable, Context context) throws AppException {
 
     var queryParameters = Arrays.<String>asList("name");
@@ -99,5 +100,4 @@ public class ProjectService {
 
     return null;
   }
-
 }

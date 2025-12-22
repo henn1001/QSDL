@@ -33,6 +33,7 @@ public class TicketService {
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
   }
 
+
   public CursorPage<Ticket> getTickets(CursorPageable pageable, Context context) throws AppException {
 
     var queryParameters = Arrays.<String>asList();
@@ -98,5 +99,4 @@ public class TicketService {
 
     return null;
   }
-
 }

@@ -114,12 +114,10 @@ public abstract class AbstractPersistentObject extends AbstractClass {
             Object f = this.getClass().getField(field.getName()).get(this);
 
             clear.invoke(f);
-          }
-          else {
+          } else {
             FieldUtils.writeField(this, field.getName(), null, true);
           }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
           log.error(UNHANDLED_EXCEPTION, e);
         }
       }
@@ -149,8 +147,7 @@ public abstract class AbstractPersistentObject extends AbstractClass {
   public int hashCode() {
     if (uid != null) {
       return uid.hashCode();
-    }
-    else {
+    } else {
       return super.hashCode();
     }
   }

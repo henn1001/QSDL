@@ -26,9 +26,7 @@ public class AppError extends AbstractClass {
   @JsonProperty(value = "details")
   public List<String> details = new ArrayList<>();
 
-
-  public AppError() {
-  }
+  public AppError() {}
 
   public AppError(String code, String message, Integer status) {
     this.code = code;

@@ -3,11 +3,10 @@
  */
 package app.server.user.db;
 
-import app.server.AbstractDataJpaTest;
-import app.server.TestUtils;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import app.server.AbstractDataJpaTest;
+import app.server.TestUtils;
 import app.server.common.db.*;
 import app.server.common.model.*;
 import app.server.common.util.Json;

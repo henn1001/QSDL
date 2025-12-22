@@ -55,7 +55,6 @@ class AppConfig {
             .allowedMethods("*")
             .allowedHeaders("Content-Type");
       }
-
     };
   }
 }

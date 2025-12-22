@@ -3,11 +3,10 @@
  */
 package app.server.repository;
 
-import app.server.AbstractDataJpaTest;
-import app.server.TestUtils;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import app.server.AbstractDataJpaTest;
+import app.server.TestUtils;
 import app.server.domain.entity.*;
 import app.server.domain.entity.RoleEntity;
 import app.server.model.*;

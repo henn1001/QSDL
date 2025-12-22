@@ -4,9 +4,6 @@
  */
 package {{model.package.repository}};
 
-import {{base_package}}.AbstractDataJpaTest;
-import {{base_package}}.TestUtils;
-
 {{ util.macro_imports(self._TemplateReference__context.name, model) }}
 
 class {{model.name}}RepositoryTest extends AbstractDataJpaTest {

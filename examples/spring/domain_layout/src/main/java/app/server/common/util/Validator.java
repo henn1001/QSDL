@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 
 public class Validator {
 
-  private static final jakarta.validation.Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+  private static final jakarta.validation.Validator validator =
+      Validation.buildDefaultValidatorFactory().getValidator();
 
   private static final String NOT_NULL_MSG = "{jakarta.validation.constraints.NotNull.message}";
 
@@ -56,16 +57,14 @@ public class Validator {
     }
   }
 
-  public static final <E extends Enum<E>> void validateEnum(String key, String value, Class<E> enumClass) throws AppException {
+  public static final <E extends Enum<E>> void validateEnum(String key, String value, Class<E> enumClass)
+      throws AppException {
     E[] enumConstants = enumClass.getEnumConstants();
 
-    boolean isValid = Arrays.stream(enumConstants)
-        .anyMatch(e -> e.name().equals(value));
+    boolean isValid = Arrays.stream(enumConstants).anyMatch(e -> e.name().equals(value));
 
     if (!isValid) {
-      String validValues = Arrays.stream(enumConstants)
-          .map(Enum::name)
-          .collect(Collectors.joining(", "));
+      String validValues = Arrays.stream(enumConstants).map(Enum::name).collect(Collectors.joining(", "));
 
       String error = String.format("Invalid value '%s' for '%s'. Valid values are: %s", value, key, validValues);
       throw new AppException(ErrorCode.BAD_REQUEST, List.of(error));

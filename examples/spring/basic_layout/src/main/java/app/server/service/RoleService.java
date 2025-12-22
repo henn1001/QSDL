@@ -46,6 +46,7 @@ public class RoleService {
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));
   }
 
+
   public CursorPage<Role> getRoles(Long projectId, CursorPageable pageable, Context context) throws AppException {
 
     // confirm existence of parent
@@ -134,5 +135,4 @@ public class RoleService {
 
     return null;
   }
-
 }

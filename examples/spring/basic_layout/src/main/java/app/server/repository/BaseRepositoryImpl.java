@@ -19,8 +19,7 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
 public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Serializable>
-    extends SimpleJpaRepository<T, S>
-    implements BaseRepository<T, S> {
+    extends SimpleJpaRepository<T, S> implements BaseRepository<T, S> {
 
   private final EntityManager entityManager;
 
@@ -50,14 +49,13 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
 
   @Override
   public long count(Predicate predicate) {
-    return queryFactory.selectFrom(entityPath)
-        .where(predicate)
-        .fetchCount();
+    return queryFactory.selectFrom(entityPath).where(predicate).fetchCount();
   }
 
   @Override
   public List<T> findAll(Predicate predicate) {
-    return queryFactory.selectFrom(entityPath)
+    return queryFactory
+        .selectFrom(entityPath)
         .where(predicate)
         .orderBy(entityPath.getNumber("id", Long.class).desc())
         .fetch();
@@ -69,7 +67,8 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
     // the id of this extra item will be the new cursor
     int limit = pageable.limit() + 1;
 
-    List<T> items = queryFactory.selectFrom(entityPath)
+    List<T> items = queryFactory
+        .selectFrom(entityPath)
         .where(predicate)
         .where(entityPath.getNumber("id", Long.class).loe(pageable.cursor()))
         .orderBy(entityPath.getNumber("id", Long.class).desc())
@@ -83,14 +82,14 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
   }
 
   /**
-  * Returns the cursor for the next CursorPage.
-  *
-  * <p>All items after the requested limit of the provided list are removed and 
-  * the id of limit + 1 is used as cursor.
-  *
-  * @param items the list of entities.
-  * @return the cursor for the next CursorPage.
-  */
+   * Returns the cursor for the next CursorPage.
+   *
+   * <p>All items after the requested limit of the provided list are removed and
+   * the id of limit + 1 is used as cursor.
+   *
+   * @param items the list of entities.
+   * @return the cursor for the next CursorPage.
+   */
   private String getNextCursor(List<T> items, long limit) {
     String nextCursor = null;
     int size = items.size();
@@ -106,8 +105,7 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
       // it is only used for the paging cursor
       if (diff == 1) {
         items.remove(cursorIndex);
-      }
-      else {
+      } else {
         items.subList(cursorIndex, size).clear();
       }
     }

@@ -14,4 +14,5 @@ public abstract class AbstractClass {
 
   public String toPrettyString() throws Json.JsonException {
     return Json.serializer().toPrettyString(this);
-  }}
+  }
+}

@@ -100,8 +100,7 @@ public abstract class AbstractPersistentBase extends AbstractClass {
   public int hashCode() {
     if (uid != null) {
       return uid.hashCode();
-    }
-    else {
+    } else {
       return super.hashCode();
     }
   }

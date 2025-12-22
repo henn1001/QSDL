@@ -43,6 +43,7 @@ public class {{api.name}}Service {
 {% endif %}
 
 {% for operation in api.operations if operation.is_generated %}
+
   {% if operation.method != "get" %}
   @Transactional
   {% endif %}
@@ -54,6 +55,5 @@ public class {{api.name}}Service {
     return null;
   {% endif %}
   }
-
 {% endfor %}}
 {{""}}

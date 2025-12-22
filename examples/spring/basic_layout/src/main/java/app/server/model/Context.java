@@ -36,7 +36,8 @@ public class Context {
     loadParameterMap();
   }
 
-  public Context(MultiValueMap<String, String> parameterMap,
+  public Context(
+      MultiValueMap<String, String> parameterMap,
       MultiValueMap<String, String> headerMap,
       Map<String, Object> attributeMap) {
     this.parameterMap = Objects.requireNonNullElse(parameterMap, new LinkedMultiValueMap<String, String>());
@@ -58,8 +59,8 @@ public class Context {
   }
 
   /**
-  * retrieves all headers from the context.
-  */
+   * retrieves all headers from the context.
+   */
   private void loadHeaderMap() {
 
     Enumeration<String> enumerator = request.getHeaderNames();
@@ -71,8 +72,8 @@ public class Context {
   }
 
   /**
-  * retrieves all attributes from the context.
-  */
+   * retrieves all attributes from the context.
+   */
   private void loadAttributeMap() {
 
     Enumeration<String> enumerator = request.getAttributeNames();
@@ -100,8 +101,8 @@ public class Context {
   }
 
   /**
-  * Returns a subset from the parameterMap.
-  */
+   * Returns a subset from the parameterMap.
+   */
   public MultiValueMap<String, String> getParameterMap(List<String> values) {
 
     MultiValueMap<String, String> ret = new LinkedMultiValueMap<>();
@@ -116,8 +117,8 @@ public class Context {
   }
 
   /**
-  * Returns a subset from the headerMap.
-  */
+   * Returns a subset from the headerMap.
+   */
   public MultiValueMap<String, String> getHeaderMap(List<String> values) {
 
     MultiValueMap<String, String> ret = new LinkedMultiValueMap<>();

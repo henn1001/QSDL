@@ -206,6 +206,7 @@ def generate_imports_for_template(
             "import lombok.NonNull;",
             "import lombok.Setter;",
             "import lombok.extern.jackson.Jacksonized;",
+            "import jakarta.validation.Valid;",
             "import jakarta.validation.constraints.Max;",
             "import jakarta.validation.constraints.Min;",
             "import jakarta.validation.constraints.NotNull;",
@@ -294,8 +295,9 @@ def generate_imports_for_template(
                 if model_class
                 else []
             ),
-            "import static org.junit.jupiter.api.Assertions.assertEquals;",
             f"import {util.Store.package.util}.Json;",
+            f"import {util.Store.config.base_package}.AbstractDataJpaTest;",
+            f"import {util.Store.config.base_package}.TestUtils;",
             "import com.querydsl.core.BooleanBuilder;",
             "import java.util.List;",
             "import org.json.JSONObject;",
@@ -303,6 +305,7 @@ def generate_imports_for_template(
             "import org.skyscreamer.jsonassert.JSONAssert;",
             "import org.springframework.beans.factory.annotation.Autowired;",
             "import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;",
+            "import static org.junit.jupiter.api.Assertions.assertEquals;",
         ],
         "ServiceTest.j2": [
             # *(model_class.imports["service_tests"] if model_class else []),

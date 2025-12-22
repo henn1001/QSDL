@@ -42,28 +42,28 @@ public class CursorPageable {
   }
 
   /**
-  * Returns the requested base64 decoded cursor.
-  *
-  * @return the requested base64 decoded cursor.
-  */
+   * Returns the requested base64 decoded cursor.
+   *
+   * @return the requested base64 decoded cursor.
+   */
   public long cursor() {
     return decodedCursor;
   }
 
   /**
-  * Returns the requested limit.
-  *
-  * @return the requested limit.
-  */
+   * Returns the requested limit.
+   *
+   * @return the requested limit.
+   */
   public int limit() {
     return limit;
   }
 
   /**
-  * Returns the request to return the total count.
-  *
-  * @return the request to return the total count.
-  */
+   * Returns the request to return the total count.
+   *
+   * @return the request to return the total count.
+   */
   public boolean count() {
     return count;
   }

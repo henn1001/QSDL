@@ -46,6 +46,7 @@ public class UserService {
         .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
   }
 
+
   public CursorPage<User> getUsersForTicket(Long ticketId, CursorPageable pageable, Context context) throws AppException {
 
     // confirm existence of parent
@@ -163,5 +164,4 @@ public class UserService {
 
     return null;
   }
-
 }

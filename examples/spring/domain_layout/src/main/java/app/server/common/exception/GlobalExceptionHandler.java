@@ -36,8 +36,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     dataBinder.initDirectFieldAccess();
   }
 
-  private ResponseEntity<Object> buildResponseEntity(AppError appError,
-      HttpServletRequest httpRequest) {
+  private ResponseEntity<Object> buildResponseEntity(AppError appError, HttpServletRequest httpRequest) {
 
     appError.path = httpRequest.getRequestURI();
 
@@ -50,8 +49,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    * Handle our Exceptions.
    */
   @ExceptionHandler({AppException.class})
-  protected ResponseEntity<Object> handleAppException(AppException ex, WebRequest request,
-      HttpServletRequest httpRequest) {
+  protected ResponseEntity<Object> handleAppException(
+      AppException ex, WebRequest request, HttpServletRequest httpRequest) {
 
     return buildResponseEntity(ex.getAppError(), httpRequest);
   }
@@ -62,8 +61,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    * <p>Catch-all other exceptions that don't have specific handlers.
    */
   @ExceptionHandler({Exception.class})
-  protected ResponseEntity<Object> handleAll(Exception ex, WebRequest request,
-      HttpServletRequest httpRequest) {
+  protected ResponseEntity<Object> handleAll(Exception ex, WebRequest request, HttpServletRequest httpRequest) {
 
     log.error("Caught unhandeled exception:", ex);
 
@@ -76,8 +74,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    * Handles standard Spring MVC Exceptions.
    */
   @Override
-  protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
-      HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+  protected ResponseEntity<Object> handleExceptionInternal(
+      Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 
@@ -90,8 +88,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    * Handles bean validation related Exceptions.
    */
   @Override
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-      HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
     HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
 

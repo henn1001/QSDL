@@ -12,9 +12,7 @@ public enum {{model.name}} {
   {% endfor %}
 
   public static boolean hasValue(String value) {
-    return EnumSet.allOf({{model.name}}.class)
-        .stream()
-        .anyMatch(e -> e.toString().equals(value));
+    return EnumSet.allOf({{model.name}}.class).stream().anyMatch(e -> e.toString().equals(value));
   }
 }
 {{""}}

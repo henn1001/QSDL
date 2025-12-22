@@ -42,7 +42,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -76,7 +76,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -106,7 +106,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -136,7 +136,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -166,7 +166,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -197,7 +197,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -228,7 +228,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -254,7 +254,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -289,7 +289,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -304,8 +304,7 @@ class TestSpecificsSpring:
         test_input = Path("examples/openapi/input.qsdl")
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
-        test_output.mkdir()
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         config = {
             "base_package": "com.supertest",
@@ -345,7 +344,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
@@ -360,8 +359,7 @@ class TestSpecificsSpring:
         test_input = Path("examples/openapi/input.qsdl")
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
-        test_output.mkdir()
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         config = {
             "id_type": "STRING",
@@ -381,10 +379,9 @@ class TestSpecificsSpring:
         test_output = Path("srcgen/")
 
         shutil.rmtree(test_output, ignore_errors=True)
-        test_output.mkdir()
 
         config = {
-            "encapsulation": True,
+            "encapsulation": False,
         }
 
         # generate
@@ -400,8 +397,7 @@ class TestSpecificsSpring:
         test_input = Path("examples/openapi/input.qsdl")
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
-        test_output.mkdir()
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         config = {
             "database": "NO",
@@ -420,8 +416,7 @@ class TestSpecificsSpring:
         test_input = Path("examples/other/package_example.qsdl")
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
-        test_output.mkdir()
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         config = {
             "api_path": "{package}.api",
@@ -459,7 +454,7 @@ class TestSpecificsSpring:
         test_input = textwrap.dedent(test_input)
         test_output = Path("srcgen/")
 
-        shutil.rmtree(test_output, ignore_errors=True)
+        shutil.rmtree(test_output / "src", ignore_errors=True)
 
         # generate
         assert generate(test_output, generator_name="spring", raw_schema=test_input) is None

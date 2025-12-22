@@ -9,7 +9,7 @@ import java.util.Objects;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
-  // @formatter:off
+
   // generics
   BAD_REQUEST("400", "Bad Request", HttpStatus.BAD_REQUEST),
   UNAUTHORIZED("401", "Unauthorized", HttpStatus.UNAUTHORIZED),
@@ -18,7 +18,6 @@ public enum ErrorCode {
   INTERNAL_SERVER_ERROR("500", "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
   // specifics
   ENTITY_NOT_FOUND("1000", "Entity not found", HttpStatus.NOT_FOUND),
-  // @formatter:on
   ;
 
   private final String code;

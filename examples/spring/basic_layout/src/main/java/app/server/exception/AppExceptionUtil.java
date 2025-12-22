@@ -12,8 +12,7 @@ public class AppExceptionUtil {
   public static void request(ThrowingConsumer<Void> operation) throws AppException {
     try {
       operation.accept(null);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
     }
   }
@@ -21,8 +20,7 @@ public class AppExceptionUtil {
   public static void request(ThrowingConsumer<Void> operation, ErrorCode code) throws AppException {
     try {
       operation.accept(null);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new AppException(code, e.getMessage());
     }
   }
@@ -30,8 +28,7 @@ public class AppExceptionUtil {
   public static <T> T request(ThrowingSupplier<T> operation) throws AppException {
     try {
       return operation.get();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
     }
   }
@@ -39,8 +36,7 @@ public class AppExceptionUtil {
   public static <T> T request(ThrowingSupplier<T> operation, ErrorCode code) throws AppException {
     try {
       return operation.get();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new AppException(code, e.getMessage());
     }
   }
@@ -64,20 +60,17 @@ public class AppExceptionUtil {
   }
 
   public static AppException entityNotFound(Class<?> cls, Long id) {
-    return new AppException(ErrorCode.ENTITY_NOT_FOUND,
-        "No %s entity with id %s exists!"
-            .formatted(cls.getSimpleName(), id));
+    String msg = "No %s entity with id %s exists!".formatted(cls.getSimpleName(), id);
+    return new AppException(ErrorCode.ENTITY_NOT_FOUND, msg);
   }
 
   public static AppException entityAlreadyAdded(Class<?> cls, Long id) {
-    return new AppException(ErrorCode.BAD_REQUEST,
-        "Entity %s with id %s already added!"
-            .formatted(cls.getSimpleName(), id));
+    String msg = "Entity %s with id %s already added!".formatted(cls.getSimpleName(), id);
+    return new AppException(ErrorCode.BAD_REQUEST, msg);
   }
 
   public static AppException entityNotAttached(Class<?> cls, Long id) {
-    return new AppException(ErrorCode.BAD_REQUEST,
-        "Entity %s with id %s not attached!"
-            .formatted(cls.getSimpleName(), id));
+    String msg = "Entity %s with id %s not attached!".formatted(cls.getSimpleName(), id);
+    return new AppException(ErrorCode.BAD_REQUEST, msg);
   }
 }

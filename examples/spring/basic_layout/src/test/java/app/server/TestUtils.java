@@ -29,9 +29,11 @@ public class TestUtils {
   public static EasyRandom easyRandom;
   public static EasyRandom easyRandomJpa;
 
+  private static final Json json = Json.serializer();
+
   static {
     EasyRandomParameters parameters = new EasyRandomParameters()
-        .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}").put("test", "data"))
+        .randomize(ObjectNode.class, () -> json.nodeFromJson("{}").put("test", "data"))
         .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
         .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
         .randomize(BigInteger.class, new MyBigIntegerRandomizer())
@@ -39,7 +41,7 @@ public class TestUtils {
         .objectPoolSize(10000);
 
     EasyRandomParameters jpaParameters = new EasyRandomParameters()
-        .randomize(ObjectNode.class, () -> Json.serializer().nodeFromJson("{}").put("test", "data"))
+        .randomize(ObjectNode.class, () -> json.nodeFromJson("{}").put("test", "data"))
         .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
         .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
         .randomize(BigInteger.class, new MyBigIntegerRandomizer())
