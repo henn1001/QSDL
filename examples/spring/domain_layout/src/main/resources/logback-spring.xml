@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <property name="LOGS" value="logs" />
+
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>%d{yyyy-MM-dd} | %d{HH:mm:ss.SSS} | %highlight(%-5level) | %magenta(%thread) | %-30.30(%logger{5}) | %m%n</Pattern>
+    </layout>
+  </appender>
+
+  <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>%d{yyyy-MM-dd} | %d{HH:mm:ss.SSS} | %-5level | %thread | %-30.30(%logger{5}) | %m%n</Pattern>
+    </encoder>
+
+    <file>${LOGS}/spring.log</file>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- weekly rollover and keep maximum 30 days -->
+      <fileNamePattern>${LOGS}/archived/spring.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+  </appender>
+
+  <!-- LOG everything at INFO level -->
+  <root level="info">
+    <appender-ref ref="Console" />
+  </root>
+
+  <springProfile name="log">
+    <root level="info">
+      <appender-ref ref="RollingFile" />
+    </root>
+  </springProfile>
+
+</configuration>

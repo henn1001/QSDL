@@ -1,0 +1,15 @@
+{
+  "api_path": "{package}.api",
+  "controller_path": "{package}.api",
+  "domain_path": "{package}.dto",
+  "entity_path": "{package}.db",
+  "mapper_path": "{package}.mapper",
+  "repository_path": "{package}.db",
+  "service_path": "{package}.service",
+  "enum_path": "common.constants",
+  "exception_path": "common.exception",
+  "model_path": "common.model",
+  "config_path": "common.config",
+  "util_path": "common.util",
+  "package_placeholder_fallback": "common"
+}

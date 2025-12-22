@@ -19,7 +19,7 @@ enum Status {
     CLOSED
 }
 
-base BaseType {
+base BaseType @spring-package("custom") {
     name: String! @query
     description: String
     creation_by: String @readOnly
@@ -31,16 +31,16 @@ base BaseType {
 
 
 // NameSpace Management
-type Project extends BaseType @namespace("Management") {
+type Project extends BaseType @namespace("Management") @spring-package("project") {
     archive: Boolean @writeOnly
     roles: [Role] @composition
 }
 
-type Role @namespace("Management") {
+type Role @namespace("Management") @spring-package("user") {
     name: String!
 }
 
-type User @namespace("Management"){
+type User @namespace("Management") @spring-package("user") {
     name: String!
     count: Int @hidden
     mail: String @unique
@@ -57,7 +57,7 @@ type Ticket @namespace("Incident"){
     users: [User] @aggregation
 }
 
-extend api {
+extend api @spring-package("custom") {
     submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(POST)
     action(arg1: BaseType, arg2: String?, arg4: String!?): Object @path("action") @method(POST)
 }

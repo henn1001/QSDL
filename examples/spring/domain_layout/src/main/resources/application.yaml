@@ -1,0 +1,105 @@
+### Core
+server.port: 8080
+server.base-path: /api/v1
+spring.mvc.pathmatch.matching-strategy: ant_path_matcher
+spring.threads.virtual.enabled: true
+
+### Monitoring service
+management.server.port: 8081
+management.endpoints.web.base-path: /api/actuator
+management.endpoint.health.show-details: always
+management.endpoints.web.exposure.include: health,info,metrics,prometheus,logfile,loggers
+management.endpoints.web.exposure.exclude:
+management.endpoints.web.cors.allowed-origins: "*"
+management.endpoints.web.cors.allowed-methods: GET
+
+### Logging
+logging.file.name: logs/spring.log
+
+### H2-Console
+spring.h2.console.enabled: false
+spring.h2.console.settings.web-allow-others: true
+spring.h2.console.path: /api/h2
+
+### Flyway
+spring.flyway.enabled: false
+
+### Audits
+spring.jpa.properties.org.hibernate.envers.audit_strategy: ValidityAuditStrategy
+
+# Springdocs
+springdoc.api-docs.path: /api/docs/generated
+springdoc.packagesToScan: X
+springdoc.swagger-ui.path: /api/swagger-ui
+springdoc.swagger-ui.url: /api/docs/openapi.json
+
+---
+################################################################################
+spring.config.activate.on-profile: dev
+
+### Datasource
+spring.jpa.properties.hibernate.hbm2dll.create_namespaces: true
+spring.jpa.hibernate.ddl-auto: update
+
+spring.datasource.url: jdbc:hsqldb:mem:testdb;sql.syntax_pgs=true;
+spring.datasource.username: sa
+spring.datasource.password:
+
+### H2-Console
+spring.h2.console.enabled: true
+
+### Logging
+logging.level.org.hibernate.SQL: DEBUG
+spring.jpa.properties.hibernate.format_sql: true
+spring.jpa.properties.hibernate.show_sql: false
+
+---
+################################################################################
+spring.config.activate.on-profile: local
+
+### Datasource
+spring.jpa.properties.hibernate.hbm2dll.create_namespaces: true
+spring.jpa.hibernate.ddl-auto: update
+
+spring.datasource.url: jdbc:hsqldb:file:./db/testdb;sql.syntax_pgs=true;
+spring.datasource.username: sa
+spring.datasource.password:
+
+### H2-Console
+spring.h2.console.enabled: true
+
+---
+################################################################################
+spring.config.activate.on-profile: prod
+
+### Datasource
+spring.jpa.properties.hibernate.default_schema: spring
+spring.jpa.hibernate.ddl-auto: validate
+
+spring.datasource.url: jdbc:postgresql://localhost:5432/postgres
+spring.datasource.username: postgres
+spring.datasource.password: postgres
+
+### Flyway
+spring.flyway.enabled: true
+spring.flyway.schemas: spring
+spring.flyway.locations: classpath:db/migration
+spring.flyway.out-of-order: true
+spring.flyway.ignoreMigrationPatterns: "*:missing"
+
+---
+################################################################################
+spring.config.activate.on-profile: prod-init
+
+spring.jpa.hibernate.ddl-auto: create
+spring.jpa.properties.hibernate.hbm2ddl.delimiter: ;
+
+spring.jpa.properties.jakarta.persistence.schema-generation.scripts.action: create
+spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-target: src/main/resources/db/migration/V1000__Initial.sql
+spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-source: metadata
+
+---
+################################################################################
+
+### Default Profile
+spring.profiles.active: dev

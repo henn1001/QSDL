@@ -17,7 +17,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "QSDL - Spring",
+            "name": "QSDL - Spring - Basic",
             "type": "debugpy",
             "request": "launch",
             "module": "qsdl",
@@ -26,7 +26,24 @@
                 "-g",
                 "spring",
                 "-o",
-                "examples/spring/srcgen/"
+                "examples/spring/basic_layout/"
+            ],
+            "justMyCode": false,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "QSDL - Spring - Domain",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "qsdl",
+            "args": [
+                "examples/spring/relation.qsdl",
+                "-g",
+                "spring",
+                "-c",
+                "util/domain_config.json",
+                "-o",
+                "examples/spring/domain_layout/"
             ],
             "justMyCode": false,
             "console": "integratedTerminal"

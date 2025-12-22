@@ -1,0 +1,1053 @@
+openapi: 3.1.0
+info:
+  title: Test API
+  description: |
+    A simple parent child relation example.
+    
+    Tests:
+      -  extending from a base
+      -  read & writeOnly
+      -  compositions
+      -  aggregations
+      -  usage of enums and generic json object
+  version: '1.0'
+servers:
+  - url: '/api/v1'
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Management
+  - name: Incident
+
+paths:  
+  '/projects':
+    get:
+      tags:
+        - Management
+      summary: getProjects
+      description: |
+        List Projects
+      operationId: getProjects
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      tags:
+        - Management
+      summary: createProject
+      description: |
+        Create a Project
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/projects/{id}':
+    get:
+      tags:
+        - Management
+      summary: getProject
+      description: |
+        Read the specified Project
+      operationId: getProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    put:
+      tags:
+        - Management
+      summary: replaceProject
+      description: |
+        Replace the specified Project
+      operationId: replaceProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Management
+      summary: updateProject
+      description: |
+        Update the specified Project
+      operationId: updateProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - Management
+      summary: deleteProject
+      description: |
+        Delete the specified Project
+      operationId: deleteProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/projects/{project_id}/roles':
+    get:
+      tags:
+        - Management
+      summary: getRoles
+      description: |
+        List Roles
+      operationId: getRoles
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      tags:
+        - Management
+      summary: createRole
+      description: |
+        Create a Role
+      operationId: createRole
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/projects/{project_id}/roles/{id}':
+    get:
+      tags:
+        - Management
+      summary: getRole
+      description: |
+        Read the specified Role
+      operationId: getRole
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    put:
+      tags:
+        - Management
+      summary: replaceRole
+      description: |
+        Replace the specified Role
+      operationId: replaceRole
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Management
+      summary: updateRole
+      description: |
+        Update the specified Role
+      operationId: updateRole
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - Management
+      summary: deleteRole
+      description: |
+        Delete the specified Role
+      operationId: deleteRole
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets/{ticket_id}/users':
+    get:
+      tags:
+        - Incident
+      summary: getUsersForTicket
+      description: |
+        List Users
+      operationId: getUsersForTicket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets/{ticket_id}/users/{id}/add':
+    post:
+      tags:
+        - Incident
+      summary: addUserToTicket
+      description: |
+        Add User
+      operationId: addUserToTicket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets/{ticket_id}/users/{id}/remove':
+    post:
+      tags:
+        - Incident
+      summary: removeUserFromTicket
+      description: |
+        Remove User
+      operationId: removeUserFromTicket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/users':
+    get:
+      tags:
+        - Management
+      summary: getUsers
+      description: |
+        List Users
+      operationId: getUsers
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      tags:
+        - Management
+      summary: createUser
+      description: |
+        Create a User
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/users/{id}':
+    get:
+      tags:
+        - Management
+      summary: getUser
+      description: |
+        Read the specified User
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    put:
+      tags:
+        - Management
+      summary: replaceUser
+      description: |
+        Replace the specified User
+      operationId: replaceUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Management
+      summary: updateUser
+      description: |
+        Update the specified User
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - Management
+      summary: deleteUser
+      description: |
+        Delete the specified User
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets':
+    get:
+      tags:
+        - Incident
+      summary: getTickets
+      description: |
+        List Tickets
+      operationId: getTickets
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      tags:
+        - Incident
+      summary: createTicket
+      description: |
+        Create a Ticket
+      operationId: createTicket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tickets/{id}':
+    get:
+      tags:
+        - Incident
+      summary: getTicket
+      description: |
+        Read the specified Ticket
+      operationId: getTicket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    put:
+      tags:
+        - Incident
+      summary: replaceTicket
+      description: |
+        Replace the specified Ticket
+      operationId: replaceTicket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - Incident
+      summary: updateTicket
+      description: |
+        Update the specified Ticket
+      operationId: updateTicket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - Incident
+      summary: deleteTicket
+      description: |
+        Delete the specified Ticket
+      operationId: deleteTicket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/action':
+    post:
+      summary: action
+      operationId: action
+      parameters:
+        - name: arg2
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: arg4
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseType'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/query':
+    post:
+      summary: submitQury
+      operationId: submitQury
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                arg1:
+                  type: string
+                arg2:
+                  type: array
+                  items:
+                    type: integer
+                    format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+
+  responses:
+    DefaultError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+
+  parameters:
+    cursor:
+      name: cursor
+      description: |
+        Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+      in: query
+      required: false
+      schema:
+        type: string
+    limit:  
+      name: limit
+      description: |
+        The maximum number of items to return.
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+    count:
+      name: count
+      description: |
+        Returns the total number of items available.
+      in: query
+      required: false
+      schema:
+        type: boolean
+
+  schemas:
+    Status:
+      type: string
+      enum:
+        - OPEN
+        - TO_DO
+        - CLOSED
+
+    BaseType:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 255
+        creation_by:
+          type: string
+          readOnly: true
+          maxLength: 255
+        creation_date:
+          type: string
+          format: date
+          readOnly: true
+        last_update_by:
+          type: string
+          readOnly: true
+          maxLength: 255
+        last_update_date:
+          type: string
+          format: date-time
+          readOnly: true
+        meta_inf:
+          type: object
+
+    ProjectList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+        next_cursor:
+          type: string
+          maxLength: 255
+        total_count:
+          type: integer
+          format: int64
+          minimum: 0
+
+    Project:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 255
+        creation_by:
+          type: string
+          readOnly: true
+          maxLength: 255
+        creation_date:
+          type: string
+          format: date
+          readOnly: true
+        last_update_by:
+          type: string
+          readOnly: true
+          maxLength: 255
+        last_update_date:
+          type: string
+          format: date-time
+          readOnly: true
+        meta_inf:
+          type: object
+        archive:
+          type: boolean
+          writeOnly: true
+
+    RoleList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        next_cursor:
+          type: string
+          maxLength: 255
+        total_count:
+          type: integer
+          format: int64
+          minimum: 0
+
+    Role:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        name:
+          type: string
+          maxLength: 255
+
+    UserList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        next_cursor:
+          type: string
+          maxLength: 255
+        total_count:
+          type: integer
+          format: int64
+          minimum: 0
+
+    User:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        name:
+          type: string
+          maxLength: 255
+        mail:
+          type: string
+          maxLength: 255
+        tmp:
+          type: string
+          maxLength: 255
+
+    TicketList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticket'
+        next_cursor:
+          type: string
+          maxLength: 255
+        total_count:
+          type: integer
+          format: int64
+          minimum: 0
+
+    Ticket:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        number:
+          type: integer
+          format: int32
+          minimum: 0
+          default: 42
+        title:
+          type: string
+          maxLength: 255
+          default: Witty Title
+        body:
+          type: string
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/Status'
+          default: OPEN
+
+    AppError:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          description: A identifier that categorizes the error
+          type: string
+        message:
+          description: A brief, human-readable message about the error
+          type: string
+        status:
+          description: The HTTP response code
+          type: integer
+          format: int32
+        path:
+          description: A URI that identifies the specific occurrence of the error
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          description: Detailed explanations of the error
+          type: array
+          items:
+            type: string

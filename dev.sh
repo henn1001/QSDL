@@ -24,6 +24,11 @@ build() {
   uv build
 }
 
+generate() {
+  qsdl examples/spring/relation.qsdl -g spring -o examples/spring/basic_layout
+  qsdl examples/spring/relation.qsdl -g spring -c util/domain_config.json -o examples/spring/domain_layout
+}
+
 build-docker() {
   docker build -t qsdl .
 }

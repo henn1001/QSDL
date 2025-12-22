@@ -1,0 +1,14 @@
+{
+  "[java]": {
+    "editor.formatOnSave": false
+  },
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.factorypath": true,
+    "**/.project": true,
+    "**/.settings": true
+  },
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.format.enabled": false,
+  "java.saveActions.organizeImports": false
+}
