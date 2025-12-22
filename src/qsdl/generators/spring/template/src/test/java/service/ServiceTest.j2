@@ -1,4 +1,5 @@
 {% import '_macro/Parameter.j2' as macro with context %}
+{% import '_macro/Util.j2' as util with context %}
 {% set getId = "getId()" if id_type == "Long" else "getUid()" %}
 {% set m_type = model.name %}
 {% set m_var = model.name | lower %}
@@ -10,28 +11,7 @@
  */
 package {{api.package.service}};
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
-{% for imprt in model.imports.service_tests %}
-{{imprt}}
-{% endfor %}
-import com.querydsl.core.types.Predicate;
-import java.util.List;
-import java.util.Optional;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+{{ util.macro_imports(self._TemplateReference__context.name, model) }}
 
 @ExtendWith(SpringExtension.class)
 @Import(TestConfig.class)

@@ -1,4 +1,5 @@
 {% import '_macro/Hibernate.j2' as hibernate with context %}
+{% import '_macro/Util.j2' as util with context %}
 {% set has_date = model.fields|selectattr("is_date") | list %}
 {% set has_array = model.fields|selectattr("is_array") | list %}
 /**
@@ -6,39 +7,8 @@
  */
 package {{model.package.entity}};
 
-{% for imprt in model.imports.entity %}
-{{imprt}}
-{% endfor %}
+{{ util.macro_imports(self._TemplateReference__context.name, model) }}
 
-{% if model.has_relation %}
-import com.fasterxml.jackson.annotation.JsonIgnore;
-{% endif %}
-{% if model.has_objectnode %}
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-{% endif %}
-{% if use_auditing %}
-import org.hibernate.envers.Audited;
-{% endif %}
-{% if use_encapsulation %}
-import lombok.*;
-{% endif %}
-
-import jakarta.persistence.*;
-{% if model.fields|selectattr("is_required")|rejectattr("is_id") | list  %}
-import jakarta.validation.constraints.NotNull;
-{% endif %}
-
-{% if has_date %}
-import java.time.*;
-{% endif %}
-{% if has_array %}
-import java.util.*;
-{% endif %}
-{% if has_date or has_array %}
-
-{% endif %}
 {% if use_encapsulation %}
 @Getter
 @Setter

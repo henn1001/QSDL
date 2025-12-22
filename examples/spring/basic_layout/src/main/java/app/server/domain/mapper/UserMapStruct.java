@@ -5,7 +5,6 @@ package app.server.domain.mapper;
 
 import app.server.domain.User;
 import app.server.domain.entity.UserEntity;
-
 import org.mapstruct.*;
 
 @Mapper(

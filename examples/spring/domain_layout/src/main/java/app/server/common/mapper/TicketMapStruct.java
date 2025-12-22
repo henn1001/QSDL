@@ -5,7 +5,6 @@ package app.server.common.mapper;
 
 import app.server.common.db.TicketEntity;
 import app.server.common.dto.Ticket;
-
 import org.mapstruct.*;
 
 @Mapper(

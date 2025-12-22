@@ -6,13 +6,16 @@ package app.server.common.db;
 import app.server.common.constants.Status;
 import app.server.common.model.AbstractPersistentObject;
 import app.server.user.db.UserEntity;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.NotNull;
+import java.time.*;
 import java.util.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter

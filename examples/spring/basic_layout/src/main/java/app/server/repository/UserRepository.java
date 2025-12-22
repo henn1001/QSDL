@@ -4,11 +4,8 @@
 package app.server.repository;
 
 import app.server.domain.entity.UserEntity;
-
-import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
-
+import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends AbstractRepository<UserEntity, Long> {
 

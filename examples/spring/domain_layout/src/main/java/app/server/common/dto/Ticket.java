@@ -5,13 +5,14 @@ package app.server.common.dto;
 
 import app.server.common.constants.Status;
 import app.server.common.model.AbstractClass;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.validation.*;
+import jakarta.validation.constraints.*;
+import java.time.*;
+import java.util.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
-
-import jakarta.validation.constraints.*;
-
 @Getter
 @Setter
 @Builder

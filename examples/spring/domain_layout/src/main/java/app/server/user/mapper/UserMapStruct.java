@@ -5,7 +5,6 @@ package app.server.user.mapper;
 
 import app.server.user.db.UserEntity;
 import app.server.user.dto.User;
-
 import org.mapstruct.*;
 
 @Mapper(

@@ -3,10 +3,9 @@
  */
 package app.server.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import app.server.AbstractDataJpaTest;
 import app.server.TestUtils;
+
 import app.server.domain.entity.*;
 import app.server.domain.entity.UserEntity;
 import app.server.model.*;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TicketRepositoryTest extends AbstractDataJpaTest {
 

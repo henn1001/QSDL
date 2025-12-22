@@ -5,7 +5,6 @@ package app.server.project.mapper;
 
 import app.server.project.db.ProjectEntity;
 import app.server.project.dto.Project;
-
 import org.mapstruct.*;
 
 @Mapper(

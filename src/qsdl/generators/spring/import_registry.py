@@ -15,7 +15,7 @@ def render_imports(template_name: str, api_or_model: spring.ApiClass | spring.Mo
 
     import_sets = {
         "Api.j2": [
-            *([f"import {api_class.package.domain}.*;"] if api_class else []),
+            f"import {api_class.package.domain}.*;" if api_class else None,
             f"import {util.Store.package.enum}.*;",
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
@@ -34,13 +34,11 @@ def render_imports(template_name: str, api_or_model: spring.ApiClass | spring.Mo
             "import java.util.List;",
         ],
         "Controller.j2": [
-            *([f"import {api_class.package.api}.{api_class.name}Api;"] if api_class else []),
-            *([f"import {api_class.package.domain}.*;"] if api_class else []),
-            *(
-                [f"import {api_class.package.service}.{api_class.name}Service;"]
-                if api_class and api_class.has_generated
-                else []
-            ),
+            f"import {api_class.package.api}.{api_class.name}Api;" if api_class else None,
+            f"import {api_class.package.domain}.*;" if api_class else None,
+            f"import {api_class.package.service}.{api_class.name}Service;"
+            if api_class and api_class.has_generated
+            else None,
             f"import {util.Store.package.controller}.BaseController;",
             f"import {util.Store.package.util}.Validator;",
             f"import {util.Store.package.enum}.*;",
@@ -62,7 +60,7 @@ def render_imports(template_name: str, api_or_model: spring.ApiClass | spring.Mo
             "import lombok.AllArgsConstructor;",
         ],
         "Service.j2": [
-            *([f"import {api_class.package.domain}.*;"] if api_class else []),
+            f"import {api_class.package.domain}.*;" if api_class else None,
             *(
                 [
                     f"import {api_class.package.entity}.*;",
@@ -95,6 +93,97 @@ def render_imports(template_name: str, api_or_model: spring.ApiClass | spring.Mo
             "import org.springframework.stereotype.Service;",
             "import org.springframework.transaction.annotation.Transactional;",
             "import java.util.Arrays;",
+        ],
+        "Entity.j2": [
+            *(model_class.imports["entity"] if model_class else []),
+            "import com.fasterxml.jackson.annotation.JsonIgnore;",
+            "import com.fasterxml.jackson.databind.node.ObjectNode;",
+            "import org.hibernate.annotations.JdbcTypeCode;",
+            "import org.hibernate.type.SqlTypes;",
+            "import org.hibernate.envers.Audited;" if util.Store.config.use_auditing else None,
+            "import lombok.Getter;",
+            "import lombok.Setter;",
+            "import jakarta.persistence.*;",
+            "import jakarta.validation.constraints.NotNull;",
+            "import java.time.*;",
+            "import java.util.*;",
+        ],
+        "MapStruct.j2": [
+            *(model_class.imports["mapper"] if model_class else []),
+            "import org.mapstruct.*;",
+        ],
+        "Pojo.j2": [
+            *(model_class.imports["domain"] if model_class else []),
+            "import com.fasterxml.jackson.annotation.JsonProperty;",
+            "import com.fasterxml.jackson.databind.node.ObjectNode;",
+            "import lombok.*;",
+            "import lombok.extern.jackson.Jacksonized;",
+            "import jakarta.validation.*;",
+            "import jakarta.validation.constraints.*;",
+            "import java.time.*;",
+            "import java.util.*;",
+        ],
+        "Repository.j2": [
+            *(model_class.imports["repo"] if model_class else []),
+            "import org.springframework.stereotype.Repository;",
+            "import java.util.Optional;",
+        ],
+        "DControllerTest.j2": [
+            *(model_class.imports["controller_tests"] if model_class else []),
+            "import static org.junit.jupiter.api.Assertions.assertEquals;",
+            "import static org.mockito.ArgumentMatchers.any;",
+            "import static org.mockito.ArgumentMatchers.eq;",
+            "import static org.mockito.Mockito.when;",
+            "import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;",
+            "import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;",
+            "import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;",
+            "import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;",
+            "import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;",
+            "import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;",
+            "import java.util.Arrays;",
+            "import org.json.JSONObject;",
+            "import org.junit.jupiter.api.Test;",
+            "import org.skyscreamer.jsonassert.JSONAssert;",
+            "import org.springframework.beans.factory.annotation.Autowired;",
+            "import org.springframework.beans.factory.annotation.Value;",
+            "import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;",
+            "import org.springframework.boot.test.mock.mockito.MockBean;",
+            "import org.springframework.context.annotation.Import;",
+            "import org.springframework.http.MediaType;",
+            "import org.springframework.test.web.servlet.MockMvc;",
+        ],
+        "RepositoryTest.j2": [
+            *(model_class.imports["repo_tests"] if model_class else []),
+            "import static org.junit.jupiter.api.Assertions.assertEquals;",
+            f"import {util.Store.package.util}.Json;",
+            "import com.querydsl.core.BooleanBuilder;",
+            "import java.util.List;",
+            "import org.json.JSONObject;",
+            "import org.junit.jupiter.api.Test;",
+            "import org.skyscreamer.jsonassert.JSONAssert;",
+            "import org.springframework.beans.factory.annotation.Autowired;",
+            "import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;",
+        ],
+        "ServiceTest.j2": [
+            *(model_class.imports["service_tests"] if model_class else []),
+            "import static org.junit.jupiter.api.Assertions.assertEquals;",
+            "import static org.junit.jupiter.api.Assertions.assertThrows;",
+            "import static org.mockito.ArgumentMatchers.any;",
+            "import static org.mockito.ArgumentMatchers.eq;",
+            "import static org.mockito.Mockito.when;",
+            "import com.querydsl.core.types.Predicate;",
+            "import java.util.List;",
+            "import java.util.Optional;",
+            "import org.json.JSONArray;",
+            "import org.json.JSONObject;",
+            "import org.junit.jupiter.api.BeforeEach;",
+            "import org.junit.jupiter.api.Test;",
+            "import org.junit.jupiter.api.extension.ExtendWith;",
+            "import org.mockito.Mock;",
+            "import org.skyscreamer.jsonassert.JSONAssert;",
+            "import org.springframework.beans.factory.annotation.Autowired;",
+            "import org.springframework.context.annotation.Import;",
+            "import org.springframework.test.context.junit.jupiter.SpringExtension;",
         ],
         "BaseController.j2": [
             f"import {util.Store.package.model}.Context;",
@@ -248,4 +337,4 @@ def render_imports(template_name: str, api_or_model: spring.ApiClass | spring.Mo
     }
 
     imports = import_sets.get(template_name, [])
-    return sorted(set(imports))
+    return sorted(set([imp for imp in imports if imp]))

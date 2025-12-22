@@ -4,9 +4,8 @@
 package app.server.repository;
 
 import app.server.domain.entity.TicketEntity;
-
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
-
 @Repository
 public interface TicketRepository extends AbstractRepository<TicketEntity, Long> {
 }

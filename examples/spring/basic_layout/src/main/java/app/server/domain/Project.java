@@ -4,16 +4,14 @@
 package app.server.domain;
 
 import app.server.model.AbstractClass;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.validation.*;
+import jakarta.validation.constraints.*;
+import java.time.*;
+import java.util.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
-
-import jakarta.validation.constraints.*;
-
-import java.time.*;
-
 @Getter
 @Setter
 @Builder
