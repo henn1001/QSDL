@@ -3,16 +3,16 @@
  */
 package app.server.config;
 
-import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@AllArgsConstructor
 @ConfigurationProperties(prefix = "app")
-public class AppProperties {
+// @formatter:off
+public record AppProperties(
 
-  @NotEmpty
-  public final String name;
-}
+  @DefaultValue("SpringBootApp") String name
+
+) {}
+// @formatter:on
