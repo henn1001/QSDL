@@ -1,0 +1,30 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "generate spring",
+      "type": "shell",
+      "group": "build",
+      "dependsOn": [
+        "spring/basic_layout",
+        "spring/domain_layout"
+      ]
+    },
+    {
+      "label": "spring/basic_layout",
+      "type": "shell",
+      "command": "qsdl examples/spring/relation.qsdl -g spring -o examples/spring/basic_layout",
+      "group": "build",
+      "hide": true
+    },
+    {
+      "label": "spring/domain_layout",
+      "type": "shell",
+      "command": "qsdl examples/spring/relation.qsdl -g spring -c util/domain_config.json -o examples/spring/domain_layout",
+      "group": "build",
+      "hide": true
+    }
+  ]
+}
