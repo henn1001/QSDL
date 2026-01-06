@@ -38,209 +38,225 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import(TestConfig.class)
 class ProjectControllerTest {
 
-  @MockBean
-  ProjectService service;
+    @MockBean
+    ProjectService service;
 
-  @Value("${server.base-path:/}")
-  String basePath;
+    @Value("${server.base-path:/}")
+    String basePath;
 
-  @Autowired
-  MockMvc mockMvc;
+    @Autowired
+    MockMvc mockMvc;
 
-  static Long one = 1L;
+    static Long one = 1L;
 
-  @Test
-  public void whenGetProjects_thenOk() throws Exception {
+    @Test
+    public void whenGetProjects_thenOk() throws Exception {
 
-    // Given
-    Project request = TestUtils.getRandom(Project.class);
+        // Given
+        Project request = TestUtils.getRandom(Project.class);
 
-    CursorPage<Project> ret = new CursorPage<Project>(Arrays.asList(request), null, null);
+        CursorPage<Project> ret = new CursorPage<Project>(Arrays.asList(request), null, null);
 
-    when(service.getProjects(any(), any()))
-        .thenReturn(ret);
+        when(service.getProjects(any(), any()))
+                .thenReturn(ret);
 
-    // When
-    String response = mockMvc.perform(get(basePath + "/projects"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(get(basePath + "/projects"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ret),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ret),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenCreateProject_thenOk() throws Exception {
+    @Test
+    public void whenCreateProject_thenOk() throws Exception {
 
-    // Given
-    Project request = TestUtils.getRandom(Project.class);
+        // Given
+        Project request = TestUtils.getRandom(Project.class);
 
-    when(service.createProject(any(), any()))
-        .thenReturn(request);
+        when(service.createProject(any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(post(basePath + "/projects")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(post(basePath + "/projects")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenCreateProjectWithInvalidPayload_thenError() throws Exception {
+    @Test
+    public void whenCreateProjectWithInvalidPayload_thenError() throws Exception {
 
-    // Given
-    Project request = TestUtils.getRandom(Project.class);
+        // Given
+        Project request = TestUtils.getRandom(Project.class);
 
-    when(service.createProject(any(), any()))
-        .thenReturn(request);
+        when(service.createProject(any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(post(basePath + "/projects")
-        .content("{}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(post(basePath + "/projects")
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
 
-  @Test
-  public void whenGetProject_thenOk() throws Exception {
+    @Test
+    public void whenGetProject_thenOk() throws Exception {
 
-    // Given
-    Project request = TestUtils.getRandom(Project.class);
+        // Given
+        Project request = TestUtils.getRandom(Project.class);
 
-    when(service.getProject(eq(one), any()))
-        .thenReturn(request);
+        when(service.getProject(eq(one), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(get(basePath + "/projects/1"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(get(basePath + "/projects/1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenReplaceProject_thenOk() throws Exception {
+    @Test
+    public void whenReplaceProject_thenOk() throws Exception {
 
-    // Given
-    Project request = TestUtils.getRandom(Project.class);
+        // Given
+        Project request = TestUtils.getRandom(Project.class);
 
-    when(service.replaceProject(eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.replaceProject(eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(put(basePath + "/projects/1")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(put(basePath + "/projects/1")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenReplaceProjectWithInvalidPayload_thenError() throws Exception {
+    @Test
+    public void whenReplaceProjectWithInvalidPayload_thenError() throws Exception {
 
-    // Given
-    Project request = TestUtils.getRandom(Project.class);
+        // Given
+        Project request = TestUtils.getRandom(Project.class);
 
-    when(service.replaceProject(eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.replaceProject(eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(put(basePath + "/projects/1")
-        .content("{}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(put(basePath + "/projects/1")
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
 
-  @Test
-  public void whenUpdateProject_thenOk() throws Exception {
+    @Test
+    public void whenUpdateProject_thenOk() throws Exception {
 
-    // Given
-    Project request = TestUtils.getRandom(Project.class);
+        // Given
+        Project request = TestUtils.getRandom(Project.class);
 
-    when(service.updateProject(eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.updateProject(eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(patch(basePath + "/projects/1")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(patch(basePath + "/projects/1")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenUpdateProjectWithInvalidPayload_thenError() throws Exception {
+    @Test
+    public void whenUpdateProjectWithInvalidPayload_thenError() throws Exception {
 
-    // Given
-    Project request = TestUtils.getRandom(Project.class);
+        // Given
+        Project request = TestUtils.getRandom(Project.class);
 
-    when(service.updateProject(eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.updateProject(eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(put(basePath + "/projects/1")
-        .content("{}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(put(basePath + "/projects/1")
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
 
-  @Test
-  public void whenDeleteProject_thenOk() throws Exception {
+    @Test
+    public void whenDeleteProject_thenOk() throws Exception {
 
-    // Given
+        // Given
 
-    // When
-    mockMvc.perform(delete(basePath + "/projects/1"))
-        .andExpect(status().isOk());
+        // When
+        mockMvc.perform(delete(basePath + "/projects/1"))
+                .andExpect(status().isOk());
 
-    // Then
+        // Then
 
-  }
+    }
 }

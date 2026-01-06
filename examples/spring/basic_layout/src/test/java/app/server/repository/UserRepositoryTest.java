@@ -14,6 +14,7 @@ import app.server.repository.*;
 import app.server.repository.TicketRepository;
 import app.server.util.Json;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import java.util.List;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -23,202 +24,211 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 class UserRepositoryTest extends AbstractDataJpaTest {
 
-  @Autowired
-  TicketRepository ticketRepository;
+    @Autowired
+    TicketRepository ticketRepository;
 
-  @Autowired
-  UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-  @Autowired
-  TestEntityManager testEntityManager;
+    @Autowired
+    TestEntityManager testEntityManager;
 
-  public List<UserEntity> prepareData(int count) {
+    public List<UserEntity> prepareData(int count) {
 
-    List<UserEntity> testDatas = TestUtils.getRandomEntityWithNullId(UserEntity.class, count);
+        List<UserEntity> testDatas = TestUtils.getRandomEntityWithNullId(UserEntity.class, count);
 
-    TicketEntity ticket = ticketRepository.save(TestUtils.getRandomEntityWithNullId(TicketEntity.class));
+        TicketEntity ticket = ticketRepository.save(TestUtils.getRandomEntityWithNullId(TicketEntity.class));
 
-    for (UserEntity testData : testDatas) {
-      testData.addToTickets(ticket);
+        for (UserEntity testData : testDatas) {
+            testData.addToTickets(ticket);
+        }
+
+        userRepository.saveAll(testDatas);
+
+        // forces synchronization to DB
+        // clears persistence context
+        testEntityManager.flush();
+        testEntityManager.clear();
+
+        return userRepository.findAll();
     }
 
-    userRepository.saveAll(testDatas);
+    @Test
+    public void whenSave_thenFind() throws Exception {
 
-    // forces synchronization to DB
-    // clears persistence context
-    testEntityManager.flush();
-    testEntityManager.clear();
+        // Given
+        UserEntity testData = prepareData(1).get(0);
 
-    return userRepository.findAll();
-  }
+        // When
+        UserEntity findData = userRepository.findById(testData.getId()).orElse(null);
 
-  @Test
-  public void whenSave_thenFind() throws Exception {
+        TestUtils.copyAllIdentities(testData, findData);
 
-    // Given
-    UserEntity testData = prepareData(1).get(0);
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(testData),
+                new JSONObject(Json.serializer().toString(findData)),
+                false);
+    }
 
-    // When
-    UserEntity findData = userRepository.findById(testData.getId()).orElse(null);
+    @Test
+    public void whenDelete_thenCountZero() throws Exception {
 
-    TestUtils.copyAllIdentities(testData, findData);
+        // Given
+        UserEntity testData = prepareData(1).get(0);
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(testData),
-        new JSONObject(Json.serializer().toString(findData)),
-        false);
-  }
+        // When
+        userRepository.delete(testData);
 
-  @Test
-  public void whenDelete_thenCountZero() throws Exception {
+        // Then
+        long count = userRepository.count();
+        assertEquals(0, count);
+    }
 
-    // Given
-    UserEntity testData = prepareData(1).get(0);
+    @Test
+    public void whenCount_thenUseQuerie() throws Exception {
 
-    // When
-    userRepository.delete(testData);
+        // Given
+        List<UserEntity> testData = prepareData(5);
 
-    // Then
-    long count = userRepository.count();
-    assertEquals(0, count);
-  }
+        BooleanBuilder predicate = new BooleanBuilder();
 
-  @Test
-  public void whenCount_thenUseQuerie() throws Exception {
+        // When
+        long count = userRepository.count(predicate);
 
-    // Given
-    List<UserEntity> testData = prepareData(5);
+        // Then
+        assertEquals(5, count);
+    }
 
-    BooleanBuilder predicate = new BooleanBuilder();
+    @Test
+    public void whenFindAll_thenPaginate() throws Exception {
 
-    // When
-    long count = userRepository.count(predicate);
+        // Given
+        List<UserEntity> testData = prepareData(5);
 
-    // Then
-    assertEquals(5, count);
-  }
+        // When
+        String cursor = null;
+        int idx = 0;
 
-  @Test
-  public void whenFindAll_thenPaginate() throws Exception {
+        do {
+            CursorPageable pageable = new CursorPageable(cursor, 1, null);
+            BooleanBuilder predicate = new BooleanBuilder();
+            CursorPage<UserEntity> findData = userRepository.findAll(predicate, pageable);
 
-    // Given
-    List<UserEntity> testData = prepareData(5);
+            cursor = findData.nextCursor();
 
-    // When
-    String cursor = null;
-    int idx = 0;
+            assertEquals(1, findData.count());
 
-    do {
-      CursorPageable pageable = new CursorPageable(cursor, 1, null);
-      BooleanBuilder predicate = new BooleanBuilder();
-      CursorPage<UserEntity> findData = userRepository.findAll(predicate, pageable);
+            idx++;
+        } while (cursor != null);
 
-      cursor = findData.nextCursor();
+        // Then
+        assertEquals(5, idx);
+    }
 
-      assertEquals(1, findData.count());
+    @Test
+    public void whenCountByTicket_thenUseQuerie() throws Exception {
 
-      idx++;
-    } while (cursor != null);
+        // Given
+        UserEntity testData = prepareData(5).get(0);
+        TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
 
-    // Then
-    assertEquals(5, idx);
-  }
+        BooleanExpression expression = QUserEntity.userEntity.tickets.any().id.eq(parent.getId());
+        BooleanBuilder predicate = new BooleanBuilder(expression);
 
-  @Test
-  public void whenCountByTicket_thenUseQuerie() throws Exception {
+        // When
+        long count = userRepository.count(predicate);
 
-    // Given
-    UserEntity testData = prepareData(5).get(0);
-    TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
+        // Then
+        assertEquals(5, count);
+    }
 
-    BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parent.getId()));
+    @Test
+    public void whenFindAllByTicket_thenPaginate() throws Exception {
 
-    // When
-    long count = userRepository.count(predicate);
+        // Given
+        Long parentId = prepareData(5)
+                .get(0)
+                .getTickets()
+                .toArray(new TicketEntity[0])[0]
+                .getId();
 
-    // Then
-    assertEquals(5, count);
-  }
+        // When
+        String cursor = null;
+        int idx = 0;
 
-  @Test
-  public void whenFindAllByTicket_thenPaginate() throws Exception {
+        do {
+            CursorPageable pageable = new CursorPageable(cursor, 1, null);
+            BooleanExpression expression = QUserEntity.userEntity.tickets.any().id.eq(parentId);
+            BooleanBuilder predicate = new BooleanBuilder(expression);
+            CursorPage<UserEntity> findData = userRepository.findAll(predicate, pageable);
 
-    // Given
-    Long parentId = prepareData(5).get(0).getTickets().toArray(new TicketEntity[0])[0].getId();
+            cursor = findData.nextCursor();
 
-    // When
-    String cursor = null;
-    int idx = 0;
+            assertEquals(1, findData.count());
 
-    do {
-      CursorPageable pageable = new CursorPageable(cursor, 1, null);
-      BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parentId));
-      CursorPage<UserEntity> findData = userRepository.findAll(predicate, pageable);
+            idx++;
+        } while (cursor != null);
 
-      cursor = findData.nextCursor();
+        // Then
+        assertEquals(5, idx);
+    }
 
-      assertEquals(1, findData.count());
+    @Test
+    public void whenUnlinkFromLinkedTicket_thenStillExist() throws Exception {
 
-      idx++;
-    } while (cursor != null);
+        // Given
+        UserEntity testData = prepareData(1).get(0);
+        TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
 
-    // Then
-    assertEquals(5, idx);
-  }
+        // When
+        testData.removeFromTickets(parent);
+        userRepository.save(testData);
 
-  @Test
-  public void whenUnlinkFromLinkedTicket_thenStillExist() throws Exception {
+        // Then
+        BooleanExpression expression = QUserEntity.userEntity.tickets.any().id.eq(parent.getId());
+        BooleanBuilder predicate = new BooleanBuilder(expression);
 
-    // Given
-    UserEntity testData = prepareData(1).get(0);
-    TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
+        assertEquals(0, userRepository.count(predicate));
+        assertEquals(true, userRepository.existsById(testData.getId()));
+        assertEquals(true, ticketRepository.existsById(parent.getId()));
+    }
 
-    // When
-    testData.removeFromTickets(parent);
-    userRepository.save(testData);
+    @Test
+    public void whenDeleteFromLinkedTicket_thenStillExistA() throws Exception {
 
-    // Then
-    BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parent.getId()));
+        // Given
+        UserEntity testData = prepareData(1).get(0);
+        TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
 
-    assertEquals(0, userRepository.count(predicate));
-    assertEquals(true, userRepository.existsById(testData.getId()));
-    assertEquals(true, ticketRepository.existsById(parent.getId()));
-  }
+        // When
+        userRepository.delete(testData);
 
-  @Test
-  public void whenDeleteFromLinkedTicket_thenStillExistA() throws Exception {
+        // Then
+        BooleanExpression expression =QUserEntity.userEntity.tickets.any().id.eq(parent.getId());
+        BooleanBuilder predicate = new BooleanBuilder(expression);
 
-    // Given
-    UserEntity testData = prepareData(1).get(0);
-    TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
+        assertEquals(0, userRepository.count(predicate));
+        assertEquals(false, userRepository.existsById(testData.getId()));
+        assertEquals(true, ticketRepository.existsById(parent.getId()));
+    }
 
-    // When
-    userRepository.delete(testData);
+    @Test
+    public void whenDeleteFromLinkedTicket_thenStillExistB() throws Exception {
 
-    // Then
-    BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parent.getId()));
+        // Given
+        UserEntity testData = prepareData(1).get(0);
+        TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
 
-    assertEquals(0, userRepository.count(predicate));
-    assertEquals(false, userRepository.existsById(testData.getId()));
-    assertEquals(true, ticketRepository.existsById(parent.getId()));
-  }
+        // When
+        ticketRepository.delete(parent);
 
-  @Test
-  public void whenDeleteFromLinkedTicket_thenStillExistB() throws Exception {
+        // Then
+        BooleanExpression expression = QUserEntity.userEntity.tickets.any().id.eq(parent.getId());
+        BooleanBuilder predicate = new BooleanBuilder(expression);
 
-    // Given
-    UserEntity testData = prepareData(1).get(0);
-    TicketEntity parent = testData.getTickets().toArray(new TicketEntity[0])[0];
-
-    // When
-    ticketRepository.delete(parent);
-
-    // Then
-    BooleanBuilder predicate = new BooleanBuilder(QUserEntity.userEntity.tickets.any().id.eq(parent.getId()));
-
-    assertEquals(0, userRepository.count(predicate));
-    assertEquals(true, userRepository.existsById(testData.getId()));
-    assertEquals(false, ticketRepository.existsById(parent.getId()));
-  }
+        assertEquals(0, userRepository.count(predicate));
+        assertEquals(true, userRepository.existsById(testData.getId()));
+        assertEquals(false, ticketRepository.existsById(parent.getId()));
+    }
 }

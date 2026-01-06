@@ -11,247 +11,263 @@ package {{api.package.controller}};
 @Import(TestConfig.class)
 class {{model.name}}ControllerTest {
 
-  @MockBean
-  {{model.name}}Service service;
+    @MockBean
+    {{model.name}}Service service;
 
-  @Value("${server.base-path:/}")
-  String basePath;
+    @Value("${server.base-path:/}")
+    String basePath;
 
-  @Autowired
-  MockMvc mockMvc;
+    @Autowired
+    MockMvc mockMvc;
 
-  static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};
+    static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};
 {% for operation in api.operations if operation.is_generated %}
 
-  {% if operation.method == "get" and operation.is_pageable %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  public void when{{operation.name|pascal}}_thenOk() throws Exception {
+    {% if operation.method == "get" and operation.is_pageable %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
-    // Given
-    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        // Given
+        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
-    CursorPage<{{model.name}}> ret = new CursorPage<{{model.name}}>(Arrays.asList(request), null, null);
+        CursorPage<{{model.name}}> ret = new CursorPage<{{model.name}}>(Arrays.asList(request), null, null);
 
-    when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
-        .thenReturn(ret);
+        when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
+                .thenReturn(ret);
 
-    // When
-    String response = mockMvc.perform(get(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(get(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ret),
-        new JSONObject(response),
-        false);
-  }
-  {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  public void when{{operation.name|pascal}}_thenOk() throws Exception {
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ret),
+                new JSONObject(response),
+                false);
+    }
+    {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
-    // Given
+        // Given
 
-    // When
-    mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
-        .andExpect(status().isOk());
+        // When
+        mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
+                .andExpect(status().isOk());
 
-    // Then
+        // Then
 
-  }
-  {% elif operation.method == "post" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  public void when{{operation.name|pascal}}_thenOk() throws Exception {
+    }
+    {% elif operation.method == "post" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
-    // Given
-    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        // Given
+        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
-        .thenReturn(request);
+        when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
+    @Test
+    public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
-    // Given
-    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        // Given
+        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
-        .thenReturn(request);
+        when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-        .content("{{ "{}" if model.has_required else "" }}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+                .content("{{ "{}" if model.has_required else "" }}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
-  {% elif operation.method == "get" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  public void when{{operation.name|pascal}}_thenOk() throws Exception {
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
+    {% elif operation.method == "get" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
-    // Given
-    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        // Given
+        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}, any()))
-        .thenReturn(request);
+        when(service.{{operation.name}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}, any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(get(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(get(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
-  {% elif operation.method == "put" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  public void when{{operation.name|pascal}}_thenOk() throws Exception {
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
+    {% elif operation.method == "put" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
-    // Given
-    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        // Given
+        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-        .thenReturn(request);
+        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
+    @Test
+    public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
-    // Given
-    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        // Given
+        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-        .thenReturn(request);
+        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-        .content("{{ "{}" if model.has_required else "" }}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+                .content("{{ "{}" if model.has_required else "" }}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
-  {% elif operation.method == "patch" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  public void when{{operation.name|pascal}}_thenOk() throws Exception {
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
+    {% elif operation.method == "patch" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
-    // Given
-    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        // Given
+        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-        .thenReturn(request);
+        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(patch(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(patch(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
+    @Test
+    public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
-    // Given
-    {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        // Given
+        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
 
-    when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-        .thenReturn(request);
+        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-        .content("{{ "{}" if model.has_required else "" }}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+                .content("{{ "{}" if model.has_required else "" }}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
-  {% elif operation.method == "delete" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  public void when{{operation.name|pascal}}_thenOk() throws Exception {
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
+    {% elif operation.method == "delete" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
-    // Given
+        // Given
 
-    // When
-    mockMvc.perform(delete(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
-        .andExpect(status().isOk());
+        // When
+        mockMvc.perform(delete(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
+                .andExpect(status().isOk());
 
-    // Then
+        // Then
 
-  }
-  {% endif %}
+    }
+    {% endif %}
 {% endfor %}}
 {{""}}

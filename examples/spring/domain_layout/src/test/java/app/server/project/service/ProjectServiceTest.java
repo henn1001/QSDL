@@ -40,253 +40,253 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Import(TestConfig.class)
 class ProjectServiceTest {
 
-  @Mock
-  ProjectRepository repository;
+    @Mock
+    ProjectRepository repository;
 
-  @Mock
-  ProjectMapStruct mockedMapper;
+    @Mock
+    ProjectMapStruct mockedMapper;
 
-  ProjectService service;
+    ProjectService service;
 
-  @Autowired
-  ProjectMapStruct mapper;
+    @Autowired
+    ProjectMapStruct mapper;
 
-  @BeforeEach
-  void setUp() {
-    service = new ProjectService(repository, mockedMapper);
-  }
+    @BeforeEach
+    void setUp() {
+        service = new ProjectService(repository, mockedMapper);
+    }
 
-  @Test
-  void whenGetProjects_thenOk() throws Exception {
+    @Test
+    void whenGetProjects_thenOk() throws Exception {
 
-    // Given
-    List<ProjectEntity> projectEntityList = TestUtils.getRandomEntity(ProjectEntity.class, 5);
-    List<Project> projectList = projectEntityList.stream().map(mapper::toDto).toList();
+        // Given
+        List<ProjectEntity> projectEntityList = TestUtils.getRandomEntity(ProjectEntity.class, 5);
+        List<Project> projectList = projectEntityList.stream().map(mapper::toDto).toList();
 
-    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6L));
+        when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+                .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6L));
 
-    when(mockedMapper.toDto(any(ProjectEntity.class)))
-        .thenReturn(projectList.get(0))
-        .thenReturn(projectList.get(1))
-        .thenReturn(projectList.get(2))
-        .thenReturn(projectList.get(3))
-        .thenReturn(projectList.get(4));
+        when(mockedMapper.toDto(any(ProjectEntity.class)))
+                .thenReturn(projectList.get(0))
+                .thenReturn(projectList.get(1))
+                .thenReturn(projectList.get(2))
+                .thenReturn(projectList.get(3))
+                .thenReturn(projectList.get(4));
 
-    // When
-    CursorPage<Project> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
+        // When
+        CursorPage<Project> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
 
-    // Then
-    assertEquals(5L, response.count());
-    assertEquals(6L, response.totalCount());
+        // Then
+        assertEquals(5L, response.count());
+        assertEquals(6L, response.totalCount());
 
-    JSONAssert.assertEquals(
-        Json.serializer().toString(projectList),
-        new JSONArray(Json.serializer().toString(response.items())),
-        false);
-  }
+        JSONAssert.assertEquals(
+                Json.serializer().toString(projectList),
+                new JSONArray(Json.serializer().toString(response.items())),
+                false);
+    }
 
-  @Test
-  void whenCreateProject_thenOk() throws Exception {
+    @Test
+    void whenCreateProject_thenOk() throws Exception {
 
-    // Given
-    ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-    Project project = mapper.toDto(projectEntity);
+        // Given
+        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        Project project = mapper.toDto(projectEntity);
 
-    when(mockedMapper.toEntity(any(Project.class)))
-        .thenReturn(projectEntity);
+        when(mockedMapper.toEntity(any(Project.class)))
+                .thenReturn(projectEntity);
 
-    when(repository.save(eq(projectEntity)))
-        .thenReturn(projectEntity);
+        when(repository.save(eq(projectEntity)))
+                .thenReturn(projectEntity);
 
-    when(mockedMapper.toDto(any(ProjectEntity.class)))
-        .thenReturn(project);
+        when(mockedMapper.toDto(any(ProjectEntity.class)))
+                .thenReturn(project);
 
-    // When
-    Project response = service.createProject(project, new Context());
+        // When
+        Project response = service.createProject(project, new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(project),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(project),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  void whenGetProject_thenOk() throws Exception {
+    @Test
+    void whenGetProject_thenOk() throws Exception {
 
-    // Given
-    ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-    Project project = mapper.toDto(projectEntity);
+        // Given
+        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(projectEntity.getId())))
-        .thenReturn(Optional.of(projectEntity));
+        when(repository.findById(eq(projectEntity.getId())))
+                .thenReturn(Optional.of(projectEntity));
 
-    when(mockedMapper.toDto(any(ProjectEntity.class)))
-        .thenReturn(project);
+        when(mockedMapper.toDto(any(ProjectEntity.class)))
+                .thenReturn(project);
 
-    // When
-    Project response = service.getProject(projectEntity.getId(), new Context());
+        // When
+        Project response = service.getProject(projectEntity.getId(), new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(project),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(project),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  public void whenGetProjectWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenGetProjectWithInvalidId_thenError() throws Exception {
 
-    // Given
-    ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        // Given
+        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
 
-    when(repository.findById(eq(projectEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
+        when(repository.findById(eq(projectEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
 
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.getProject(projectEntity.getId(), new Context());
-        });
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.getProject(projectEntity.getId(), new Context());
+                });
 
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 
-  @Test
-  void whenReplaceProject_thenOk() throws Exception {
+    @Test
+    void whenReplaceProject_thenOk() throws Exception {
 
-    // Given
-    ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-    Project project = mapper.toDto(projectEntity);
+        // Given
+        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(projectEntity.getId())))
-        .thenReturn(Optional.of(projectEntity));
+        when(repository.findById(eq(projectEntity.getId())))
+                .thenReturn(Optional.of(projectEntity));
 
-    when(repository.save(eq(projectEntity)))
-        .thenReturn(projectEntity);
+        when(repository.save(eq(projectEntity)))
+                .thenReturn(projectEntity);
 
-    when(mockedMapper.toDto(any(ProjectEntity.class)))
-        .thenReturn(project);
+        when(mockedMapper.toDto(any(ProjectEntity.class)))
+                .thenReturn(project);
 
-    // When
-    Project response = service.replaceProject(projectEntity.getId(), project, new Context());
+        // When
+        Project response = service.replaceProject(projectEntity.getId(), project, new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(project),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(project),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  public void whenReplaceProjectWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenReplaceProjectWithInvalidId_thenError() throws Exception {
 
-    // Given
-    ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-    Project project = mapper.toDto(projectEntity);
+        // Given
+        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(projectEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
+        when(repository.findById(eq(projectEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
 
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.replaceProject(projectEntity.getId(), project, new Context());
-        });
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.replaceProject(projectEntity.getId(), project, new Context());
+                });
 
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 
-  @Test
-  void whenUpdateProject_thenOk() throws Exception {
+    @Test
+    void whenUpdateProject_thenOk() throws Exception {
 
-    // Given
-    ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-    Project project = mapper.toDto(projectEntity);
+        // Given
+        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(projectEntity.getId())))
-        .thenReturn(Optional.of(projectEntity));
+        when(repository.findById(eq(projectEntity.getId())))
+                .thenReturn(Optional.of(projectEntity));
 
-    when(repository.save(eq(projectEntity)))
-        .thenReturn(projectEntity);
+        when(repository.save(eq(projectEntity)))
+                .thenReturn(projectEntity);
 
-    when(mockedMapper.toDto(any(ProjectEntity.class)))
-        .thenReturn(project);
+        when(mockedMapper.toDto(any(ProjectEntity.class)))
+                .thenReturn(project);
 
-    // When
-    Project response = service.updateProject(projectEntity.getId(), project, new Context());
+        // When
+        Project response = service.updateProject(projectEntity.getId(), project, new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(project),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(project),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  public void whenUpdateProjectWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenUpdateProjectWithInvalidId_thenError() throws Exception {
 
-    // Given
-    ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-    Project project = mapper.toDto(projectEntity);
+        // Given
+        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        Project project = mapper.toDto(projectEntity);
 
-    when(repository.findById(eq(projectEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
+        when(repository.findById(eq(projectEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
 
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.updateProject(projectEntity.getId(), project, new Context());
-        });
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.updateProject(projectEntity.getId(), project, new Context());
+                });
 
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 
-  @Test
-  void whenDeleteProject_thenOk() throws Exception {
+    @Test
+    void whenDeleteProject_thenOk() throws Exception {
 
-    // Given
-    ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        // Given
+        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
 
-    when(repository.findById(eq(projectEntity.getId())))
-        .thenReturn(Optional.of(projectEntity));
+        when(repository.findById(eq(projectEntity.getId())))
+                .thenReturn(Optional.of(projectEntity));
 
-    // When & Then
-    service.deleteProject(projectEntity.getId(), new Context());
-  }
+        // When & Then
+        service.deleteProject(projectEntity.getId(), new Context());
+    }
 
-  @Test
-  public void whenDeleteProjectWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenDeleteProjectWithInvalidId_thenError() throws Exception {
 
-    // Given
-    ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        // Given
+        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
 
-    when(repository.findById(eq(projectEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
+        when(repository.findById(eq(projectEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
 
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.deleteProject(projectEntity.getId(), new Context());
-        });
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.deleteProject(projectEntity.getId(), new Context());
+                });
 
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 }

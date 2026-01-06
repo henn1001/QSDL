@@ -16,35 +16,35 @@ import org.springframework.util.MultiValueMap;
 
 public final class PredicateBuilder {
 
-  private PredicateBuilder() {
-    // not called
-  }
+    private PredicateBuilder() {
+        // not called
+    }
 
-  private static final ConversionService conversionService;
+    private static final ConversionService conversionService;
 
-  private static final SimpleEntityPathResolver resolver;
+    private static final SimpleEntityPathResolver resolver;
 
-  private static final QuerydslPredicateBuilder predicateBuilder;
+    private static final QuerydslPredicateBuilder predicateBuilder;
 
-  private static final QuerydslBindingsFactory bindingsFactory;
+    private static final QuerydslBindingsFactory bindingsFactory;
 
-  static {
-    conversionService = DefaultConversionService.getSharedInstance();
-    resolver = new SimpleEntityPathResolver("");
-    predicateBuilder = new QuerydslPredicateBuilder(conversionService, resolver);
-    bindingsFactory = new QuerydslBindingsFactory(resolver);
-  }
+    static {
+        conversionService = DefaultConversionService.getSharedInstance();
+        resolver = new SimpleEntityPathResolver("");
+        predicateBuilder = new QuerydslPredicateBuilder(conversionService, resolver);
+        bindingsFactory = new QuerydslBindingsFactory(resolver);
+    }
 
-  /**
-   * Replicates the behavior of using @QuerydslPredicate at controller level.
-   */
-  public static <T> BooleanBuilder build(MultiValueMap<String, String> queryParameters, Class<T> domainClass) {
+    /**
+     * Replicates the behavior of using @QuerydslPredicate at controller level.
+     */
+    public static <T> BooleanBuilder build(MultiValueMap<String, String> queryParameters, Class<T> domainClass) {
 
-    TypeInformation<?> domainType = TypeInformation.of(domainClass).getActualType();
-    QuerydslBindings bindings = bindingsFactory.createBindingsFor(domainType);
+        TypeInformation<?> domainType = TypeInformation.of(domainClass).getActualType();
+        QuerydslBindings bindings = bindingsFactory.createBindingsFor(domainType);
 
-    Predicate predicate = predicateBuilder.getPredicate(domainType, queryParameters, bindings);
+        Predicate predicate = predicateBuilder.getPredicate(domainType, queryParameters, bindings);
 
-    return new BooleanBuilder(predicate);
-  }
+        return new BooleanBuilder(predicate);
+    }
 }

@@ -40,31 +40,31 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "ticket")
 public class TicketEntity extends AbstractPersistentObject {
 
-  private Integer number = 42;
+    private Integer number = 42;
 
-  private String title = "Witty Title";
+    private String title = "Witty Title";
 
-  private String body;
+    private String body;
 
-  @Enumerated(EnumType.STRING)
-  private Status status = Status.OPEN;
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.OPEN;
 
-  @JsonIgnore
-  @ManyToMany(mappedBy = "tickets", fetch = FetchType.LAZY)
-  public final Set<UserEntity> users = new LinkedHashSet<>();
+    @JsonIgnore
+    @ManyToMany(mappedBy = "tickets", fetch = FetchType.LAZY)
+    public final Set<UserEntity> users = new LinkedHashSet<>();
 
-  @PreRemove
-  private void preRemoveHook() {
-    new LinkedHashSet<>(this.users).forEach(o -> o.removeFromTickets(this));
-  }
+    @PreRemove
+    private void preRemoveHook() {
+        new LinkedHashSet<>(this.users).forEach(o -> o.removeFromTickets(this));
+    }
 
-  public void addToUsers(UserEntity o) {
-    o.getTickets().add(this);
-    this.users.add(o);
-  }
+    public void addToUsers(UserEntity o) {
+        o.getTickets().add(this);
+        this.users.add(o);
+    }
 
-  public void removeFromUsers(UserEntity o) {
-    o.getTickets().remove(this);
-    this.users.remove(o);
-  }
+    public void removeFromUsers(UserEntity o) {
+        o.getTickets().remove(this);
+        this.users.remove(o);
+    }
 }

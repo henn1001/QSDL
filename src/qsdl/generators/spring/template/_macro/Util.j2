@@ -1,3 +1,3 @@
-{% macro macro_imports(template_name, api_or_model)  %}
+{% macro macro_imports(template_name, api_or_model)    %}
 {% for line in generate_imports_for_template(template_name, api_or_model) %}{{ line }}{{"\n" if not loop.last}}{% endfor %}
 {% endmacro %}

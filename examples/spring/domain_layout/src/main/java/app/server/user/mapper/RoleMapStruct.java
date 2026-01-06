@@ -13,27 +13,24 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(
-    componentModel = "spring",
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface RoleMapStruct {
 
-  Role toDto(RoleEntity entity);
+    Role toDto(RoleEntity entity);
 
-  // ignore read only attributes and relations
-  @Mapping(target = "uid", ignore = true)
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "project", ignore = true)
-  RoleEntity toEntity(Role dto);
+    // ignore read only attributes and relations
+    @Mapping(target = "uid", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "project", ignore = true)
+    RoleEntity toEntity(Role dto);
 
-  @Named("replace")
-  @InheritConfiguration(name = "toEntity")
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-  void replace(Role source, @MappingTarget RoleEntity target);
+    @Named("replace")
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void replace(Role source, @MappingTarget RoleEntity target);
 
-  @Named("update")
-  @InheritConfiguration(name = "toEntity")
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  void update(Role source, @MappingTarget RoleEntity target);
+    @Named("update")
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void update(Role source, @MappingTarget RoleEntity target);
 }

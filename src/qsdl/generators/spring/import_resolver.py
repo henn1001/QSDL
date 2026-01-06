@@ -300,6 +300,7 @@ def generate_imports_for_template(
             f"import {util.Store.config.base_package}.AbstractDataJpaTest;",
             f"import {util.Store.config.base_package}.TestUtils;",
             "import com.querydsl.core.BooleanBuilder;",
+            "import com.querydsl.core.types.dsl.BooleanExpression;",
             "import java.util.List;",
             "import org.json.JSONObject;",
             "import org.junit.jupiter.api.Test;",

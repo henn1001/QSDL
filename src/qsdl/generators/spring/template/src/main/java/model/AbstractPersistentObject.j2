@@ -13,126 +13,126 @@ package {{package.model}};
 @MappedSuperclass
 public abstract class AbstractPersistentObject extends AbstractClass {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  {{ '@JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)' if id_type == "Long" else "@JsonIgnore" }}
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    {{ '@JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)' if id_type == "Long" else "@JsonIgnore" }}
+    private Long id;
 
-  @Column(unique = true, updatable = false)
-  {{ '@JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)' if id_type == "String" else "@JsonIgnore" }}
-  private String uid;
+    @Column(unique = true, updatable = false)
+    {{ '@JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)' if id_type == "String" else "@JsonIgnore" }}
+    private String uid;
 
-  @Version
-  @JsonIgnore
-  private Integer iv;
+    @Version
+    @JsonIgnore
+    private Integer iv;
 
-  private static final String UNHANDLED_EXCEPTION = "Caught unhandled exception:";
+    private static final String UNHANDLED_EXCEPTION = "Caught unhandled exception:";
 
-  /**
-   * The internal numeric identifier.
-   */
-  public Long getId() {
-    return id;
-  }
-
-  /**
-   * The (external) unique identifier.
-   */
-  public String getUid() {
-    return uid;
-  }
-
-  /**
-   * Set the (external) unique identifier.
-   */
-  public void setUid(String uid) {
-    this.uid = uid;
-  }
-
-  /**
-   * The version field.
-   */
-  public Integer getIv() {
-    return iv;
-  }
-
-  @PrePersist
-  private void ensureUid() {
-    if (this.uid == null) {
-      this.uid = IdGenerator.createId();
+    /**
+     * The internal numeric identifier.
+     */
+    public Long getId() {
+        return id;
     }
-  }
 
-  /**
-   * Copies the id, uid and iv field from another AbstractPersistentObject.
-   */
-  public void copyIdentity(AbstractPersistentObject o) {
-    this.id = o.getId();
-    this.uid = o.getUid();
-    this.iv = o.getIv();
-  }
+    /**
+     * The (external) unique identifier.
+     */
+    public String getUid() {
+        return uid;
+    }
 
-  /**
-   * Removes all relations from a give Object.
-   *
-   * <p>Affects fields annotated with OneToOne, OneToMany, ManyToOne, ManyToMany
-   */
-  public void removeRelations() {
+    /**
+     * Set the (external) unique identifier.
+     */
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
-    Field[] fields = this.getClass().getDeclaredFields();
+    /**
+     * The version field.
+     */
+    public Integer getIv() {
+        return iv;
+    }
 
-    // null fields if:
-    // annotated with JsonIgnore and either of OneToOne, OneToMany, ManyToOne, ManyToMany
-    for (Field field : fields) {
-      if (field.isAnnotationPresent(JsonIgnore.class)
-          && (field.isAnnotationPresent(OneToOne.class)
-              || field.isAnnotationPresent(OneToMany.class)
-              || field.isAnnotationPresent(ManyToOne.class)
-              || field.isAnnotationPresent(ManyToMany.class))) {
-
-        try {
-          if (field.getType() == Set.class) {
-            Method clear = Set.class.getDeclaredMethod("clear");
-
-            Object f = this.getClass().getField(field.getName()).get(this);
-
-            clear.invoke(f);
-          } else {
-            FieldUtils.writeField(this, field.getName(), null, true);
-          }
-        } catch (Exception e) {
-          log.error(UNHANDLED_EXCEPTION, e);
+    @PrePersist
+    private void ensureUid() {
+        if (this.uid == null) {
+            this.uid = IdGenerator.createId();
         }
-      }
-    }
-  }
-
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
     }
 
-    if (!(o instanceof AbstractPersistentObject)) {
-      return false;
+    /**
+     * Copies the id, uid and iv field from another AbstractPersistentObject.
+     */
+    public void copyIdentity(AbstractPersistentObject o) {
+        this.id = o.getId();
+        this.uid = o.getUid();
+        this.iv = o.getIv();
     }
 
-    AbstractPersistentObject other = (AbstractPersistentObject) o;
+    /**
+     * Removes all relations from a give Object.
+     *
+     * <p>Affects fields annotated with OneToOne, OneToMany, ManyToOne, ManyToMany
+     */
+    public void removeRelations() {
 
-    // if the uid is missing, return false
-    if (uid == null) {
-      return false;
+        Field[] fields = this.getClass().getDeclaredFields();
+
+        // null fields if:
+        // annotated with JsonIgnore and either of OneToOne, OneToMany, ManyToOne, ManyToMany
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(JsonIgnore.class)
+                    && (field.isAnnotationPresent(OneToOne.class)
+                            || field.isAnnotationPresent(OneToMany.class)
+                            || field.isAnnotationPresent(ManyToOne.class)
+                            || field.isAnnotationPresent(ManyToMany.class))) {
+
+                try {
+                    if (field.getType() == Set.class) {
+                        Method clear = Set.class.getDeclaredMethod("clear");
+
+                        Object f = this.getClass().getField(field.getName()).get(this);
+
+                        clear.invoke(f);
+                    } else {
+                        FieldUtils.writeField(this, field.getName(), null, true);
+                    }
+                } catch (Exception e) {
+                    log.error(UNHANDLED_EXCEPTION, e);
+                }
+            }
+        }
     }
 
-    // equivalence by uid
-    return uid.equals(other.getUid());
-  }
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
 
-  public int hashCode() {
-    if (uid != null) {
-      return uid.hashCode();
-    } else {
-      return super.hashCode();
+        if (!(o instanceof AbstractPersistentObject)) {
+            return false;
+        }
+
+        AbstractPersistentObject other = (AbstractPersistentObject) o;
+
+        // if the uid is missing, return false
+        if (uid == null) {
+            return false;
+        }
+
+        // equivalence by uid
+        return uid.equals(other.getUid());
     }
-  }
+
+    public int hashCode() {
+        if (uid != null) {
+            return uid.hashCode();
+        } else {
+            return super.hashCode();
+        }
+    }
 }
 {{""}}

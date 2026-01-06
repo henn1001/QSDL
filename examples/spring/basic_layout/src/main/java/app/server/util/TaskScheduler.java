@@ -23,113 +23,113 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class TaskScheduler {
 
-  private final ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<>();
 
-  protected final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+    protected final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
-  public static class TaskSkippedException extends RuntimeException {}
+    public static class TaskSkippedException extends RuntimeException {}
 
-  @PreDestroy
-  protected void destroy() {
-    executorService.shutdown();
-  }
-
-  /**
-   * Runs the task only if no other instance of the same task is running.
-   * Different tasks will not interfere with each other.
-   */
-  protected Optional<Exception> tryRunLocked(String lockKey, Runnable task) {
-    ReentrantLock lock = lockMap.computeIfAbsent(lockKey, k -> new ReentrantLock()); // Ensure lock exists
-
-    if (lock.tryLock()) {
-      try {
-        task.run();
-        return Optional.empty();
-      } catch (Exception e) {
-        return Optional.of(e);
-      } finally {
-        lock.unlock();
-      }
+    @PreDestroy
+    protected void destroy() {
+        executorService.shutdown();
     }
 
-    log.warn("Task {} is already running. Skipping execution.", lockKey);
-    return Optional.empty(); // Task was skipped
-  }
+    /**
+     * Runs the task only if no other instance of the same task is running.
+     * Different tasks will not interfere with each other.
+     */
+    protected Optional<Exception> tryRunLocked(String lockKey, Runnable task) {
+        ReentrantLock lock = lockMap.computeIfAbsent(lockKey, k -> new ReentrantLock()); // Ensure lock exists
 
-  /**
-   * Runs the task that returns a value only if no other instance of the same task is running, using a specific lock key.
-   * Different tasks will not interfere with each other.
-   */
-  protected <T> T tryRunLockedWithResult(String lockKey, Supplier<T> task) {
-    ReentrantLock lock = lockMap.computeIfAbsent(lockKey, k -> new ReentrantLock());
-
-    if (lock.tryLock()) {
-      try {
-        return task.get();
-      } finally {
-        lock.unlock();
-      }
-    } else {
-      log.warn("Task {} is already running. Skipping execution.", lockKey);
-      return null; // Task was skipped
-    }
-  }
-
-  /**
-   * Executes a task concurrently with a specified number of threads.
-   *
-   * @param task the task to run in parallel
-   * @param concurrency the number of concurrent executions
-   */
-  protected List<Exception> runConcurrently(Runnable task, int concurrency) {
-    List<CompletableFuture<Exception>> futures = IntStream.range(0, concurrency)
-        .mapToObj(i -> CompletableFuture.supplyAsync(
-            () -> {
-              try {
+        if (lock.tryLock()) {
+            try {
                 task.run();
-                return null;
-              } catch (Exception e) {
-                return e;
-              }
-            },
-            executorService))
-        .toList();
+                return Optional.empty();
+            } catch (Exception e) {
+                return Optional.of(e);
+            } finally {
+                lock.unlock();
+            }
+        }
 
-    return futures.stream()
-        .map(CompletableFuture::join) // Wait for all tasks to complete
-        .filter(Objects::nonNull) // Filter out successful executions (null means success)
-        .toList();
-  }
+        log.warn("Task {} is already running. Skipping execution.", lockKey);
+        return Optional.empty(); // Task was skipped
+    }
 
-  /**
-   * Executes a task concurrently for each input in the collection.
-   *
-   * @param inputs the collection of inputs to process
-   * @param task the task to run for each input
-   * @param errorHandler a function to handle exceptions for each input
-   * @return a list of successfully completed inputs
-   */
-  protected <T> List<T> runConcurrently(
-      Collection<T> inputs, Consumer<T> task, BiConsumer<T, Exception> errorHandler) {
-    List<T> successfulInputs = new CopyOnWriteArrayList<>();
+    /**
+     * Runs the task that returns a value only if no other instance of the same task is running, using a specific lock key.
+     * Different tasks will not interfere with each other.
+     */
+    protected <T> T tryRunLockedWithResult(String lockKey, Supplier<T> task) {
+        ReentrantLock lock = lockMap.computeIfAbsent(lockKey, k -> new ReentrantLock());
 
-    List<CompletableFuture<Void>> futures = inputs.stream()
-        .map(input -> CompletableFuture.runAsync(
-            () -> {
-              try {
-                task.accept(input);
-                successfulInputs.add(input);
-              } catch (Exception ex) {
-                errorHandler.accept(input, ex);
-              }
-            },
-            executorService))
-        .toList();
+        if (lock.tryLock()) {
+            try {
+                return task.get();
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            log.warn("Task {} is already running. Skipping execution.", lockKey);
+            return null; // Task was skipped
+        }
+    }
 
-    // Wait for all futures to complete (ensure all tasks finish regardless of success or failure)
-    futures.forEach(CompletableFuture::join);
+    /**
+     * Executes a task concurrently with a specified number of threads.
+     *
+     * @param task the task to run in parallel
+     * @param concurrency the number of concurrent executions
+     */
+    protected List<Exception> runConcurrently(Runnable task, int concurrency) {
+        List<CompletableFuture<Exception>> futures = IntStream.range(0, concurrency)
+                .mapToObj(i -> CompletableFuture.supplyAsync(
+                        () -> {
+                            try {
+                                task.run();
+                                return null;
+                            } catch (Exception e) {
+                                return e;
+                            }
+                        },
+                        executorService))
+                .toList();
 
-    // Return the list of successfully completed inputs
-    return successfulInputs;
-  }
+        return futures.stream()
+                .map(CompletableFuture::join) // Wait for all tasks to complete
+                .filter(Objects::nonNull) // Filter out successful executions (null means success)
+                .toList();
+    }
+
+    /**
+     * Executes a task concurrently for each input in the collection.
+     *
+     * @param inputs the collection of inputs to process
+     * @param task the task to run for each input
+     * @param errorHandler a function to handle exceptions for each input
+     * @return a list of successfully completed inputs
+     */
+    protected <T> List<T> runConcurrently(
+            Collection<T> inputs, Consumer<T> task, BiConsumer<T, Exception> errorHandler) {
+        List<T> successfulInputs = new CopyOnWriteArrayList<>();
+
+        List<CompletableFuture<Void>> futures = inputs.stream()
+                .map(input -> CompletableFuture.runAsync(
+                        () -> {
+                            try {
+                                task.accept(input);
+                                successfulInputs.add(input);
+                            } catch (Exception ex) {
+                                errorHandler.accept(input, ex);
+                            }
+                        },
+                        executorService))
+                .toList();
+
+        // Wait for all futures to complete (ensure all tasks finish regardless of success or failure)
+        futures.forEach(CompletableFuture::join);
+
+        // Return the list of successfully completed inputs
+        return successfulInputs;
+    }
 }

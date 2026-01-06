@@ -1,158 +1,158 @@
 {% macro logic(operation) -%}
-  {% set model_dto = model.name | lower %}
-  {% set model_entity = model.name | lower + "Entity" %}
-  {% if operation.parent %}
-  {% set p_model = operation.parent.model %}
-  {% set p_hibernate = operation.parent.hibernate %}
-  {% set p_m_hibernate = operation.parent.model.hibernate %}
-  {% set p_model_entity = p_model.name | lower + "Entity" %}
-  {% endif %}
-  {% if operation.method == "get" and operation.is_pageable %}
-    {# 
-     ########################################################################################
-      Get all entities.
-    #}
+    {% set model_dto = model.name | lower %}
+    {% set model_entity = model.name | lower + "Entity" %}
     {% if operation.parent %}
-    // confirm existence of parent
-    // should be optimized with something like getReferenceById
-    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
-
-    var queryParameters = Arrays.<String>asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
-    var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}Entity.class);
-    predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{operation.parent.predicate}}.id.eq({{p_model_entity}}.getId()));
-    {% else %}
-    var queryParameters = Arrays.<String>asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
-    var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}Entity.class);
+    {% set p_model = operation.parent.model %}
+    {% set p_hibernate = operation.parent.hibernate %}
+    {% set p_m_hibernate = operation.parent.model.hibernate %}
+    {% set p_model_entity = p_model.name | lower + "Entity" %}
     {% endif %}
+    {% if operation.method == "get" and operation.is_pageable %}
+        {# 
+         ########################################################################################
+            Get all entities.
+        #}
+        {% if operation.parent %}
+        // confirm existence of parent
+        // should be optimized with something like getReferenceById
+        var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-    var cursorPage = {{model_dto}}Repository.findAll(predicate, pageable);
+        var queryParameters = Arrays.<String>asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
+        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}Entity.class);
+        predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{operation.parent.predicate}}.id.eq({{p_model_entity}}.getId()));
+        {% else %}
+        var queryParameters = Arrays.<String>asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
+        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}Entity.class);
+        {% endif %}
 
-    var {{model_dto}}Entities = cursorPage.items();
-    var {{model_dto}}Dtos = {{model_dto}}Entities.stream().map({{model_dto}}MapStruct::toDto).toList();
+        var cursorPage = {{model_dto}}Repository.findAll(predicate, pageable);
 
-    return new CursorPage<>({{model_dto}}Dtos, cursorPage.nextCursor(), cursorPage.totalCount());
-  {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
-    {# 
-     ########################################################################################
-      Create a entity.
-    #}
-    // get and confirm existence
-    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
+        var {{model_dto}}Entities = cursorPage.items();
+        var {{model_dto}}Dtos = {{model_dto}}Entities.stream().map({{model_dto}}MapStruct::toDto).toList();
 
-    {% if operation.path.endswith('/add') %}
-    var {{model_entity}} = fetch{{model.name}}FromDb(id);
+        return new CursorPage<>({{model_dto}}Dtos, cursorPage.nextCursor(), cursorPage.totalCount());
+    {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
+        {# 
+         ########################################################################################
+            Create a entity.
+        #}
+        // get and confirm existence
+        var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-    if ({{model_entity}}.{{p_model.name|lower}}s.contains({{p_model_entity}})) {
-      throw AppExceptionUtil.entityAlreadyAdded({{ model.name }}.class, id);
-    }
+        {% if operation.path.endswith('/add') %}
+        var {{model_entity}} = fetch{{model.name}}FromDb(id);
 
-    {{model_entity}}.addTo{{ p_model.name }}s({{p_model_entity}});
-    {% elif operation.path.endswith('/remove') %}
-    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
+        if ({{model_entity}}.{{p_model.name|lower}}s.contains({{p_model_entity}})) {
+            throw AppExceptionUtil.entityAlreadyAdded({{ model.name }}.class, id);
+        }
 
-    {{model_entity}}.removeFrom{{ p_model.name }}s({{p_model_entity}});
+        {{model_entity}}.addTo{{ p_model.name }}s({{p_model_entity}});
+        {% elif operation.path.endswith('/remove') %}
+        var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
+
+        {{model_entity}}.removeFrom{{ p_model.name }}s({{p_model_entity}});
+        {% endif %}
+
+        {{model_dto}}Repository.save({{model_entity}});
+
+        return null;
+    {% elif operation.method == "post" %}
+        {# 
+         ########################################################################################
+            Create a entity.
+        #}
+        {% if operation.parent %}
+        // confirm existence of parent
+        var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
+
+        var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
+
+        // add parent relation
+            {% if use_encapsulation %}
+        {{model_entity}}.set{{ p_model.name }}({{p_model_entity}});
+            {% else %}
+        {{model_entity}}.{{p_model.name|lower}} = {{p_model_entity}};
+            {% endif %}
+
+        {% else %}
+        var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
+
+        {% endif %}
+        {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
+
+        return {{model_dto}}MapStruct.toDto({{model_entity}});
+    {% elif operation.method == "get" %}
+        {# 
+         ########################################################################################
+            Get a entity.
+
+        #}
+        {% if operation.parent %}
+        // confirm existence of parent
+        var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
+
+        var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
+        {% else %}
+        var {{model_entity}} = fetch{{model.name}}FromDb(id);
+        {% endif %}
+
+        return {{model_dto}}MapStruct.toDto({{model_entity}});
+    {% elif operation.method == "put" %}
+        {# 
+         ########################################################################################
+            Replace entities.
+        #}
+        {% if operation.parent %}
+        // confirm existence of parent
+        var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
+
+        var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
+        {% else %}
+        var {{model_entity}} = fetch{{model.name}}FromDb(id);
+        {% endif %}
+
+        // replace {{model_entity}} with all writeable fields - nulls included
+        {{model_dto}}MapStruct.replace(body, {{model_entity}});
+
+        {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
+
+        return {{model_dto}}MapStruct.toDto({{model_entity}});
+    {% elif operation.method == "patch" %}
+        {# 
+         ########################################################################################
+            Patch entities.
+        #}
+        {% if operation.parent %}
+        // confirm existence of parent
+        var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
+
+        var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
+        {% else %}
+        var {{model_entity}} = fetch{{model.name}}FromDb(id);
+        {% endif %}
+
+        // update dbEntity with all writeable fields if present
+        {{model_dto}}MapStruct.update(body, {{model_entity}});
+
+        {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
+
+        return {{model_dto}}MapStruct.toDto({{model_entity}});
+    {% elif operation.method == "delete" %}
+        {# 
+         ########################################################################################
+            Delete entities.
+        #}
+        {% if operation.parent %}
+        // confirm existence of parent
+        var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
+
+        var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
+        {% else %}
+        var {{model_entity}} = fetch{{model.name}}FromDb(id);
+        {% endif %}
+
+        {{model_dto}}Repository.delete({{model_entity}});
+
+        return null;
     {% endif %}
-
-    {{model_dto}}Repository.save({{model_entity}});
-
-    return null;
-  {% elif operation.method == "post" %}
-    {# 
-     ########################################################################################
-      Create a entity.
-    #}
-    {% if operation.parent %}
-    // confirm existence of parent
-    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
-
-    var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
-
-    // add parent relation
-      {% if use_encapsulation %}
-    {{model_entity}}.set{{ p_model.name }}({{p_model_entity}});
-      {% else %}
-    {{model_entity}}.{{p_model.name|lower}} = {{p_model_entity}};
-      {% endif %}
-
-    {% else %}
-    var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
-
-    {% endif %}
-    {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
-
-    return {{model_dto}}MapStruct.toDto({{model_entity}});
-  {% elif operation.method == "get" %}
-    {# 
-     ########################################################################################
-      Get a entity.
-
-    #}
-    {% if operation.parent %}
-    // confirm existence of parent
-    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
-
-    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
-    {% else %}
-    var {{model_entity}} = fetch{{model.name}}FromDb(id);
-    {% endif %}
-
-    return {{model_dto}}MapStruct.toDto({{model_entity}});
-  {% elif operation.method == "put" %}
-    {# 
-     ########################################################################################
-      Replace entities.
-    #}
-    {% if operation.parent %}
-    // confirm existence of parent
-    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
-
-    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
-    {% else %}
-    var {{model_entity}} = fetch{{model.name}}FromDb(id);
-    {% endif %}
-
-    // replace {{model_entity}} with all writeable fields - nulls included
-    {{model_dto}}MapStruct.replace(body, {{model_entity}});
-
-    {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
-
-    return {{model_dto}}MapStruct.toDto({{model_entity}});
-  {% elif operation.method == "patch" %}
-    {# 
-     ########################################################################################
-      Patch entities.
-    #}
-    {% if operation.parent %}
-    // confirm existence of parent
-    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
-
-    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
-    {% else %}
-    var {{model_entity}} = fetch{{model.name}}FromDb(id);
-    {% endif %}
-
-    // update dbEntity with all writeable fields if present
-    {{model_dto}}MapStruct.update(body, {{model_entity}});
-
-    {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
-
-    return {{model_dto}}MapStruct.toDto({{model_entity}});
-  {% elif operation.method == "delete" %}
-    {# 
-     ########################################################################################
-      Delete entities.
-    #}
-    {% if operation.parent %}
-    // confirm existence of parent
-    var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
-
-    var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
-    {% else %}
-    var {{model_entity}} = fetch{{model.name}}FromDb(id);
-    {% endif %}
-
-    {{model_dto}}Repository.delete({{model_entity}});
-
-    return null;
-  {% endif %}
 {% endmacro %}

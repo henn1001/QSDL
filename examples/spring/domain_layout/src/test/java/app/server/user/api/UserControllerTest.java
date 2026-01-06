@@ -38,258 +38,276 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import(TestConfig.class)
 class UserControllerTest {
 
-  @MockBean
-  UserService service;
+    @MockBean
+    UserService service;
 
-  @Value("${server.base-path:/}")
-  String basePath;
+    @Value("${server.base-path:/}")
+    String basePath;
 
-  @Autowired
-  MockMvc mockMvc;
+    @Autowired
+    MockMvc mockMvc;
 
-  static Long one = 1L;
+    static Long one = 1L;
 
-  @Test
-  public void whenGetUsersForTicket_thenOk() throws Exception {
+    @Test
+    public void whenGetUsersForTicket_thenOk() throws Exception {
 
-    // Given
-    User request = TestUtils.getRandom(User.class);
+        // Given
+        User request = TestUtils.getRandom(User.class);
 
-    CursorPage<User> ret = new CursorPage<User>(Arrays.asList(request), null, null);
+        CursorPage<User> ret = new CursorPage<User>(Arrays.asList(request), null, null);
 
-    when(service.getUsersForTicket(any(), any(), any()))
-        .thenReturn(ret);
+        when(service.getUsersForTicket(any(), any(), any()))
+                .thenReturn(ret);
 
-    // When
-    String response = mockMvc.perform(get(basePath + "/tickets/1/users"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(get(basePath + "/tickets/1/users"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ret),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ret),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenAddUserToTicket_thenOk() throws Exception {
+    @Test
+    public void whenAddUserToTicket_thenOk() throws Exception {
 
-    // Given
+        // Given
 
-    // When
-    mockMvc.perform(post(basePath + "/tickets/1/users/1/add"))
-        .andExpect(status().isOk());
+        // When
+        mockMvc.perform(post(basePath + "/tickets/1/users/1/add"))
+                .andExpect(status().isOk());
 
-    // Then
+        // Then
 
-  }
+    }
 
-  @Test
-  public void whenRemoveUserFromTicket_thenOk() throws Exception {
+    @Test
+    public void whenRemoveUserFromTicket_thenOk() throws Exception {
 
-    // Given
+        // Given
 
-    // When
-    mockMvc.perform(post(basePath + "/tickets/1/users/1/remove"))
-        .andExpect(status().isOk());
+        // When
+        mockMvc.perform(post(basePath + "/tickets/1/users/1/remove"))
+                .andExpect(status().isOk());
 
-    // Then
+        // Then
 
-  }
+    }
 
-  @Test
-  public void whenGetUsers_thenOk() throws Exception {
+    @Test
+    public void whenGetUsers_thenOk() throws Exception {
 
-    // Given
-    User request = TestUtils.getRandom(User.class);
+        // Given
+        User request = TestUtils.getRandom(User.class);
 
-    CursorPage<User> ret = new CursorPage<User>(Arrays.asList(request), null, null);
+        CursorPage<User> ret = new CursorPage<User>(Arrays.asList(request), null, null);
 
-    when(service.getUsers(any(), any()))
-        .thenReturn(ret);
+        when(service.getUsers(any(), any()))
+                .thenReturn(ret);
 
-    // When
-    String response = mockMvc.perform(get(basePath + "/users"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(get(basePath + "/users"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ret),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ret),
+                new JSONObject(response),
+                false);
+    }
+
+    @Test
+    public void whenCreateUser_thenOk() throws Exception {
+
+        // Given
+        User request = TestUtils.getRandom(User.class);
 
-  @Test
-  public void whenCreateUser_thenOk() throws Exception {
+        when(service.createUser(any(), any()))
+                .thenReturn(request);
 
-    // Given
-    User request = TestUtils.getRandom(User.class);
-
-    when(service.createUser(any(), any()))
-        .thenReturn(request);
-
-    // When
-    String response = mockMvc.perform(post(basePath + "/users")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
-
-  @Test
-  public void whenCreateUserWithInvalidPayload_thenError() throws Exception {
-
-    // Given
-    User request = TestUtils.getRandom(User.class);
-
-    when(service.createUser(any(), any()))
-        .thenReturn(request);
-
-    // When
-    String response = mockMvc.perform(post(basePath + "/users")
-        .content("{}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
-
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
-
-  @Test
-  public void whenGetUser_thenOk() throws Exception {
-
-    // Given
-    User request = TestUtils.getRandom(User.class);
-
-    when(service.getUser(eq(one), any()))
-        .thenReturn(request);
-
-    // When
-    String response = mockMvc.perform(get(basePath + "/users/1"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
-
-  @Test
-  public void whenReplaceUser_thenOk() throws Exception {
-
-    // Given
-    User request = TestUtils.getRandom(User.class);
-
-    when(service.replaceUser(eq(one), any(), any()))
-        .thenReturn(request);
-
-    // When
-    String response = mockMvc.perform(put(basePath + "/users/1")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
-
-  @Test
-  public void whenReplaceUserWithInvalidPayload_thenError() throws Exception {
-
-    // Given
-    User request = TestUtils.getRandom(User.class);
-
-    when(service.replaceUser(eq(one), any(), any()))
-        .thenReturn(request);
-
-    // When
-    String response = mockMvc.perform(put(basePath + "/users/1")
-        .content("{}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
-
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
-
-  @Test
-  public void whenUpdateUser_thenOk() throws Exception {
-
-    // Given
-    User request = TestUtils.getRandom(User.class);
-
-    when(service.updateUser(eq(one), any(), any()))
-        .thenReturn(request);
-
-    // When
-    String response = mockMvc.perform(patch(basePath + "/users/1")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
-
-  @Test
-  public void whenUpdateUserWithInvalidPayload_thenError() throws Exception {
-
-    // Given
-    User request = TestUtils.getRandom(User.class);
-
-    when(service.updateUser(eq(one), any(), any()))
-        .thenReturn(request);
-
-    // When
-    String response = mockMvc.perform(put(basePath + "/users/1")
-        .content("{}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
-
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
-
-  @Test
-  public void whenDeleteUser_thenOk() throws Exception {
-
-    // Given
-
-    // When
-    mockMvc.perform(delete(basePath + "/users/1"))
-        .andExpect(status().isOk());
-
-    // Then
-
-  }
+        // When
+        String response = mockMvc.perform(post(basePath + "/users")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
+
+    @Test
+    public void whenCreateUserWithInvalidPayload_thenError() throws Exception {
+
+        // Given
+        User request = TestUtils.getRandom(User.class);
+
+        when(service.createUser(any(), any()))
+                .thenReturn(request);
+
+        // When
+        String response = mockMvc.perform(post(basePath + "/users")
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
+
+    @Test
+    public void whenGetUser_thenOk() throws Exception {
+
+        // Given
+        User request = TestUtils.getRandom(User.class);
+
+        when(service.getUser(eq(one), any()))
+                .thenReturn(request);
+
+        // When
+        String response = mockMvc.perform(get(basePath + "/users/1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
+
+    @Test
+    public void whenReplaceUser_thenOk() throws Exception {
+
+        // Given
+        User request = TestUtils.getRandom(User.class);
+
+        when(service.replaceUser(eq(one), any(), any()))
+                .thenReturn(request);
+
+        // When
+        String response = mockMvc.perform(put(basePath + "/users/1")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
+
+    @Test
+    public void whenReplaceUserWithInvalidPayload_thenError() throws Exception {
+
+        // Given
+        User request = TestUtils.getRandom(User.class);
+
+        when(service.replaceUser(eq(one), any(), any()))
+                .thenReturn(request);
+
+        // When
+        String response = mockMvc.perform(put(basePath + "/users/1")
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
+
+    @Test
+    public void whenUpdateUser_thenOk() throws Exception {
+
+        // Given
+        User request = TestUtils.getRandom(User.class);
+
+        when(service.updateUser(eq(one), any(), any()))
+                .thenReturn(request);
+
+        // When
+        String response = mockMvc.perform(patch(basePath + "/users/1")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
+
+    @Test
+    public void whenUpdateUserWithInvalidPayload_thenError() throws Exception {
+
+        // Given
+        User request = TestUtils.getRandom(User.class);
+
+        when(service.updateUser(eq(one), any(), any()))
+                .thenReturn(request);
+
+        // When
+        String response = mockMvc.perform(put(basePath + "/users/1")
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
+
+    @Test
+    public void whenDeleteUser_thenOk() throws Exception {
+
+        // Given
+
+        // When
+        mockMvc.perform(delete(basePath + "/users/1"))
+                .andExpect(status().isOk());
+
+        // Then
+
+    }
 }

@@ -18,134 +18,134 @@ import org.springframework.util.MultiValueMap;
  */
 public class Context {
 
-  private HttpServletRequest request;
+    private HttpServletRequest request;
 
-  public MultiValueMap<String, String> parameterMap;
+    public MultiValueMap<String, String> parameterMap;
 
-  public MultiValueMap<String, String> headerMap;
+    public MultiValueMap<String, String> headerMap;
 
-  public Map<String, Object> attributeMap;
+    public Map<String, Object> attributeMap;
 
-  public Context() {
-    this(null, null, null);
-  }
-
-  public Context(HttpServletRequest request) {
-    this();
-    this.request = request;
-    loadParameterMap();
-  }
-
-  public Context(
-      MultiValueMap<String, String> parameterMap,
-      MultiValueMap<String, String> headerMap,
-      Map<String, Object> attributeMap) {
-    this.parameterMap = Objects.requireNonNullElse(parameterMap, new LinkedMultiValueMap<String, String>());
-    this.headerMap = Objects.requireNonNullElse(headerMap, new LinkedMultiValueMap<String, String>());
-    this.attributeMap = Objects.requireNonNullElse(attributeMap, new LinkedHashMap<String, Object>());
-  }
-
-  /**
-   * retrieves all parameters from the context.
-   */
-  private void loadParameterMap() {
-
-    Enumeration<String> enumerator = request.getParameterNames();
-
-    while (enumerator.hasMoreElements()) {
-      String name = enumerator.nextElement();
-      parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
-    }
-  }
-
-  /**
-   * retrieves all headers from the context.
-   */
-  private void loadHeaderMap() {
-
-    Enumeration<String> enumerator = request.getHeaderNames();
-
-    while (enumerator.hasMoreElements()) {
-      String name = enumerator.nextElement();
-      headerMap.put(name, Arrays.asList(request.getHeader(name)));
-    }
-  }
-
-  /**
-   * retrieves all attributes from the context.
-   */
-  private void loadAttributeMap() {
-
-    Enumeration<String> enumerator = request.getAttributeNames();
-
-    while (enumerator.hasMoreElements()) {
-      String name = enumerator.nextElement();
-      attributeMap.put(name, request.getAttribute(name));
-    }
-  }
-
-  /**
-   * Use this method to load values from the HttpServletRequest.
-   *
-   * <p>we want to do this on demand to not waste time when these values are not needed on the service layer.
-   */
-  public void loadFromContext(boolean loadHeaders, boolean loadAttributes) {
-    if (request != null) {
-      if (loadHeaders) {
-        loadHeaderMap();
-      }
-      if (loadAttributes) {
-        loadAttributeMap();
-      }
-    }
-  }
-
-  /**
-   * Returns a subset from the parameterMap.
-   */
-  public MultiValueMap<String, String> getParameterMap(List<String> values) {
-
-    MultiValueMap<String, String> ret = new LinkedMultiValueMap<>();
-
-    for (String value : values) {
-      if (parameterMap.containsKey(value)) {
-        ret.addAll(value, parameterMap.get(value));
-      }
+    public Context() {
+        this(null, null, null);
     }
 
-    return ret;
-  }
-
-  /**
-   * Returns a subset from the headerMap.
-   */
-  public MultiValueMap<String, String> getHeaderMap(List<String> values) {
-
-    MultiValueMap<String, String> ret = new LinkedMultiValueMap<>();
-
-    for (String value : values) {
-      if (headerMap.containsKey(value)) {
-        ret.addAll(value, headerMap.get(value));
-      }
+    public Context(HttpServletRequest request) {
+        this();
+        this.request = request;
+        loadParameterMap();
     }
 
-    return ret;
-  }
-
-  /**
-   * Returns a subset from the attributeMap.
-   */
-  public Map<String, Object> getAttributeMap(List<String> values) {
-
-    Map<String, Object> ret = new LinkedHashMap<>();
-
-    for (String value : values) {
-      if (attributeMap.containsKey(value)) {
-        ret.put(value, attributeMap.get(value));
-      }
+    public Context(
+            MultiValueMap<String, String> parameterMap,
+            MultiValueMap<String, String> headerMap,
+            Map<String, Object> attributeMap) {
+        this.parameterMap = Objects.requireNonNullElse(parameterMap, new LinkedMultiValueMap<String, String>());
+        this.headerMap = Objects.requireNonNullElse(headerMap, new LinkedMultiValueMap<String, String>());
+        this.attributeMap = Objects.requireNonNullElse(attributeMap, new LinkedHashMap<String, Object>());
     }
 
-    return ret;
-  }
+    /**
+     * retrieves all parameters from the context.
+     */
+    private void loadParameterMap() {
+
+        Enumeration<String> enumerator = request.getParameterNames();
+
+        while (enumerator.hasMoreElements()) {
+            String name = enumerator.nextElement();
+            parameterMap.put(name, Arrays.asList(request.getParameterValues(name)));
+        }
+    }
+
+    /**
+     * retrieves all headers from the context.
+     */
+    private void loadHeaderMap() {
+
+        Enumeration<String> enumerator = request.getHeaderNames();
+
+        while (enumerator.hasMoreElements()) {
+            String name = enumerator.nextElement();
+            headerMap.put(name, Arrays.asList(request.getHeader(name)));
+        }
+    }
+
+    /**
+     * retrieves all attributes from the context.
+     */
+    private void loadAttributeMap() {
+
+        Enumeration<String> enumerator = request.getAttributeNames();
+
+        while (enumerator.hasMoreElements()) {
+            String name = enumerator.nextElement();
+            attributeMap.put(name, request.getAttribute(name));
+        }
+    }
+
+    /**
+     * Use this method to load values from the HttpServletRequest.
+     *
+     * <p>we want to do this on demand to not waste time when these values are not needed on the service layer.
+     */
+    public void loadFromContext(boolean loadHeaders, boolean loadAttributes) {
+        if (request != null) {
+            if (loadHeaders) {
+                loadHeaderMap();
+            }
+            if (loadAttributes) {
+                loadAttributeMap();
+            }
+        }
+    }
+
+    /**
+     * Returns a subset from the parameterMap.
+     */
+    public MultiValueMap<String, String> getParameterMap(List<String> values) {
+
+        MultiValueMap<String, String> ret = new LinkedMultiValueMap<>();
+
+        for (String value : values) {
+            if (parameterMap.containsKey(value)) {
+                ret.addAll(value, parameterMap.get(value));
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns a subset from the headerMap.
+     */
+    public MultiValueMap<String, String> getHeaderMap(List<String> values) {
+
+        MultiValueMap<String, String> ret = new LinkedMultiValueMap<>();
+
+        for (String value : values) {
+            if (headerMap.containsKey(value)) {
+                ret.addAll(value, headerMap.get(value));
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns a subset from the attributeMap.
+     */
+    public Map<String, Object> getAttributeMap(List<String> values) {
+
+        Map<String, Object> ret = new LinkedHashMap<>();
+
+        for (String value : values) {
+            if (attributeMap.containsKey(value)) {
+                ret.put(value, attributeMap.get(value));
+            }
+        }
+
+        return ret;
+    }
 }
 {{""}}

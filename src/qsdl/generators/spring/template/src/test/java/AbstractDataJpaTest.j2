@@ -9,7 +9,7 @@ package {{base_package}};
 @DataJpaTest
 @Import(TestConfig.class)
 @EnableJpaRepositories(
-    basePackages = {{"{"}}{% for pkg in packages | map(attribute='repository') | unique | list %}"{{pkg}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}},
-    repositoryBaseClass = BaseRepositoryImpl.class)
+        basePackages = {{"{"}}{% for pkg in packages | map(attribute='repository') | unique | list %}"{{pkg}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}},
+        repositoryBaseClass = BaseRepositoryImpl.class)
 public abstract class AbstractDataJpaTest {}
 {{""}}

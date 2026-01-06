@@ -39,26 +39,26 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "user")
 public class UserEntity extends AbstractPersistentObject {
 
-  @NotNull
-  private String name;
+    @NotNull
+    private String name;
 
-  private Integer count;
+    private Integer count;
 
-  @Column(unique = true)
-  private String mail;
+    @Column(unique = true)
+    private String mail;
 
-  @JsonIgnore
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
-  public final Set<TicketEntity> tickets = new LinkedHashSet<>();
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
+    public final Set<TicketEntity> tickets = new LinkedHashSet<>();
 
-  public void addToTickets(TicketEntity o) {
-    o.getUsers().add(this);
-    this.tickets.add(o);
-  }
+    public void addToTickets(TicketEntity o) {
+        o.getUsers().add(this);
+        this.tickets.add(o);
+    }
 
-  public void removeFromTickets(TicketEntity o) {
-    o.getUsers().remove(this);
-    this.tickets.remove(o);
-  }
+    public void removeFromTickets(TicketEntity o) {
+        o.getUsers().remove(this);
+        this.tickets.remove(o);
+    }
 }

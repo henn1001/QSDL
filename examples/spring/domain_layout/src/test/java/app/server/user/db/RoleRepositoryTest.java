@@ -14,6 +14,7 @@ import app.server.project.db.ProjectEntity;
 import app.server.project.db.ProjectRepository;
 import app.server.user.db.*;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import java.util.List;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -23,147 +24,149 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 class RoleRepositoryTest extends AbstractDataJpaTest {
 
-  @Autowired
-  ProjectRepository projectRepository;
+    @Autowired
+    ProjectRepository projectRepository;
 
-  @Autowired
-  RoleRepository roleRepository;
+    @Autowired
+    RoleRepository roleRepository;
 
-  @Autowired
-  TestEntityManager testEntityManager;
+    @Autowired
+    TestEntityManager testEntityManager;
 
-  public List<RoleEntity> prepareData(int count) {
+    public List<RoleEntity> prepareData(int count) {
 
-    List<RoleEntity> testDatas = TestUtils.getRandomEntityWithNullId(RoleEntity.class, count);
+        List<RoleEntity> testDatas = TestUtils.getRandomEntityWithNullId(RoleEntity.class, count);
 
-    ProjectEntity project = projectRepository.save(TestUtils.getRandomEntityWithNullId(ProjectEntity.class));
+        ProjectEntity project = projectRepository.save(TestUtils.getRandomEntityWithNullId(ProjectEntity.class));
 
-    for (RoleEntity testData : testDatas) {
-      testData.setProject(project);
+        for (RoleEntity testData : testDatas) {
+            testData.setProject(project);
+        }
+
+        roleRepository.saveAll(testDatas);
+
+        // forces synchronization to DB
+        // clears persistence context
+        testEntityManager.flush();
+        testEntityManager.clear();
+
+        return roleRepository.findAll();
     }
 
-    roleRepository.saveAll(testDatas);
+    @Test
+    public void whenSave_thenFind() throws Exception {
 
-    // forces synchronization to DB
-    // clears persistence context
-    testEntityManager.flush();
-    testEntityManager.clear();
+        // Given
+        RoleEntity testData = prepareData(1).get(0);
 
-    return roleRepository.findAll();
-  }
+        // When
+        RoleEntity findData = roleRepository.findById(testData.getId()).orElse(null);
 
-  @Test
-  public void whenSave_thenFind() throws Exception {
+        TestUtils.copyAllIdentities(testData, findData);
 
-    // Given
-    RoleEntity testData = prepareData(1).get(0);
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(testData),
+                new JSONObject(Json.serializer().toString(findData)),
+                false);
+    }
 
-    // When
-    RoleEntity findData = roleRepository.findById(testData.getId()).orElse(null);
+    @Test
+    public void whenDelete_thenCountZero() throws Exception {
 
-    TestUtils.copyAllIdentities(testData, findData);
+        // Given
+        RoleEntity testData = prepareData(1).get(0);
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(testData),
-        new JSONObject(Json.serializer().toString(findData)),
-        false);
-  }
+        // When
+        roleRepository.delete(testData);
 
-  @Test
-  public void whenDelete_thenCountZero() throws Exception {
+        // Then
+        long count = roleRepository.count();
+        assertEquals(0, count);
+    }
 
-    // Given
-    RoleEntity testData = prepareData(1).get(0);
+    @Test
+    public void whenCount_thenUseQuerie() throws Exception {
 
-    // When
-    roleRepository.delete(testData);
+        // Given
+        List<RoleEntity> testData = prepareData(5);
 
-    // Then
-    long count = roleRepository.count();
-    assertEquals(0, count);
-  }
+        BooleanBuilder predicate = new BooleanBuilder();
 
-  @Test
-  public void whenCount_thenUseQuerie() throws Exception {
+        // When
+        long count = roleRepository.count(predicate);
 
-    // Given
-    List<RoleEntity> testData = prepareData(5);
+        // Then
+        assertEquals(5, count);
+    }
 
-    BooleanBuilder predicate = new BooleanBuilder();
+    @Test
+    public void whenFindAll_thenPaginate() throws Exception {
 
-    // When
-    long count = roleRepository.count(predicate);
+        // Given
+        List<RoleEntity> testData = prepareData(5);
 
-    // Then
-    assertEquals(5, count);
-  }
+        // When
+        String cursor = null;
+        int idx = 0;
 
-  @Test
-  public void whenFindAll_thenPaginate() throws Exception {
+        do {
+            CursorPageable pageable = new CursorPageable(cursor, 1, null);
+            BooleanBuilder predicate = new BooleanBuilder();
+            CursorPage<RoleEntity> findData = roleRepository.findAll(predicate, pageable);
 
-    // Given
-    List<RoleEntity> testData = prepareData(5);
+            cursor = findData.nextCursor();
 
-    // When
-    String cursor = null;
-    int idx = 0;
+            assertEquals(1, findData.count());
 
-    do {
-      CursorPageable pageable = new CursorPageable(cursor, 1, null);
-      BooleanBuilder predicate = new BooleanBuilder();
-      CursorPage<RoleEntity> findData = roleRepository.findAll(predicate, pageable);
+            idx++;
+        } while (cursor != null);
 
-      cursor = findData.nextCursor();
+        // Then
+        assertEquals(5, idx);
+    }
 
-      assertEquals(1, findData.count());
+    @Test
+    public void whenCountByProject_thenUseQuerie() throws Exception {
 
-      idx++;
-    } while (cursor != null);
+        // Given
+        RoleEntity testData = prepareData(5).get(0);
+        ProjectEntity parent = testData.getProject();
 
-    // Then
-    assertEquals(5, idx);
-  }
+        BooleanExpression expression = QRoleEntity.roleEntity.project.id.eq(parent.getId());
+        BooleanBuilder predicate = new BooleanBuilder(expression);
 
-  @Test
-  public void whenCountByProject_thenUseQuerie() throws Exception {
+        // When
+        long count = roleRepository.count(predicate);
 
-    // Given
-    RoleEntity testData = prepareData(5).get(0);
-    ProjectEntity parent = testData.getProject();
+        // Then
+        assertEquals(5, count);
+    }
 
-    BooleanBuilder predicate = new BooleanBuilder(QRoleEntity.roleEntity.project.id.eq(parent.getId()));
+    @Test
+    public void whenFindAllByProject_thenPaginate() throws Exception {
 
-    // When
-    long count = roleRepository.count(predicate);
+        // Given
+        Long parentId = prepareData(5).get(0).getProject().getId();
 
-    // Then
-    assertEquals(5, count);
-  }
+        // When
+        String cursor = null;
+        int idx = 0;
 
-  @Test
-  public void whenFindAllByProject_thenPaginate() throws Exception {
+        do {
+            CursorPageable pageable = new CursorPageable(cursor, 1, null);
+            BooleanExpression expression = QRoleEntity.roleEntity.project.id.eq(parentId);
+            BooleanBuilder predicate = new BooleanBuilder(expression);
+            CursorPage<RoleEntity> findData = roleRepository.findAll(predicate, pageable);
 
-    // Given
-    Long parentId = prepareData(5).get(0).getProject().getId();
+            cursor = findData.nextCursor();
 
-    // When
-    String cursor = null;
-    int idx = 0;
+            assertEquals(1, findData.count());
 
-    do {
-      CursorPageable pageable = new CursorPageable(cursor, 1, null);
-      BooleanBuilder predicate = new BooleanBuilder(QRoleEntity.roleEntity.project.id.eq(parentId));
-      CursorPage<RoleEntity> findData = roleRepository.findAll(predicate, pageable);
+            idx++;
+        } while (cursor != null);
 
-      cursor = findData.nextCursor();
-
-      assertEquals(1, findData.count());
-
-      idx++;
-    } while (cursor != null);
-
-    // Then
-    assertEquals(5, idx);
-  }
+        // Then
+        assertEquals(5, idx);
+    }
 }

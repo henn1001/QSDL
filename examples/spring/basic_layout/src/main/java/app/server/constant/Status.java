@@ -6,11 +6,11 @@ package app.server.constant;
 import java.util.EnumSet;
 
 public enum Status {
-  OPEN,
-  TO_DO,
-  CLOSED;
+    OPEN,
+    TO_DO,
+    CLOSED;
 
-  public static boolean hasValue(String value) {
-    return EnumSet.allOf(Status.class).stream().anyMatch(e -> e.toString().equals(value));
-  }
+    public static boolean hasValue(String value) {
+        return EnumSet.allOf(Status.class).stream().anyMatch(e -> e.toString().equals(value));
+    }
 }

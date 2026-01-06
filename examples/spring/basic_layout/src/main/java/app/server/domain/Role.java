@@ -29,14 +29,14 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode(callSuper = false)
 public class Role extends AbstractClass {
 
-  @Min(0)
-  @Max(Long.MAX_VALUE)
-  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  private Long id;
+    @Min(0)
+    @Max(Long.MAX_VALUE)
+    @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+    private Long id;
 
-  @NonNull
-  @NotNull
-  @Size(min = 0, max = 255)
-  @JsonProperty(value = "name", required = true)
-  private String name;
+    @NonNull
+    @NotNull
+    @Size(min = 0, max = 255)
+    @JsonProperty(value = "name", required = true)
+    private String name;
 }

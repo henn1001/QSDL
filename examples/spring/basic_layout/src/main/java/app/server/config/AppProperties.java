@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
 // @formatter:off
 public record AppProperties(
 
-  @DefaultValue("SpringBootApp") String name
+    @DefaultValue("SpringBootApp") String name
 
 ) {}
 // @formatter:on

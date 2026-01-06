@@ -20,54 +20,54 @@ package {{model.package.domain}};
 public class {{model.name}} extends AbstractClass {
 {% for field in model.fields if not field.is_relation and not field.is_hidden %}
 
-  {# 
-    Required fields
-  #}
-  {% if field.is_required and not field.is_read_only%}
-  {% if use_builder %}
-  @NonNull
-  {% endif %}
-  @NotNull
-  {% endif %}
-  {# 
-    Set @Valid for any container
-  #}
-  {% if (field.is_array or field.is_base or field.is_object) %}
-  @Valid
-  {% endif %}
-  {# 
-    Size limits
-  #}
-  {% if field.type == "String" %}
-  @Size(min = {{field.min_size}}, max = {{field.max_size}})
-  {% endif %}
-  {% if field.type in ["Integer", "Long"] and field.min_size %}
-  @Min({{field.min_size}})
-  @Max({{field.max_size}})
-  {% endif %}
-  {# 
-    Default
-  #}
-  {% if use_builder and field.default  %}
-  @Builder.Default
-  {% endif %}
-  {# 
-    Pattern
-  #}
-  {% if field.pattern and not field.is_array  %}
-  @Pattern(regexp = "{{field.pattern}}")
-  {% endif %}
-  {# 
-    Set JsonIgnore for relations
-  #}
-  @JsonProperty(value = "{{field.json_key}}"{% if field.is_required %}, required = true{% endif %}{% if field.is_read_only %}, access = JsonProperty.Access.READ_ONLY{% endif %}{% if field.is_write_only %}, access = JsonProperty.Access.WRITE_ONLY{% endif %})
-  {# 
-    Set the Field definition
-  #}
-  {% if field.is_array %}
-  {{ "private" if use_encapsulation else "public"}} List<{{ "@Pattern(regexp = \"" + field.pattern + "\") " if field.pattern}}{{field.type}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
-  {% else %}
-  {{ "private" if use_encapsulation else "public"}} {{field.type}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
-  {% endif %}
+    {# 
+        Required fields
+    #}
+    {% if field.is_required and not field.is_read_only%}
+    {% if use_builder %}
+    @NonNull
+    {% endif %}
+    @NotNull
+    {% endif %}
+    {# 
+        Set @Valid for any container
+    #}
+    {% if (field.is_array or field.is_base or field.is_object) %}
+    @Valid
+    {% endif %}
+    {# 
+        Size limits
+    #}
+    {% if field.type == "String" %}
+    @Size(min = {{field.min_size}}, max = {{field.max_size}})
+    {% endif %}
+    {% if field.type in ["Integer", "Long"] and field.min_size %}
+    @Min({{field.min_size}})
+    @Max({{field.max_size}})
+    {% endif %}
+    {# 
+        Default
+    #}
+    {% if use_builder and field.default    %}
+    @Builder.Default
+    {% endif %}
+    {# 
+        Pattern
+    #}
+    {% if field.pattern and not field.is_array    %}
+    @Pattern(regexp = "{{field.pattern}}")
+    {% endif %}
+    {# 
+        Set JsonIgnore for relations
+    #}
+    @JsonProperty(value = "{{field.json_key}}"{% if field.is_required %}, required = true{% endif %}{% if field.is_read_only %}, access = JsonProperty.Access.READ_ONLY{% endif %}{% if field.is_write_only %}, access = JsonProperty.Access.WRITE_ONLY{% endif %})
+    {# 
+        Set the Field definition
+    #}
+    {% if field.is_array %}
+    {{ "private" if use_encapsulation else "public"}} List<{{ "@Pattern(regexp = \"" + field.pattern + "\") " if field.pattern}}{{field.type}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
+    {% else %}
+    {{ "private" if use_encapsulation else "public"}} {{field.type}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
+    {% endif %}
 {% endfor %}}
 {{""}}

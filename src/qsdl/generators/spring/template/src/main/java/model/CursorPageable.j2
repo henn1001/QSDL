@@ -11,61 +11,61 @@ import java.util.Base64;
 
 public class CursorPageable {
 
-  private final long decodedCursor;
+    private final long decodedCursor;
 
-  private final int limit;
+    private final int limit;
 
-  private final boolean count;
+    private final boolean count;
 
-  /**
-   * Constructor of {@code CursorPageable}.
-   *
-   * @param cursor the requested base64 encoded cursor.
-   * @param limit the requested limit.
-   * @param count the request to return the total count.
-   */
-  public CursorPageable(String cursor, Integer limit, Boolean count) {
-    Long parsedCursor = null;
+    /**
+     * Constructor of {@code CursorPageable}.
+     *
+     * @param cursor the requested base64 encoded cursor.
+     * @param limit the requested limit.
+     * @param count the request to return the total count.
+     */
+    public CursorPageable(String cursor, Integer limit, Boolean count) {
+        Long parsedCursor = null;
 
-    // try parsing the cursor
-    if (cursor != null) {
-      String decodedString = new String(Base64.getDecoder().decode(cursor));
-      parsedCursor = Long.parseLong(decodedString);
+        // try parsing the cursor
+        if (cursor != null) {
+            String decodedString = new String(Base64.getDecoder().decode(cursor));
+            parsedCursor = Long.parseLong(decodedString);
+        }
+
+        // set cursor either positive value or Long.MAX_VALUE
+        // set limit between min and max value, or default
+        // set count or false as default
+        this.decodedCursor = parsedCursor != null && parsedCursor > 0 ? parsedCursor : Long.MAX_VALUE;
+        this.limit = limit != null && limit > 0 ? Math.min(CURSOR_MAX, Math.max(CURSOR_MIN, limit)) : CURSOR_DEFAULT;
+        this.count = count != null ? count : false;
     }
 
-    // set cursor either positive value or Long.MAX_VALUE
-    // set limit between min and max value, or default
-    // set count or false as default
-    this.decodedCursor = parsedCursor != null && parsedCursor > 0 ? parsedCursor : Long.MAX_VALUE;
-    this.limit = limit != null && limit > 0 ? Math.min(CURSOR_MAX, Math.max(CURSOR_MIN, limit)) : CURSOR_DEFAULT;
-    this.count = count != null ? count : false;
-  }
+    /**
+     * Returns the requested base64 decoded cursor.
+     *
+     * @return the requested base64 decoded cursor.
+     */
+    public long cursor() {
+        return decodedCursor;
+    }
 
-  /**
-   * Returns the requested base64 decoded cursor.
-   *
-   * @return the requested base64 decoded cursor.
-   */
-  public long cursor() {
-    return decodedCursor;
-  }
+    /**
+     * Returns the requested limit.
+     *
+     * @return the requested limit.
+     */
+    public int limit() {
+        return limit;
+    }
 
-  /**
-   * Returns the requested limit.
-   *
-   * @return the requested limit.
-   */
-  public int limit() {
-    return limit;
-  }
-
-  /**
-   * Returns the request to return the total count.
-   *
-   * @return the request to return the total count.
-   */
-  public boolean count() {
-    return count;
-  }
+    /**
+     * Returns the request to return the total count.
+     *
+     * @return the request to return the total count.
+     */
+    public boolean count() {
+        return count;
+    }
 }
 {{""}}

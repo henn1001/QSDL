@@ -25,63 +25,63 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public interface ProjectApi {
 
-  /**
-   * GET /projects : getProjects
-   *
-   * List Projects
-   */
-  @GetMapping(value = "/projects", produces = {"application/json"})
-  default ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * GET /projects : getProjects
+     *
+     * List Projects
+     */
+    @GetMapping(value = "/projects", produces = {"application/json"})
+    default ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * POST /projects : createProject
-   *
-   * Create a Project
-   */
-  @PostMapping(value = "/projects", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<Project> createProject(@RequestBody Project body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * POST /projects : createProject
+     *
+     * Create a Project
+     */
+    @PostMapping(value = "/projects", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<Project> createProject(@RequestBody Project body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * GET /projects/{id} : getProject
-   *
-   * Read the specified Project
-   */
-  @GetMapping(value = "/projects/{id}", produces = {"application/json"})
-  default ResponseEntity<Project> getProject(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * GET /projects/{id} : getProject
+     *
+     * Read the specified Project
+     */
+    @GetMapping(value = "/projects/{id}", produces = {"application/json"})
+    default ResponseEntity<Project> getProject(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * PUT /projects/{id} : replaceProject
-   *
-   * Replace the specified Project
-   */
-  @PutMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @RequestBody Project body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * PUT /projects/{id} : replaceProject
+     *
+     * Replace the specified Project
+     */
+    @PutMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @RequestBody Project body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * PATCH /projects/{id} : updateProject
-   *
-   * Update the specified Project
-   */
-  @PatchMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * PATCH /projects/{id} : updateProject
+     *
+     * Update the specified Project
+     */
+    @PatchMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * DELETE /projects/{id} : deleteProject
-   *
-   * Delete the specified Project
-   */
-  @DeleteMapping(value = "/projects/{id}")
-  default ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * DELETE /projects/{id} : deleteProject
+     *
+     * Delete the specified Project
+     */
+    @DeleteMapping(value = "/projects/{id}")
+    default ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 }

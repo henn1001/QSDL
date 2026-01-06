@@ -30,62 +30,62 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @AllArgsConstructor
 public class ProjectController extends BaseController implements ProjectApi {
 
-  final ProjectService projectService;
+    final ProjectService projectService;
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
-    CursorPage<Project> response = projectService.getProjects(pageable, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
+        CursorPage<Project> response = projectService.getProjects(pageable, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Project> createProject(Project body) {
-    Validator.validate(body);
-    Project response = projectService.createProject(body, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Project> createProject(Project body) {
+        Validator.validate(body);
+        Project response = projectService.createProject(body, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Project> getProject(Long id) {
-    Project response = projectService.getProject(id, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Project> getProject(Long id) {
+        Project response = projectService.getProject(id, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Project> replaceProject(Long id, Project body) {
-    Validator.validate(body);
-    Project response = projectService.replaceProject(id, body, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Project> replaceProject(Long id, Project body) {
+        Validator.validate(body);
+        Project response = projectService.replaceProject(id, body, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Project> updateProject(Long id, Project body) {
-    Validator.validateExRequired(body);
-    Project response = projectService.updateProject(id, body, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Project> updateProject(Long id, Project body) {
+        Validator.validateExRequired(body);
+        Project response = projectService.updateProject(id, body, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Void> deleteProject(Long id) {
-    projectService.deleteProject(id, super.getContext());
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Void> deleteProject(Long id) {
+        projectService.deleteProject(id, super.getContext());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

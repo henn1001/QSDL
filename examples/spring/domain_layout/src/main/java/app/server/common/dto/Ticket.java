@@ -30,27 +30,27 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode(callSuper = false)
 public class Ticket extends AbstractClass {
 
-  @Min(0)
-  @Max(Long.MAX_VALUE)
-  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  private Long id;
+    @Min(0)
+    @Max(Long.MAX_VALUE)
+    @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+    private Long id;
 
-  @Min(0)
-  @Max(Integer.MAX_VALUE)
-  @Builder.Default
-  @JsonProperty(value = "number")
-  private Integer number = 42;
+    @Min(0)
+    @Max(Integer.MAX_VALUE)
+    @Builder.Default
+    @JsonProperty(value = "number")
+    private Integer number = 42;
 
-  @Size(min = 0, max = 255)
-  @Builder.Default
-  @JsonProperty(value = "title")
-  private String title = "Witty Title";
+    @Size(min = 0, max = 255)
+    @Builder.Default
+    @JsonProperty(value = "title")
+    private String title = "Witty Title";
 
-  @Size(min = 0, max = 255)
-  @JsonProperty(value = "body")
-  private String body;
+    @Size(min = 0, max = 255)
+    @JsonProperty(value = "body")
+    private String body;
 
-  @Builder.Default
-  @JsonProperty(value = "status")
-  private Status status = Status.OPEN;
+    @Builder.Default
+    @JsonProperty(value = "status")
+    private Status status = Status.OPEN;
 }

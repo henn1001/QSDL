@@ -39,35 +39,35 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "project")
 public class ProjectEntity extends AbstractPersistentObject {
 
-  @NotNull
-  private String name;
+    @NotNull
+    private String name;
 
-  private String description;
+    private String description;
 
-  private String creationBy;
+    private String creationBy;
 
-  private LocalDate creationDate;
+    private LocalDate creationDate;
 
-  private String lastUpdateBy;
+    private String lastUpdateBy;
 
-  private OffsetDateTime lastUpdateDate;
+    private OffsetDateTime lastUpdateDate;
 
-  @JdbcTypeCode(SqlTypes.JSON)
-  private ObjectNode metaInf;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private ObjectNode metaInf;
 
-  private Boolean archive;
+    private Boolean archive;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  public final Set<RoleEntity> roles = new LinkedHashSet<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    public final Set<RoleEntity> roles = new LinkedHashSet<>();
 
-  public void addToRoles(RoleEntity o) {
-    o.setProject(this);
-    this.roles.add(o);
-  }
+    public void addToRoles(RoleEntity o) {
+        o.setProject(this);
+        this.roles.add(o);
+    }
 
-  public void removeFromRoles(RoleEntity o) {
-    o.setProject(null);
-    this.roles.remove(o);
-  }
+    public void removeFromRoles(RoleEntity o) {
+        o.setProject(null);
+        this.roles.remove(o);
+    }
 }

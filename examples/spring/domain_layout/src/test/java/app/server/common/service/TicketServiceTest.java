@@ -40,253 +40,253 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Import(TestConfig.class)
 class TicketServiceTest {
 
-  @Mock
-  TicketRepository repository;
+    @Mock
+    TicketRepository repository;
 
-  @Mock
-  TicketMapStruct mockedMapper;
+    @Mock
+    TicketMapStruct mockedMapper;
 
-  TicketService service;
+    TicketService service;
 
-  @Autowired
-  TicketMapStruct mapper;
+    @Autowired
+    TicketMapStruct mapper;
 
-  @BeforeEach
-  void setUp() {
-    service = new TicketService(repository, mockedMapper);
-  }
+    @BeforeEach
+    void setUp() {
+        service = new TicketService(repository, mockedMapper);
+    }
 
-  @Test
-  void whenGetTickets_thenOk() throws Exception {
+    @Test
+    void whenGetTickets_thenOk() throws Exception {
 
-    // Given
-    List<TicketEntity> ticketEntityList = TestUtils.getRandomEntity(TicketEntity.class, 5);
-    List<Ticket> ticketList = ticketEntityList.stream().map(mapper::toDto).toList();
+        // Given
+        List<TicketEntity> ticketEntityList = TestUtils.getRandomEntity(TicketEntity.class, 5);
+        List<Ticket> ticketList = ticketEntityList.stream().map(mapper::toDto).toList();
 
-    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<TicketEntity>(ticketEntityList, null, 6L));
+        when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+                .thenReturn(new CursorPage<TicketEntity>(ticketEntityList, null, 6L));
 
-    when(mockedMapper.toDto(any(TicketEntity.class)))
-        .thenReturn(ticketList.get(0))
-        .thenReturn(ticketList.get(1))
-        .thenReturn(ticketList.get(2))
-        .thenReturn(ticketList.get(3))
-        .thenReturn(ticketList.get(4));
+        when(mockedMapper.toDto(any(TicketEntity.class)))
+                .thenReturn(ticketList.get(0))
+                .thenReturn(ticketList.get(1))
+                .thenReturn(ticketList.get(2))
+                .thenReturn(ticketList.get(3))
+                .thenReturn(ticketList.get(4));
 
-    // When
-    CursorPage<Ticket> response = service.getTickets(new CursorPageable(null, 5, true), new Context());
+        // When
+        CursorPage<Ticket> response = service.getTickets(new CursorPageable(null, 5, true), new Context());
 
-    // Then
-    assertEquals(5L, response.count());
-    assertEquals(6L, response.totalCount());
+        // Then
+        assertEquals(5L, response.count());
+        assertEquals(6L, response.totalCount());
 
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ticketList),
-        new JSONArray(Json.serializer().toString(response.items())),
-        false);
-  }
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ticketList),
+                new JSONArray(Json.serializer().toString(response.items())),
+                false);
+    }
 
-  @Test
-  void whenCreateTicket_thenOk() throws Exception {
+    @Test
+    void whenCreateTicket_thenOk() throws Exception {
 
-    // Given
-    TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
-    Ticket ticket = mapper.toDto(ticketEntity);
+        // Given
+        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(mockedMapper.toEntity(any(Ticket.class)))
-        .thenReturn(ticketEntity);
+        when(mockedMapper.toEntity(any(Ticket.class)))
+                .thenReturn(ticketEntity);
 
-    when(repository.save(eq(ticketEntity)))
-        .thenReturn(ticketEntity);
+        when(repository.save(eq(ticketEntity)))
+                .thenReturn(ticketEntity);
 
-    when(mockedMapper.toDto(any(TicketEntity.class)))
-        .thenReturn(ticket);
+        when(mockedMapper.toDto(any(TicketEntity.class)))
+                .thenReturn(ticket);
 
-    // When
-    Ticket response = service.createTicket(ticket, new Context());
+        // When
+        Ticket response = service.createTicket(ticket, new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ticket),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ticket),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  void whenGetTicket_thenOk() throws Exception {
+    @Test
+    void whenGetTicket_thenOk() throws Exception {
 
-    // Given
-    TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
-    Ticket ticket = mapper.toDto(ticketEntity);
+        // Given
+        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(ticketEntity.getId())))
-        .thenReturn(Optional.of(ticketEntity));
+        when(repository.findById(eq(ticketEntity.getId())))
+                .thenReturn(Optional.of(ticketEntity));
 
-    when(mockedMapper.toDto(any(TicketEntity.class)))
-        .thenReturn(ticket);
+        when(mockedMapper.toDto(any(TicketEntity.class)))
+                .thenReturn(ticket);
 
-    // When
-    Ticket response = service.getTicket(ticketEntity.getId(), new Context());
+        // When
+        Ticket response = service.getTicket(ticketEntity.getId(), new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ticket),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ticket),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  public void whenGetTicketWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenGetTicketWithInvalidId_thenError() throws Exception {
 
-    // Given
-    TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        // Given
+        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
 
-    when(repository.findById(eq(ticketEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
+        when(repository.findById(eq(ticketEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
 
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.getTicket(ticketEntity.getId(), new Context());
-        });
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.getTicket(ticketEntity.getId(), new Context());
+                });
 
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 
-  @Test
-  void whenReplaceTicket_thenOk() throws Exception {
+    @Test
+    void whenReplaceTicket_thenOk() throws Exception {
 
-    // Given
-    TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
-    Ticket ticket = mapper.toDto(ticketEntity);
+        // Given
+        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(ticketEntity.getId())))
-        .thenReturn(Optional.of(ticketEntity));
+        when(repository.findById(eq(ticketEntity.getId())))
+                .thenReturn(Optional.of(ticketEntity));
 
-    when(repository.save(eq(ticketEntity)))
-        .thenReturn(ticketEntity);
+        when(repository.save(eq(ticketEntity)))
+                .thenReturn(ticketEntity);
 
-    when(mockedMapper.toDto(any(TicketEntity.class)))
-        .thenReturn(ticket);
+        when(mockedMapper.toDto(any(TicketEntity.class)))
+                .thenReturn(ticket);
 
-    // When
-    Ticket response = service.replaceTicket(ticketEntity.getId(), ticket, new Context());
+        // When
+        Ticket response = service.replaceTicket(ticketEntity.getId(), ticket, new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ticket),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ticket),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  public void whenReplaceTicketWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenReplaceTicketWithInvalidId_thenError() throws Exception {
 
-    // Given
-    TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
-    Ticket ticket = mapper.toDto(ticketEntity);
+        // Given
+        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(ticketEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
+        when(repository.findById(eq(ticketEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
 
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.replaceTicket(ticketEntity.getId(), ticket, new Context());
-        });
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.replaceTicket(ticketEntity.getId(), ticket, new Context());
+                });
 
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 
-  @Test
-  void whenUpdateTicket_thenOk() throws Exception {
+    @Test
+    void whenUpdateTicket_thenOk() throws Exception {
 
-    // Given
-    TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
-    Ticket ticket = mapper.toDto(ticketEntity);
+        // Given
+        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(ticketEntity.getId())))
-        .thenReturn(Optional.of(ticketEntity));
+        when(repository.findById(eq(ticketEntity.getId())))
+                .thenReturn(Optional.of(ticketEntity));
 
-    when(repository.save(eq(ticketEntity)))
-        .thenReturn(ticketEntity);
+        when(repository.save(eq(ticketEntity)))
+                .thenReturn(ticketEntity);
 
-    when(mockedMapper.toDto(any(TicketEntity.class)))
-        .thenReturn(ticket);
+        when(mockedMapper.toDto(any(TicketEntity.class)))
+                .thenReturn(ticket);
 
-    // When
-    Ticket response = service.updateTicket(ticketEntity.getId(), ticket, new Context());
+        // When
+        Ticket response = service.updateTicket(ticketEntity.getId(), ticket, new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ticket),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ticket),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  public void whenUpdateTicketWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenUpdateTicketWithInvalidId_thenError() throws Exception {
 
-    // Given
-    TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
-    Ticket ticket = mapper.toDto(ticketEntity);
+        // Given
+        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        Ticket ticket = mapper.toDto(ticketEntity);
 
-    when(repository.findById(eq(ticketEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
+        when(repository.findById(eq(ticketEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
 
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.updateTicket(ticketEntity.getId(), ticket, new Context());
-        });
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.updateTicket(ticketEntity.getId(), ticket, new Context());
+                });
 
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 
-  @Test
-  void whenDeleteTicket_thenOk() throws Exception {
+    @Test
+    void whenDeleteTicket_thenOk() throws Exception {
 
-    // Given
-    TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        // Given
+        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
 
-    when(repository.findById(eq(ticketEntity.getId())))
-        .thenReturn(Optional.of(ticketEntity));
+        when(repository.findById(eq(ticketEntity.getId())))
+                .thenReturn(Optional.of(ticketEntity));
 
-    // When & Then
-    service.deleteTicket(ticketEntity.getId(), new Context());
-  }
+        // When & Then
+        service.deleteTicket(ticketEntity.getId(), new Context());
+    }
 
-  @Test
-  public void whenDeleteTicketWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenDeleteTicketWithInvalidId_thenError() throws Exception {
 
-    // Given
-    TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        // Given
+        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
 
-    when(repository.findById(eq(ticketEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
+        when(repository.findById(eq(ticketEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
 
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.deleteTicket(ticketEntity.getId(), new Context());
-        });
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.deleteTicket(ticketEntity.getId(), new Context());
+                });
 
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 }

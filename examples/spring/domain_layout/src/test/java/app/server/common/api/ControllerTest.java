@@ -32,49 +32,52 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import(TestConfig.class)
 class ControllerTest {
 
-  String basePath = "/api/ping";
+    String basePath = "/api/ping";
 
-  @MockBean
-  YAMLMapper mapper;
+    @MockBean
+    YAMLMapper mapper;
 
-  @Autowired
-  MockMvc mockMvc;
+    @Autowired
+    MockMvc mockMvc;
 
-  @Test
-  public void whenAppException_thenError() throws Exception {
+    @Test
+    public void whenAppException_thenError() throws Exception {
 
-    // Given
-    when(mapper.readValue(anyString(), any(Class.class)))
-        .thenAnswer(invocation -> {
-          throw new AppException(ErrorCode.ENTITY_NOT_FOUND);
+        // Given
+        when(mapper.readValue(anyString(), any(Class.class))).thenAnswer(invocation -> {
+            throw new AppException(ErrorCode.ENTITY_NOT_FOUND);
         });
 
-    // When
-    String response = mockMvc.perform(get(basePath))
-        .andExpect(status().isNotFound())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(get(basePath))
+                .andExpect(status().isNotFound())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 
-  @Test
-  public void whenWrongMethod_thenError() throws Exception {
+    @Test
+    public void whenWrongMethod_thenError() throws Exception {
 
-    // Given
+        // Given
 
-    // When
-    String response = mockMvc.perform(post(basePath))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(post(basePath))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
 }

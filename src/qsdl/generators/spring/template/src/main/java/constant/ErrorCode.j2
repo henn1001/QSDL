@@ -8,48 +8,48 @@ package {{package.enum}};
 
 public enum ErrorCode {
 
-  // generics
-  BAD_REQUEST("400", "Bad Request", HttpStatus.BAD_REQUEST),
-  UNAUTHORIZED("401", "Unauthorized", HttpStatus.UNAUTHORIZED),
-  FORBIDDEN("403", "Forbidden", HttpStatus.FORBIDDEN),
-  NOT_FOUND("404", "Not Found", HttpStatus.NOT_FOUND),
-  INTERNAL_SERVER_ERROR("500", "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
-  // specifics
-  ENTITY_NOT_FOUND("1000", "Entity not found", HttpStatus.NOT_FOUND),
-  ;
+    // generics
+    BAD_REQUEST("400", "Bad Request", HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED("401", "Unauthorized", HttpStatus.UNAUTHORIZED),
+    FORBIDDEN("403", "Forbidden", HttpStatus.FORBIDDEN),
+    NOT_FOUND("404", "Not Found", HttpStatus.NOT_FOUND),
+    INTERNAL_SERVER_ERROR("500", "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
+    // specifics
+    ENTITY_NOT_FOUND("1000", "Entity not found", HttpStatus.NOT_FOUND),
+    ;
 
-  private final String code;
-  private final String message;
-  private final Integer status;
+    private final String code;
+    private final String message;
+    private final Integer status;
 
-  private ErrorCode(String code, String message, HttpStatus status) {
-    this.code = code;
-    this.message = message;
-    this.status = Objects.nonNull(status) ? status.value() : null;
-  }
+    private ErrorCode(String code, String message, HttpStatus status) {
+        this.code = code;
+        this.message = message;
+        this.status = Objects.nonNull(status) ? status.value() : null;
+    }
 
-  public String code() {
-    return code;
-  }
+    public String code() {
+        return code;
+    }
 
-  public String message() {
-    return message;
-  }
+    public String message() {
+        return message;
+    }
 
-  public Integer status() {
-    return status;
-  }
+    public Integer status() {
+        return status;
+    }
 
-  public AppError toAppError() {
-    return new AppError(this.code, this.message, this.status);
-  }
+    public AppError toAppError() {
+        return new AppError(this.code, this.message, this.status);
+    }
 
-  public AppError toAppError(String detail) {
-    return new AppError(this.code, this.message, this.status, detail);
-  }
+    public AppError toAppError(String detail) {
+        return new AppError(this.code, this.message, this.status, detail);
+    }
 
-  public AppError toAppError(List<String> details) {
-    return new AppError(this.code, this.message, this.status, details);
-  }
+    public AppError toAppError(List<String> details) {
+        return new AppError(this.code, this.message, this.status, details);
+    }
 }
 {{""}}

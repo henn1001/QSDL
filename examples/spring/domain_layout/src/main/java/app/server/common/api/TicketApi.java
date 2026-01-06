@@ -25,63 +25,63 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public interface TicketApi {
 
-  /**
-   * GET /tickets : getTickets
-   *
-   * List Tickets
-   */
-  @GetMapping(value = "/tickets", produces = {"application/json"})
-  default ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * GET /tickets : getTickets
+     *
+     * List Tickets
+     */
+    @GetMapping(value = "/tickets", produces = {"application/json"})
+    default ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * POST /tickets : createTicket
-   *
-   * Create a Ticket
-   */
-  @PostMapping(value = "/tickets", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<Ticket> createTicket(@RequestBody Ticket body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * POST /tickets : createTicket
+     *
+     * Create a Ticket
+     */
+    @PostMapping(value = "/tickets", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<Ticket> createTicket(@RequestBody Ticket body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * GET /tickets/{id} : getTicket
-   *
-   * Read the specified Ticket
-   */
-  @GetMapping(value = "/tickets/{id}", produces = {"application/json"})
-  default ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * GET /tickets/{id} : getTicket
+     *
+     * Read the specified Ticket
+     */
+    @GetMapping(value = "/tickets/{id}", produces = {"application/json"})
+    default ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * PUT /tickets/{id} : replaceTicket
-   *
-   * Replace the specified Ticket
-   */
-  @PutMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @RequestBody Ticket body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * PUT /tickets/{id} : replaceTicket
+     *
+     * Replace the specified Ticket
+     */
+    @PutMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @RequestBody Ticket body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * PATCH /tickets/{id} : updateTicket
-   *
-   * Update the specified Ticket
-   */
-  @PatchMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * PATCH /tickets/{id} : updateTicket
+     *
+     * Update the specified Ticket
+     */
+    @PatchMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * DELETE /tickets/{id} : deleteTicket
-   *
-   * Delete the specified Ticket
-   */
-  @DeleteMapping(value = "/tickets/{id}")
-  default ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * DELETE /tickets/{id} : deleteTicket
+     *
+     * Delete the specified Ticket
+     */
+    @DeleteMapping(value = "/tickets/{id}")
+    default ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 }

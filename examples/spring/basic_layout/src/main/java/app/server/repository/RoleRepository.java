@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RoleRepository extends AbstractRepository<RoleEntity, Long> {
 
-  public Optional<RoleEntity> findByProjectIdAndId(Long projectId, Long id);
+    public Optional<RoleEntity> findByProjectIdAndId(Long projectId, Long id);
 
-  public Optional<RoleEntity> findByProjectIdAndUid(Long projectId, String uid);
+    public Optional<RoleEntity> findByProjectIdAndUid(Long projectId, String uid);
 }

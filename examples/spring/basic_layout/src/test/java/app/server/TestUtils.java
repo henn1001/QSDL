@@ -22,156 +22,156 @@ import org.jeasy.random.randomizers.range.LongRangeRandomizer;
 
 public class TestUtils {
 
-  private TestUtils() {
-    // not called
-  }
-
-  public static EasyRandom easyRandom;
-  public static EasyRandom easyRandomJpa;
-
-  private static final Json json = Json.serializer();
-
-  static {
-    EasyRandomParameters parameters = new EasyRandomParameters()
-        .randomize(ObjectNode.class, () -> json.nodeFromJson("{}").put("test", "data"))
-        .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
-        .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
-        .randomize(BigInteger.class, new MyBigIntegerRandomizer())
-        .collectionSizeRange(1, 10)
-        .objectPoolSize(10000);
-
-    EasyRandomParameters jpaParameters = new EasyRandomParameters()
-        .randomize(ObjectNode.class, () -> json.nodeFromJson("{}").put("test", "data"))
-        .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
-        .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
-        .randomize(BigInteger.class, new MyBigIntegerRandomizer())
-        .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentObject.class)))
-        .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentBase.class)))
-        .excludeField(FieldPredicates.named("uid").and(FieldPredicates.inClass(AbstractPersistentObject.class)))
-        .excludeField(FieldPredicates.named("uid").and(FieldPredicates.inClass(AbstractPersistentBase.class)))
-        .collectionSizeRange(1, 10)
-        .objectPoolSize(10000);
-
-    easyRandom = new EasyRandom(parameters);
-    easyRandomJpa = new EasyRandom(jpaParameters);
-  }
-
-  static class MyBigIntegerRandomizer extends AbstractRandomizer<BigInteger> {
-
-    @Override
-    public BigInteger getRandomValue() {
-      // The maximum value for numeric(38, 0) is 10^38 - 1
-      // 99999999999999999999999999999999999999
-      return new BigInteger(38 * 3 + 1, random);
+    private TestUtils() {
+        // not called
     }
-  }
 
-  public static <T> T getRandom(Class<T> cls) {
-    T o = easyRandom.nextObject(cls);
-    return o;
-  }
+    public static EasyRandom easyRandom;
+    public static EasyRandom easyRandomJpa;
 
-  public static <T> List<T> getRandom(Class<T> cls, int count) {
-    List<T> ol = easyRandom.objects(cls, count).collect(Collectors.toList());
-    return ol;
-  }
+    private static final Json json = Json.serializer();
 
-  public static <T extends AbstractPersistentObject> T getRandomEntity(Class<T> cls) {
-    T o = easyRandom.nextObject(cls);
-    o.removeRelations();
-    return o;
-  }
+    static {
+        EasyRandomParameters parameters = new EasyRandomParameters()
+                .randomize(ObjectNode.class, () -> json.nodeFromJson("{}").put("test", "data"))
+                .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
+                .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
+                .randomize(BigInteger.class, new MyBigIntegerRandomizer())
+                .collectionSizeRange(1, 10)
+                .objectPoolSize(10000);
 
-  public static <T extends AbstractPersistentObject> List<T> getRandomEntity(Class<T> cls, int count) {
-    List<T> ol = easyRandom.objects(cls, count).collect(Collectors.toList());
-    ol.forEach(o -> o.removeRelations());
-    return ol;
-  }
+        EasyRandomParameters jpaParameters = new EasyRandomParameters()
+                .randomize(ObjectNode.class, () -> json.nodeFromJson("{}").put("test", "data"))
+                .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
+                .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
+                .randomize(BigInteger.class, new MyBigIntegerRandomizer())
+                .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentObject.class)))
+                .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentBase.class)))
+                .excludeField(FieldPredicates.named("uid").and(FieldPredicates.inClass(AbstractPersistentObject.class)))
+                .excludeField(FieldPredicates.named("uid").and(FieldPredicates.inClass(AbstractPersistentBase.class)))
+                .collectionSizeRange(1, 10)
+                .objectPoolSize(10000);
 
-  public static <T extends AbstractPersistentObject> T getRandomEntityWithNullId(Class<T> cls) {
-    T o = easyRandomJpa.nextObject(cls);
-    o.removeRelations();
-    return o;
-  }
-
-  public static <T extends AbstractPersistentObject> List<T> getRandomEntityWithNullId(Class<T> cls, int count) {
-    List<T> ol = easyRandomJpa.objects(cls, count).collect(Collectors.toList());
-    ol.forEach(o -> o.removeRelations());
-    return ol;
-  }
-
-  /**
-   * Helper to determine whether docker is running.
-   */
-  public static boolean isDockerAvailable() {
-    try {
-      Process process = new ProcessBuilder("docker", "info")
-          .redirectErrorStream(true)
-          .start();
-
-      int exitCode = process.waitFor();
-
-      return exitCode == 0;
-    } catch (Exception e) {
-      return false;
+        easyRandom = new EasyRandom(parameters);
+        easyRandomJpa = new EasyRandom(jpaParameters);
     }
-  }
 
-  /**
-   * A helper-method to deep-copy idenities for nested objects.
-   *
-   * <p>Needed when testing repositories, as these modify the identity.
-   * We assume that object a and b are equal in size/structure.
-   */
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  public static void copyAllIdentities(Object a, Object b) throws Exception {
+    static class MyBigIntegerRandomizer extends AbstractRandomizer<BigInteger> {
 
-    // we only care about AbstractPersistentObject and AbstractPersistentBase types
-    // evoke copyIdentity, otherwise return silently
-    if (a instanceof AbstractPersistentObject && b instanceof AbstractPersistentObject) {
-      AbstractPersistentObject.class
-          .getDeclaredMethod("copyIdentity", AbstractPersistentObject.class)
-          .invoke(a, b);
-    } else if (a instanceof AbstractPersistentBase && b instanceof AbstractPersistentBase) {
-      AbstractPersistentBase.class
-          .getDeclaredMethod("copyIdentity", AbstractPersistentBase.class)
-          .invoke(a, b);
-    } else {
-      return;
-    }
-    // loop over all fields to check for nested objects
-    for (Field field : a.getClass().getDeclaredFields()) {
-
-      // enable field access
-      field.setAccessible(true);
-
-      // ignore hibernate relations
-      if (field.isAnnotationPresent(JsonIgnore.class)) {
-        continue;
-      }
-      // for sets, we call self for each item
-      else if (field.getType() == Set.class) {
-
-        Set<Object> setA = (Set) field.get(a);
-        Set<Object> setB = (Set) field.get(b);
-
-        for (int i = 0; i < setA.size(); i++) {
-
-          Object f1 = setA.toArray()[i];
-          Object f2 = setB.toArray()[i];
-
-          copyAllIdentities(f1, f2);
+        @Override
+        public BigInteger getRandomValue() {
+            // The maximum value for numeric(38, 0) is 10^38 - 1
+            // 99999999999999999999999999999999999999
+            return new BigInteger(38 * 3 + 1, random);
         }
-      }
-      // for nested objects, we can call self directly
-      else if (field.get(a) instanceof AbstractPersistentObject
-          || field.get(a) instanceof AbstractPersistentBase) {
-
-        Object f1 = field.get(a);
-        Object f2 = field.get(b);
-
-        copyAllIdentities(f1, f2);
-      }
     }
-  }
+
+    public static <T> T getRandom(Class<T> cls) {
+        T o = easyRandom.nextObject(cls);
+        return o;
+    }
+
+    public static <T> List<T> getRandom(Class<T> cls, int count) {
+        List<T> ol = easyRandom.objects(cls, count).collect(Collectors.toList());
+        return ol;
+    }
+
+    public static <T extends AbstractPersistentObject> T getRandomEntity(Class<T> cls) {
+        T o = easyRandom.nextObject(cls);
+        o.removeRelations();
+        return o;
+    }
+
+    public static <T extends AbstractPersistentObject> List<T> getRandomEntity(Class<T> cls, int count) {
+        List<T> ol = easyRandom.objects(cls, count).collect(Collectors.toList());
+        ol.forEach(o -> o.removeRelations());
+        return ol;
+    }
+
+    public static <T extends AbstractPersistentObject> T getRandomEntityWithNullId(Class<T> cls) {
+        T o = easyRandomJpa.nextObject(cls);
+        o.removeRelations();
+        return o;
+    }
+
+    public static <T extends AbstractPersistentObject> List<T> getRandomEntityWithNullId(Class<T> cls, int count) {
+        List<T> ol = easyRandomJpa.objects(cls, count).collect(Collectors.toList());
+        ol.forEach(o -> o.removeRelations());
+        return ol;
+    }
+
+    /**
+     * Helper to determine whether docker is running.
+     */
+    public static boolean isDockerAvailable() {
+        try {
+            Process process = new ProcessBuilder("docker", "info")
+                    .redirectErrorStream(true)
+                    .start();
+
+            int exitCode = process.waitFor();
+
+            return exitCode == 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * A helper-method to deep-copy idenities for nested objects.
+     *
+     * <p>Needed when testing repositories, as these modify the identity.
+     * We assume that object a and b are equal in size/structure.
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static void copyAllIdentities(Object a, Object b) throws Exception {
+
+        // we only care about AbstractPersistentObject and AbstractPersistentBase types
+        // evoke copyIdentity, otherwise return silently
+        if (a instanceof AbstractPersistentObject && b instanceof AbstractPersistentObject) {
+            AbstractPersistentObject.class
+                    .getDeclaredMethod("copyIdentity", AbstractPersistentObject.class)
+                    .invoke(a, b);
+        } else if (a instanceof AbstractPersistentBase && b instanceof AbstractPersistentBase) {
+            AbstractPersistentBase.class
+                    .getDeclaredMethod("copyIdentity", AbstractPersistentBase.class)
+                    .invoke(a, b);
+        } else {
+            return;
+        }
+        // loop over all fields to check for nested objects
+        for (Field field : a.getClass().getDeclaredFields()) {
+
+            // enable field access
+            field.setAccessible(true);
+
+            // ignore hibernate relations
+            if (field.isAnnotationPresent(JsonIgnore.class)) {
+                continue;
+            }
+            // for sets, we call self for each item
+            else if (field.getType() == Set.class) {
+
+                Set<Object> setA = (Set) field.get(a);
+                Set<Object> setB = (Set) field.get(b);
+
+                for (int i = 0; i < setA.size(); i++) {
+
+                    Object f1 = setA.toArray()[i];
+                    Object f2 = setB.toArray()[i];
+
+                    copyAllIdentities(f1, f2);
+                }
+            }
+            // for nested objects, we can call self directly
+            else if (field.get(a) instanceof AbstractPersistentObject
+                    || field.get(a) instanceof AbstractPersistentBase) {
+
+                Object f1 = field.get(a);
+                Object f2 = field.get(b);
+
+                copyAllIdentities(f1, f2);
+            }
+        }
+    }
 }

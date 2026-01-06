@@ -13,6 +13,7 @@ import app.server.model.*;
 import app.server.repository.*;
 import app.server.util.Json;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import java.util.List;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -22,99 +23,99 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 class TicketRepositoryTest extends AbstractDataJpaTest {
 
-  @Autowired
-  TicketRepository ticketRepository;
+    @Autowired
+    TicketRepository ticketRepository;
 
-  @Autowired
-  TestEntityManager testEntityManager;
+    @Autowired
+    TestEntityManager testEntityManager;
 
-  public List<TicketEntity> prepareData(int count) {
+    public List<TicketEntity> prepareData(int count) {
 
-    List<TicketEntity> testDatas = TestUtils.getRandomEntityWithNullId(TicketEntity.class, count);
+        List<TicketEntity> testDatas = TestUtils.getRandomEntityWithNullId(TicketEntity.class, count);
 
-    for (TicketEntity testData : testDatas) {
+        for (TicketEntity testData : testDatas) {
+        }
+
+        ticketRepository.saveAll(testDatas);
+
+        // forces synchronization to DB
+        // clears persistence context
+        testEntityManager.flush();
+        testEntityManager.clear();
+
+        return ticketRepository.findAll();
     }
 
-    ticketRepository.saveAll(testDatas);
+    @Test
+    public void whenSave_thenFind() throws Exception {
 
-    // forces synchronization to DB
-    // clears persistence context
-    testEntityManager.flush();
-    testEntityManager.clear();
+        // Given
+        TicketEntity testData = prepareData(1).get(0);
 
-    return ticketRepository.findAll();
-  }
+        // When
+        TicketEntity findData = ticketRepository.findById(testData.getId()).orElse(null);
 
-  @Test
-  public void whenSave_thenFind() throws Exception {
+        TestUtils.copyAllIdentities(testData, findData);
 
-    // Given
-    TicketEntity testData = prepareData(1).get(0);
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(testData),
+                new JSONObject(Json.serializer().toString(findData)),
+                false);
+    }
 
-    // When
-    TicketEntity findData = ticketRepository.findById(testData.getId()).orElse(null);
+    @Test
+    public void whenDelete_thenCountZero() throws Exception {
 
-    TestUtils.copyAllIdentities(testData, findData);
+        // Given
+        TicketEntity testData = prepareData(1).get(0);
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(testData),
-        new JSONObject(Json.serializer().toString(findData)),
-        false);
-  }
+        // When
+        ticketRepository.delete(testData);
 
-  @Test
-  public void whenDelete_thenCountZero() throws Exception {
+        // Then
+        long count = ticketRepository.count();
+        assertEquals(0, count);
+    }
 
-    // Given
-    TicketEntity testData = prepareData(1).get(0);
+    @Test
+    public void whenCount_thenUseQuerie() throws Exception {
 
-    // When
-    ticketRepository.delete(testData);
+        // Given
+        List<TicketEntity> testData = prepareData(5);
 
-    // Then
-    long count = ticketRepository.count();
-    assertEquals(0, count);
-  }
+        BooleanBuilder predicate = new BooleanBuilder();
 
-  @Test
-  public void whenCount_thenUseQuerie() throws Exception {
+        // When
+        long count = ticketRepository.count(predicate);
 
-    // Given
-    List<TicketEntity> testData = prepareData(5);
+        // Then
+        assertEquals(5, count);
+    }
 
-    BooleanBuilder predicate = new BooleanBuilder();
+    @Test
+    public void whenFindAll_thenPaginate() throws Exception {
 
-    // When
-    long count = ticketRepository.count(predicate);
+        // Given
+        List<TicketEntity> testData = prepareData(5);
 
-    // Then
-    assertEquals(5, count);
-  }
+        // When
+        String cursor = null;
+        int idx = 0;
 
-  @Test
-  public void whenFindAll_thenPaginate() throws Exception {
+        do {
+            CursorPageable pageable = new CursorPageable(cursor, 1, null);
+            BooleanBuilder predicate = new BooleanBuilder();
+            CursorPage<TicketEntity> findData = ticketRepository.findAll(predicate, pageable);
 
-    // Given
-    List<TicketEntity> testData = prepareData(5);
+            cursor = findData.nextCursor();
 
-    // When
-    String cursor = null;
-    int idx = 0;
+            assertEquals(1, findData.count());
 
-    do {
-      CursorPageable pageable = new CursorPageable(cursor, 1, null);
-      BooleanBuilder predicate = new BooleanBuilder();
-      CursorPage<TicketEntity> findData = ticketRepository.findAll(predicate, pageable);
+            idx++;
+        } while (cursor != null);
 
-      cursor = findData.nextCursor();
-
-      assertEquals(1, findData.count());
-
-      idx++;
-    } while (cursor != null);
-
-    // Then
-    assertEquals(5, idx);
-  }
+        // Then
+        assertEquals(5, idx);
+    }
 }

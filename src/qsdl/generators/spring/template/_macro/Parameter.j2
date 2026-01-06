@@ -1,129 +1,129 @@
 {%- macro get_response(operation) -%}
 
-  {%- if operation.response -%}
-    {%- if operation.response.is_array -%}
-      List<{{operation.response.type}}>
+    {%- if operation.response -%}
+        {%- if operation.response.is_array -%}
+            List<{{operation.response.type}}>
+        {%- else -%}
+            {{operation.response.type}}
+        {%- endif %}
     {%- else -%}
-      {{operation.response.type}}
-    {%- endif %}
-  {%- else -%}
-    Void
-  {%- endif -%}
+        Void
+    {%- endif -%}
 
 {%- endmacro %}
 
 {%- macro paramsApi(operation) -%}
 
-  {%- for parameter in operation.path_parameters -%}
-    @PathVariable("{{parameter.json_key}}") {{ param_helper(parameter) }}
-    {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
-  {%- endfor %}
+    {%- for parameter in operation.path_parameters -%}
+        @PathVariable("{{parameter.json_key}}") {{ param_helper(parameter) }}
+        {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
+    {%- endfor %}
 
-  {%- if operation.is_pageable -%}
-      CursorPageable pageable
-    {%- if operation.body_parameters -%}{{", "}}{% endif -%}
-  {%- endif -%}
+    {%- if operation.is_pageable -%}
+            CursorPageable pageable
+        {%- if operation.body_parameters -%}{{", "}}{% endif -%}
+    {%- endif -%}
 
-  {% set requiresNode = operation.body_parameters | rejectattr("is_base") | rejectattr("is_object") | list %}
-  {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
-      @RequestBody ObjectNode body
-  {%- elif operation.body_parameters and operation.method == "patch" -%}
-      @RequestBody {{ param_helper(operation.body_parameters[0]) }}
-  {%- elif operation.body_parameters -%}
-      @RequestBody {{ param_helper(operation.body_parameters[0]) }}
-  {%- endif -%}
+    {% set requiresNode = operation.body_parameters | rejectattr("is_base") | rejectattr("is_object") | list %}
+    {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
+            @RequestBody ObjectNode body
+    {%- elif operation.body_parameters and operation.method == "patch" -%}
+            @RequestBody {{ param_helper(operation.body_parameters[0]) }}
+    {%- elif operation.body_parameters -%}
+            @RequestBody {{ param_helper(operation.body_parameters[0]) }}
+    {%- endif -%}
 
 {%- endmacro %}
 
 {%- macro paramsController(operation) -%}
 
-  {%- for parameter in operation.path_parameters -%}
-    {{ param_helper(parameter) }}
-    {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
-  {%- endfor %}
+    {%- for parameter in operation.path_parameters -%}
+        {{ param_helper(parameter) }}
+        {%- if not loop.last or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
+    {%- endfor %}
 
-  {%- if operation.is_pageable -%}
-      CursorPageable pageable
-    {%- if operation.body_parameters -%}{{", "}}{% endif -%}
-  {%- endif -%}
+    {%- if operation.is_pageable -%}
+            CursorPageable pageable
+        {%- if operation.body_parameters -%}{{", "}}{% endif -%}
+    {%- endif -%}
 
-  {% set requiresNode = operation.body_parameters | rejectattr("is_base") | rejectattr("is_object") | list %}
-  {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
-      ObjectNode body
-  {%- elif operation.body_parameters and operation.method == "patch" -%}
-      {{ param_helper(operation.body_parameters[0]) }}
-  {%- elif operation.body_parameters -%}
-      {{ param_helper(operation.body_parameters[0]) }}
-  {%- endif -%}
+    {% set requiresNode = operation.body_parameters | rejectattr("is_base") | rejectattr("is_object") | list %}
+    {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
+            ObjectNode body
+    {%- elif operation.body_parameters and operation.method == "patch" -%}
+            {{ param_helper(operation.body_parameters[0]) }}
+    {%- elif operation.body_parameters -%}
+            {{ param_helper(operation.body_parameters[0]) }}
+    {%- endif -%}
 
 {%- endmacro %}
 
 {%- macro paramsService(operation) -%}
 
-  {%- for parameter in operation.path_parameters -%}
-      {{ param_helper(parameter) }}{{", "}}
-  {%- endfor %}
+    {%- for parameter in operation.path_parameters -%}
+            {{ param_helper(parameter) }}{{", "}}
+    {%- endfor %}
 
-  {%- if operation.is_pageable -%}
-      CursorPageable pageable{{", "}}
-  {%- endif -%}
+    {%- if operation.is_pageable -%}
+            CursorPageable pageable{{", "}}
+    {%- endif -%}
 
-  {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      ObjectNode body{{", "}}
-  {%- elif operation.body_parameters -%}
-      {{ param_helper(operation.body_parameters[0]) }}{{", "}}
-  {%- endif -%}
+    {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
+            ObjectNode body{{", "}}
+    {%- elif operation.body_parameters -%}
+            {{ param_helper(operation.body_parameters[0]) }}{{", "}}
+    {%- endif -%}
 
-      Context context
+            Context context
 
 {%- endmacro %}
 
 {%- macro paramsCallService(operation) -%}
 
-  {%- for parameter in operation.path_parameters -%}
-      {{parameter.name}}{{", "}}
-  {%- endfor %}
+    {%- for parameter in operation.path_parameters -%}
+            {{parameter.name}}{{", "}}
+    {%- endfor %}
 
-  {%- if operation.is_pageable -%}
-      pageable{{", "}}
-  {%- endif -%}
+    {%- if operation.is_pageable -%}
+            pageable{{", "}}
+    {%- endif -%}
 
-  {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      body{{", "}}
-  {%- elif operation.body_parameters -%}
-      {{operation.body_parameters[0].name}}{{", "}}
-  {%- endif -%}
+    {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
+            body{{", "}}
+    {%- elif operation.body_parameters -%}
+            {{operation.body_parameters[0].name}}{{", "}}
+    {%- endif -%}
 
-      super.getContext()
+            super.getContext()
 
 {%- endmacro %}
 
 {%- macro paramsCallServiceMocked(operation) -%}
 
-  {%- for parameter in operation.path_parameters -%}
-      any(){{", "}}
-  {%- endfor %}
+    {%- for parameter in operation.path_parameters -%}
+            any(){{", "}}
+    {%- endfor %}
 
-  {%- if operation.is_pageable -%}
-      any(){{", "}}
-  {%- endif -%}
+    {%- if operation.is_pageable -%}
+            any(){{", "}}
+    {%- endif -%}
 
-  {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-      any(){{", "}}
-  {%- elif operation.body_parameters -%}
-      any(){{", "}}
-  {%- endif -%}
+    {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
+            any(){{", "}}
+    {%- elif operation.body_parameters -%}
+            any(){{", "}}
+    {%- endif -%}
 
-      any()
+            any()
 
 {%- endmacro %}
 
 {%- macro param_helper(parameter) -%}
 
-  {%- if parameter.is_array -%}
-    List<{{parameter.type}}> {{parameter.name}}
-  {%- else -%}
-    {{parameter.type}} {{parameter.name}}
-  {%- endif %}
+    {%- if parameter.is_array -%}
+        List<{{parameter.type}}> {{parameter.name}}
+    {%- else -%}
+        {{parameter.type}} {{parameter.name}}
+    {%- endif %}
 
 {%- endmacro %}

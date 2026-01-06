@@ -17,420 +17,420 @@ package {{api.package.service}};
 @Import(TestConfig.class)
 class {{model.name}}ServiceTest {
 
-  @Mock
-  {{model.name}}Repository repository;
+    @Mock
+    {{model.name}}Repository repository;
 
-  @Mock
-  {{model.name}}MapStruct mockedMapper;
+    @Mock
+    {{model.name}}MapStruct mockedMapper;
 
 {% for parent in model.parents %}
-  @Mock
-  {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
+    @Mock
+    {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
 
 {% endfor %}
-  {{model.name}}Service service;
+    {{model.name}}Service service;
 
-  @Autowired
-  {{model.name}}MapStruct mapper;
-{% if  model.parents %}
+    @Autowired
+    {{model.name}}MapStruct mapper;
+{% if    model.parents %}
 
-  static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};
+    static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};
 {% endif %}
 
-  @BeforeEach
-  void setUp() {
-    service = new {{model.name}}Service({% for parent in model.parents %}{{parent.model.name|lower}}Repository, {% endfor %}repository, mockedMapper);
-  }
+    @BeforeEach
+    void setUp() {
+        service = new {{model.name}}Service({% for parent in model.parents %}{{parent.model.name|lower}}Repository, {% endfor %}repository, mockedMapper);
+    }
 {% for operation in api.operations if operation.is_generated %}
 
-  {% if operation.parent %}
-  {% set p_model = operation.parent.model %}
-  {% set p_hibernate = operation.parent.hibernate %}
-  {% set p_m_hibernate = operation.parent.model.hibernate %}
-  {% set p_m_type = p_model.name %}
-  {% set p_m_var = p_model.name | lower %}
-  {% set p_m_entity_type = p_model.name + "Entity" %}
-  {% set p_m_entity_var = p_model.name | lower + "Entity" %}
-  {% endif %}
-  {% if operation.method == "get" and operation.is_pageable %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  void when{{operation.name|pascal}}_thenOk() throws Exception {
-
-    // Given
-    List<{{m_entity_type}}> {{m_entity_var}}List = TestUtils.getRandomEntity({{m_entity_type}}.class, 5);
-    List<{{m_type}}> {{m_var}}List = {{m_entity_var}}List.stream().map(mapper::toDto).toList();
     {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
+    {% set p_model = operation.parent.model %}
+    {% set p_hibernate = operation.parent.hibernate %}
+    {% set p_m_hibernate = operation.parent.model.hibernate %}
+    {% set p_m_type = p_model.name %}
+    {% set p_m_var = p_model.name | lower %}
+    {% set p_m_entity_type = p_model.name + "Entity" %}
+    {% set p_m_entity_var = p_model.name | lower + "Entity" %}
     {% endif %}
+    {% if operation.method == "get" and operation.is_pageable %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    void when{{operation.name|pascal}}_thenOk() throws Exception {
 
-    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<{{m_entity_type}}>({{m_entity_var}}List, null, 6L));
+        // Given
+        List<{{m_entity_type}}> {{m_entity_var}}List = TestUtils.getRandomEntity({{m_entity_type}}.class, 5);
+        List<{{m_type}}> {{m_var}}List = {{m_entity_var}}List.stream().map(mapper::toDto).toList();
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
 
-    when(mockedMapper.toDto(any({{m_entity_type}}.class)))
-        .thenReturn({{m_var}}List.get(0))
-        .thenReturn({{m_var}}List.get(1))
-        .thenReturn({{m_var}}List.get(2))
-        .thenReturn({{m_var}}List.get(3))
-        .thenReturn({{m_var}}List.get(4));
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+        {% endif %}
 
-    // When
-    {% if operation.parent %}
-    CursorPage<{{m_type}}> response = service.{{operation.name}}(one, new CursorPageable(null, 5, true), new Context());
-    {% else %}
-    CursorPage<{{m_type}}> response = service.{{operation.name}}(new CursorPageable(null, 5, true), new Context());
+        when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+                .thenReturn(new CursorPage<{{m_entity_type}}>({{m_entity_var}}List, null, 6L));
+
+        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+                .thenReturn({{m_var}}List.get(0))
+                .thenReturn({{m_var}}List.get(1))
+                .thenReturn({{m_var}}List.get(2))
+                .thenReturn({{m_var}}List.get(3))
+                .thenReturn({{m_var}}List.get(4));
+
+        // When
+        {% if operation.parent %}
+        CursorPage<{{m_type}}> response = service.{{operation.name}}(one, new CursorPageable(null, 5, true), new Context());
+        {% else %}
+        CursorPage<{{m_type}}> response = service.{{operation.name}}(new CursorPageable(null, 5, true), new Context());
+        {% endif %}
+
+        // Then
+        assertEquals(5L, response.count());
+        assertEquals(6L, response.totalCount());
+
+        JSONAssert.assertEquals(
+                Json.serializer().toString({{m_var}}List),
+                new JSONArray(Json.serializer().toString(response.items())),
+                false);
+    }
+    {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    void when{{operation.name|pascal}}_thenOk() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{hibernate.find_by_id}}(eq(testParent.{{getId}})))
+                .thenReturn(Optional.of(testParent));
+
+        {% if operation.path.endswith('/remove') %}
+        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% else %}
+        when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% endif %}
+
+        when(repository.save(eq({{m_entity_var}})))
+                .thenReturn(null);
+
+        // When
+        service.{{operation.name}}(testParent.{{getId}}, {{m_entity_var}}.{{getId}}, new Context());
+
+        // Then
+
+    }
+    {% elif operation.method == "post" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    void when{{operation.name|pascal}}_thenOk() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+        {% endif %}
+
+        when(mockedMapper.toEntity(any({{m_type}}.class)))
+                .thenReturn({{m_entity_var}});
+
+        when(repository.save(eq({{m_entity_var}})))
+                .thenReturn({{m_entity_var}});
+
+        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+                .thenReturn({{m_var}});
+
+        // When
+        {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_var}}, new Context());
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString({{m_var}}),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
+    {% elif operation.method == "get" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    void when{{operation.name|pascal}}_thenOk() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+
+        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% else %}
+
+        when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% endif %}
+
+        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+                .thenReturn({{m_var}});
+
+        // When
+        {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString({{m_var}}),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
+
+    @Test
+    public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+
+        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.ofNullable(null));
+        {% else %}
+
+        when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.ofNullable(null));
+        {% endif %}
+
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
+                });
+
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
+    {% elif operation.method == "put" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    void when{{operation.name|pascal}}_thenOk() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+
+        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% else %}
+
+        when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% endif %}
+
+        when(repository.save(eq({{m_entity_var}})))
+                .thenReturn({{m_entity_var}});
+
+        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+                .thenReturn({{m_var}});
+
+        // When
+        {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString({{m_var}}),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
+
+    @Test
+    public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+
+        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.ofNullable(null));
+        {% else %}
+
+        when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.ofNullable(null));
+        {% endif %}
+
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
+                });
+
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
+    {% elif operation.method == "patch" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    void when{{operation.name|pascal}}_thenOk() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+
+        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% else %}
+
+        when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% endif %}
+
+        when(repository.save(eq({{m_entity_var}})))
+                .thenReturn({{m_entity_var}});
+
+        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+                .thenReturn({{m_var}});
+
+        // When
+        {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString({{m_var}}),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
+
+    @Test
+    public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+
+        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.ofNullable(null));
+        {% else %}
+
+        when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.ofNullable(null));
+        {% endif %}
+
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
+                });
+
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
+    {% elif operation.method == "delete" %}
+    {# 
+    ########################################################################################
+    #}
+    @Test
+    void when{{operation.name|pascal}}_thenOk() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+
+        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% else %}
+
+        when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.of({{m_entity_var}}));
+        {% endif %}
+
+        // When & Then
+        service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
+    }
+
+    @Test
+    public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
+
+        // Given
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {% if operation.parent %}
+        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+
+        when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
+                .thenReturn(Optional.of(testParent));
+
+        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.ofNullable(null));
+        {% else %}
+
+        when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
+                .thenReturn(Optional.ofNullable(null));
+        {% endif %}
+
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
+                });
+
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
     {% endif %}
-
-    // Then
-    assertEquals(5L, response.count());
-    assertEquals(6L, response.totalCount());
-
-    JSONAssert.assertEquals(
-        Json.serializer().toString({{m_var}}List),
-        new JSONArray(Json.serializer().toString(response.items())),
-        false);
-  }
-  {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  void when{{operation.name|pascal}}_thenOk() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{hibernate.find_by_id}}(eq(testParent.{{getId}})))
-        .thenReturn(Optional.of(testParent));
-
-    {% if operation.path.endswith('/remove') %}
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% else %}
-    when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% endif %}
-
-    when(repository.save(eq({{m_entity_var}})))
-        .thenReturn(null);
-
-    // When
-    service.{{operation.name}}(testParent.{{getId}}, {{m_entity_var}}.{{getId}}, new Context());
-
-    // Then
-
-  }
-  {% elif operation.method == "post" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  void when{{operation.name|pascal}}_thenOk() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
-    {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
-    {% endif %}
-
-    when(mockedMapper.toEntity(any({{m_type}}.class)))
-        .thenReturn({{m_entity_var}});
-
-    when(repository.save(eq({{m_entity_var}})))
-        .thenReturn({{m_entity_var}});
-
-    when(mockedMapper.toDto(any({{m_entity_type}}.class)))
-        .thenReturn({{m_var}});
-
-    // When
-    {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_var}}, new Context());
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString({{m_var}}),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
-  {% elif operation.method == "get" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  void when{{operation.name|pascal}}_thenOk() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
-    {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
-
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% else %}
-
-    when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% endif %}
-
-    when(mockedMapper.toDto(any({{m_entity_type}}.class)))
-        .thenReturn({{m_var}});
-
-    // When
-    {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString({{m_var}}),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
-
-  @Test
-  public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
-
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.ofNullable(null));
-    {% else %}
-
-    when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.ofNullable(null));
-    {% endif %}
-
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
-        });
-
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
-  {% elif operation.method == "put" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  void when{{operation.name|pascal}}_thenOk() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
-    {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
-
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% else %}
-
-    when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% endif %}
-
-    when(repository.save(eq({{m_entity_var}})))
-        .thenReturn({{m_entity_var}});
-
-    when(mockedMapper.toDto(any({{m_entity_type}}.class)))
-        .thenReturn({{m_var}});
-
-    // When
-    {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString({{m_var}}),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
-
-  @Test
-  public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
-    {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
-
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.ofNullable(null));
-    {% else %}
-
-    when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.ofNullable(null));
-    {% endif %}
-
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
-        });
-
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
-  {% elif operation.method == "patch" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  void when{{operation.name|pascal}}_thenOk() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
-    {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
-
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% else %}
-
-    when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% endif %}
-
-    when(repository.save(eq({{m_entity_var}})))
-        .thenReturn({{m_entity_var}});
-
-    when(mockedMapper.toDto(any({{m_entity_type}}.class)))
-        .thenReturn({{m_var}});
-
-    // When
-    {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString({{m_var}}),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
-
-  @Test
-  public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
-    {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
-
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.ofNullable(null));
-    {% else %}
-
-    when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.ofNullable(null));
-    {% endif %}
-
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
-        });
-
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
-  {% elif operation.method == "delete" %}
-  {# 
-  ########################################################################################
-  #}
-  @Test
-  void when{{operation.name|pascal}}_thenOk() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
-
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% else %}
-
-    when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.of({{m_entity_var}}));
-    {% endif %}
-
-    // When & Then
-    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
-  }
-
-  @Test
-  public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
-
-    // Given
-    {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-    {% if operation.parent %}
-    {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
-
-    when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
-        .thenReturn(Optional.of(testParent));
-
-    when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.ofNullable(null));
-    {% else %}
-
-    when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
-        .thenReturn(Optional.ofNullable(null));
-    {% endif %}
-
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
-        });
-
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
-  {% endif %}
 {% endfor %}}
 {{""}}

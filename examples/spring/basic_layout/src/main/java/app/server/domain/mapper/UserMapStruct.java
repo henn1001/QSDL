@@ -13,29 +13,26 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(
-    componentModel = "spring",
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapStruct {
 
-  @Mapping(target = "tmp", ignore = true)
-  User toDto(UserEntity entity);
+    @Mapping(target = "tmp", ignore = true)
+    User toDto(UserEntity entity);
 
-  // ignore read only attributes and relations
-  @Mapping(target = "uid", ignore = true)
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "count", ignore = true)
-  @Mapping(target = "tickets", ignore = true)
-  UserEntity toEntity(User dto);
+    // ignore read only attributes and relations
+    @Mapping(target = "uid", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "count", ignore = true)
+    @Mapping(target = "tickets", ignore = true)
+    UserEntity toEntity(User dto);
 
-  @Named("replace")
-  @InheritConfiguration(name = "toEntity")
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-  void replace(User source, @MappingTarget UserEntity target);
+    @Named("replace")
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void replace(User source, @MappingTarget UserEntity target);
 
-  @Named("update")
-  @InheritConfiguration(name = "toEntity")
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  void update(User source, @MappingTarget UserEntity target);
+    @Named("update")
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void update(User source, @MappingTarget UserEntity target);
 }

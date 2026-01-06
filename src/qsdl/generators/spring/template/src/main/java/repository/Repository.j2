@@ -9,11 +9,11 @@ package {{model.package.repository}};
 
 @Repository
 public interface {{model.name}}Repository extends AbstractRepository<{{model.name}}Entity, Long> {
-  {% for parent in model.parents %}
+    {% for parent in model.parents %}
 
-  public Optional<{{model.name}}Entity> findBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
+    public Optional<{{model.name}}Entity> findBy{{parent.hibernate.method_joined_id}}(Long {{parent.model.hibernate.parameter_joined_id}}, Long id);
 
-  public Optional<{{model.name}}Entity> findBy{{parent.hibernate.method_joined_uid}}(Long {{parent.model.hibernate.parameter_joined_id}}, String uid);
-  {% endfor %}
+    public Optional<{{model.name}}Entity> findBy{{parent.hibernate.method_joined_uid}}(Long {{parent.model.hibernate.parameter_joined_id}}, String uid);
+    {% endfor %}
 }
 {{""}}

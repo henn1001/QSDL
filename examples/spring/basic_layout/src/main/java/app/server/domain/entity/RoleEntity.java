@@ -39,11 +39,11 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "role")
 public class RoleEntity extends AbstractPersistentObject {
 
-  @NotNull
-  private String name;
+    @NotNull
+    private String name;
 
-  @JsonIgnore
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "project_id")
-  private ProjectEntity project;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private ProjectEntity project;
 }

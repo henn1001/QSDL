@@ -29,38 +29,38 @@ import lombok.extern.jackson.Jacksonized;
 @EqualsAndHashCode(callSuper = false)
 public class Project extends AbstractClass {
 
-  @Min(0)
-  @Max(Long.MAX_VALUE)
-  @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
-  private Long id;
+    @Min(0)
+    @Max(Long.MAX_VALUE)
+    @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+    private Long id;
 
-  @NonNull
-  @NotNull
-  @Size(min = 0, max = 255)
-  @JsonProperty(value = "name", required = true)
-  private String name;
+    @NonNull
+    @NotNull
+    @Size(min = 0, max = 255)
+    @JsonProperty(value = "name", required = true)
+    private String name;
 
-  @Size(min = 0, max = 255)
-  @JsonProperty(value = "description")
-  private String description;
+    @Size(min = 0, max = 255)
+    @JsonProperty(value = "description")
+    private String description;
 
-  @Size(min = 0, max = 255)
-  @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
-  private String creationBy;
+    @Size(min = 0, max = 255)
+    @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
+    private String creationBy;
 
-  @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
-  private LocalDate creationDate;
+    @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
+    private LocalDate creationDate;
 
-  @Size(min = 0, max = 255)
-  @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
-  private String lastUpdateBy;
+    @Size(min = 0, max = 255)
+    @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
+    private String lastUpdateBy;
 
-  @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
-  private OffsetDateTime lastUpdateDate;
+    @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
+    private OffsetDateTime lastUpdateDate;
 
-  @JsonProperty(value = "meta_inf")
-  private ObjectNode metaInf;
+    @JsonProperty(value = "meta_inf")
+    private ObjectNode metaInf;
 
-  @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
-  private Boolean archive;
+    @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
+    private Boolean archive;
 }

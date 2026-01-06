@@ -13,27 +13,24 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(
-    componentModel = "spring",
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TicketMapStruct {
 
-  Ticket toDto(TicketEntity entity);
+    Ticket toDto(TicketEntity entity);
 
-  // ignore read only attributes and relations
-  @Mapping(target = "uid", ignore = true)
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "users", ignore = true)
-  TicketEntity toEntity(Ticket dto);
+    // ignore read only attributes and relations
+    @Mapping(target = "uid", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "users", ignore = true)
+    TicketEntity toEntity(Ticket dto);
 
-  @Named("replace")
-  @InheritConfiguration(name = "toEntity")
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-  void replace(Ticket source, @MappingTarget TicketEntity target);
+    @Named("replace")
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void replace(Ticket source, @MappingTarget TicketEntity target);
 
-  @Named("update")
-  @InheritConfiguration(name = "toEntity")
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  void update(Ticket source, @MappingTarget TicketEntity target);
+    @Named("update")
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void update(Ticket source, @MappingTarget TicketEntity target);
 }

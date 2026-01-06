@@ -13,6 +13,7 @@ import app.server.model.*;
 import app.server.repository.*;
 import app.server.util.Json;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import java.util.List;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -22,101 +23,101 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 class ProjectRepositoryTest extends AbstractDataJpaTest {
 
-  @Autowired
-  ProjectRepository projectRepository;
+    @Autowired
+    ProjectRepository projectRepository;
 
-  @Autowired
-  TestEntityManager testEntityManager;
+    @Autowired
+    TestEntityManager testEntityManager;
 
-  public List<ProjectEntity> prepareData(int count) {
+    public List<ProjectEntity> prepareData(int count) {
 
-    List<ProjectEntity> testDatas = TestUtils.getRandomEntityWithNullId(ProjectEntity.class, count);
+        List<ProjectEntity> testDatas = TestUtils.getRandomEntityWithNullId(ProjectEntity.class, count);
 
-    for (ProjectEntity testData : testDatas) {
-      testData.addToRoles(TestUtils.getRandomEntityWithNullId(RoleEntity.class));
+        for (ProjectEntity testData : testDatas) {
+            testData.addToRoles(TestUtils.getRandomEntityWithNullId(RoleEntity.class));
+        }
+
+        projectRepository.saveAll(testDatas);
+
+        // forces synchronization to DB
+        // clears persistence context
+        testEntityManager.flush();
+        testEntityManager.clear();
+
+        return projectRepository.findAll();
     }
 
-    projectRepository.saveAll(testDatas);
+    @Test
+    public void whenSave_thenFind() throws Exception {
 
-    // forces synchronization to DB
-    // clears persistence context
-    testEntityManager.flush();
-    testEntityManager.clear();
+        // Given
+        ProjectEntity testData = prepareData(1).get(0);
 
-    return projectRepository.findAll();
-  }
+        // When
+        ProjectEntity findData = projectRepository.findById(testData.getId()).orElse(null);
 
-  @Test
-  public void whenSave_thenFind() throws Exception {
+        TestUtils.copyAllIdentities(testData, findData);
 
-    // Given
-    ProjectEntity testData = prepareData(1).get(0);
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(testData),
+                new JSONObject(Json.serializer().toString(findData)),
+                false);
+    }
 
-    // When
-    ProjectEntity findData = projectRepository.findById(testData.getId()).orElse(null);
+    @Test
+    public void whenDelete_thenCountZero() throws Exception {
 
-    TestUtils.copyAllIdentities(testData, findData);
+        // Given
+        ProjectEntity testData = prepareData(1).get(0);
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(testData),
-        new JSONObject(Json.serializer().toString(findData)),
-        false);
-  }
+        // When
+        projectRepository.delete(testData);
 
-  @Test
-  public void whenDelete_thenCountZero() throws Exception {
+        // Then
+        long count = projectRepository.count();
+        assertEquals(0, count);
+    }
 
-    // Given
-    ProjectEntity testData = prepareData(1).get(0);
+    @Test
+    public void whenCount_thenUseQuerie() throws Exception {
 
-    // When
-    projectRepository.delete(testData);
+        // Given
+        List<ProjectEntity> testData = prepareData(5);
 
-    // Then
-    long count = projectRepository.count();
-    assertEquals(0, count);
-  }
+        BooleanBuilder predicate = new BooleanBuilder();
+        predicate.and(QProjectEntity.projectEntity.name.eq(testData.get(0).getName()));
 
-  @Test
-  public void whenCount_thenUseQuerie() throws Exception {
+        // When
+        long count = projectRepository.count(predicate);
 
-    // Given
-    List<ProjectEntity> testData = prepareData(5);
+        // Then
+        assertEquals(1, count);
+    }
 
-    BooleanBuilder predicate = new BooleanBuilder();
-    predicate.and(QProjectEntity.projectEntity.name.eq(testData.get(0).getName()));
+    @Test
+    public void whenFindAll_thenPaginate() throws Exception {
 
-    // When
-    long count = projectRepository.count(predicate);
+        // Given
+        List<ProjectEntity> testData = prepareData(5);
 
-    // Then
-    assertEquals(1, count);
-  }
+        // When
+        String cursor = null;
+        int idx = 0;
 
-  @Test
-  public void whenFindAll_thenPaginate() throws Exception {
+        do {
+            CursorPageable pageable = new CursorPageable(cursor, 1, null);
+            BooleanBuilder predicate = new BooleanBuilder();
+            CursorPage<ProjectEntity> findData = projectRepository.findAll(predicate, pageable);
 
-    // Given
-    List<ProjectEntity> testData = prepareData(5);
+            cursor = findData.nextCursor();
 
-    // When
-    String cursor = null;
-    int idx = 0;
+            assertEquals(1, findData.count());
 
-    do {
-      CursorPageable pageable = new CursorPageable(cursor, 1, null);
-      BooleanBuilder predicate = new BooleanBuilder();
-      CursorPage<ProjectEntity> findData = projectRepository.findAll(predicate, pageable);
+            idx++;
+        } while (cursor != null);
 
-      cursor = findData.nextCursor();
-
-      assertEquals(1, findData.count());
-
-      idx++;
-    } while (cursor != null);
-
-    // Then
-    assertEquals(5, idx);
-  }
+        // Then
+        assertEquals(5, idx);
+    }
 }

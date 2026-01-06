@@ -19,78 +19,78 @@ package {{model.package.entity}};
 public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersistentObject{% else %} extends AbstractPersistentBase{% endif %} {
 {% for field in model.fields if not field.is_id and not field.is_transient %}
 
-  {# 
-    Required fields
-  #}
-  {% if field.is_required and not field.is_read_only%}
-  @NotNull
-  {% endif %}
-  {# 
-    Do not deserialize relations
-  #}
-  {% if field.is_relation%}
-  @JsonIgnore
-  {% endif %}
-  {# 
-    Hibernate
-  #}
-  {{- hibernate.attribute_annotation(field) -}}
-  {# 
-    Set the Field definition
-  #}
-  {% set typeName = field.type + "Entity" if field.is_object or field.is_base else field.entity_type %}
-  {% if field.is_array and field.is_relation %}
-  public final Set<{{typeName}}> {{field.name}} = new LinkedHashSet<>();
-  {% elif field.is_array %}
-  {{ "private" if use_encapsulation else "public"}} List<{{typeName}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
-  {% else %}
-  {{ "private" if use_encapsulation else "public"}} {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
-  {% endif %}
+    {# 
+        Required fields
+    #}
+    {% if field.is_required and not field.is_read_only%}
+    @NotNull
+    {% endif %}
+    {# 
+        Do not deserialize relations
+    #}
+    {% if field.is_relation%}
+    @JsonIgnore
+    {% endif %}
+    {# 
+        Hibernate
+    #}
+    {{- hibernate.attribute_annotation(field) -}}
+    {# 
+        Set the Field definition
+    #}
+    {% set typeName = field.type + "Entity" if field.is_object or field.is_base else field.entity_type %}
+    {% if field.is_array and field.is_relation %}
+    public final Set<{{typeName}}> {{field.name}} = new LinkedHashSet<>();
+    {% elif field.is_array %}
+    {{ "private" if use_encapsulation else "public"}} List<{{typeName}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
+    {% else %}
+    {{ "private" if use_encapsulation else "public"}} {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
+    {% endif %}
 {% endfor %}
-  {% set removeHookList = model.fields| selectattr("is_aggregation") | rejectattr("is_relation_owner") | list %}
-  {% if removeHookList %}
+    {% set removeHookList = model.fields| selectattr("is_aggregation") | rejectattr("is_relation_owner") | list %}
+    {% if removeHookList %}
 
-  @PreRemove
-  private void preRemoveHook() {
-    {% for field in removeHookList %}
-    new LinkedHashSet<>(this.{{field.name}}).forEach(o -> o.removeFrom{{model.name}}s(this));
-    {% endfor %}
-  }
-  {% endif %}
+    @PreRemove
+    private void preRemoveHook() {
+        {% for field in removeHookList %}
+        new LinkedHashSet<>(this.{{field.name}}).forEach(o -> o.removeFrom{{model.name}}s(this));
+        {% endfor %}
+    }
+    {% endif %}
 {% for field in model.fields if field.is_relation and field.is_array %}
 
-  public void addTo{{field.type}}s({{field.type}}Entity o) {
+    public void addTo{{field.type}}s({{field.type}}Entity o) {
 {% if use_encapsulation %}
-    {% if field.is_composition  %}
-    o.set{{model.name}}(this);
-    {% else %}
-    o.get{{model.name}}s().add(this);
-    {% endif %}
+        {% if field.is_composition    %}
+        o.set{{model.name}}(this);
+        {% else %}
+        o.get{{model.name}}s().add(this);
+        {% endif %}
 {% else %}
-    {% if field.is_composition  %}
-    o.{{model.name|camel}} = this;
-    {% else %}
-    o.{{model.name|camel}}s.add(this);
-    {% endif %}
+        {% if field.is_composition    %}
+        o.{{model.name|camel}} = this;
+        {% else %}
+        o.{{model.name|camel}}s.add(this);
+        {% endif %}
 {% endif %}
-    this.{{field.name}}.add(o);
-  }
+        this.{{field.name}}.add(o);
+    }
 
-  public void removeFrom{{field.type}}s({{field.type}}Entity o) {
+    public void removeFrom{{field.type}}s({{field.type}}Entity o) {
 {% if use_encapsulation %}
-    {% if field.is_composition  %}
-    o.set{{model.name}}(null);
-    {% else %}
-    o.get{{model.name}}s().remove(this);
-    {% endif %}
+        {% if field.is_composition    %}
+        o.set{{model.name}}(null);
+        {% else %}
+        o.get{{model.name}}s().remove(this);
+        {% endif %}
 {% else %}
-    {% if field.is_composition  %}
-    o.{{model.name|camel}} = null;
-    {% else %}
-    o.{{model.name|camel}}s.remove(this);
-    {% endif %}
+        {% if field.is_composition    %}
+        o.{{model.name|camel}} = null;
+        {% else %}
+        o.{{model.name|camel}}s.remove(this);
+        {% endif %}
 {% endif %}
-    this.{{field.name}}.remove(o);
-  }
+        this.{{field.name}}.remove(o);
+    }
 {% endfor %}}
 {{""}}

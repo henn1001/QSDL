@@ -19,97 +19,97 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
 public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Serializable>
-    extends SimpleJpaRepository<T, S> implements BaseRepository<T, S> {
+        extends SimpleJpaRepository<T, S> implements BaseRepository<T, S> {
 
-  private final EntityManager entityManager;
+    private final EntityManager entityManager;
 
-  private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
-  private final PathBuilder<T> entityPath;
+    private final PathBuilder<T> entityPath;
 
-  public BaseRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
-    super(entityInformation, entityManager);
-    this.entityManager = entityManager;
-    this.queryFactory = new JPAQueryFactory(this.entityManager);
+    public BaseRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
+        super(entityInformation, entityManager);
+        this.entityManager = entityManager;
+        this.queryFactory = new JPAQueryFactory(this.entityManager);
 
-    var resolver = new SimpleEntityPathResolver("");
-    var path = resolver.createPath(entityInformation.getJavaType());
-    this.entityPath = new PathBuilder<>(entityInformation.getJavaType(), path.getMetadata());
-  }
-
-  @Override
-  public EntityManager entityManager() {
-    return entityManager;
-  }
-
-  @Override
-  public JPAQuery<T> query() {
-    return queryFactory.selectFrom(entityPath);
-  }
-
-  @Override
-  public long count(Predicate predicate) {
-    return queryFactory.selectFrom(entityPath).where(predicate).fetchCount();
-  }
-
-  @Override
-  public List<T> findAll(Predicate predicate) {
-    return queryFactory
-        .selectFrom(entityPath)
-        .where(predicate)
-        .orderBy(entityPath.getNumber("id", Long.class).desc())
-        .fetch();
-  }
-
-  @Override
-  public CursorPage<T> findAll(Predicate predicate, CursorPageable pageable) {
-    // for paging, we always want to request one extra item
-    // the id of this extra item will be the new cursor
-    int limit = pageable.limit() + 1;
-
-    List<T> items = queryFactory
-        .selectFrom(entityPath)
-        .where(predicate)
-        .where(entityPath.getNumber("id", Long.class).loe(pageable.cursor()))
-        .orderBy(entityPath.getNumber("id", Long.class).desc())
-        .limit(limit)
-        .fetch();
-
-    Long totalCount = pageable.count() ? count(predicate) : null;
-    String nextCursor = getNextCursor(items, pageable.limit());
-
-    return new CursorPage<T>(items, nextCursor, totalCount);
-  }
-
-  /**
-   * Returns the cursor for the next CursorPage.
-   *
-   * <p>All items after the requested limit of the provided list are removed and
-   * the id of limit + 1 is used as cursor.
-   *
-   * @param items the list of entities.
-   * @return the cursor for the next CursorPage.
-   */
-  private String getNextCursor(List<T> items, long limit) {
-    String nextCursor = null;
-    int size = items.size();
-    int diff = size - (int) limit;
-    int cursorIndex = size - diff;
-
-    if (diff >= 1) {
-      // fetch last item in list and encode id as cursor
-      nextCursor = items.get(cursorIndex).getId().toString();
-      nextCursor = Base64.getEncoder().encodeToString(nextCursor.getBytes());
-
-      // very important to remove the last item
-      // it is only used for the paging cursor
-      if (diff == 1) {
-        items.remove(cursorIndex);
-      } else {
-        items.subList(cursorIndex, size).clear();
-      }
+        var resolver = new SimpleEntityPathResolver("");
+        var path = resolver.createPath(entityInformation.getJavaType());
+        this.entityPath = new PathBuilder<>(entityInformation.getJavaType(), path.getMetadata());
     }
 
-    return nextCursor;
-  }
+    @Override
+    public EntityManager entityManager() {
+        return entityManager;
+    }
+
+    @Override
+    public JPAQuery<T> query() {
+        return queryFactory.selectFrom(entityPath);
+    }
+
+    @Override
+    public long count(Predicate predicate) {
+        return queryFactory.selectFrom(entityPath).where(predicate).fetchCount();
+    }
+
+    @Override
+    public List<T> findAll(Predicate predicate) {
+        return queryFactory
+                .selectFrom(entityPath)
+                .where(predicate)
+                .orderBy(entityPath.getNumber("id", Long.class).desc())
+                .fetch();
+    }
+
+    @Override
+    public CursorPage<T> findAll(Predicate predicate, CursorPageable pageable) {
+        // for paging, we always want to request one extra item
+        // the id of this extra item will be the new cursor
+        int limit = pageable.limit() + 1;
+
+        List<T> items = queryFactory
+                .selectFrom(entityPath)
+                .where(predicate)
+                .where(entityPath.getNumber("id", Long.class).loe(pageable.cursor()))
+                .orderBy(entityPath.getNumber("id", Long.class).desc())
+                .limit(limit)
+                .fetch();
+
+        Long totalCount = pageable.count() ? count(predicate) : null;
+        String nextCursor = getNextCursor(items, pageable.limit());
+
+        return new CursorPage<T>(items, nextCursor, totalCount);
+    }
+
+    /**
+     * Returns the cursor for the next CursorPage.
+     *
+     * <p>All items after the requested limit of the provided list are removed and
+     * the id of limit + 1 is used as cursor.
+     *
+     * @param items the list of entities.
+     * @return the cursor for the next CursorPage.
+     */
+    private String getNextCursor(List<T> items, long limit) {
+        String nextCursor = null;
+        int size = items.size();
+        int diff = size - (int) limit;
+        int cursorIndex = size - diff;
+
+        if (diff >= 1) {
+            // fetch last item in list and encode id as cursor
+            nextCursor = items.get(cursorIndex).getId().toString();
+            nextCursor = Base64.getEncoder().encodeToString(nextCursor.getBytes());
+
+            // very important to remove the last item
+            // it is only used for the paging cursor
+            if (diff == 1) {
+                items.remove(cursorIndex);
+            } else {
+                items.subList(cursorIndex, size).clear();
+            }
+        }
+
+        return nextCursor;
+    }
 }

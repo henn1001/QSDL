@@ -6,13 +6,13 @@ package {{model.package.enum}};
 import java.util.EnumSet;
 
 public enum {{model.name}} {
-  {% for value in model.constants %}
-  {{value}}{% if not loop.last %},{% else %};{% endif %}
+    {% for value in model.constants %}
+    {{value}}{% if not loop.last %},{% else %};{% endif %}
 
-  {% endfor %}
+    {% endfor %}
 
-  public static boolean hasValue(String value) {
-    return EnumSet.allOf({{model.name}}.class).stream().anyMatch(e -> e.toString().equals(value));
-  }
+    public static boolean hasValue(String value) {
+        return EnumSet.allOf({{model.name}}.class).stream().anyMatch(e -> e.toString().equals(value));
+    }
 }
 {{""}}

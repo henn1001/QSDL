@@ -23,38 +23,38 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableJpaRepositories(basePackages = "app.server.common.db", repositoryBaseClass = BaseRepositoryImpl.class)
 class AppConfig {
 
-  @Value("${server.port}")
-  String serverPort;
+    @Value("${server.port}")
+    String serverPort;
 
-  @EventListener(ApplicationReadyEvent.class)
-  void doSomethingAfterStartup() {
-    System.out.println("listening on port " + serverPort);
+    @EventListener(ApplicationReadyEvent.class)
+    void doSomethingAfterStartup() {
+        System.out.println("listening on port " + serverPort);
 
-    // set timezone to UTC
-    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-  }
+        // set timezone to UTC
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
-  @Bean
-  ObjectMapper objectMapper() {
-    return Json.serializer().mapper();
-  }
+    @Bean
+    ObjectMapper objectMapper() {
+        return Json.serializer().mapper();
+    }
 
-  @Bean
-  YAMLMapper yamlMapper() {
-    return new YAMLMapper();
-  }
+    @Bean
+    YAMLMapper yamlMapper() {
+        return new YAMLMapper();
+    }
 
-  @Bean
-  WebMvcConfigurer webConfigurer() {
-    return new WebMvcConfigurer() {
+    @Bean
+    WebMvcConfigurer webConfigurer() {
+        return new WebMvcConfigurer() {
 
-      @Override
-      public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/v1/**")
-            .allowedOrigins("*")
-            .allowedMethods("*")
-            .allowedHeaders("Content-Type");
-      }
-    };
-  }
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/v1/**")
+                        .allowedOrigins("*")
+                        .allowedMethods("*")
+                        .allowedHeaders("Content-Type");
+            }
+        };
+    }
 }

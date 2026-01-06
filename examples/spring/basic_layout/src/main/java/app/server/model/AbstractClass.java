@@ -7,12 +7,12 @@ import app.server.util.Json;
 
 public abstract class AbstractClass {
 
-  @Override
-  public String toString() throws Json.JsonException {
-    return Json.serializer().toString(this);
-  }
+    @Override
+    public String toString() throws Json.JsonException {
+        return Json.serializer().toString(this);
+    }
 
-  public String toPrettyString() throws Json.JsonException {
-    return Json.serializer().toPrettyString(this);
-  }
+    public String toPrettyString() throws Json.JsonException {
+        return Json.serializer().toPrettyString(this);
+    }
 }

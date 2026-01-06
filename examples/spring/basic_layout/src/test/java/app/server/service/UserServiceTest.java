@@ -42,338 +42,338 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Import(TestConfig.class)
 class UserServiceTest {
 
-  @Mock
-  UserRepository repository;
+    @Mock
+    UserRepository repository;
 
-  @Mock
-  UserMapStruct mockedMapper;
+    @Mock
+    UserMapStruct mockedMapper;
 
-  @Mock
-  TicketRepository ticketRepository;
+    @Mock
+    TicketRepository ticketRepository;
 
-  UserService service;
+    UserService service;
 
-  @Autowired
-  UserMapStruct mapper;
+    @Autowired
+    UserMapStruct mapper;
 
-  static Long one = 1L;
+    static Long one = 1L;
 
-  @BeforeEach
-  void setUp() {
-    service = new UserService(ticketRepository, repository, mockedMapper);
-  }
+    @BeforeEach
+    void setUp() {
+        service = new UserService(ticketRepository, repository, mockedMapper);
+    }
 
-  @Test
-  void whenGetUsersForTicket_thenOk() throws Exception {
+    @Test
+    void whenGetUsersForTicket_thenOk() throws Exception {
 
-    // Given
-    List<UserEntity> userEntityList = TestUtils.getRandomEntity(UserEntity.class, 5);
-    List<User> userList = userEntityList.stream().map(mapper::toDto).toList();
-    TicketEntity testParent = TestUtils.getRandomEntity(TicketEntity.class);
+        // Given
+        List<UserEntity> userEntityList = TestUtils.getRandomEntity(UserEntity.class, 5);
+        List<User> userList = userEntityList.stream().map(mapper::toDto).toList();
+        TicketEntity testParent = TestUtils.getRandomEntity(TicketEntity.class);
 
-    when(ticketRepository.findById(eq(one)))
-        .thenReturn(Optional.of(testParent));
+        when(ticketRepository.findById(eq(one)))
+                .thenReturn(Optional.of(testParent));
 
-    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
+        when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+                .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
-    when(mockedMapper.toDto(any(UserEntity.class)))
-        .thenReturn(userList.get(0))
-        .thenReturn(userList.get(1))
-        .thenReturn(userList.get(2))
-        .thenReturn(userList.get(3))
-        .thenReturn(userList.get(4));
+        when(mockedMapper.toDto(any(UserEntity.class)))
+                .thenReturn(userList.get(0))
+                .thenReturn(userList.get(1))
+                .thenReturn(userList.get(2))
+                .thenReturn(userList.get(3))
+                .thenReturn(userList.get(4));
 
-    // When
-    CursorPage<User> response = service.getUsersForTicket(one, new CursorPageable(null, 5, true), new Context());
+        // When
+        CursorPage<User> response = service.getUsersForTicket(one, new CursorPageable(null, 5, true), new Context());
 
-    // Then
-    assertEquals(5L, response.count());
-    assertEquals(6L, response.totalCount());
+        // Then
+        assertEquals(5L, response.count());
+        assertEquals(6L, response.totalCount());
 
-    JSONAssert.assertEquals(
-        Json.serializer().toString(userList),
-        new JSONArray(Json.serializer().toString(response.items())),
-        false);
-  }
+        JSONAssert.assertEquals(
+                Json.serializer().toString(userList),
+                new JSONArray(Json.serializer().toString(response.items())),
+                false);
+    }
 
-  @Test
-  void whenAddUserToTicket_thenOk() throws Exception {
+    @Test
+    void whenAddUserToTicket_thenOk() throws Exception {
 
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-    TicketEntity testParent = TestUtils.getRandomEntity(TicketEntity.class);
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        TicketEntity testParent = TestUtils.getRandomEntity(TicketEntity.class);
 
-    when(ticketRepository.findById(eq(testParent.getId())))
-        .thenReturn(Optional.of(testParent));
+        when(ticketRepository.findById(eq(testParent.getId())))
+                .thenReturn(Optional.of(testParent));
 
-    when(repository.findById(eq(userEntity.getId())))
-        .thenReturn(Optional.of(userEntity));
+        when(repository.findById(eq(userEntity.getId())))
+                .thenReturn(Optional.of(userEntity));
 
-    when(repository.save(eq(userEntity)))
-        .thenReturn(null);
+        when(repository.save(eq(userEntity)))
+                .thenReturn(null);
 
-    // When
-    service.addUserToTicket(testParent.getId(), userEntity.getId(), new Context());
+        // When
+        service.addUserToTicket(testParent.getId(), userEntity.getId(), new Context());
 
-    // Then
+        // Then
 
-  }
+    }
 
-  @Test
-  void whenRemoveUserFromTicket_thenOk() throws Exception {
+    @Test
+    void whenRemoveUserFromTicket_thenOk() throws Exception {
 
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-    TicketEntity testParent = TestUtils.getRandomEntity(TicketEntity.class);
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        TicketEntity testParent = TestUtils.getRandomEntity(TicketEntity.class);
 
-    when(ticketRepository.findById(eq(testParent.getId())))
-        .thenReturn(Optional.of(testParent));
+        when(ticketRepository.findById(eq(testParent.getId())))
+                .thenReturn(Optional.of(testParent));
 
-    when(repository.findByTicketsIdAndId(eq(testParent.getId()), eq(userEntity.getId())))
-        .thenReturn(Optional.of(userEntity));
+        when(repository.findByTicketsIdAndId(eq(testParent.getId()), eq(userEntity.getId())))
+                .thenReturn(Optional.of(userEntity));
 
-    when(repository.save(eq(userEntity)))
-        .thenReturn(null);
+        when(repository.save(eq(userEntity)))
+                .thenReturn(null);
 
-    // When
-    service.removeUserFromTicket(testParent.getId(), userEntity.getId(), new Context());
+        // When
+        service.removeUserFromTicket(testParent.getId(), userEntity.getId(), new Context());
 
-    // Then
+        // Then
 
-  }
+    }
 
-  @Test
-  void whenGetUsers_thenOk() throws Exception {
+    @Test
+    void whenGetUsers_thenOk() throws Exception {
 
-    // Given
-    List<UserEntity> userEntityList = TestUtils.getRandomEntity(UserEntity.class, 5);
-    List<User> userList = userEntityList.stream().map(mapper::toDto).toList();
+        // Given
+        List<UserEntity> userEntityList = TestUtils.getRandomEntity(UserEntity.class, 5);
+        List<User> userList = userEntityList.stream().map(mapper::toDto).toList();
 
-    when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
-        .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
+        when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
+                .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
-    when(mockedMapper.toDto(any(UserEntity.class)))
-        .thenReturn(userList.get(0))
-        .thenReturn(userList.get(1))
-        .thenReturn(userList.get(2))
-        .thenReturn(userList.get(3))
-        .thenReturn(userList.get(4));
+        when(mockedMapper.toDto(any(UserEntity.class)))
+                .thenReturn(userList.get(0))
+                .thenReturn(userList.get(1))
+                .thenReturn(userList.get(2))
+                .thenReturn(userList.get(3))
+                .thenReturn(userList.get(4));
 
-    // When
-    CursorPage<User> response = service.getUsers(new CursorPageable(null, 5, true), new Context());
+        // When
+        CursorPage<User> response = service.getUsers(new CursorPageable(null, 5, true), new Context());
 
-    // Then
-    assertEquals(5L, response.count());
-    assertEquals(6L, response.totalCount());
+        // Then
+        assertEquals(5L, response.count());
+        assertEquals(6L, response.totalCount());
 
-    JSONAssert.assertEquals(
-        Json.serializer().toString(userList),
-        new JSONArray(Json.serializer().toString(response.items())),
-        false);
-  }
+        JSONAssert.assertEquals(
+                Json.serializer().toString(userList),
+                new JSONArray(Json.serializer().toString(response.items())),
+                false);
+    }
 
-  @Test
-  void whenCreateUser_thenOk() throws Exception {
+    @Test
+    void whenCreateUser_thenOk() throws Exception {
 
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-    User user = mapper.toDto(userEntity);
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        User user = mapper.toDto(userEntity);
 
-    when(mockedMapper.toEntity(any(User.class)))
-        .thenReturn(userEntity);
+        when(mockedMapper.toEntity(any(User.class)))
+                .thenReturn(userEntity);
 
-    when(repository.save(eq(userEntity)))
-        .thenReturn(userEntity);
+        when(repository.save(eq(userEntity)))
+                .thenReturn(userEntity);
 
-    when(mockedMapper.toDto(any(UserEntity.class)))
-        .thenReturn(user);
+        when(mockedMapper.toDto(any(UserEntity.class)))
+                .thenReturn(user);
 
-    // When
-    User response = service.createUser(user, new Context());
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(user),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // When
+        User response = service.createUser(user, new Context());
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(user),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  void whenGetUser_thenOk() throws Exception {
+    @Test
+    void whenGetUser_thenOk() throws Exception {
 
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-    User user = mapper.toDto(userEntity);
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        User user = mapper.toDto(userEntity);
 
-    when(repository.findById(eq(userEntity.getId())))
-        .thenReturn(Optional.of(userEntity));
+        when(repository.findById(eq(userEntity.getId())))
+                .thenReturn(Optional.of(userEntity));
 
-    when(mockedMapper.toDto(any(UserEntity.class)))
-        .thenReturn(user);
+        when(mockedMapper.toDto(any(UserEntity.class)))
+                .thenReturn(user);
 
-    // When
-    User response = service.getUser(userEntity.getId(), new Context());
+        // When
+        User response = service.getUser(userEntity.getId(), new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(user),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(user),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  public void whenGetUserWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenGetUserWithInvalidId_thenError() throws Exception {
 
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
 
-    when(repository.findById(eq(userEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
+        when(repository.findById(eq(userEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
 
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.getUser(userEntity.getId(), new Context());
-        });
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.getUser(userEntity.getId(), new Context());
+                });
 
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
-
-  @Test
-  void whenReplaceUser_thenOk() throws Exception {
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
+
+    @Test
+    void whenReplaceUser_thenOk() throws Exception {
 
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-    User user = mapper.toDto(userEntity);
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        User user = mapper.toDto(userEntity);
 
-    when(repository.findById(eq(userEntity.getId())))
-        .thenReturn(Optional.of(userEntity));
+        when(repository.findById(eq(userEntity.getId())))
+                .thenReturn(Optional.of(userEntity));
 
-    when(repository.save(eq(userEntity)))
-        .thenReturn(userEntity);
+        when(repository.save(eq(userEntity)))
+                .thenReturn(userEntity);
 
-    when(mockedMapper.toDto(any(UserEntity.class)))
-        .thenReturn(user);
+        when(mockedMapper.toDto(any(UserEntity.class)))
+                .thenReturn(user);
 
-    // When
-    User response = service.replaceUser(userEntity.getId(), user, new Context());
+        // When
+        User response = service.replaceUser(userEntity.getId(), user, new Context());
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(user),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(user),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
 
-  @Test
-  public void whenReplaceUserWithInvalidId_thenError() throws Exception {
+    @Test
+    public void whenReplaceUserWithInvalidId_thenError() throws Exception {
 
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-    User user = mapper.toDto(userEntity);
-
-    when(repository.findById(eq(userEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
-
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.replaceUser(userEntity.getId(), user, new Context());
-        });
-
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
-
-  @Test
-  void whenUpdateUser_thenOk() throws Exception {
-
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-    User user = mapper.toDto(userEntity);
-
-    when(repository.findById(eq(userEntity.getId())))
-        .thenReturn(Optional.of(userEntity));
-
-    when(repository.save(eq(userEntity)))
-        .thenReturn(userEntity);
-
-    when(mockedMapper.toDto(any(UserEntity.class)))
-        .thenReturn(user);
-
-    // When
-    User response = service.updateUser(userEntity.getId(), user, new Context());
-
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(user),
-        new JSONObject(Json.serializer().toString(response)),
-        false);
-  }
-
-  @Test
-  public void whenUpdateUserWithInvalidId_thenError() throws Exception {
-
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-    User user = mapper.toDto(userEntity);
-
-    when(repository.findById(eq(userEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
-
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.updateUser(userEntity.getId(), user, new Context());
-        });
-
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
-
-  @Test
-  void whenDeleteUser_thenOk() throws Exception {
-
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-
-    when(repository.findById(eq(userEntity.getId())))
-        .thenReturn(Optional.of(userEntity));
-
-    // When & Then
-    service.deleteUser(userEntity.getId(), new Context());
-  }
-
-  @Test
-  public void whenDeleteUserWithInvalidId_thenError() throws Exception {
-
-    // Given
-    UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-
-    when(repository.findById(eq(userEntity.getId())))
-        .thenReturn(Optional.ofNullable(null));
-
-    // When
-    AppException thrown = assertThrows(AppException.class,
-        () -> {
-          service.deleteUser(userEntity.getId(), new Context());
-        });
-
-    // Then
-    AppError error = thrown.getAppError();
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-    assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-  }
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        User user = mapper.toDto(userEntity);
+
+        when(repository.findById(eq(userEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
+
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.replaceUser(userEntity.getId(), user, new Context());
+                });
+
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
+
+    @Test
+    void whenUpdateUser_thenOk() throws Exception {
+
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        User user = mapper.toDto(userEntity);
+
+        when(repository.findById(eq(userEntity.getId())))
+                .thenReturn(Optional.of(userEntity));
+
+        when(repository.save(eq(userEntity)))
+                .thenReturn(userEntity);
+
+        when(mockedMapper.toDto(any(UserEntity.class)))
+                .thenReturn(user);
+
+        // When
+        User response = service.updateUser(userEntity.getId(), user, new Context());
+
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(user),
+                new JSONObject(Json.serializer().toString(response)),
+                false);
+    }
+
+    @Test
+    public void whenUpdateUserWithInvalidId_thenError() throws Exception {
+
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        User user = mapper.toDto(userEntity);
+
+        when(repository.findById(eq(userEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
+
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.updateUser(userEntity.getId(), user, new Context());
+                });
+
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
+
+    @Test
+    void whenDeleteUser_thenOk() throws Exception {
+
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+
+        when(repository.findById(eq(userEntity.getId())))
+                .thenReturn(Optional.of(userEntity));
+
+        // When & Then
+        service.deleteUser(userEntity.getId(), new Context());
+    }
+
+    @Test
+    public void whenDeleteUserWithInvalidId_thenError() throws Exception {
+
+        // Given
+        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+
+        when(repository.findById(eq(userEntity.getId())))
+                .thenReturn(Optional.ofNullable(null));
+
+        // When
+        AppException thrown = assertThrows(AppException.class,
+                () -> {
+                    service.deleteUser(userEntity.getId(), new Context());
+                });
+
+        // Then
+        AppError error = thrown.getAppError();
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+    }
 }

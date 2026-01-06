@@ -38,209 +38,225 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import(TestConfig.class)
 class RoleControllerTest {
 
-  @MockBean
-  RoleService service;
+    @MockBean
+    RoleService service;
 
-  @Value("${server.base-path:/}")
-  String basePath;
+    @Value("${server.base-path:/}")
+    String basePath;
 
-  @Autowired
-  MockMvc mockMvc;
+    @Autowired
+    MockMvc mockMvc;
 
-  static Long one = 1L;
+    static Long one = 1L;
 
-  @Test
-  public void whenGetRoles_thenOk() throws Exception {
+    @Test
+    public void whenGetRoles_thenOk() throws Exception {
 
-    // Given
-    Role request = TestUtils.getRandom(Role.class);
+        // Given
+        Role request = TestUtils.getRandom(Role.class);
 
-    CursorPage<Role> ret = new CursorPage<Role>(Arrays.asList(request), null, null);
+        CursorPage<Role> ret = new CursorPage<Role>(Arrays.asList(request), null, null);
 
-    when(service.getRoles(any(), any(), any()))
-        .thenReturn(ret);
+        when(service.getRoles(any(), any(), any()))
+                .thenReturn(ret);
 
-    // When
-    String response = mockMvc.perform(get(basePath + "/projects/1/roles"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(get(basePath + "/projects/1/roles"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(ret),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(ret),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenCreateRole_thenOk() throws Exception {
+    @Test
+    public void whenCreateRole_thenOk() throws Exception {
 
-    // Given
-    Role request = TestUtils.getRandom(Role.class);
+        // Given
+        Role request = TestUtils.getRandom(Role.class);
 
-    when(service.createRole(eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.createRole(eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(post(basePath + "/projects/1/roles")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(post(basePath + "/projects/1/roles")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenCreateRoleWithInvalidPayload_thenError() throws Exception {
+    @Test
+    public void whenCreateRoleWithInvalidPayload_thenError() throws Exception {
 
-    // Given
-    Role request = TestUtils.getRandom(Role.class);
+        // Given
+        Role request = TestUtils.getRandom(Role.class);
 
-    when(service.createRole(eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.createRole(eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(post(basePath + "/projects/1/roles")
-        .content("{}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(post(basePath + "/projects/1/roles")
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
 
-  @Test
-  public void whenGetRole_thenOk() throws Exception {
+    @Test
+    public void whenGetRole_thenOk() throws Exception {
 
-    // Given
-    Role request = TestUtils.getRandom(Role.class);
+        // Given
+        Role request = TestUtils.getRandom(Role.class);
 
-    when(service.getRole(eq(one), eq(one), any()))
-        .thenReturn(request);
+        when(service.getRole(eq(one), eq(one), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(get(basePath + "/projects/1/roles/1"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(get(basePath + "/projects/1/roles/1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenReplaceRole_thenOk() throws Exception {
+    @Test
+    public void whenReplaceRole_thenOk() throws Exception {
 
-    // Given
-    Role request = TestUtils.getRandom(Role.class);
+        // Given
+        Role request = TestUtils.getRandom(Role.class);
 
-    when(service.replaceRole(eq(one), eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.replaceRole(eq(one), eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenReplaceRoleWithInvalidPayload_thenError() throws Exception {
+    @Test
+    public void whenReplaceRoleWithInvalidPayload_thenError() throws Exception {
 
-    // Given
-    Role request = TestUtils.getRandom(Role.class);
+        // Given
+        Role request = TestUtils.getRandom(Role.class);
 
-    when(service.replaceRole(eq(one), eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.replaceRole(eq(one), eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
-        .content("{}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
 
-  @Test
-  public void whenUpdateRole_thenOk() throws Exception {
+    @Test
+    public void whenUpdateRole_thenOk() throws Exception {
 
-    // Given
-    Role request = TestUtils.getRandom(Role.class);
+        // Given
+        Role request = TestUtils.getRandom(Role.class);
 
-    when(service.updateRole(eq(one), eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.updateRole(eq(one), eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(patch(basePath + "/projects/1/roles/1")
-        .content(Json.serializer().toString(request))
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(patch(basePath + "/projects/1/roles/1")
+                        .content(Json.serializer().toString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    JSONAssert.assertEquals(
-        Json.serializer().toString(request),
-        new JSONObject(response),
-        false);
-  }
+        // Then
+        JSONAssert.assertEquals(
+                Json.serializer().toString(request),
+                new JSONObject(response),
+                false);
+    }
 
-  @Test
-  public void whenUpdateRoleWithInvalidPayload_thenError() throws Exception {
+    @Test
+    public void whenUpdateRoleWithInvalidPayload_thenError() throws Exception {
 
-    // Given
-    Role request = TestUtils.getRandom(Role.class);
+        // Given
+        Role request = TestUtils.getRandom(Role.class);
 
-    when(service.updateRole(eq(one), eq(one), any(), any()))
-        .thenReturn(request);
+        when(service.updateRole(eq(one), eq(one), any(), any()))
+                .thenReturn(request);
 
-    // When
-    String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
-        .content("{}")
-        .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        // When
+        String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
+                .content("{}")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    // Then
-    AppError error = Json.serializer().fromJson(response, AppError.class);
-    assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-    assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-    assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-  }
+        // Then
+        AppError error = Json.serializer().fromJson(response, AppError.class);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+    }
 
-  @Test
-  public void whenDeleteRole_thenOk() throws Exception {
+    @Test
+    public void whenDeleteRole_thenOk() throws Exception {
 
-    // Given
+        // Given
 
-    // When
-    mockMvc.perform(delete(basePath + "/projects/1/roles/1"))
-        .andExpect(status().isOk());
+        // When
+        mockMvc.perform(delete(basePath + "/projects/1/roles/1"))
+                .andExpect(status().isOk());
 
-    // Then
+        // Then
 
-  }
+    }
 }

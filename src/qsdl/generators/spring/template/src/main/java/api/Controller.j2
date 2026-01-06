@@ -12,29 +12,29 @@ package {{api.package.controller}};
 public class {{api.name}}Controller extends BaseController implements {{api.name}}Api {
 {% if api.has_generated %}
 
-  final {{api.name}}Service {{api.name|lower}}Service;
+    final {{api.name}}Service {{api.name|lower}}Service;
 {% endif %}
 {% for operation in api.operations %}
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) {
-  {% if operation.is_generated and operation.response %}
-    {% if operation.method in ["post", "put"] %}
-    Validator.validate(body);
-    {% elif operation.method == "patch" %}
-    Validator.validateExRequired(body);
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) {
+    {% if operation.is_generated and operation.response %}
+        {% if operation.method in ["post", "put"] %}
+        Validator.validate(body);
+        {% elif operation.method == "patch" %}
+        Validator.validateExRequired(body);
+        {% endif %}
+        {{macro.get_response(operation)}} response = {{api.name|lower}}Service.{{operation.name}}({{macro.paramsCallService(operation)}});
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    {% elif operation.is_generated %}
+        {{api.name|lower}}Service.{{operation.name}}({{macro.paramsCallService(operation)}});
+        return new ResponseEntity<>(HttpStatus.OK);
+    {% else %}
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     {% endif %}
-    {{macro.get_response(operation)}} response = {{api.name|lower}}Service.{{operation.name}}({{macro.paramsCallService(operation)}});
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  {% elif operation.is_generated %}
-    {{api.name|lower}}Service.{{operation.name}}({{macro.paramsCallService(operation)}});
-    return new ResponseEntity<>(HttpStatus.OK);
-  {% else %}
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  {% endif %}
-  }
+    }
 {% endfor %}}
 {{""}}

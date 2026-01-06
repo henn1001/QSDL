@@ -15,45 +15,44 @@ public class {{api.name}}Service {
 
 {% if database == "HIBERNATE" and model %}
 {% for parent in model.parents %}
-  final {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
+    final {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
 
 {% endfor %}
-  final {{api.name}}Repository {{api.name|lower}}Repository;
+    final {{api.name}}Repository {{api.name|lower}}Repository;
 
-  final {{api.name}}MapStruct {{api.name|lower}}MapStruct;
+    final {{api.name}}MapStruct {{api.name|lower}}MapStruct;
 {% endif %}
 {% if database == "HIBERNATE" and model %}
 
-  {{model.name}}Entity fetch{{model.name}}FromDb({{id_type}} id) throws AppException {
-    return {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
-        .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}.class, id));
-  }
+    {{model.name}}Entity fetch{{model.name}}FromDb({{id_type}} id) throws AppException {
+        return {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}.class, id));
+    }
 {% for parent in model.parents %}
 
-  {{model.name}}Entity fetch{{model.name}}From{{parent.model.name}}FromDb(Long {{ parent.model.hibernate.parameter_joined_id }}, {{id_type}} id) throws AppException {
-    return {{model.name|lower}}Repository.{{ parent.hibernate.find_by_parentid_and_id }}({{ parent.model.hibernate.parameter_joined_id }}, id)
-        .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}.class, id));
-  }
+    {{model.name}}Entity fetch{{model.name}}From{{parent.model.name}}FromDb(Long {{ parent.model.hibernate.parameter_joined_id }}, {{id_type}} id) throws AppException {
+        return {{model.name|lower}}Repository.{{ parent.hibernate.find_by_parentid_and_id }}({{ parent.model.hibernate.parameter_joined_id }}, id)
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}.class, id));
+    }
 
-  {{parent.model.name}}Entity fetch{{parent.model.name}}FromDb({{id_type}} id) throws AppException {
-    return {{parent.model.name|lower}}Repository.{{ parent.model.hibernate.find_by_id }}(id)
-        .orElseThrow(() -> AppExceptionUtil.entityNotFound({{parent.model.name}}.class, id));
-  }
+    {{parent.model.name}}Entity fetch{{parent.model.name}}FromDb({{id_type}} id) throws AppException {
+        return {{parent.model.name|lower}}Repository.{{ parent.model.hibernate.find_by_id }}(id)
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound({{parent.model.name}}.class, id));
+    }
 {% endfor %}
 {% endif %}
-
 {% for operation in api.operations if operation.is_generated %}
 
-  {% if operation.method != "get" %}
-  @Transactional
-  {% endif %}
-  public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
+    {% if operation.method != "get" %}
+    @Transactional
+    {% endif %}
+    public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
 
-  {% if database == "HIBERNATE" %}
-  {{- opr_macro.logic(operation) -}}
-  {% else %}
-    return null;
-  {% endif %}
-  }
+    {% if database == "HIBERNATE" %}
+    {{- opr_macro.logic(operation) -}}
+    {% else %}
+        return null;
+    {% endif %}
+    }
 {% endfor %}}
 {{""}}

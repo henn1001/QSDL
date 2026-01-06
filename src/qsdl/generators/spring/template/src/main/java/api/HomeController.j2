@@ -24,49 +24,49 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class HomeController {
 
-  @Autowired
-  YAMLMapper yamlMapper;
+    @Autowired
+    YAMLMapper yamlMapper;
 
-  @Value("classpath:/openapi.yaml")
-  Resource openapi;
+    @Value("classpath:/openapi.yaml")
+    Resource openapi;
 
-  @Bean
-  public String openapiContent() throws IOException {
-    try (InputStream is = openapi.getInputStream()) {
-      return StreamUtils.copyToString(is, Charset.defaultCharset());
+    @Bean
+    public String openapiContent() throws IOException {
+        try (InputStream is = openapi.getInputStream()) {
+            return StreamUtils.copyToString(is, Charset.defaultCharset());
+        }
     }
-  }
 
-  @GetMapping(value = "/api/docs/openapi.yaml", produces = "application/vnd.oai.openapi")
-  @ResponseBody
-  public String openapiYaml() throws IOException {
-    return openapiContent();
-  }
+    @GetMapping(value = "/api/docs/openapi.yaml", produces = "application/vnd.oai.openapi")
+    @ResponseBody
+    public String openapiYaml() throws IOException {
+        return openapiContent();
+    }
 
-  @GetMapping(value = "/api/docs/openapi.json", produces = "application/json")
-  @ResponseBody
-  public Object openapiJson() throws IOException {
-    return yamlMapper.readValue(openapiContent(), Object.class);
-  }
+    @GetMapping(value = "/api/docs/openapi.json", produces = "application/json")
+    @ResponseBody
+    public Object openapiJson() throws IOException {
+        return yamlMapper.readValue(openapiContent(), Object.class);
+    }
 
-  @GetMapping(value = "/api/ping")
-  @ResponseBody
-  public Object heartbeat() throws IOException {
-    return yamlMapper.readValue("pong", Object.class);
-  }
+    @GetMapping(value = "/api/ping")
+    @ResponseBody
+    public Object heartbeat() throws IOException {
+        return yamlMapper.readValue("pong", Object.class);
+    }
 
-  @RequestMapping("/api")
-  public String index() {
-    return "redirect:/api/swagger-ui/index.html";
-  }
+    @RequestMapping("/api")
+    public String index() {
+        return "redirect:/api/swagger-ui/index.html";
+    }
 
-  @RequestMapping(value = {"/", "/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}"})
-  public String getIndex(HttpServletRequest request) {
-    // This is very important so our routing is handled by the frontend
-    // '/' - matches root
-    // '/{x:[\\w\\-]+}' - matches everything up to the second /.
-    // '/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}' - matches everything that doesn't start with api.
-    return "/index.html";
-  }
+    @RequestMapping(value = {"/", "/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}"})
+    public String getIndex(HttpServletRequest request) {
+        // This is very important so our routing is handled by the frontend
+        // '/' - matches root
+        // '/{x:[\\w\\-]+}' - matches everything up to the second /.
+        // '/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}' - matches everything that doesn't start with api.
+        return "/index.html";
+    }
 }
 {{""}}

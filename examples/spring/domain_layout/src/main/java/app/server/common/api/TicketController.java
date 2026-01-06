@@ -30,62 +30,62 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @AllArgsConstructor
 public class TicketController extends BaseController implements TicketApi {
 
-  final TicketService ticketService;
+    final TicketService ticketService;
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
-    CursorPage<Ticket> response = ticketService.getTickets(pageable, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
+        CursorPage<Ticket> response = ticketService.getTickets(pageable, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Ticket> createTicket(Ticket body) {
-    Validator.validate(body);
-    Ticket response = ticketService.createTicket(body, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Ticket> createTicket(Ticket body) {
+        Validator.validate(body);
+        Ticket response = ticketService.createTicket(body, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Ticket> getTicket(Long id) {
-    Ticket response = ticketService.getTicket(id, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Ticket> getTicket(Long id) {
+        Ticket response = ticketService.getTicket(id, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Ticket> replaceTicket(Long id, Ticket body) {
-    Validator.validate(body);
-    Ticket response = ticketService.replaceTicket(id, body, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Ticket> replaceTicket(Long id, Ticket body) {
+        Validator.validate(body);
+        Ticket response = ticketService.replaceTicket(id, body, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Ticket> updateTicket(Long id, Ticket body) {
-    Validator.validateExRequired(body);
-    Ticket response = ticketService.updateTicket(id, body, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Ticket> updateTicket(Long id, Ticket body) {
+        Validator.validateExRequired(body);
+        Ticket response = ticketService.updateTicket(id, body, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Void> deleteTicket(Long id) {
-    ticketService.deleteTicket(id, super.getContext());
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Void> deleteTicket(Long id) {
+        ticketService.deleteTicket(id, super.getContext());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

@@ -8,27 +8,27 @@ package {{package.exception}};
 
 public class AppException extends RuntimeException {
 
-  private static final long serialVersionUID = 348957328953479850L;
+    private static final long serialVersionUID = 348957328953479850L;
 
-  private final AppError appError;
+    private final AppError appError;
 
-  public AppException(ErrorCode error) {
-    super(error.message());
-    this.appError = error.toAppError();
-  }
+    public AppException(ErrorCode error) {
+        super(error.message());
+        this.appError = error.toAppError();
+    }
 
-  public AppException(ErrorCode error, String detail) {
-    super(error.message());
-    this.appError = error.toAppError(detail);
-  }
+    public AppException(ErrorCode error, String detail) {
+        super(error.message());
+        this.appError = error.toAppError(detail);
+    }
 
-  public AppException(ErrorCode error, List<String> details) {
-    super(error.message());
-    this.appError = error.toAppError(details);
-  }
+    public AppException(ErrorCode error, List<String> details) {
+        super(error.message());
+        this.appError = error.toAppError(details);
+    }
 
-  public AppError getAppError() {
-    return appError;
-  }
+    public AppError getAppError() {
+        return appError;
+    }
 }
 {{""}}

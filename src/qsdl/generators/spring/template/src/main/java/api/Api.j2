@@ -12,20 +12,20 @@ package {{api.package.api}};
 public interface {{api.name}}Api {
 {% for operation in api.operations %}
 
-  /**
-   * {{operation.method|upper}} {{operation.path}}{% if operation.summary %} : {{operation.summary + "\n"}}{% endif %}
-  {% if operation.description %}
-   *
-    {% for line in operation.description %}
-   * {{line}}
-    {% endfor %}
-  {% endif %}
-   */
-  @{{operation.method|capitalize}}Mapping(value = "{{operation.path}}"
-  {%- if operation.produces %}, produces = {{ "{\"" + operation.produces + "\"}"}}{% endif %}
-  {%- if operation.consumes %}, consumes = {{ "{\"" + operation.consumes + "\"}"}}{% endif %})
-  default ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsApi(operation)}}) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * {{operation.method|upper}} {{operation.path}}{% if operation.summary %} : {{operation.summary + "\n"}}{% endif %}
+    {% if operation.description %}
+     *
+        {% for line in operation.description %}
+     * {{line}}
+        {% endfor %}
+    {% endif %}
+     */
+    @{{operation.method|capitalize}}Mapping(value = "{{operation.path}}"
+    {%- if operation.produces %}, produces = {{ "{\"" + operation.produces + "\"}"}}{% endif %}
+    {%- if operation.consumes %}, consumes = {{ "{\"" + operation.consumes + "\"}"}}{% endif %})
+    default ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsApi(operation)}}) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 {% endfor %}}
 {{""}}

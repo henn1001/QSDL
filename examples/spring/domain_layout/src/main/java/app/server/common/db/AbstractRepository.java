@@ -10,11 +10,11 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
 public interface AbstractRepository<T extends AbstractPersistentObject, S extends Serializable>
-    extends BaseRepository<T, S> {
+        extends BaseRepository<T, S> {
 
-  public Optional<T> findByUid(String uid);
+    public Optional<T> findByUid(String uid);
 
-  public T getByUid(String uid);
+    public T getByUid(String uid);
 
-  public boolean existsByUid(String uid);
+    public boolean existsByUid(String uid);
 }

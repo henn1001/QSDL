@@ -25,79 +25,78 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class TicketService {
 
-  final TicketRepository ticketRepository;
+    final TicketRepository ticketRepository;
 
-  final TicketMapStruct ticketMapStruct;
+    final TicketMapStruct ticketMapStruct;
 
-  TicketEntity fetchTicketFromDb(Long id) throws AppException {
-    return ticketRepository.findById(id)
-        .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
-  }
+    TicketEntity fetchTicketFromDb(Long id) throws AppException {
+        return ticketRepository.findById(id)
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
+    }
 
+    public CursorPage<Ticket> getTickets(CursorPageable pageable, Context context) throws AppException {
 
-  public CursorPage<Ticket> getTickets(CursorPageable pageable, Context context) throws AppException {
+        var queryParameters = Arrays.<String>asList();
+        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), TicketEntity.class);
 
-    var queryParameters = Arrays.<String>asList();
-    var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), TicketEntity.class);
+        var cursorPage = ticketRepository.findAll(predicate, pageable);
 
-    var cursorPage = ticketRepository.findAll(predicate, pageable);
+        var ticketEntities = cursorPage.items();
+        var ticketDtos = ticketEntities.stream().map(ticketMapStruct::toDto).toList();
 
-    var ticketEntities = cursorPage.items();
-    var ticketDtos = ticketEntities.stream().map(ticketMapStruct::toDto).toList();
+        return new CursorPage<>(ticketDtos, cursorPage.nextCursor(), cursorPage.totalCount());
+    }
 
-    return new CursorPage<>(ticketDtos, cursorPage.nextCursor(), cursorPage.totalCount());
-  }
+    @Transactional
+    public Ticket createTicket(Ticket body, Context context) throws AppException {
 
-  @Transactional
-  public Ticket createTicket(Ticket body, Context context) throws AppException {
+        var ticketEntity = ticketMapStruct.toEntity(body);
 
-    var ticketEntity = ticketMapStruct.toEntity(body);
+        ticketEntity = ticketRepository.save(ticketEntity);
 
-    ticketEntity = ticketRepository.save(ticketEntity);
+        return ticketMapStruct.toDto(ticketEntity);
+    }
 
-    return ticketMapStruct.toDto(ticketEntity);
-  }
+    public Ticket getTicket(Long id, Context context) throws AppException {
 
-  public Ticket getTicket(Long id, Context context) throws AppException {
+        var ticketEntity = fetchTicketFromDb(id);
 
-    var ticketEntity = fetchTicketFromDb(id);
+        return ticketMapStruct.toDto(ticketEntity);
+    }
 
-    return ticketMapStruct.toDto(ticketEntity);
-  }
+    @Transactional
+    public Ticket replaceTicket(Long id, Ticket body, Context context) throws AppException {
 
-  @Transactional
-  public Ticket replaceTicket(Long id, Ticket body, Context context) throws AppException {
+        var ticketEntity = fetchTicketFromDb(id);
 
-    var ticketEntity = fetchTicketFromDb(id);
+        // replace ticketEntity with all writeable fields - nulls included
+        ticketMapStruct.replace(body, ticketEntity);
 
-    // replace ticketEntity with all writeable fields - nulls included
-    ticketMapStruct.replace(body, ticketEntity);
+        ticketEntity = ticketRepository.save(ticketEntity);
 
-    ticketEntity = ticketRepository.save(ticketEntity);
+        return ticketMapStruct.toDto(ticketEntity);
+    }
 
-    return ticketMapStruct.toDto(ticketEntity);
-  }
+    @Transactional
+    public Ticket updateTicket(Long id, Ticket body, Context context) throws AppException {
 
-  @Transactional
-  public Ticket updateTicket(Long id, Ticket body, Context context) throws AppException {
+        var ticketEntity = fetchTicketFromDb(id);
 
-    var ticketEntity = fetchTicketFromDb(id);
+        // update dbEntity with all writeable fields if present
+        ticketMapStruct.update(body, ticketEntity);
 
-    // update dbEntity with all writeable fields if present
-    ticketMapStruct.update(body, ticketEntity);
+        ticketEntity = ticketRepository.save(ticketEntity);
 
-    ticketEntity = ticketRepository.save(ticketEntity);
+        return ticketMapStruct.toDto(ticketEntity);
+    }
 
-    return ticketMapStruct.toDto(ticketEntity);
-  }
+    @Transactional
+    public Void deleteTicket(Long id, Context context) throws AppException {
 
-  @Transactional
-  public Void deleteTicket(Long id, Context context) throws AppException {
+        var ticketEntity = fetchTicketFromDb(id);
 
-    var ticketEntity = fetchTicketFromDb(id);
+        ticketRepository.delete(ticketEntity);
 
-    ticketRepository.delete(ticketEntity);
-
-    return null;
-  }
+        return null;
+    }
 }

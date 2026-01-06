@@ -28,82 +28,82 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-  /**
-   * Required for nested object validation.
-   */
-  @InitBinder
-  private void initDirectFieldAccess(DataBinder dataBinder) {
-    dataBinder.initDirectFieldAccess();
-  }
-
-  private ResponseEntity<Object> buildResponseEntity(AppError appError, HttpServletRequest httpRequest) {
-
-    appError.path = httpRequest.getRequestURI();
-
-    log.warn(appError.toString());
-
-    return new ResponseEntity<>(appError, HttpStatus.valueOf(appError.status));
-  }
-
-  /**
-   * Handle our Exceptions.
-   */
-  @ExceptionHandler({AppException.class})
-  protected ResponseEntity<Object> handleAppException(
-      AppException ex, WebRequest request, HttpServletRequest httpRequest) {
-
-    return buildResponseEntity(ex.getAppError(), httpRequest);
-  }
-
-  /**
-   * Fall-back handler.
-   *
-   * <p>Catch-all other exceptions that don't have specific handlers.
-   */
-  @ExceptionHandler({Exception.class})
-  protected ResponseEntity<Object> handleAll(Exception ex, WebRequest request, HttpServletRequest httpRequest) {
-
-    log.error("Caught unhandeled exception:", ex);
-
-    AppError appError = ErrorCode.INTERNAL_SERVER_ERROR.toAppError(ex.toString());
-
-    return buildResponseEntity(appError, httpRequest);
-  }
-
-  /**
-   * Handles standard Spring MVC Exceptions.
-   */
-  @Override
-  protected ResponseEntity<Object> handleExceptionInternal(
-      Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
-    HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
-
-    AppError appError = ErrorCode.BAD_REQUEST.toAppError(ex.toString());
-
-    return buildResponseEntity(appError, httpRequest);
-  }
-
-  /**
-   * Handles bean validation related Exceptions.
-   */
-  @Override
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(
-      MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
-    HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
-
-    List<String> errors = new ArrayList<>();
-    for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-      errors.add(error.getField() + ": " + error.getDefaultMessage());
+    /**
+     * Required for nested object validation.
+     */
+    @InitBinder
+    private void initDirectFieldAccess(DataBinder dataBinder) {
+        dataBinder.initDirectFieldAccess();
     }
 
-    for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-      errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+    private ResponseEntity<Object> buildResponseEntity(AppError appError, HttpServletRequest httpRequest) {
+
+        appError.path = httpRequest.getRequestURI();
+
+        log.warn(appError.toString());
+
+        return new ResponseEntity<>(appError, HttpStatus.valueOf(appError.status));
     }
 
-    AppError appError = ErrorCode.BAD_REQUEST.toAppError(errors);
+    /**
+     * Handle our Exceptions.
+     */
+    @ExceptionHandler({AppException.class})
+    protected ResponseEntity<Object> handleAppException(
+            AppException ex, WebRequest request, HttpServletRequest httpRequest) {
 
-    return buildResponseEntity(appError, httpRequest);
-  }
+        return buildResponseEntity(ex.getAppError(), httpRequest);
+    }
+
+    /**
+     * Fall-back handler.
+     *
+     * <p>Catch-all other exceptions that don't have specific handlers.
+     */
+    @ExceptionHandler({Exception.class})
+    protected ResponseEntity<Object> handleAll(Exception ex, WebRequest request, HttpServletRequest httpRequest) {
+
+        log.error("Caught unhandeled exception:", ex);
+
+        AppError appError = ErrorCode.INTERNAL_SERVER_ERROR.toAppError(ex.toString());
+
+        return buildResponseEntity(appError, httpRequest);
+    }
+
+    /**
+     * Handles standard Spring MVC Exceptions.
+     */
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(
+            Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
+
+        AppError appError = ErrorCode.BAD_REQUEST.toAppError(ex.toString());
+
+        return buildResponseEntity(appError, httpRequest);
+    }
+
+    /**
+     * Handles bean validation related Exceptions.
+     */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
+
+        List<String> errors = new ArrayList<>();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errors.add(error.getField() + ": " + error.getDefaultMessage());
+        }
+
+        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
+            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+        }
+
+        AppError appError = ErrorCode.BAD_REQUEST.toAppError(errors);
+
+        return buildResponseEntity(appError, httpRequest);
+    }
 }

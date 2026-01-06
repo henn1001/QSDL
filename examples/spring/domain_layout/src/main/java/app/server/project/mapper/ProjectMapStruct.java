@@ -13,31 +13,28 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(
-    componentModel = "spring",
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProjectMapStruct {
 
-  Project toDto(ProjectEntity entity);
+    Project toDto(ProjectEntity entity);
 
-  // ignore read only attributes and relations
-  @Mapping(target = "uid", ignore = true)
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "creationBy", ignore = true)
-  @Mapping(target = "creationDate", ignore = true)
-  @Mapping(target = "lastUpdateBy", ignore = true)
-  @Mapping(target = "lastUpdateDate", ignore = true)
-  @Mapping(target = "roles", ignore = true)
-  ProjectEntity toEntity(Project dto);
+    // ignore read only attributes and relations
+    @Mapping(target = "uid", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "creationBy", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "lastUpdateBy", ignore = true)
+    @Mapping(target = "lastUpdateDate", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    ProjectEntity toEntity(Project dto);
 
-  @Named("replace")
-  @InheritConfiguration(name = "toEntity")
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-  void replace(Project source, @MappingTarget ProjectEntity target);
+    @Named("replace")
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void replace(Project source, @MappingTarget ProjectEntity target);
 
-  @Named("update")
-  @InheritConfiguration(name = "toEntity")
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  void update(Project source, @MappingTarget ProjectEntity target);
+    @Named("update")
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void update(Project source, @MappingTarget ProjectEntity target);
 }

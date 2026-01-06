@@ -25,19 +25,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public interface DefaultApi {
 
-  /**
-   * POST /query : submitQury
-   */
-  @PostMapping(value = "/query", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * POST /query : submitQury
+     */
+    @PostMapping(value = "/query", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * POST /action : action
-   */
-  @PostMapping(value = "/action", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<ObjectNode> action(@RequestBody BaseType arg1) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * POST /action : action
+     */
+    @PostMapping(value = "/action", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<ObjectNode> action(@RequestBody BaseType arg1) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 }

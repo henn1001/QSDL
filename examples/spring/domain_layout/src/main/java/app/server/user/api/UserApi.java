@@ -25,93 +25,93 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public interface UserApi {
 
-  /**
-   * GET /tickets/{ticket_id}/users : getUsersForTicket
-   *
-   * List Users
-   */
-  @GetMapping(value = "/tickets/{ticket_id}/users", produces = {"application/json"})
-  default ResponseEntity<CursorPage<User>> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * GET /tickets/{ticket_id}/users : getUsersForTicket
+     *
+     * List Users
+     */
+    @GetMapping(value = "/tickets/{ticket_id}/users", produces = {"application/json"})
+    default ResponseEntity<CursorPage<User>> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * POST /tickets/{ticket_id}/users/{id}/add : addUserToTicket
-   *
-   * Add User
-   */
-  @PostMapping(value = "/tickets/{ticket_id}/users/{id}/add")
-  default ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * POST /tickets/{ticket_id}/users/{id}/add : addUserToTicket
+     *
+     * Add User
+     */
+    @PostMapping(value = "/tickets/{ticket_id}/users/{id}/add")
+    default ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * POST /tickets/{ticket_id}/users/{id}/remove : removeUserFromTicket
-   *
-   * Remove User
-   */
-  @PostMapping(value = "/tickets/{ticket_id}/users/{id}/remove")
-  default ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * POST /tickets/{ticket_id}/users/{id}/remove : removeUserFromTicket
+     *
+     * Remove User
+     */
+    @PostMapping(value = "/tickets/{ticket_id}/users/{id}/remove")
+    default ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * GET /users : getUsers
-   *
-   * List Users
-   */
-  @GetMapping(value = "/users", produces = {"application/json"})
-  default ResponseEntity<CursorPage<User>> getUsers(CursorPageable pageable) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * GET /users : getUsers
+     *
+     * List Users
+     */
+    @GetMapping(value = "/users", produces = {"application/json"})
+    default ResponseEntity<CursorPage<User>> getUsers(CursorPageable pageable) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * POST /users : createUser
-   *
-   * Create a User
-   */
-  @PostMapping(value = "/users", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<User> createUser(@RequestBody User body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * POST /users : createUser
+     *
+     * Create a User
+     */
+    @PostMapping(value = "/users", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<User> createUser(@RequestBody User body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * GET /users/{id} : getUser
-   *
-   * Read the specified User
-   */
-  @GetMapping(value = "/users/{id}", produces = {"application/json"})
-  default ResponseEntity<User> getUser(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * GET /users/{id} : getUser
+     *
+     * Read the specified User
+     */
+    @GetMapping(value = "/users/{id}", produces = {"application/json"})
+    default ResponseEntity<User> getUser(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * PUT /users/{id} : replaceUser
-   *
-   * Replace the specified User
-   */
-  @PutMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<User> replaceUser(@PathVariable("id") Long id, @RequestBody User body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * PUT /users/{id} : replaceUser
+     *
+     * Replace the specified User
+     */
+    @PutMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<User> replaceUser(@PathVariable("id") Long id, @RequestBody User body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * PATCH /users/{id} : updateUser
-   *
-   * Update the specified User
-   */
-  @PatchMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
-  default ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User body) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * PATCH /users/{id} : updateUser
+     *
+     * Update the specified User
+     */
+    @PatchMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
+    default ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User body) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 
-  /**
-   * DELETE /users/{id} : deleteUser
-   *
-   * Delete the specified User
-   */
-  @DeleteMapping(value = "/users/{id}")
-  default ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
-    return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-  }
+    /**
+     * DELETE /users/{id} : deleteUser
+     *
+     * Delete the specified User
+     */
+    @DeleteMapping(value = "/users/{id}")
+    default ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
 }

@@ -13,20 +13,20 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public abstract class AbstractIntegrationTest {
 
-  @Container
-  @SuppressWarnings("resource")
-  public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.1").withReuse(true);
+    @Container
+    @SuppressWarnings("resource")
+    public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.1").withReuse(true);
 
-  @BeforeAll
-  static void setProfile() {
-    if (TestUtils.isDockerAvailable()) {
-      System.setProperty("spring.profiles.active", "prod,integration");
-      System.setProperty("spring.datasource.url", postgres.getJdbcUrl());
-      System.setProperty("spring.datasource.username", postgres.getUsername());
-      System.setProperty("spring.datasource.password", postgres.getPassword());
-      System.setProperty("spring.test.database.replace", "none");
-    } else {
-      System.setProperty("spring.profiles.active", "dev,integration");
+    @BeforeAll
+    static void setProfile() {
+        if (TestUtils.isDockerAvailable()) {
+            System.setProperty("spring.profiles.active", "prod,integration");
+            System.setProperty("spring.datasource.url", postgres.getJdbcUrl());
+            System.setProperty("spring.datasource.username", postgres.getUsername());
+            System.setProperty("spring.datasource.password", postgres.getPassword());
+            System.setProperty("spring.test.database.replace", "none");
+        } else {
+            System.setProperty("spring.profiles.active", "dev,integration");
+        }
     }
-  }
 }

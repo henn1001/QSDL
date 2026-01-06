@@ -8,16 +8,16 @@ package {{package.repository}};
 
 @NoRepositoryBean
 public interface BaseRepository<T extends AbstractPersistentObject, S extends Serializable>
-    extends JpaRepository<T, S> {
+        extends JpaRepository<T, S> {
 
-  public EntityManager entityManager();
+    public EntityManager entityManager();
 
-  public JPAQuery<T> query();
+    public JPAQuery<T> query();
 
-  public long count(Predicate predicate);
+    public long count(Predicate predicate);
 
-  public List<T> findAll(Predicate predicate);
+    public List<T> findAll(Predicate predicate);
 
-  public CursorPage<T> findAll(Predicate predicate, CursorPageable pageable);
+    public CursorPage<T> findAll(Predicate predicate, CursorPageable pageable);
 }
 {{""}}

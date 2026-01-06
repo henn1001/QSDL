@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends AbstractRepository<UserEntity, Long> {
 
-  public Optional<UserEntity> findByTicketsIdAndId(Long ticketId, Long id);
+    public Optional<UserEntity> findByTicketsIdAndId(Long ticketId, Long id);
 
-  public Optional<UserEntity> findByTicketsIdAndUid(Long ticketId, String uid);
+    public Optional<UserEntity> findByTicketsIdAndUid(Long ticketId, String uid);
 }

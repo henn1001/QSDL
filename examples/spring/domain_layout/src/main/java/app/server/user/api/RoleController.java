@@ -30,62 +30,62 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @AllArgsConstructor
 public class RoleController extends BaseController implements RoleApi {
 
-  final RoleService roleService;
+    final RoleService roleService;
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<CursorPage<Role>> getRoles(Long projectId, CursorPageable pageable) {
-    CursorPage<Role> response = roleService.getRoles(projectId, pageable, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<CursorPage<Role>> getRoles(Long projectId, CursorPageable pageable) {
+        CursorPage<Role> response = roleService.getRoles(projectId, pageable, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Role> createRole(Long projectId, Role body) {
-    Validator.validate(body);
-    Role response = roleService.createRole(projectId, body, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Role> createRole(Long projectId, Role body) {
+        Validator.validate(body);
+        Role response = roleService.createRole(projectId, body, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Role> getRole(Long projectId, Long id) {
-    Role response = roleService.getRole(projectId, id, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Role> getRole(Long projectId, Long id) {
+        Role response = roleService.getRole(projectId, id, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Role> replaceRole(Long projectId, Long id, Role body) {
-    Validator.validate(body);
-    Role response = roleService.replaceRole(projectId, id, body, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Role> replaceRole(Long projectId, Long id, Role body) {
+        Validator.validate(body);
+        Role response = roleService.replaceRole(projectId, id, body, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Role> updateRole(Long projectId, Long id, Role body) {
-    Validator.validateExRequired(body);
-    Role response = roleService.updateRole(projectId, id, body, super.getContext());
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Role> updateRole(Long projectId, Long id, Role body) {
+        Validator.validateExRequired(body);
+        Role response = roleService.updateRole(projectId, id, body, super.getContext());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-  /**
-   * {@inheritDoc}.
-   */
-  @Override
-  public ResponseEntity<Void> deleteRole(Long projectId, Long id) {
-    roleService.deleteRole(projectId, id, super.getContext());
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public ResponseEntity<Void> deleteRole(Long projectId, Long id) {
+        roleService.deleteRole(projectId, id, super.getContext());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
