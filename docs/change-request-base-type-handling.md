@@ -1,10 +1,10 @@
 # Change Request: Base Type Handling - Introduce `@opaque` for Opaque Storage
 
 ## Status
-**Proposed** - Implementation pending
+**Implemented** - All phases complete ✅
 **Scope:** PostgreSQL generator (BREAKING CHANGE) & Spring Boot generator (NEW)
 **Priority:** Medium - Fix incorrect `@opaque` semantics, introduce `@opaque` directive
-**Implementation Order:** PostgreSQL fixes → Spring Boot implementation
+**Implementation Order:** PostgreSQL fixes → Spring Boot implementation → Tests
 
 ## Executive Summary
 
