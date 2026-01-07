@@ -709,9 +709,26 @@ def test_default_flattening(self):  # NEW
 
 #### 3.2 Add New PostgreSQL Tests
 **File: `tests/functional/generators/test_postgres.py`**
-- [ ] `test_nested_flattening()`: Test nested base types (Address with ContactInfo)
-- [ ] `test_array_embedded()`: Test `[Base] @opaque` creates JSONB array
-- [ ] `test_mixed_base_usage()`: Same base with @opaque and without
+- [x] `test_nested_base_flattening()`: Test nested base types (Address with ContactInfo)
+- [x] `test_multiple_base_fields_same_type()`: Test multiple fields of same Base type
+- [x] `test_base_flattening_with_constraints()`: Test constraint preservation during flattening
+- [x] `test_opaque_nested_base()`: Test @opaque with nested Base types
+- [x] `test_opaque_base_with_constraints()`: Test @opaque ignores constraints (JSONB)
+- [x] `test_base_array_jsonb()`: Test `[Base]` and `[Base] @opaque` create JSONB array
+- [x] `test_mixed_base_same_type()`: Same base with @opaque and without
+- [x] `test_mixed_base_and_object_fields()`: Mix Base (flattened) with Object (FK)
+- [x] `test_nested_object_relationships()`: Test nested Object relationships (4 levels)
+- [x] `test_object_arrays_with_directives()`: Test @composition and @aggregation
+- [x] `test_deeply_nested_base_types()`: Test 4-level Base nesting with flattening
+- [x] `test_deeply_nested_base_with_opaque()`: Test 4-level Base nesting with JSONB
+- [x] `test_complex_mixed_base_object_arrays()`: Test complex combinations
+- [x] `test_base_and_object_same_structure()`: Test Base vs Object semantics
+- [x] `test_deep_composition_chain()`: Test 4-level @composition hierarchy
+- [x] `test_deep_aggregation_chain()`: Test 4-level @aggregation hierarchy
+- [x] `test_mixed_composition_aggregation()`: Test mixing both in same entity
+- [x] `test_complex_entity_graph()`: Test complex entity graphs with multiple relationships
+- [x] **Restructure tests into 6 logical groups** for better organization
+- [x] **27 tests total** (from 10 → 27, +170% increase), all passing ✅
 
 #### 3.3 Add Spring Boot Tests
 **File: `tests/functional/generators/test_spring.py`**
