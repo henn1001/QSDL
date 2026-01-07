@@ -35,10 +35,18 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
         Hibernate
     #}
     {{- hibernate.attribute_annotation(field) -}}
-    {# 
+    {#
         Set the Field definition
     #}
-    {% set typeName = field.type + "Entity" if field.is_object or field.is_base else field.entity_type %}
+    {% if field.is_object %}
+        {% set typeName = field.type + "Entity" %}
+    {% elif field.is_base and field.is_opaque %}
+        {% set typeName = field.type %}
+    {% elif field.is_base %}
+        {% set typeName = field.type + "Embeddable" %}
+    {% else %}
+        {% set typeName = field.entity_type %}
+    {% endif %}
     {% if field.is_array and field.is_relation %}
     public final Set<{{typeName}}> {{field.name}} = new LinkedHashSet<>();
     {% elif field.is_array %}

@@ -56,12 +56,16 @@ class ModelField:
 
     is_composition: bool = False
     is_aggregation: bool = False
+    is_opaque: bool = False
     is_relation: bool = False
     is_relation_owner: bool = False
     foreign_key_name: str = None
     foreign_key_is_array: bool = False
 
     hibernate: spring.HibernateFieldInfo = None
+
+    # For embedded Base types (non-opaque)
+    base_fields: list[ModelField] = field(default_factory=list)
 
     getter: str = None
     setter: str = None
@@ -100,12 +104,22 @@ class ModelField:
         # relation model
         self.is_composition = _ref.is_composition
         self.is_aggregation = _ref.is_aggregation
+        self.is_opaque = _ref.is_opaque
         self.is_relation = self.is_composition or self.is_aggregation
 
         self.getter = "get" + stringcase.pascalcase(self.name)
         self.setter = "set" + stringcase.pascalcase(self.name)
 
         self._add_constraints(_ref)
+
+        # For non-opaque Base types, extract fields for @Embedded generation
+        if self.is_base and not self.is_opaque and not self.is_array:
+            for base_field in _ref.value.fields:
+                # Create simplified field info for @AttributeOverride
+                field_info = type('obj', (object,), {
+                    'name': stringcase.camelcase(base_field.name)
+                })()
+                self.base_fields.append(field_info)
 
         return self
 

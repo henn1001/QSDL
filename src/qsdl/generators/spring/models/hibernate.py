@@ -23,10 +23,17 @@ from .. import util
 
 
 class HibernateFieldInfo:
-    """Custom dataclass"""
+    """Custom dataclass for Hibernate-specific field information"""
 
     def __init__(self, field: spring.ModelField) -> None:
-        pass
+        self.embedded_fields = []  # List of fields from embedded Base types
+
+        # Populate embedded_fields for non-opaque Base types
+        if field.is_base and not field.is_opaque and not field.is_array:
+            # Access the DSL Base type to extract its fields
+            # Note: We need to pass the DSL field reference for this to work
+            # For now, we'll populate this in a separate method
+            pass
 
 
 class HibernateParentInfo:

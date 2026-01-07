@@ -54,12 +54,31 @@
     @JoinColumn(name = "{{field.type|lower}}_id")
             {% endif %}
     {#
-        Nested Objects
+        Base Types: New semantics for @opaque directive
     #}
-    {% elif field.is_array and (field.is_object or field.is_base) %}
+    {% elif field.is_base and not field.is_array and field.is_opaque %}
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "{{field.name|snake}}", columnDefinition = "jsonb")
+    {% elif field.is_base and not field.is_array and not field.is_opaque %}
+    @Embedded
+    @AttributeOverrides({
+    {% for base_field in field.base_fields %}
+        @AttributeOverride(name = "{{base_field.name}}", column = @Column(name = "{{field.name|snake}}_{{base_field.name|snake}}")){{ "," if not loop.last }}
+    {% endfor %}
+    })
+    {% elif field.is_base and field.is_array and field.is_opaque %}
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "{{field.name|snake}}", columnDefinition = "jsonb")
+    {#
+        Nested Objects: Keep existing behavior for Objects
+    #}
+    {% elif field.is_array and field.is_object %}
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "{{field.name|snake}}_{{model.name|snake}}_id")
-    {% elif not field.is_array and (field.is_object or field.is_base) %}
+    {% elif field.is_array and field.is_base %}
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "{{field.name|snake}}_{{model.name|snake}}_id")
+    {% elif not field.is_array and field.is_object %}
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "{{field.name|snake}}_{{field.type|snake}}_id")
     {% elif field.is_array %}

@@ -613,9 +613,9 @@ if dsl_field.is_array and (dsl_field.is_object or dsl_field.is_base):
 
 #### 2.1 Entity Generation - Add @Embedded Support
 **File: `src/qsdl/generators/spring/template/_macro/Hibernate.j2`**
-- [ ] **Line 59-64:** Update to check `field.is_opaque`
-- [ ] Default (no directive): Generate `@Embedded` with `@AttributeOverrides`
-- [ ] `@opaque`: Generate `@JdbcTypeCode(SqlTypes.JSON)`
+- [x] **Line 59-64:** Update to check `field.is_opaque`
+- [x] Default (no directive): Generate `@Embedded` with `@AttributeOverrides`
+- [x] `@opaque`: Generate `@JdbcTypeCode(SqlTypes.JSON)`
 
 **New logic template:**
 ```jinja2
