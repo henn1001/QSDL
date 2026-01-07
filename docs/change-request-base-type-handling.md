@@ -730,13 +730,15 @@ def test_default_flattening(self):  # NEW
 - [x] **Restructure tests into 6 logical groups** for better organization
 - [x] **27 tests total** (from 10 → 27, +170% increase), all passing ✅
 
-#### 3.3 Add Spring Boot Tests
+#### 3.3 Add Spring Boot Tests ✅
 **File: `tests/functional/generators/test_spring.py`**
-- [ ] `test_default_flattening_entity()`: Verify `@Embedded` + `@AttributeOverrides`
-- [ ] `test_embedded_jsonb_entity()`: Verify `@JdbcTypeCode(SqlTypes.JSON)`
-- [ ] `test_embeddable_class_generation()`: Verify `*Embeddable.java` created
-- [ ] `test_mapper_with_embeddables()`: Verify MapStruct compilation
-- [ ] `test_array_embedded_entity()`: Verify JSONB array handling
+- [x] `test_default_flattening_entity()`: Verify flattened fields with @Column annotations (inline expansion)
+- [x] `test_opaque_jsonb_entity()`: Verify `@JdbcTypeCode(SqlTypes.JSON)`
+- [x] `test_opaque_array_jsonb()`: Verify JSONB array handling with @opaque
+- [x] `test_mapper_with_flattened_fields()`: Verify MapStruct compilation with flattened base fields
+- [x] `test_full_compilation()`: Integration test - verify generated code compiles with Maven (ready, not run in CI)
+- [x] **4 content verification tests passing** (fast, precise)
+- [x] **1 integration test ready** (optional Maven compilation check)
 
 ### Phase 4: Documentation & Migration
 - [ ] Update `@opaque` directive docs with CORRECT semantics (JSONB, not flatten)
