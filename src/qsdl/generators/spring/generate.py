@@ -153,8 +153,8 @@ def generate_postgres(output_path: Path) -> None:
     from qsdl.config import Config as core_config  # pylint: disable=import-outside-toplevel
 
     core.generate(
-        "postgres",
         gen_schema_folder,
+        generator_name="postgres",
         input_path=core_config.input_path,
         raw_schema=core_config.raw_schema,
     )

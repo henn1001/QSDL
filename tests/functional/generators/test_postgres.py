@@ -19,7 +19,7 @@ def wrapper_generate(test_input: str) -> str:
     test_output = Path("srcgen/" + "/")
 
     # generate
-    assert generate("postgres", test_output, raw_schema=test_input) == 0
+    assert generate(test_output, generator_name="postgres", raw_schema=test_input) is None
 
     output_file = Path("srcgen/" + Config.file_name)
 

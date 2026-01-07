@@ -20,7 +20,7 @@ def wrapper_generate(test_input: str) -> None:
 
     # generate
     shutil.rmtree(test_output / "src", ignore_errors=True)
-    assert generate("spring", test_output, raw_schema=test_input) == 0
+    assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
 
 
 def assert_tests_succeed() -> None:
