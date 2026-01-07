@@ -101,9 +101,20 @@ class Table:
         dsl_fields = [x for x in self._ref.fields]
 
         for dsl_field in dsl_fields:
-            #  filter out fields that are not relevant for the table
+            # Handle arrays of Base/Object types
             if isinstance(dsl_field.value, dsl.Base | dsl.Object) and dsl_field.is_array:
-                continue
+                if dsl_field.is_opaque:
+                    # @opaque on arrays = JSONB array storage
+                    new_column = Column()
+                    new_column.name = qfilter.snakecase(dsl_field.name).lower()
+                    new_column.type = "JSONB"
+                    new_column.is_required = dsl_field.is_required
+                    new_column.is_unique = dsl_field.is_unique
+                    self.columns.append(new_column)
+                    continue  # Skip join table creation
+                else:
+                    # Default arrays = join table (handled by build_jointables())
+                    continue
 
             # Handle Base types with new semantics
             if isinstance(dsl_field.value, dsl.Base):

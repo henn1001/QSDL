@@ -554,9 +554,9 @@ Result: `locations JSONB` with full nesting
 
 #### 1.1 Fix @opaque Semantics and Change Default (CRITICAL)
 **File: `src/qsdl/generators/postgres/models/table.py`**
-- [ ] **Line 108-110:** REVERSE logic - `@opaque` should create JSONB, not flatten
-- [ ] **Line 57-59:** Change default from FK to flattening for base type fields
-- [ ] Update `_extract_embedded_columns()` to run for default (not `@opaque`)
+- [x] **Line 108-110:** REVERSE logic - `@opaque` should create JSONB, not flatten
+- [x] **Line 57-59:** Change default from FK to flattening for base type fields
+- [x] Update `_extract_embedded_columns()` to run for default (not `@opaque`)
 
 **Current (WRONG):**
 ```python
@@ -588,15 +588,15 @@ if isinstance(dsl_field.value, dsl.Base):
 
 #### 1.2 Update Table Generation Logic
 **File: `src/qsdl/generators/postgres/generate.py`**
-- [ ] **Line 42-45:** Update `is_relevant_base()` logic
-- [ ] Base types need tables only if used without `@opaque`
-- [ ] Skip table generation for bases only used with `@opaque` (JSONB)
+- [x] **Line 42-45:** Update `is_relevant_base()` logic
+- [x] Base types need tables only if used without `@opaque`
+- [x] Skip table generation for bases only used with `@opaque` (JSONB)
 
 #### 1.3 Add JSONB Array Support
 **File: `src/qsdl/generators/postgres/models/table.py`**
-- [ ] **Line 105-106:** Check for `@opaque` on arrays
-- [ ] If `field.is_array and field.is_opaque`, create JSONB column instead of join table
-- [ ] Update column type to JSONB for embedded arrays
+- [x] **Line 105-106:** Check for `@opaque` on arrays
+- [x] If `field.is_array and field.is_opaque`, create JSONB column instead of join table
+- [x] Update column type to JSONB for embedded arrays
 
 **New logic:**
 ```python
