@@ -149,6 +149,9 @@ legend
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Description |  |
+  | Comment | \\/\\/.*$ |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
 end legend
 
 @enduml

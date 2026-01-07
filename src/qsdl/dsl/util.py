@@ -15,6 +15,7 @@
 """QSDL Utility functions"""
 
 import qsdl.dsl.models as dsl
+import qsdl.dsl.textx as xtx
 
 ValueType = dsl.Scalar | dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation
 
@@ -143,3 +144,31 @@ def get_type_override(
         ret["type"] = custom_directive.value.strip()
 
     return ret
+
+
+def is_used_as_field_value(schema: dsl.Schema, entity: dsl.Base | dsl.Object) -> bool:
+    """Checks if the provided Base or Object is used anywhere.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
+
+    Returns:
+        bool: [description]
+    """
+    entity_list = xtx.get_children_of_field(schema)
+
+    return any(itr.value == entity for itr in entity_list)
+
+
+def is_base_embedded(schema: dsl.Schema, entity: dsl.Base) -> bool:
+    """Checks if the provided Base is used anywhere and is embedded.
+
+    Args:
+        entity (Base): entity.Base.
+
+    Returns:
+        bool: [description]
+    """
+    entity_list = xtx.get_children_of_field(schema)
+
+    return any(itr.value == entity and itr.is_embedded for itr in entity_list)

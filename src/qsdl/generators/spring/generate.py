@@ -140,6 +140,26 @@ def generate_openapi(output_path: Path) -> None:
     )
 
 
+def generate_postgres(output_path: Path) -> None:
+    """Helper that calls the postgres generator.
+
+    Args:
+        output_path (Path): The requested destination.
+    """
+    gen_schema_folder = output_path / "src/main/resources/db/migration"
+    gen_schema_folder.mkdir(exist_ok=True, parents=True)
+
+    from qsdl import core  # pylint: disable=import-outside-toplevel
+    from qsdl.config import Config as core_config  # pylint: disable=import-outside-toplevel
+
+    core.generate(
+        "postgres",
+        gen_schema_folder,
+        input_path=core_config.input_path,
+        raw_schema=core_config.raw_schema,
+    )
+
+
 def generate(schema: Schema, output_path: Path, config: Config) -> None:
     """Generator func for spring"""
 
@@ -324,5 +344,6 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         macro_path = Path(__file__).parent / "template" / "_macro"
         render(output_file, context, template_path, macro_path=macro_path)
 
-    # run openapi generator to create spec file
+    # run openapi and postgres generator to create spec file
     generate_openapi(output_path)
+    generate_postgres(output_path)

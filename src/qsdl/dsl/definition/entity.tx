@@ -110,6 +110,7 @@ Field:
         is_write_only?='@writeOnly'
         is_composition?='@composition'
         is_aggregation?='@aggregation'
+        is_embedded?='@embedded'
         is_unique?='@unique'
         is_hidden?='@hidden'
         is_transient?='@transient'

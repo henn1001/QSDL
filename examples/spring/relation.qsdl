@@ -61,3 +61,12 @@ extend api @spring-package("custom") {
     submitQury(arg1: String, arg2: [Int]): Object @path("query") @method(POST)
     action(arg1: BaseType, arg2: String?, arg4: String!?): Object @path("action") @method(POST)
 }
+
+
+//https://vladmihalcea.com/database-table-relationships/
+//https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/
+
+//https://vladmihalcea.com/set-bidirectional-onetomany
+//https://vladmihalcea.com/the-best-way-to-implement-equals-hashcode-and-tostring-with-jpa-and-hibernate/
+
+//https://vladmihalcea.com/postgresql-array-java-list/

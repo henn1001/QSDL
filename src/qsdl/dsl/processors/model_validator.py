@@ -251,6 +251,18 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
                 msg = f"The Field {field.name} for {field.parent.name} references itself."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
+            # verify that embedded is used only for Bases on non-arrays and do not contain relations
+            if field.is_embedded and field.value._tx_fqn != "entity.Base":
+                msg = f"The Field {field.name} for {field.parent.name} declares embedded on a non Base value."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+            if field.is_embedded and field.is_array:
+                msg = f"The Field {field.name} for {field.parent.name} declares embedded for an array value."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+            if field.is_embedded and [
+                field for field in field.value.fields if field.is_aggregation or field.is_composition
+            ]:
+                msg = f"The Field {field.name} for {field.parent.name} declares embedded for a relation value."
+
 
 def validate_crud_generator_directive(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Check if the requested crud operations are valid
