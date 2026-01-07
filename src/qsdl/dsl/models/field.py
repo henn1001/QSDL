@@ -39,7 +39,7 @@ class Field:
     is_write_only: bool = False
     is_composition: bool = False
     is_aggregation: bool = False
-    is_embedded: bool = False
+    is_opaque: bool = False
     is_unique: bool = False
     is_hidden: bool = False
     is_transient: bool = False

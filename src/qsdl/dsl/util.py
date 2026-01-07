@@ -160,8 +160,8 @@ def is_used_as_field_value(schema: dsl.Schema, entity: dsl.Base | dsl.Object) ->
     return any(itr.value == entity for itr in entity_list)
 
 
-def is_base_embedded(schema: dsl.Schema, entity: dsl.Base) -> bool:
-    """Checks if the provided Base is used anywhere and is embedded.
+def is_base_opaque(schema: dsl.Schema, entity: dsl.Base) -> bool:
+    """Checks if the provided Base is used anywhere and is opaque.
 
     Args:
         entity (Base): entity.Base.
@@ -171,4 +171,4 @@ def is_base_embedded(schema: dsl.Schema, entity: dsl.Base) -> bool:
     """
     entity_list = xtx.get_children_of_field(schema)
 
-    return any(itr.value == entity and itr.is_embedded for itr in entity_list)
+    return any(itr.value == entity and itr.is_opaque for itr in entity_list)
