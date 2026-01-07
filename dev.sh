@@ -16,7 +16,7 @@ lint() {
   ruff check "$@"
 }
 
-tests() {
+test() {
   uv run pytest
 }
 

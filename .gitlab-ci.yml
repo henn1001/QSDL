@@ -14,7 +14,7 @@ stages:
 
 test:
   script:
-    - bash dev.sh tests
+    - bash dev.sh test
   only:
     - master
   artifacts:
