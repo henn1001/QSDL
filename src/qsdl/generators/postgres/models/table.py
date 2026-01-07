@@ -63,6 +63,11 @@ class Column:
         return column
 
     def _extend_type_field(self, _ref: dsl.Field) -> None:
+        # Special handling for Object scalar type arrays: JSONB can natively store arrays
+        if _ref.value.name == "Object" and self.is_array:
+            # Don't add [] suffix - JSONB natively handles arrays
+            self.is_array = False
+
         if isinstance(_ref.value, dsl.Enum):
             self.type = "TEXT"
             values = (", ").join([f"'{x}'" for x in _ref.value.values])
@@ -101,20 +106,20 @@ class Table:
         dsl_fields = [x for x in self._ref.fields]
 
         for dsl_field in dsl_fields:
-            # Handle arrays of Base/Object types
-            if isinstance(dsl_field.value, dsl.Base | dsl.Object) and dsl_field.is_array:
-                if dsl_field.is_opaque:
-                    # @opaque on arrays = JSONB array storage
-                    new_column = Column()
-                    new_column.name = qfilter.snakecase(dsl_field.name).lower()
-                    new_column.type = "JSONB"
-                    new_column.is_required = dsl_field.is_required
-                    new_column.is_unique = dsl_field.is_unique
-                    self.columns.append(new_column)
-                    continue  # Skip join table creation
-                else:
-                    # Default arrays = join table (handled by build_jointables())
-                    continue
+            # Handle arrays of Base types - ALWAYS JSONB (value objects)
+            if isinstance(dsl_field.value, dsl.Base) and dsl_field.is_array:
+                new_column = Column()
+                new_column.name = qfilter.snakecase(dsl_field.name).lower()
+                new_column.type = "JSONB"
+                new_column.is_required = dsl_field.is_required
+                new_column.is_unique = dsl_field.is_unique
+                self.columns.append(new_column)
+                continue  # Skip join table creation
+
+            # Handle arrays of Object types - join tables (entity relationships)
+            if isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array:
+                # Join table handling in build_jointables()
+                continue
 
             # Handle Base types with new semantics
             if isinstance(dsl_field.value, dsl.Base):
@@ -156,16 +161,12 @@ class Table:
         return_tables = []
 
         for dsl_field in self._ref.fields:
-            # filter out fields that are not relevant
-            if not (isinstance(dsl_field.value, dsl.Base | dsl.Object) and dsl_field.is_array):
-                continue
-
-            # Skip arrays with @opaque (they're stored as JSONB, no join table needed)
-            if dsl_field.is_opaque:
+            # Only Object type arrays create join tables (Base types are always JSONB)
+            if not (isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array):
                 continue
 
             # create a new table for the many to many relation
-            if isinstance(dsl_field.value, dsl.Base | dsl.Object):
+            if isinstance(dsl_field.value, dsl.Object):
                 source_table_name = self.name
                 fiel_name = qfilter.snakecase(dsl_field.name).upper()
                 ref_table_name = qfilter.snakecase(dsl_field.value.name).upper()
