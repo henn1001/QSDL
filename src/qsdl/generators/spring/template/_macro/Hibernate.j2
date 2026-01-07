@@ -42,7 +42,7 @@
             #}
             {% if field.is_aggregation and field.foreign_key_is_array %}
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "{{field.type|lower}}_to_{{model.name|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{field.type|lower}}_id"))
+    @JoinTable(name = "{{table_prefix}}{{field.type|lower}}_to_{{model.name|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{field.type|lower}}_id"))
             {% elif field.is_aggregation and not field.foreign_key_is_array    %}
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "{{field.type|lower}}_id")
@@ -64,5 +64,6 @@
     @JoinColumn(name = "{{field.name|snake}}_{{field.type|snake}}_id")
     {% elif field.is_array %}
     @ElementCollection
+    @CollectionTable(name="{{table_prefix}}{{model.name|lower}}_to_{{field.type|lower|lower}}")
     {% endif %}
 {% endmacro %}

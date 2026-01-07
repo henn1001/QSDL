@@ -11,5 +11,6 @@
   "model_path": "common.model",
   "config_path": "common.config",
   "util_path": "common.util",
-  "package_placeholder_fallback": "common"
+  "package_placeholder_fallback": "common",
+  "table_prefix": "t_"
 }

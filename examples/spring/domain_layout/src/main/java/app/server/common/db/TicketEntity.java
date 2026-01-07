@@ -10,6 +10,7 @@ import app.server.user.db.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -38,7 +39,7 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Setter
 @Entity
-@Table(name = "ticket")
+@Table(name = "t_ticket")
 public class TicketEntity extends AbstractPersistentObject {
 
     private Integer number = 42;

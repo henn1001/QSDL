@@ -297,6 +297,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         "id_name": id_name,
         "id_type": id_type,
         "generate_imports_for_template": resolver.generate_imports_for_template,
+        "table_prefix": config.table_prefix,
     }
 
     # generate supporting files

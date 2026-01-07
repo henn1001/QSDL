@@ -15,7 +15,7 @@ package {{model.package.entity}};
 {% endif %}
 {% if model.is_object or model.is_entity %}@Entity{{"\n"}}{% endif %}
 {% if use_auditing and (model.is_object or model.is_entity) %}@Audited{{"\n"}}{% endif %}
-@Table(name = "{{model.name|snake}}")
+@Table(name = "{{table_prefix}}{{model.name|snake|lower}}")
 public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersistentObject{% else %} extends AbstractPersistentBase{% endif %} {
 {% for field in model.fields if not field.is_id and not field.is_transient %}
 

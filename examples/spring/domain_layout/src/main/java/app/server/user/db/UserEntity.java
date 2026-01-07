@@ -9,6 +9,7 @@ import app.server.common.model.AbstractPersistentObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -37,7 +38,7 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "t_user")
 public class UserEntity extends AbstractPersistentObject {
 
     @NotNull
@@ -50,7 +51,7 @@ public class UserEntity extends AbstractPersistentObject {
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
+    @JoinTable(name = "t_ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
     public final Set<TicketEntity> tickets = new LinkedHashSet<>();
 
     public void addToTickets(TicketEntity o) {

@@ -55,6 +55,7 @@ class Config(BaseConfig):
     use_encapsulation: bool = True
     use_builder: bool = True
     use_auditing: bool = False
+    table_prefix: str = "t_"
 
     # used to change the OpenAPI type for ID between "String" and "Long"
     id_type: IDTYPE = IDTYPE.LONG

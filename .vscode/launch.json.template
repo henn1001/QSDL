@@ -25,6 +25,8 @@
                 "examples/spring/relation.qsdl",
                 "-g",
                 "spring",
+                "-c",
+                "util/basic_config.json",
                 "-o",
                 "examples/spring/basic_layout/"
             ],

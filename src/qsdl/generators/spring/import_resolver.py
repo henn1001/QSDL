@@ -155,6 +155,7 @@ def generate_imports_for_template(
             "import org.hibernate.envers.Audited;" if util.Store.config.use_auditing else None,
             "import lombok.Getter;",
             "import lombok.Setter;",
+            "import jakarta.persistence.CollectionTable;",
             "import jakarta.persistence.Column;",
             "import jakarta.persistence.CascadeType;",
             "import jakarta.persistence.ElementCollection;",

@@ -34,7 +34,7 @@ release (){
 
 clean() {
   echo "cleaning..."
-  rm -rf .pytest_cache/ .ruff_cache/ dist/ .coverage
+  rm -rf .pytest_cache/ .ruff_cache/ dist/ .coverage srcgen/
   find src tests -type d \
     \( -name "*.egg-info" -o -name "__pycache__" \) \
     -exec rm -rf {} +
