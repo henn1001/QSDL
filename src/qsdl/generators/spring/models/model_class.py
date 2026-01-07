@@ -112,12 +112,13 @@ class ModelField:
 
         self._add_constraints(_ref)
 
-        # For non-opaque Base types, extract fields for @Embedded generation
+        # For non-opaque Base types, extract fields for flattening
         if self.is_base and not self.is_opaque and not self.is_array:
             for base_field in _ref.value.fields:
-                # Create simplified field info for @AttributeOverride
+                # Create simplified field info with name and type
                 field_info = type('obj', (object,), {
-                    'name': stringcase.camelcase(base_field.name)
+                    'name': stringcase.camelcase(base_field.name),
+                    'type': util.custom_type(base_field.value)
                 })()
                 self.base_fields.append(field_info)
 

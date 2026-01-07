@@ -641,31 +641,21 @@ if dsl_field.is_array and (dsl_field.is_object or dsl_field.is_base):
 {% endif %}
 ```
 
-#### 2.2 Create @Embeddable Template
-**New File: `src/qsdl/generators/spring/template/src/main/java/domain/Embeddable.j2`**
-- [ ] Create template for `@Embeddable` classes
-- [ ] Generate fields with JPA annotations
-- [ ] Support nested embeddables (recursive base types)
-- [ ] Add Lombok annotations (`@Getter`, `@Setter`, `@NoArgsConstructor`)
-- [ ] Handle validation annotations (`@NotNull`, `@Size`)
+#### 2.2 Flatten Base Fields Inline (No @Embeddable)
+**File: `src/qsdl/generators/spring/template/src/main/java/domain/Entity.j2`**
+- [x] Expand non-opaque Base type fields directly into Entity class
+- [x] Generate individual fields with prefix (e.g., `addressStreet`, `addressCity`)
+- [x] Each flattened field gets own @Column annotation with snake_case name
 
-#### 2.3 Generate @Embeddable Classes
-**File: `src/qsdl/generators/spring/generate.py`**
-- [ ] Add logic to generate `*Embeddable.java` classes for base types
-- [ ] Only generate if base is used without `@opaque` (default flattening)
-- [ ] Place in same package as entities (or DTOs)
+**File: `src/qsdl/generators/spring/models/model_class.py`**
+- [x] Store base_fields list with name and type for template use
+- [x] Extract fields from Base type during ModelField.build()
 
-#### 2.4 MapStruct Mapper Updates
-**File: `src/qsdl/generators/spring/template/src/main/java/domain/MapStruct.j2`**
-- [ ] Add mapping methods for DTO ↔ Embeddable conversions
-- [ ] Handle nested embeddables correctly
-- [ ] JSONB fields: Direct POJO mapping (already works)
-
-#### 2.5 Array JSONB Support
+#### 2.3 Array JSONB Support
 **File: `src/qsdl/generators/spring/template/_macro/Hibernate.j2`**
-- [ ] Check for `field.is_array and field.is_opaque`
-- [ ] Generate `@JdbcTypeCode(SqlTypes.JSON)` for embedded arrays
-- [ ] Use `List<PojoType>` instead of entity relationships
+- [x] Check for `field.is_array and field.is_opaque`
+- [x] Generate `@JdbcTypeCode(SqlTypes.JSON)` for embedded arrays
+- [x] Use `List<PojoType>` instead of entity relationships
 
 ### Phase 3: Testing
 

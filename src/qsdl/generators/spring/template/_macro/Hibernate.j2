@@ -54,21 +54,19 @@
     @JoinColumn(name = "{{field.type|lower}}_id")
             {% endif %}
     {#
-        Base Types: New semantics for @opaque directive
+        Base Types with @opaque: JSONB storage
     #}
-    {% elif field.is_base and not field.is_array and field.is_opaque %}
+    {% elif field.is_base and field.is_opaque and not field.is_array %}
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "{{field.name|snake}}", columnDefinition = "jsonb")
-    {% elif field.is_base and not field.is_array and not field.is_opaque %}
-    @Embedded
-    @AttributeOverrides({
-    {% for base_field in field.base_fields %}
-        @AttributeOverride(name = "{{base_field.name}}", column = @Column(name = "{{field.name|snake}}_{{base_field.name|snake}}")){{ "," if not loop.last }}
-    {% endfor %}
-    })
-    {% elif field.is_base and field.is_array and field.is_opaque %}
+    {% elif field.is_base and field.is_opaque and field.is_array %}
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "{{field.name|snake}}", columnDefinition = "jsonb")
+    {#
+        Base Types without @opaque: No Hibernate annotation (fields are flattened inline)
+    #}
+    {% elif field.is_base and not field.is_opaque and not field.is_array %}
+    {# No annotation needed - fields are expanded inline in Entity.j2 #}
     {#
         Nested Objects: Keep existing behavior for Objects
     #}
@@ -79,6 +77,9 @@
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "{{field.name|snake}}_{{model.name|snake}}_id")
     {% elif not field.is_array and field.is_object %}
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "{{field.name|snake}}_{{field.type|snake}}_id")
+    {% elif not field.is_array and field.is_base %}
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "{{field.name|snake}}_{{field.type|snake}}_id")
     {% elif field.is_array %}

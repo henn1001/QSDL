@@ -31,28 +31,39 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
     {% if field.is_relation%}
     @JsonIgnore
     {% endif %}
-    {# 
+    {#
         Hibernate
     #}
     {{- hibernate.attribute_annotation(field) -}}
     {#
-        Set the Field definition
+        Handle Base types: flatten fields inline or use JSONB
     #}
-    {% if field.is_object %}
-        {% set typeName = field.type + "Entity" %}
-    {% elif field.is_base and field.is_opaque %}
-        {% set typeName = field.type %}
-    {% elif field.is_base %}
-        {% set typeName = field.type + "Embeddable" %}
+    {% if field.is_base and not field.is_opaque and not field.is_array %}
+        {# Flatten Base type fields inline with prefix #}
+        {% for base_field in field.base_fields %}
+    @Column(name = "{{field.name|snake}}_{{base_field.name|snake}}")
+    {{ "private" if use_encapsulation else "public"}} {{base_field.type}} {{field.name}}{{base_field.name|pascal}};
+        {% endfor %}
     {% else %}
-        {% set typeName = field.entity_type %}
-    {% endif %}
-    {% if field.is_array and field.is_relation %}
+        {#
+            Set the Field definition for non-flattened fields
+        #}
+        {% if field.is_object %}
+            {% set typeName = field.type + "Entity" %}
+        {% elif field.is_base and field.is_opaque %}
+            {% set typeName = field.type %}
+        {% elif field.is_base %}
+            {% set typeName = field.type + "Entity" %}
+        {% else %}
+            {% set typeName = field.entity_type %}
+        {% endif %}
+        {% if field.is_array and field.is_relation %}
     public final Set<{{typeName}}> {{field.name}} = new LinkedHashSet<>();
-    {% elif field.is_array %}
+        {% elif field.is_array %}
     {{ "private" if use_encapsulation else "public"}} List<{{typeName}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
-    {% else %}
+        {% else %}
     {{ "private" if use_encapsulation else "public"}} {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
+        {% endif %}
     {% endif %}
 {% endfor %}
     {% set removeHookList = model.fields| selectattr("is_aggregation") | rejectattr("is_relation_owner") | list %}

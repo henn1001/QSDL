@@ -356,3 +356,22 @@ class TestGeneratorPostgres:
         """
 
         assert_schema(schema, expected_schema)
+
+    def test_simple(self) -> None:
+        # Given
+        test_input = """\
+          base Bar {
+            field: String
+          }
+
+          type Foo {
+            boolean: Boolean
+            date: Date
+            datetime: Datetime
+            object: Object
+            bar: Bar
+          }
+        """
+
+        # When
+        schema = wrapper_generate(test_input)
