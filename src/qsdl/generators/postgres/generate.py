@@ -37,14 +37,11 @@ def parse_models(schema: Schema) -> list[Table]:
     models = []
 
     obj_list = xtx.get_children_of_object(schema)
-    base_list = xtx.get_children_of_base(schema)
+    # NOTE: With new semantics, Base types are NEVER separate tables
+    # They are either flattened (default) or stored as JSONB (@opaque)
+    # Only Object types get their own tables
 
-    def is_relevant_base(schema, x):
-        return qutil.is_used_as_field_value(schema, x) and not qutil.is_base_opaque(schema, x)
-
-    base_list = [x for x in base_list if is_relevant_base(schema, x)]
-
-    for obj in obj_list + base_list:
+    for obj in obj_list:
         new_model = Table.from_ref(obj)
         models.append(new_model)
 

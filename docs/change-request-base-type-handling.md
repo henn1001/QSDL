@@ -661,9 +661,11 @@ if dsl_field.is_array and (dsl_field.is_object or dsl_field.is_base):
 
 #### 3.1 Update Existing PostgreSQL Tests ⚠️
 **File: `tests/functional/generators/test_postgres.py:304`**
-- [ ] **CRITICAL:** Update `test_embedded()` - will FAIL with new semantics
-- [ ] Rewrite: `@opaque` should generate JSONB, not flattened columns
-- [ ] Add `test_default_flattening()` for no-directive behavior
+- [x] **CRITICAL:** Update `test_embedded()` → renamed to `test_opaque_jsonb()`
+- [x] Rewrite: `@opaque` should generate JSONB, not flattened columns
+- [x] Add `test_default_flattening()` for no-directive behavior
+- [x] Add `test_opaque_array_jsonb()` for JSONB array support
+- [x] Update `test_one_to_one()` and `test_one_to_many()` to only test Object types
 
 **Example updated test:**
 ```python

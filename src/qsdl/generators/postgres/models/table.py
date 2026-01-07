@@ -160,6 +160,10 @@ class Table:
             if not (isinstance(dsl_field.value, dsl.Base | dsl.Object) and dsl_field.is_array):
                 continue
 
+            # Skip arrays with @opaque (they're stored as JSONB, no join table needed)
+            if dsl_field.is_opaque:
+                continue
+
             # create a new table for the many to many relation
             if isinstance(dsl_field.value, dsl.Base | dsl.Object):
                 source_table_name = self.name
