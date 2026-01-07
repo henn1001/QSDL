@@ -53,8 +53,8 @@ class Column:
         column.is_required = _ref.is_required
         column.is_unique = _ref.is_unique
 
-        # relations
-        if _ref.value._tx_fqn in ["entity.Base", "entity.Object"]:
+        # relations (only for Objects, not Bases - Bases are handled separately)
+        if _ref.value._tx_fqn == "entity.Object":
             column.name += f"_{_ref.value.name.lower()}_id"
             column.type = "BIGINT"
 
@@ -105,15 +105,28 @@ class Table:
             if isinstance(dsl_field.value, dsl.Base | dsl.Object) and dsl_field.is_array:
                 continue
 
-            if isinstance(dsl_field.value, dsl.Base) and dsl_field.is_embedded:
-                embedded_prefix = qfilter.snakecase(dsl_field.name).lower() + "_"
-                self.columns.extend(_extract_embedded_columns(dsl_field.value, embedded_prefix))
-            else:
-                new_column = Column.from_ref(dsl_field)
-                self.columns.append(new_column)
+            # Handle Base types with new semantics
+            if isinstance(dsl_field.value, dsl.Base):
+                if dsl_field.is_opaque:
+                    # @opaque = JSONB storage (FIXED SEMANTICS!)
+                    new_column = Column()
+                    new_column.name = qfilter.snakecase(dsl_field.name).lower()
+                    new_column.type = "JSONB"
+                    new_column.is_required = dsl_field.is_required
+                    new_column.is_unique = dsl_field.is_unique
+                    self.columns.append(new_column)
+                else:
+                    # DEFAULT = Flatten columns (NEW DEFAULT!)
+                    embedded_prefix = qfilter.snakecase(dsl_field.name).lower() + "_"
+                    self.columns.extend(_extract_embedded_columns(dsl_field.value, embedded_prefix))
+                continue  # Skip rest of logic for Base types
 
-            # one to one base relation
-            if isinstance(dsl_field.value, dsl.Base | dsl.Object) and not dsl_field.is_embedded:
+            # Normal column creation for non-Base types
+            new_column = Column.from_ref(dsl_field)
+            self.columns.append(new_column)
+
+            # one to one object relation (only for Objects now)
+            if isinstance(dsl_field.value, dsl.Object):
                 ref_table_name = qfilter.snakecase(dsl_field.value.name).upper()
                 field_name = qfilter.snakecase(dsl_field.name).upper()
 
@@ -182,9 +195,15 @@ def _build_fk_constraint(table_name: str, fk_target: str, column_name: str, ref_
 
 
 def _extract_embedded_columns(ref, prefix=""):
+    """Recursively flattens Base type fields into columns with prefixes.
+
+    Note: This function is only called for Base types WITHOUT @opaque directive.
+    Base types with @opaque are stored as JSONB and don't reach this function.
+    """
     columns = []
     for field in ref.fields:
-        if isinstance(field.value, dsl.Base) and field.is_embedded:
+        if isinstance(field.value, dsl.Base):
+            # Recursively flatten nested Base types (always flatten, ignore @opaque for nested)
             nested_prefix = prefix + qfilter.snakecase(field.name).lower() + "_"
             columns.extend(_extract_embedded_columns(field.value, nested_prefix))
         else:

@@ -40,7 +40,7 @@ def parse_models(schema: Schema) -> list[Table]:
     base_list = xtx.get_children_of_base(schema)
 
     def is_relevant_base(schema, x):
-        return qutil.is_used_as_field_value(schema, x) and not qutil.is_base_embedded(schema, x)
+        return qutil.is_used_as_field_value(schema, x) and not qutil.is_base_opaque(schema, x)
 
     base_list = [x for x in base_list if is_relevant_base(schema, x)]
 

@@ -544,11 +544,11 @@ Result: `locations JSONB` with full nesting
 
 #### 0.1 Update Grammar
 **File: `src/qsdl/dsl/definition/entity.tx`**
-- [ ] **Line 113:** Change `is_embedded?='@embedded'` to `is_opaque?='@opaque'`
+- [x] **Line 113:** Change `is_embedded?='@embedded'` to `is_opaque?='@opaque'`
 
 #### 0.2 Update DSL Model
 **File: `src/qsdl/dsl/models/field.py`**
-- [ ] **Line ~42:** Rename field from `is_embedded: bool = False` to `is_opaque: bool = False`
+- [x] **Line ~42:** Rename field from `is_embedded: bool = False` to `is_opaque: bool = False`
 
 ### Phase 1: PostgreSQL Generator - BREAKING CHANGES ⚠️
 
