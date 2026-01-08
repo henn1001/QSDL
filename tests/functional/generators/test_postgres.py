@@ -2,6 +2,7 @@ import difflib
 import textwrap
 from pathlib import Path
 
+import tests.testcases as testcases
 from qsdl.core import generate
 from qsdl.generators.postgres.config import Config
 
@@ -50,25 +51,7 @@ class TestGeneratorPostgres:
 
     def test_basic_types(self) -> None:
         # Given
-        test_input = """\
-          base A {
-            int: Int
-            long: Long
-          }
-
-          base B extends A {
-            float: Float
-            double: Double
-            string: String
-          }
-
-          type Foo extends B {
-            boolean: Boolean
-            date: Date
-            datetime: Datetime
-            object: Object
-          }
-        """
+        test_input = testcases.BASIC_TYPES
 
         # When
         schema = wrapper_generate(test_input)
@@ -95,19 +78,7 @@ class TestGeneratorPostgres:
 
     def test_basic_types_as_list(self) -> None:
         # Given
-        test_input = """\
-          type Foo {
-            int: [Int]
-            long: [Long]
-            float: [Float]
-            double: [Double]
-            string: [String]
-            boolean: [Boolean]
-            date: [Date]
-            datetime: [Datetime]
-            object: [Object]
-          }
-        """
+        test_input = testcases.BASIC_TYPES_AS_LIST
 
         # When
         schema = wrapper_generate(test_input)
@@ -134,18 +105,7 @@ class TestGeneratorPostgres:
 
     def test_enum_usage(self) -> None:
         # Given
-        test_input = """\
-          enum Status {
-            OPEN
-            TO_DO
-            CLOSED
-          }
-
-          type Foo {
-            status: Status
-            states: [Status]
-          }
-        """
+        test_input = testcases.ENUM_USAGE
 
         # When
         schema = wrapper_generate(test_input)
@@ -165,16 +125,7 @@ class TestGeneratorPostgres:
 
     def test_require_and_unique(self) -> None:
         # Given
-        test_input = """\
-          type TableFour {
-            aaa: String!
-            bbb: [String]!
-            ccc: String @unique
-            ddd: [String] @unique
-            eee: String! @unique
-            fff: [String]! @unique
-          }
-        """
+        test_input = testcases.REQUIRE_AND_UNIQUE
 
         # When
         schema = wrapper_generate(test_input)
@@ -203,29 +154,7 @@ class TestGeneratorPostgres:
     def test_default_flattening(self) -> None:
         """Test default behavior flattens Base fields (NEW DEFAULT)"""
         # Given
-        test_input = """\
-          base Bar {
-            field: String
-          }
-          base A {
-            int: Int
-            long: Long
-          }
-          base B extends A {
-            float: Float
-            double: Double
-            string: String
-            fruit: Bar
-          }
-          type Foo {
-            a: B
-            b: B
-            boolean: Boolean
-            date: Date
-            datetime: Datetime
-            object: Object
-          }
-        """
+        test_input = testcases.DEFAULT_FLATTENING
 
         # When
         schema = wrapper_generate(test_input)
@@ -260,21 +189,7 @@ class TestGeneratorPostgres:
     def test_nested_base_flattening(self) -> None:
         """Test nested Base types flatten correctly (Base within Base)"""
         # Given
-        test_input = """\
-          base ContactInfo {
-            email: String
-            phone: String
-          }
-          base Address {
-            street: String
-            city: String
-            contact: ContactInfo
-          }
-          type Company {
-            name: String
-            headquarters: Address
-          }
-        """
+        test_input = testcases.NESTED_BASE_FLATTENING
 
         # When
         schema = wrapper_generate(test_input)
@@ -298,18 +213,7 @@ class TestGeneratorPostgres:
     def test_multiple_base_fields_same_type(self) -> None:
         """Test multiple fields of same Base type flatten with different prefixes"""
         # Given
-        test_input = """\
-          base Address {
-            street: String
-            city: String
-          }
-          type User {
-            name: String
-            billingAddress: Address
-            shippingAddress: Address
-            mailingAddress: Address
-          }
-        """
+        test_input = testcases.MULTIPLE_BASE_FIELDS_SAME_TYPE
 
         # When
         schema = wrapper_generate(test_input)
@@ -335,16 +239,7 @@ class TestGeneratorPostgres:
     def test_base_flattening_with_constraints(self) -> None:
         """Test Base type flattening preserves field constraints"""
         # Given
-        test_input = """\
-          base Credentials {
-            username: String! @unique
-            password: String!
-          }
-          type User {
-            name: String
-            credentials: Credentials
-          }
-        """
+        test_input = testcases.BASE_FLATTENING_WITH_CONSTRAINTS
 
         # When
         schema = wrapper_generate(test_input)
@@ -370,17 +265,7 @@ class TestGeneratorPostgres:
     def test_opaque_jsonb(self) -> None:
         """Test @opaque directive creates JSONB columns (NEW SEMANTICS)"""
         # Given
-        test_input = """\
-          base Address {
-            street: String
-            city: String
-          }
-          type User {
-            primaryAddress: Address @opaque
-            secondaryAddress: Address @opaque
-            name: String
-          }
-        """
+        test_input = testcases.OPAQUE_JSONB
 
         # When
         schema = wrapper_generate(test_input)
@@ -402,21 +287,7 @@ class TestGeneratorPostgres:
     def test_opaque_nested_base(self) -> None:
         """Test @opaque with nested Base types stores entire structure as JSONB"""
         # Given
-        test_input = """\
-          base ContactInfo {
-            email: String
-            phone: String
-          }
-          base Address {
-            street: String
-            city: String
-            contact: ContactInfo
-          }
-          type Company {
-            name: String
-            headquarters: Address @opaque
-          }
-        """
+        test_input = testcases.OPAQUE_NESTED_BASE
 
         # When
         schema = wrapper_generate(test_input)
@@ -437,16 +308,7 @@ class TestGeneratorPostgres:
     def test_opaque_base_with_constraints(self) -> None:
         """Test @opaque Base type ignores field constraints (stored as JSONB)"""
         # Given
-        test_input = """\
-          base Metadata {
-            key: String! @unique
-            value: String!
-          }
-          type Document {
-            title: String
-            metadata: Metadata @opaque
-          }
-        """
+        test_input = testcases.OPAQUE_BASE_WITH_CONSTRAINTS
 
         # When
         schema = wrapper_generate(test_input)
@@ -467,17 +329,7 @@ class TestGeneratorPostgres:
     def test_base_array_jsonb(self) -> None:
         """Test arrays of Base types are always stored as JSONB (value objects)"""
         # Given - No @opaque needed for Base arrays
-        test_input = """\
-          base Variant {
-            size: String
-            color: String
-          }
-          type Product {
-            name: String
-            variants: [Variant]
-            other: [Variant] @opaque
-          }
-        """
+        test_input = testcases.BASE_ARRAY_JSONB
 
         # When
         schema = wrapper_generate(test_input)
@@ -503,19 +355,7 @@ class TestGeneratorPostgres:
     def test_mixed_base_same_type(self) -> None:
         """Test same Base type used both with and without @opaque"""
         # Given
-        test_input = """\
-          base Address {
-            street: String
-            city: String
-            zipCode: String
-          }
-          type Company {
-            name: String
-            primaryAddress: Address
-            billingAddress: Address @opaque
-            shippingAddresses: [Address]
-          }
-        """
+        test_input = testcases.MIXED_BASE_SAME_TYPE
 
         # When
         schema = wrapper_generate(test_input)
@@ -540,20 +380,7 @@ class TestGeneratorPostgres:
     def test_mixed_base_and_object_fields(self) -> None:
         """Test mixing Base type fields (flattened) with Object type fields (FK)"""
         # Given
-        test_input = """\
-          base Address {
-            street: String
-            city: String
-          }
-          type Manager {
-            name: String
-          }
-          type Employee {
-            name: String
-            homeAddress: Address
-            manager: Manager
-          }
-        """
+        test_input = testcases.MIXED_BASE_AND_OBJECT_FIELDS
 
         # When
         schema = wrapper_generate(test_input)
@@ -587,15 +414,7 @@ class TestGeneratorPostgres:
     def test_one_to_one(self) -> None:
         """Test one-to-one relationships with Object types (not Base types)"""
         # Given - Only test with Object type, Base types are flattened now
-        test_input = """\
-          type User {
-            primary_metric: Metric
-            secondary_metric: Metric
-          }
-          type Metric {
-            likes: Int
-          }
-        """
+        test_input = testcases.ONE_TO_ONE
 
         expected_schema = """\
           create table if not exists T_USER (
@@ -622,32 +441,7 @@ class TestGeneratorPostgres:
     def test_one_to_many(self) -> None:
         """Test one-to-many relationships with Object types (not Base types)"""
         # Given - Only test with Object types, Base arrays without @opaque create join tables
-        test_inputs = [
-            """\
-              type User {
-                metric: [Metric]
-              }
-              type Metric {
-                likes: Int
-              }
-            """,
-            """\
-              type User {
-                metric: [Metric] @aggregation
-              }
-              type Metric {
-                likes: Int
-              }
-            """,
-            """\
-              type User {
-                metric: [Metric] @composition
-              }
-              type Metric {
-                likes: Int
-              }
-            """,
-        ]
+        test_inputs = testcases.ONE_TO_MANY
 
         expected_schema = """\
           create table if not exists T_USER (
@@ -678,23 +472,7 @@ class TestGeneratorPostgres:
     def test_nested_object_relationships(self) -> None:
         """Test nested Object type relationships (Object within Object)"""
         # Given
-        test_input = """\
-          type Country {
-            name: String
-          }
-          type City {
-            name: String
-            country: Country
-          }
-          type Address {
-            street: String
-            city: City
-          }
-          type Company {
-            name: String
-            headquarters: Address
-          }
-        """
+        test_input = testcases.NESTED_OBJECT_RELATIONSHIPS
 
         # When
         schema = wrapper_generate(test_input)
@@ -738,19 +516,7 @@ class TestGeneratorPostgres:
     def test_object_arrays_with_directives(self) -> None:
         """Test Object arrays with @composition and @aggregation directives"""
         # Given - Test with both directive types
-        test_input = """\
-          type Tag {
-            name: String
-          }
-          type Category {
-            name: String
-          }
-          type Product {
-            name: String
-            tags: [Tag] @composition
-            categories: [Category] @aggregation
-          }
-        """
+        test_input = testcases.OBJECT_ARRAYS_WITH_DIRECTIVES
 
         # When
         schema = wrapper_generate(test_input)
@@ -800,26 +566,7 @@ class TestGeneratorPostgres:
     def test_deeply_nested_base_types(self) -> None:
         """Test deeply nested Base types (3+ levels) flatten correctly"""
         # Given
-        test_input = """\
-          base GeoCoordinates {
-            latitude: Float
-            longitude: Float
-          }
-          base ContactInfo {
-            email: String
-            phone: String
-            location: GeoCoordinates
-          }
-          base Address {
-            street: String
-            city: String
-            contact: ContactInfo
-          }
-          type Company {
-            name: String
-            headquarters: Address
-          }
-        """
+        test_input = testcases.DEEPLY_NESTED_BASE_TYPES
 
         # When
         schema = wrapper_generate(test_input)
@@ -845,25 +592,7 @@ class TestGeneratorPostgres:
     def test_deeply_nested_base_with_opaque(self) -> None:
         """Test deeply nested Base with @opaque stores as single JSONB"""
         # Given
-        test_input = """\
-          base Rating {
-            stars: Int
-            review: String
-          }
-          base Author {
-            name: String
-            rating: Rating
-          }
-          base BookMetadata {
-            isbn: String
-            author: Author
-            publisher: String
-          }
-          type Book {
-            title: String
-            metadata: BookMetadata @opaque
-          }
-        """
+        test_input = testcases.DEEPLY_NESTED_BASE_WITH_OPAQUE
 
         # When
         schema = wrapper_generate(test_input)
@@ -884,27 +613,7 @@ class TestGeneratorPostgres:
     def test_complex_mixed_base_object_arrays(self) -> None:
         """Test complex combination of Base fields, Object relationships, and arrays"""
         # Given
-        test_input = """\
-          base Address {
-            street: String
-            city: String
-          }
-          base Metadata {
-            key: String
-            value: String
-          }
-          type Department {
-            name: String
-          }
-          type Employee {
-            name: String
-            homeAddress: Address
-            workAddress: Address @opaque
-            metadata: [Metadata]
-            department: Department
-            skills: [String]
-          }
-        """
+        test_input = testcases.COMPLEX_MIXED_BASE_OBJECT_ARRAYS
 
         # When
         schema = wrapper_generate(test_input)
@@ -937,21 +646,7 @@ class TestGeneratorPostgres:
     def test_base_and_object_same_structure(self) -> None:
         """Test Base (flattened) vs Object (FK) with identical field structure"""
         # Given
-        test_input = """\
-          base AddressValue {
-            street: String
-            city: String
-          }
-          type AddressEntity {
-            street: String
-            city: String
-          }
-          type Person {
-            name: String
-            homeAddress: AddressValue
-            workAddress: AddressEntity
-          }
-        """
+        test_input = testcases.BASE_AND_OBJECT_SAME_STRUCTURE
 
         # When
         schema = wrapper_generate(test_input)
@@ -982,24 +677,7 @@ class TestGeneratorPostgres:
     def test_deep_composition_chain(self) -> None:
         """Test deep composition chain: Organization → Department → Team → Employee"""
         # Given - @composition means lifecycle dependency (cascade delete)
-        test_input = """\
-          type Employee {
-            name: String
-            email: String
-          }
-          type Team {
-            name: String
-            members: [Employee] @composition
-          }
-          type Department {
-            name: String
-            teams: [Team] @composition
-          }
-          type Organization {
-            name: String
-            departments: [Department] @composition
-          }
-        """
+        test_input = testcases.DEEP_COMPOSITION_CHAIN
 
         # When
         schema = wrapper_generate(test_input)
@@ -1059,24 +737,7 @@ class TestGeneratorPostgres:
     def test_deep_aggregation_chain(self) -> None:
         """Test deep aggregation chain: University → Course → Student → Address"""
         # Given - @aggregation means independent lifecycle (no cascade)
-        test_input = """\
-          type Address {
-            street: String
-            city: String
-          }
-          type Student {
-            name: String
-            addresses: [Address] @aggregation
-          }
-          type Course {
-            name: String
-            students: [Student] @aggregation
-          }
-          type University {
-            name: String
-            courses: [Course] @aggregation
-          }
-        """
+        test_input = testcases.DEEP_AGGREGATION_CHAIN
 
         # When
         schema = wrapper_generate(test_input)
@@ -1136,20 +797,7 @@ class TestGeneratorPostgres:
     def test_mixed_composition_aggregation(self) -> None:
         """Test mixing @composition and @aggregation in same entity"""
         # Given - Company owns Projects (composition) but references shared Tags (aggregation)
-        test_input = """\
-          type Tag {
-            name: String
-          }
-          type Project {
-            name: String
-            tags: [Tag] @aggregation
-          }
-          type Company {
-            name: String
-            ownedProjects: [Project] @composition
-            industryTags: [Tag] @aggregation
-          }
-        """
+        test_input = testcases.MIXED_COMPOSITION_AGGREGATION
 
         # When
         schema = wrapper_generate(test_input)
@@ -1202,26 +850,7 @@ class TestGeneratorPostgres:
     def test_complex_entity_graph(self) -> None:
         """Test complex entity graph with multiple relationship types"""
         # Given - Order has owned items (composition), customer (one-to-one), and shared products (aggregation)
-        test_input = """\
-          type Customer {
-            name: String
-            email: String
-          }
-          type Product {
-            name: String
-            price: Float
-          }
-          type OrderItem {
-            quantity: Int
-            product: Product
-          }
-          type Order {
-            orderNumber: String
-            customer: Customer
-            items: [OrderItem] @composition
-            relatedProducts: [Product] @aggregation
-          }
-        """
+        test_input = testcases.COMPLEX_ENTITY_GRAPH
 
         # When
         schema = wrapper_generate(test_input)
@@ -1279,11 +908,7 @@ class TestGeneratorPostgres:
     def test_object_scalar_array(self) -> None:
         """Test [Object] scalar type maps to JSONB (not JSONB[])"""
         # Given
-        test_input = """\
-          type Foo {
-            metadata: [Object]
-          }
-        """
+        test_input = testcases.OBJECT_SCALAR_ARRAY
 
         # When
         schema = wrapper_generate(test_input)
@@ -1303,19 +928,7 @@ class TestGeneratorPostgres:
     def test_two_parent_one_child(self) -> None:
         """Test [Object] scalar type maps to JSONB (not JSONB[])"""
         # Given
-        test_input = """\
-          type Fruit {
-            name: String
-          }
-          type Foo {
-            name: String
-            basket: [Fruit] @composition
-          }
-          type Bar {
-            name: String
-            basket: [Fruit] @composition
-          }
-        """
+        test_input = testcases.TWO_PARENT_ONE_CHILD
 
         # When
         schema = wrapper_generate(test_input)
