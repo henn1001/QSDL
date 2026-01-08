@@ -575,7 +575,7 @@ class TestGeneratorPostgres:
             home_address_city TEXT,
             manager_manager_id BIGINT unique
           );
-          alter table if exists T_EMPLOYEE add constraint FK_EMPLOYEE_MANAGER foreign key (manager_manager_id) references T_MANAGER(id);
+          alter table if exists T_EMPLOYEE add constraint FK_T_EMPLOYEE_MANAGER foreign key (manager_manager_id) references T_MANAGER(id);
         """
 
         assert_schema(schema, expected_schema)
@@ -611,8 +611,8 @@ class TestGeneratorPostgres:
             iv INTEGER,
             likes INTEGER
           );
-          alter table if exists T_USER add constraint FK_USER_PRIMARY_METRIC foreign key (primary_metric_metric_id) references T_METRIC(id);
-          alter table if exists T_USER add constraint FK_USER_SECONDARY_METRIC foreign key (secondary_metric_metric_id) references T_METRIC(id);
+          alter table if exists T_USER add constraint FK_T_USER_PRIMARY_METRIC foreign key (primary_metric_metric_id) references T_METRIC(id);
+          alter table if exists T_USER add constraint FK_T_USER_SECONDARY_METRIC foreign key (secondary_metric_metric_id) references T_METRIC(id);
         """
 
         # When Then
@@ -655,7 +655,7 @@ class TestGeneratorPostgres:
             uid VARCHAR unique,
             iv INTEGER
           );
-          create table if not exists T_USER_METRIC_TO_METRIC (
+          create table if not exists T_USER_METRIC_TO_T_METRIC (
             user_id BIGINT not null,
             metric_id BIGINT not null,
             primary key (user_id, metric_id)
@@ -666,8 +666,8 @@ class TestGeneratorPostgres:
             iv INTEGER,
             likes INTEGER
           );
-          alter table if exists T_USER_METRIC_TO_METRIC add constraint FK_USER_METRIC_TO_METRIC_USER foreign key (user_id) references T_USER(id);
-          alter table if exists T_USER_METRIC_TO_METRIC add constraint FK_USER_METRIC_TO_METRIC_METRIC foreign key (metric_id) references T_METRIC(id);
+          alter table if exists T_USER_METRIC_TO_T_METRIC add constraint FK_T_USER_METRIC_TO_T_METRIC_USER foreign key (user_id) references T_USER(id);
+          alter table if exists T_USER_METRIC_TO_T_METRIC add constraint FK_T_USER_METRIC_TO_T_METRIC_METRIC foreign key (metric_id) references T_METRIC(id);
         """
 
         # When Then
@@ -728,9 +728,9 @@ class TestGeneratorPostgres:
             name TEXT,
             headquarters_address_id BIGINT unique
           );
-          alter table if exists T_CITY add constraint FK_CITY_COUNTRY foreign key (country_country_id) references T_COUNTRY(id);
-          alter table if exists T_ADDRESS add constraint FK_ADDRESS_CITY foreign key (city_city_id) references T_CITY(id);
-          alter table if exists T_COMPANY add constraint FK_COMPANY_HEADQUARTERS foreign key (headquarters_address_id) references T_ADDRESS(id);
+          alter table if exists T_CITY add constraint FK_T_CITY_COUNTRY foreign key (country_country_id) references T_COUNTRY(id);
+          alter table if exists T_ADDRESS add constraint FK_T_ADDRESS_CITY foreign key (city_city_id) references T_CITY(id);
+          alter table if exists T_COMPANY add constraint FK_T_COMPANY_HEADQUARTERS foreign key (headquarters_address_id) references T_ADDRESS(id);
         """
 
         assert_schema(schema, expected_schema)
@@ -775,20 +775,20 @@ class TestGeneratorPostgres:
             iv INTEGER,
             name TEXT
           );
-          create table if not exists T_PRODUCT_TAGS_TO_TAG (
+          create table if not exists T_PRODUCT_TAGS_TO_T_TAG (
             product_id BIGINT not null,
             tag_id BIGINT not null,
             primary key (product_id, tag_id)
           );
-          create table if not exists T_PRODUCT_CATEGORIES_TO_CATEGORY (
+          create table if not exists T_PRODUCT_CATEGORIES_TO_T_CATEGORY (
             product_id BIGINT not null,
             category_id BIGINT not null,
             primary key (product_id, category_id)
           );
-          alter table if exists T_PRODUCT_TAGS_TO_TAG add constraint FK_PRODUCT_TAGS_TO_TAG_PRODUCT foreign key (product_id) references T_PRODUCT(id);
-          alter table if exists T_PRODUCT_TAGS_TO_TAG add constraint FK_PRODUCT_TAGS_TO_TAG_TAG foreign key (tag_id) references T_TAG(id);
-          alter table if exists T_PRODUCT_CATEGORIES_TO_CATEGORY add constraint FK_PRODUCT_CATEGORIES_TO_CATEGORY_PRODUCT foreign key (product_id) references T_PRODUCT(id);
-          alter table if exists T_PRODUCT_CATEGORIES_TO_CATEGORY add constraint FK_PRODUCT_CATEGORIES_TO_CATEGORY_CATEGORY foreign key (category_id) references T_CATEGORY(id);
+          alter table if exists T_PRODUCT_TAGS_TO_T_TAG add constraint FK_T_PRODUCT_TAGS_TO_T_TAG_PRODUCT foreign key (product_id) references T_PRODUCT(id);
+          alter table if exists T_PRODUCT_TAGS_TO_T_TAG add constraint FK_T_PRODUCT_TAGS_TO_T_TAG_TAG foreign key (tag_id) references T_TAG(id);
+          alter table if exists T_PRODUCT_CATEGORIES_TO_T_CATEGORY add constraint FK_T_PRODUCT_CATEGORIES_TO_T_CATEGORY_PRODUCT foreign key (product_id) references T_PRODUCT(id);
+          alter table if exists T_PRODUCT_CATEGORIES_TO_T_CATEGORY add constraint FK_T_PRODUCT_CATEGORIES_TO_T_CATEGORY_CATEGORY foreign key (category_id) references T_CATEGORY(id);
         """
 
         assert_schema(schema, expected_schema)
@@ -929,7 +929,7 @@ class TestGeneratorPostgres:
             department_department_id BIGINT unique,
             skills TEXT []
           );
-          alter table if exists T_EMPLOYEE add constraint FK_EMPLOYEE_DEPARTMENT foreign key (department_department_id) references T_DEPARTMENT(id);
+          alter table if exists T_EMPLOYEE add constraint FK_T_EMPLOYEE_DEPARTMENT foreign key (department_department_id) references T_DEPARTMENT(id);
         """
 
         assert_schema(schema, expected_schema)
@@ -974,7 +974,7 @@ class TestGeneratorPostgres:
             home_address_city TEXT,
             work_address_addressentity_id BIGINT unique
           );
-          alter table if exists T_PERSON add constraint FK_PERSON_WORK_ADDRESS foreign key (work_address_addressentity_id) references T_ADDRESS_ENTITY(id);
+          alter table if exists T_PERSON add constraint FK_T_PERSON_WORK_ADDRESS foreign key (work_address_addressentity_id) references T_ADDRESS_ENTITY(id);
         """
 
         assert_schema(schema, expected_schema)
@@ -1019,7 +1019,7 @@ class TestGeneratorPostgres:
             iv INTEGER,
             name TEXT
           );
-          create table if not exists T_TEAM_MEMBERS_TO_EMPLOYEE (
+          create table if not exists T_TEAM_MEMBERS_TO_T_EMPLOYEE (
             team_id BIGINT not null,
             employee_id BIGINT not null,
             primary key (team_id, employee_id)
@@ -1030,7 +1030,7 @@ class TestGeneratorPostgres:
             iv INTEGER,
             name TEXT
           );
-          create table if not exists T_DEPARTMENT_TEAMS_TO_TEAM (
+          create table if not exists T_DEPARTMENT_TEAMS_TO_T_TEAM (
             department_id BIGINT not null,
             team_id BIGINT not null,
             primary key (department_id, team_id)
@@ -1041,17 +1041,17 @@ class TestGeneratorPostgres:
             iv INTEGER,
             name TEXT
           );
-          create table if not exists T_ORGANIZATION_DEPARTMENTS_TO_DEPARTMENT (
+          create table if not exists T_ORGANIZATION_DEPARTMENTS_TO_T_DEPARTMENT (
             organization_id BIGINT not null,
             department_id BIGINT not null,
             primary key (organization_id, department_id)
           );
-          alter table if exists T_TEAM_MEMBERS_TO_EMPLOYEE add constraint FK_TEAM_MEMBERS_TO_EMPLOYEE_TEAM foreign key (team_id) references T_TEAM(id);
-          alter table if exists T_TEAM_MEMBERS_TO_EMPLOYEE add constraint FK_TEAM_MEMBERS_TO_EMPLOYEE_EMPLOYEE foreign key (employee_id) references T_EMPLOYEE(id);
-          alter table if exists T_DEPARTMENT_TEAMS_TO_TEAM add constraint FK_DEPARTMENT_TEAMS_TO_TEAM_DEPARTMENT foreign key (department_id) references T_DEPARTMENT(id);
-          alter table if exists T_DEPARTMENT_TEAMS_TO_TEAM add constraint FK_DEPARTMENT_TEAMS_TO_TEAM_TEAM foreign key (team_id) references T_TEAM(id);
-          alter table if exists T_ORGANIZATION_DEPARTMENTS_TO_DEPARTMENT add constraint FK_ORGANIZATION_DEPARTMENTS_TO_DEPARTMENT_ORGANIZATION foreign key (organization_id) references T_ORGANIZATION(id);
-          alter table if exists T_ORGANIZATION_DEPARTMENTS_TO_DEPARTMENT add constraint FK_ORGANIZATION_DEPARTMENTS_TO_DEPARTMENT_DEPARTMENT foreign key (department_id) references T_DEPARTMENT(id);
+          alter table if exists T_TEAM_MEMBERS_TO_T_EMPLOYEE add constraint FK_T_TEAM_MEMBERS_TO_T_EMPLOYEE_TEAM foreign key (team_id) references T_TEAM(id);
+          alter table if exists T_TEAM_MEMBERS_TO_T_EMPLOYEE add constraint FK_T_TEAM_MEMBERS_TO_T_EMPLOYEE_EMPLOYEE foreign key (employee_id) references T_EMPLOYEE(id);
+          alter table if exists T_DEPARTMENT_TEAMS_TO_T_TEAM add constraint FK_T_DEPARTMENT_TEAMS_TO_T_TEAM_DEPARTMENT foreign key (department_id) references T_DEPARTMENT(id);
+          alter table if exists T_DEPARTMENT_TEAMS_TO_T_TEAM add constraint FK_T_DEPARTMENT_TEAMS_TO_T_TEAM_TEAM foreign key (team_id) references T_TEAM(id);
+          alter table if exists T_ORGANIZATION_DEPARTMENTS_TO_T_DEPARTMENT add constraint FK_T_ORGANIZATION_DEPARTMENTS_TO_T_DEPARTMENT_ORGANIZATION foreign key (organization_id) references T_ORGANIZATION(id);
+          alter table if exists T_ORGANIZATION_DEPARTMENTS_TO_T_DEPARTMENT add constraint FK_T_ORGANIZATION_DEPARTMENTS_TO_T_DEPARTMENT_DEPARTMENT foreign key (department_id) references T_DEPARTMENT(id);
         """
 
         assert_schema(schema, expected_schema)
@@ -1096,7 +1096,7 @@ class TestGeneratorPostgres:
             iv INTEGER,
             name TEXT
           );
-          create table if not exists T_STUDENT_ADDRESSES_TO_ADDRESS (
+          create table if not exists T_STUDENT_ADDRESSES_TO_T_ADDRESS (
             student_id BIGINT not null,
             address_id BIGINT not null,
             primary key (student_id, address_id)
@@ -1107,7 +1107,7 @@ class TestGeneratorPostgres:
             iv INTEGER,
             name TEXT
           );
-          create table if not exists T_COURSE_STUDENTS_TO_STUDENT (
+          create table if not exists T_COURSE_STUDENTS_TO_T_STUDENT (
             course_id BIGINT not null,
             student_id BIGINT not null,
             primary key (course_id, student_id)
@@ -1118,17 +1118,17 @@ class TestGeneratorPostgres:
             iv INTEGER,
             name TEXT
           );
-          create table if not exists T_UNIVERSITY_COURSES_TO_COURSE (
+          create table if not exists T_UNIVERSITY_COURSES_TO_T_COURSE (
             university_id BIGINT not null,
             course_id BIGINT not null,
             primary key (university_id, course_id)
           );
-          alter table if exists T_STUDENT_ADDRESSES_TO_ADDRESS add constraint FK_STUDENT_ADDRESSES_TO_ADDRESS_STUDENT foreign key (student_id) references T_STUDENT(id);
-          alter table if exists T_STUDENT_ADDRESSES_TO_ADDRESS add constraint FK_STUDENT_ADDRESSES_TO_ADDRESS_ADDRESS foreign key (address_id) references T_ADDRESS(id);
-          alter table if exists T_COURSE_STUDENTS_TO_STUDENT add constraint FK_COURSE_STUDENTS_TO_STUDENT_COURSE foreign key (course_id) references T_COURSE(id);
-          alter table if exists T_COURSE_STUDENTS_TO_STUDENT add constraint FK_COURSE_STUDENTS_TO_STUDENT_STUDENT foreign key (student_id) references T_STUDENT(id);
-          alter table if exists T_UNIVERSITY_COURSES_TO_COURSE add constraint FK_UNIVERSITY_COURSES_TO_COURSE_UNIVERSITY foreign key (university_id) references T_UNIVERSITY(id);
-          alter table if exists T_UNIVERSITY_COURSES_TO_COURSE add constraint FK_UNIVERSITY_COURSES_TO_COURSE_COURSE foreign key (course_id) references T_COURSE(id);
+          alter table if exists T_STUDENT_ADDRESSES_TO_T_ADDRESS add constraint FK_T_STUDENT_ADDRESSES_TO_T_ADDRESS_STUDENT foreign key (student_id) references T_STUDENT(id);
+          alter table if exists T_STUDENT_ADDRESSES_TO_T_ADDRESS add constraint FK_T_STUDENT_ADDRESSES_TO_T_ADDRESS_ADDRESS foreign key (address_id) references T_ADDRESS(id);
+          alter table if exists T_COURSE_STUDENTS_TO_T_STUDENT add constraint FK_T_COURSE_STUDENTS_TO_T_STUDENT_COURSE foreign key (course_id) references T_COURSE(id);
+          alter table if exists T_COURSE_STUDENTS_TO_T_STUDENT add constraint FK_T_COURSE_STUDENTS_TO_T_STUDENT_STUDENT foreign key (student_id) references T_STUDENT(id);
+          alter table if exists T_UNIVERSITY_COURSES_TO_T_COURSE add constraint FK_T_UNIVERSITY_COURSES_TO_T_COURSE_UNIVERSITY foreign key (university_id) references T_UNIVERSITY(id);
+          alter table if exists T_UNIVERSITY_COURSES_TO_T_COURSE add constraint FK_T_UNIVERSITY_COURSES_TO_T_COURSE_COURSE foreign key (course_id) references T_COURSE(id);
         """
 
         assert_schema(schema, expected_schema)
@@ -1168,7 +1168,7 @@ class TestGeneratorPostgres:
             iv INTEGER,
             name TEXT
           );
-          create table if not exists T_PROJECT_TAGS_TO_TAG (
+          create table if not exists T_PROJECT_TAGS_TO_T_TAG (
             project_id BIGINT not null,
             tag_id BIGINT not null,
             primary key (project_id, tag_id)
@@ -1179,22 +1179,22 @@ class TestGeneratorPostgres:
             iv INTEGER,
             name TEXT
           );
-          create table if not exists T_COMPANY_OWNED_PROJECTS_TO_PROJECT (
+          create table if not exists T_COMPANY_OWNED_PROJECTS_TO_T_PROJECT (
             company_id BIGINT not null,
             project_id BIGINT not null,
             primary key (company_id, project_id)
           );
-          create table if not exists T_COMPANY_INDUSTRY_TAGS_TO_TAG (
+          create table if not exists T_COMPANY_INDUSTRY_TAGS_TO_T_TAG (
             company_id BIGINT not null,
             tag_id BIGINT not null,
             primary key (company_id, tag_id)
           );
-          alter table if exists T_PROJECT_TAGS_TO_TAG add constraint FK_PROJECT_TAGS_TO_TAG_PROJECT foreign key (project_id) references T_PROJECT(id);
-          alter table if exists T_PROJECT_TAGS_TO_TAG add constraint FK_PROJECT_TAGS_TO_TAG_TAG foreign key (tag_id) references T_TAG(id);
-          alter table if exists T_COMPANY_OWNED_PROJECTS_TO_PROJECT add constraint FK_COMPANY_OWNED_PROJECTS_TO_PROJECT_COMPANY foreign key (company_id) references T_COMPANY(id);
-          alter table if exists T_COMPANY_OWNED_PROJECTS_TO_PROJECT add constraint FK_COMPANY_OWNED_PROJECTS_TO_PROJECT_PROJECT foreign key (project_id) references T_PROJECT(id);
-          alter table if exists T_COMPANY_INDUSTRY_TAGS_TO_TAG add constraint FK_COMPANY_INDUSTRY_TAGS_TO_TAG_COMPANY foreign key (company_id) references T_COMPANY(id);
-          alter table if exists T_COMPANY_INDUSTRY_TAGS_TO_TAG add constraint FK_COMPANY_INDUSTRY_TAGS_TO_TAG_TAG foreign key (tag_id) references T_TAG(id);
+          alter table if exists T_PROJECT_TAGS_TO_T_TAG add constraint FK_T_PROJECT_TAGS_TO_T_TAG_PROJECT foreign key (project_id) references T_PROJECT(id);
+          alter table if exists T_PROJECT_TAGS_TO_T_TAG add constraint FK_T_PROJECT_TAGS_TO_T_TAG_TAG foreign key (tag_id) references T_TAG(id);
+          alter table if exists T_COMPANY_OWNED_PROJECTS_TO_T_PROJECT add constraint FK_T_COMPANY_OWNED_PROJECTS_TO_T_PROJECT_COMPANY foreign key (company_id) references T_COMPANY(id);
+          alter table if exists T_COMPANY_OWNED_PROJECTS_TO_T_PROJECT add constraint FK_T_COMPANY_OWNED_PROJECTS_TO_T_PROJECT_PROJECT foreign key (project_id) references T_PROJECT(id);
+          alter table if exists T_COMPANY_INDUSTRY_TAGS_TO_T_TAG add constraint FK_T_COMPANY_INDUSTRY_TAGS_TO_T_TAG_COMPANY foreign key (company_id) references T_COMPANY(id);
+          alter table if exists T_COMPANY_INDUSTRY_TAGS_TO_T_TAG add constraint FK_T_COMPANY_INDUSTRY_TAGS_TO_T_TAG_TAG foreign key (tag_id) references T_TAG(id);
         """
 
         assert_schema(schema, expected_schema)
@@ -1256,22 +1256,22 @@ class TestGeneratorPostgres:
             order_number TEXT,
             customer_customer_id BIGINT unique
           );
-          create table if not exists T_ORDER_ITEMS_TO_ORDER_ITEM (
+          create table if not exists T_ORDER_ITEMS_TO_T_ORDER_ITEM (
             order_id BIGINT not null,
             order_item_id BIGINT not null,
             primary key (order_id, order_item_id)
           );
-          create table if not exists T_ORDER_RELATED_PRODUCTS_TO_PRODUCT (
+          create table if not exists T_ORDER_RELATED_PRODUCTS_TO_T_PRODUCT (
             order_id BIGINT not null,
             product_id BIGINT not null,
             primary key (order_id, product_id)
           );
-          alter table if exists T_ORDER_ITEM add constraint FK_ORDER_ITEM_PRODUCT foreign key (product_product_id) references T_PRODUCT(id);
-          alter table if exists T_ORDER add constraint FK_ORDER_CUSTOMER foreign key (customer_customer_id) references T_CUSTOMER(id);
-          alter table if exists T_ORDER_ITEMS_TO_ORDER_ITEM add constraint FK_ORDER_ITEMS_TO_ORDER_ITEM_ORDER foreign key (order_id) references T_ORDER(id);
-          alter table if exists T_ORDER_ITEMS_TO_ORDER_ITEM add constraint FK_ORDER_ITEMS_TO_ORDER_ITEM_ORDER_ITEM foreign key (order_item_id) references T_ORDER_ITEM(id);
-          alter table if exists T_ORDER_RELATED_PRODUCTS_TO_PRODUCT add constraint FK_ORDER_RELATED_PRODUCTS_TO_PRODUCT_ORDER foreign key (order_id) references T_ORDER(id);
-          alter table if exists T_ORDER_RELATED_PRODUCTS_TO_PRODUCT add constraint FK_ORDER_RELATED_PRODUCTS_TO_PRODUCT_PRODUCT foreign key (product_id) references T_PRODUCT(id);
+          alter table if exists T_ORDER_ITEM add constraint FK_T_ORDER_ITEM_PRODUCT foreign key (product_product_id) references T_PRODUCT(id);
+          alter table if exists T_ORDER add constraint FK_T_ORDER_CUSTOMER foreign key (customer_customer_id) references T_CUSTOMER(id);
+          alter table if exists T_ORDER_ITEMS_TO_T_ORDER_ITEM add constraint FK_T_ORDER_ITEMS_TO_T_ORDER_ITEM_ORDER foreign key (order_id) references T_ORDER(id);
+          alter table if exists T_ORDER_ITEMS_TO_T_ORDER_ITEM add constraint FK_T_ORDER_ITEMS_TO_T_ORDER_ITEM_ORDER_ITEM foreign key (order_item_id) references T_ORDER_ITEM(id);
+          alter table if exists T_ORDER_RELATED_PRODUCTS_TO_T_PRODUCT add constraint FK_T_ORDER_RELATED_PRODUCTS_TO_T_PRODUCT_ORDER foreign key (order_id) references T_ORDER(id);
+          alter table if exists T_ORDER_RELATED_PRODUCTS_TO_T_PRODUCT add constraint FK_T_ORDER_RELATED_PRODUCTS_TO_T_PRODUCT_PRODUCT foreign key (product_id) references T_PRODUCT(id);
         """
 
         assert_schema(schema, expected_schema)

@@ -22,6 +22,10 @@ from qsdl import dsl
 from .. import util
 
 
+def T_PREFIX() -> str:
+    return util.Store.config.table_prefix.upper()
+
+
 class Column:
     """The column of a table"""
 
@@ -95,7 +99,7 @@ class Table:
         """Rebuilds the table from a new reference"""
         table = Table()
         table._ref = _ref
-        table.name = qfilter.snakecase(_ref.name).upper()
+        table.name = T_PREFIX() + qfilter.snakecase(_ref.name).upper()
 
         table._build_columns()
         return table
@@ -143,7 +147,7 @@ class Table:
 
             # one to one object relation (only for Objects now)
             if isinstance(dsl_field.value, dsl.Object):
-                ref_table_name = qfilter.snakecase(dsl_field.value.name).upper()
+                ref_table_name = T_PREFIX() + qfilter.snakecase(dsl_field.value.name).upper()
                 field_name = qfilter.snakecase(dsl_field.name).upper()
 
                 self.constraints.extend(
@@ -155,62 +159,66 @@ class Table:
                 # Ensure the foreign key column is unique
                 new_column.is_unique = True
 
-    def build_jointables(self) -> list[Table]:
-        """Creates all jointables for many to many relations"""
 
-        return_tables = []
+def build_jointables(table: Table) -> list[Table]:
+    """Creates all jointables for many to many relations"""
 
-        for dsl_field in self._ref.fields:
-            # Only Object type arrays create join tables (Base types are always JSONB)
-            if not (isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array):
-                continue
+    return_tables = []
 
-            # create a new table for the many to many relation
-            if isinstance(dsl_field.value, dsl.Object):
-                source_table_name = self.name
-                fiel_name = qfilter.snakecase(dsl_field.name).upper()
-                ref_table_name = qfilter.snakecase(dsl_field.value.name).upper()
+    for dsl_field in table._ref.fields:
+        # Only Object type arrays create join tables (Base types are always JSONB)
+        if not (isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array):
+            continue
 
-                new_table = Table()
-                new_table.name = f"{source_table_name}_{fiel_name}_TO_{ref_table_name}"
-                new_table.is_jointable = True
+        # create a new table for the many to many relation
+        if isinstance(dsl_field.value, dsl.Object):
+            source_table_name = table.name
+            field_name = qfilter.snakecase(dsl_field.name).upper()
+            ref_table_name = T_PREFIX() + qfilter.snakecase(dsl_field.value.name).upper()
 
-                # new table has two columns, one for each side of the relation
-                column_a = Column()
-                column_a.name = f"{self.name.lower()}_id"
-                column_a.type = "BIGINT"
-                column_a.is_required = True
-                column_b = Column()
-                column_b.name = f"{qfilter.snakecase(dsl_field.value.name).lower()}_id"
-                column_b.type = "BIGINT"
-                column_b.is_required = True
+            name_left = table._ref.name.lower()
+            name_right = qfilter.snakecase(dsl_field.value.name).lower()
 
-                new_table.columns.extend([column_a, column_b])
+            new_table = Table()
+            new_table.name = f"{source_table_name}_{field_name}_TO_{ref_table_name}"
+            new_table.is_jointable = True
 
-                # add the foreign key constraints
-                self.constraints.extend(
-                    [
-                        _build_fk_constraint(new_table.name, self.name, column_a.name, self.name),
-                        _build_fk_constraint(new_table.name, ref_table_name, column_b.name, ref_table_name),
-                    ]
-                )
+            # new table has two columns, one for each side of the relation
+            column_a = Column()
+            column_a.name = f"{name_left}_id"
+            column_a.type = "BIGINT"
+            column_a.is_required = True
+            column_b = Column()
+            column_b.name = f"{name_right}_id"
+            column_b.type = "BIGINT"
+            column_b.is_required = True
 
-                # add the new table to the return list
-                return_tables.append(new_table)
+            new_table.columns.extend([column_a, column_b])
 
-        return return_tables
+            # add the foreign key constraints
+            table.constraints.extend(
+                [
+                    _build_fk_constraint(new_table.name, name_left.upper(), column_a.name, table.name),
+                    _build_fk_constraint(new_table.name, name_right.upper(), column_b.name, ref_table_name),
+                ]
+            )
+
+            # add the new table to the return list
+            return_tables.append(new_table)
+
+    return return_tables
 
 
 def _build_fk_constraint(table_name: str, fk_target: str, column_name: str, ref_table_name: str) -> str:
     """Helper to build a foreign key constraint string."""
     fk_name = f"FK_{table_name}_{fk_target}"
     return (
-        f"alter table if exists {util.Store.config.table_prefix}{table_name} add constraint {fk_name} "
-        f"foreign key ({column_name}) references {util.Store.config.table_prefix}{ref_table_name}(id);"
+        f"alter table if exists {table_name} add constraint {fk_name} "
+        f"foreign key ({column_name}) references {ref_table_name}(id);"
     )
 
 
-def _extract_embedded_columns(ref, prefix=""):
+def _extract_embedded_columns(ref, prefix="") -> list[Column]:
     """Recursively flattens Base type fields into columns with prefixes.
 
     Note: This function is only called for Base types WITHOUT @opaque directive.

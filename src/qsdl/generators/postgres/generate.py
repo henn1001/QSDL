@@ -17,13 +17,12 @@
 from pathlib import Path
 
 import qsdl.dsl.textx as xtx
-import qsdl.dsl.util as qutil
 from qsdl.dsl.models import Schema
 from qsdl.render import render
 
 from . import util
 from .config import Config
-from .models import Table
+from .models import Table, build_jointables
 
 
 def parse_models(schema: Schema) -> list[Table]:
@@ -46,7 +45,7 @@ def parse_models(schema: Schema) -> list[Table]:
         models.append(new_model)
 
         # jointables
-        jointables = new_model.build_jointables()
+        jointables = build_jointables(new_model)
         models.extend(jointables)
 
     return models
