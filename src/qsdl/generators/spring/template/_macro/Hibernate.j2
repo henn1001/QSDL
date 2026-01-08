@@ -21,65 +21,57 @@
     @Enumerated(EnumType.STRING)
     {% endif %}
     {#
-        Relations
+        Relations: Both @composition and @aggregation now use join tables for arrays
+        (matching PostgreSQL generator behavior)
     #}
     {% if field.is_relation and not field.is_relation_owner %}
-            {# 
-                the parent side of the relation.
+            {#
+                Non-owner side: uses mappedBy to reference the owning side
+                For @aggregation: target has plural field name (e.g., "projects")
+                For @composition: target has singular field name (e.g., "project")
             #}
-            {% if field.is_aggregation and field.is_array %}
-    @ManyToMany(mappedBy = "{{model.name|lower}}s", fetch = FetchType.LAZY)
-            {% elif field.is_aggregation and not field.is_array %}
-    @OneToMany(mappedBy = "{{model.name|lower}}s", fetch = FetchType.LAZY)
-            {% elif field.is_composition and field.is_array %}
-    @OneToMany(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-            {% elif field.is_composition and not field.is_array %}
-    @OneToOne(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+            {% if field.is_array %}
+    @ManyToMany(mappedBy = "{{model.name|lower}}{{ 's' if field.is_aggregation else '' }}", fetch = FetchType.LAZY{{ ", cascade = CascadeType.ALL" if field.is_composition else "" }})
+            {% else %}
+    @OneToOne(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY{{ ", cascade = CascadeType.ALL" if field.is_composition else "" }})
             {% endif %}
     {% elif field.is_relation and field.is_relation_owner %}
             {#
-                The child/owning side of the relation.
+                Owner side (synthetic field created by _add_foreign_keys)
+                Uses @JoinTable matching PostgreSQL: t_{parent}_{original_field}_to_t_{child}
+                field.type = parent type, field.foreign_key_name = original field name, model.name = child type
             #}
-            {% if field.is_aggregation and field.foreign_key_is_array %}
+            {% if field.is_array %}
+                {# Aggregation: Parent has array, child gets plural back-reference #}
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "{{table_prefix}}{{field.type|lower}}_to_{{model.name|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{field.type|lower}}_id"))
-            {% elif field.is_aggregation and not field.foreign_key_is_array    %}
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "{{field.type|lower}}_id")
-            {% elif field.is_composition and field.foreign_key_is_array %}
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "{{field.type|lower}}_id")
-            {% elif field.is_composition and not field.foreign_key_is_array %}
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "{{field.type|lower}}_id")
+    @JoinTable(name = "{{table_prefix}}{{field.type|snake}}_{{field.foreign_key_name|snake}}_to_{{table_prefix}}{{model.name|snake}}", joinColumns = @JoinColumn(name = "{{model.name|snake}}_id"), inverseJoinColumns = @JoinColumn(name = "{{field.type|snake}}_id"))
+            {% else %}
+                {# Composition: Parent has array, child gets singular back-reference #}
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "{{table_prefix}}{{field.type|snake}}_{{field.foreign_key_name|snake}}_to_{{table_prefix}}{{model.name|snake}}", joinColumns = @JoinColumn(name = "{{model.name|snake}}_id"), inverseJoinColumns = @JoinColumn(name = "{{field.type|snake}}_id"))
             {% endif %}
     {#
         Base Types with @opaque: JSONB storage
     #}
     {% elif field.is_base and field.is_opaque and not field.is_array %}
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "{{field.name|snake}}", columnDefinition = "jsonb")
+    @Column(name = "{{field.name|snake}}")
     {% elif field.is_base and field.is_opaque and field.is_array %}
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "{{field.name|snake}}", columnDefinition = "jsonb")
+    @Column(name = "{{field.name|snake}}")
     {#
         Base Types without @opaque: No Hibernate annotation (fields are flattened inline)
     #}
     {% elif field.is_base and not field.is_opaque and not field.is_array %}
     {# No annotation needed - fields are expanded inline in Entity.j2 #}
     {#
-        Nested Objects: Keep existing behavior for Objects
+        Non-relation Object arrays: Use @JoinTable (matching PostgreSQL)
+        Non-relation Base arrays: Already handled above (JSONB for @opaque, flattened otherwise)
     #}
     {% elif field.is_array and field.is_object %}
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "{{field.name|snake}}_{{model.name|snake}}_id")
-    {% elif field.is_array and field.is_base %}
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "{{field.name|snake}}_{{model.name|snake}}_id")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "{{table_prefix}}{{model.name|snake}}_{{field.name|snake}}_to_{{table_prefix}}{{field.type|snake}}", joinColumns = @JoinColumn(name = "{{model.name|snake}}_id"), inverseJoinColumns = @JoinColumn(name = "{{field.type|snake}}_id"))
     {% elif not field.is_array and field.is_object %}
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "{{field.name|snake}}_{{field.type|snake}}_id")
-    {% elif not field.is_array and field.is_base %}
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "{{field.name|snake}}_{{field.type|snake}}_id")
     {% elif field.is_array %}
