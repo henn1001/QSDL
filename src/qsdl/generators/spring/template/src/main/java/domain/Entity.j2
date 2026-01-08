@@ -51,9 +51,8 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
         {% if field.is_object %}
             {% set typeName = field.type + "Entity" %}
         {% elif field.is_base and field.is_opaque %}
+            {# @opaque base types use POJO (JSONB storage) #}
             {% set typeName = field.type %}
-        {% elif field.is_base %}
-            {% set typeName = field.type + "Entity" %}
         {% else %}
             {% set typeName = field.entity_type %}
         {% endif %}

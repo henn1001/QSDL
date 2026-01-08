@@ -220,8 +220,9 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         else:
             model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
 
-        # generate entities for both objects and base entities
-        if config.database == "HIBERNATE" and (model.is_object or model.is_entity) and not model.is_enum:
+        # generate entities ONLY for objects, NOT for base types
+        # Base types are either flattened (default) or stored as JSONB (@opaque)
+        if config.database == "HIBERNATE" and model.is_object and not model.is_enum:
             model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))
             model_files.append(("src/main/java/domain/MapStruct.j2", f"src/main/java/{model.package.mapper}/{model.name}MapStruct.java", model))
 

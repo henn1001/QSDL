@@ -204,6 +204,8 @@ class ModelClass:
 
         # addons
         self.is_supertype = util.is_supertype(_ref) if self.is_base else False
+        # NOTE: is_entity is True when used as field value, but Base types no longer
+        # generate separate Entity classes (they're either flattened or stored as JSONB)
         self.is_entity = util.is_used_as_field_value(_ref)
         self.is_aggregated = util.has(_ref, is_aggregated=True)
         self.has_relation = util.has(_ref, has_relation=True)

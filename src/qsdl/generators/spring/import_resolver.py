@@ -135,17 +135,30 @@ def generate_imports_for_template(
                 if model_class
                 else []
             ),
-            # Nested entity imports (including relations)
+            # Entity imports for Object type fields
             *(
                 [
                     f"import {util.get_model_for(field.type).package.entity}.{util.get_model_for(field.type).name}Entity;"
                     for field in model_class.fields
-                    if (field.is_object or field.is_base)
+                    if field.is_object
                     and util.get_model_for(field.type).package.entity != model_class.package.entity
                 ]
                 if model_class
                 else []
             ),
+            # POJO imports for @opaque Base type fields (stored as JSONB)
+            # Compare base type's domain package with entity's entity package
+            *(
+                [
+                    f"import {util.get_model_for(field.type).package.domain}.{util.get_model_for(field.type).name};"
+                    for field in model_class.fields
+                    if field.is_base and field.is_opaque
+                    and util.get_model_for(field.type).package.domain != model_class.package.entity
+                ]
+                if model_class
+                else []
+            ),
+            # Note: Non-opaque Base type fields are flattened inline, no imports needed
             f"import {util.Store.package.model}.AbstractPersistentBase;",
             f"import {util.Store.package.model}.AbstractPersistentObject;",
             "import com.fasterxml.jackson.annotation.JsonIgnore;",
