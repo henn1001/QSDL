@@ -61,3 +61,11 @@ type Project {
 
 In this example, unless `@aggregation` is specified, all relations are **composition** by default:  
 Deleting a `Project` will also delete its `Role`, `User`, `roles`, `users`, and `tickets`.
+
+## Recommended reads
+
+- https://vladmihalcea.com/database-table-relationships/
+- https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/
+- https://vladmihalcea.com/the-best-way-to-use-the-manytomany-annotation-with-jpa-and-hibernate/
+- https://vladmihalcea.com/postgresql-array-java-list/
+- https://vladmihalcea.com/set-bidirectional-onetomany/

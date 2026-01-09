@@ -241,6 +241,21 @@ ONE_TO_ONE = """\
   }
 """
 
+TWO_PARENT_ONE_CHILD = """\
+  type Fruit {
+    name: String
+  }
+  type Foo {
+    name: String
+    basket: [Fruit] @composition
+  }
+  type Bar {
+    name: String
+    basket: [Fruit] @composition
+  }
+"""
+
+
 ONE_TO_MANY = [
     """\
       type User {
@@ -461,19 +476,5 @@ COMPLEX_ENTITY_GRAPH = """\
 OBJECT_SCALAR_ARRAY = """\
   type Foo {
     metadata: [Object]
-  }
-"""
-
-TWO_PARENT_ONE_CHILD = """\
-  type Fruit {
-    name: String
-  }
-  type Foo {
-    name: String
-    basket: [Fruit] @composition
-  }
-  type Bar {
-    name: String
-    basket: [Fruit] @composition
   }
 """
