@@ -11,7 +11,7 @@ package {{package.config}};
 {% if database == "HIBERNATE" %}
 @EnableJpaRepositories(basePackages = "{{package.repository}}", repositoryBaseClass = BaseRepositoryImpl.class)
 {% endif%}
-class AppConfig {
+class AppConfiguration {
 
     @Value("${server.port}")
     String serverPort;

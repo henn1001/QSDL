@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableScheduling
 @EnableJpaRepositories(basePackages = "app.server.common.db", repositoryBaseClass = BaseRepositoryImpl.class)
-class AppConfig {
+class AppConfiguration {
 
     @Value("${server.port}")
     String serverPort;

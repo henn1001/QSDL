@@ -1,14 +1,13 @@
 {
-  "[java]": {
-    "editor.formatOnSave": false
-  },
-  "files.exclude": {
-    "**/.classpath": true,
-    "**/.factorypath": true,
-    "**/.project": true,
-    "**/.settings": true
-  },
+  "editor.foldingImportsByDefault": true,
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.completion.importOrder": [
+    "#",
+    "",
+  ],
   "java.configuration.updateBuildConfiguration": "automatic",
-  "java.format.enabled": false,
-  "java.saveActions.organizeImports": false
+  "java.dependency.packagePresentation": "hierarchical",
+  "java.format.enabled": false, // disable built-in formatter
+  "java.project.explorer.showNonJavaResources": false,
+  "java.saveActions.organizeImports": false, // disable auto organize imports
 }

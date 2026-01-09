@@ -8,7 +8,9 @@ import app.server.common.model.AbstractPersistentObject;
 import app.server.common.util.Json;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +21,7 @@ import org.jeasy.random.FieldPredicates;
 import org.jeasy.random.randomizers.AbstractRandomizer;
 import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
 import org.jeasy.random.randomizers.range.LongRangeRandomizer;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 public class TestUtils {
 
@@ -172,6 +175,77 @@ public class TestUtils {
 
                 copyAllIdentities(f1, f2);
             }
+        }
+    }
+
+    /**
+     * Creates an instance of a record class using @DefaultValue annotations from constructor parameters.
+     * This allows test configurations to use the same defaults as production without hardcoding values.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T createInstanceWithDefaults(Class<T> recordClass) {
+        try {
+            // Records have a single canonical constructor
+            Constructor<?>[] constructors = recordClass.getDeclaredConstructors();
+            if (constructors.length == 0) {
+                throw new IllegalStateException("No constructor found for " + recordClass);
+            }
+
+            Constructor<?> constructor = constructors[0];
+            Parameter[] parameters = constructor.getParameters();
+            Object[] args = new Object[parameters.length];
+
+            for (int i = 0; i < parameters.length; i++) {
+                Parameter param = parameters[i];
+                DefaultValue defaultValue = param.getAnnotation(DefaultValue.class);
+
+                if (defaultValue != null) {
+                    String[] values = defaultValue.value();
+                    args[i] = parseDefaultValue(values.length > 0 ? values[0] : "", param.getType());
+                } else {
+                    // For nested objects without @DefaultValue, try to recursively instantiate them
+                    if (param.getType().isRecord()) {
+                        args[i] = createInstanceWithDefaults(param.getType());
+                    } else {
+                        args[i] = null;
+                    }
+                }
+            }
+
+            return (T) constructor.newInstance(args);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create instance with defaults for " + recordClass, e);
+        }
+    }
+
+    /**
+     * Parses a @DefaultValue string into the appropriate type.
+     */
+    private static Object parseDefaultValue(String value, Class<?> targetType) {
+        try {
+            if (targetType == boolean.class || targetType == Boolean.class) {
+                return Boolean.parseBoolean(value);
+            } else if (targetType == int.class || targetType == Integer.class) {
+                return Integer.parseInt(value);
+            } else if (targetType == long.class || targetType == Long.class) {
+                return Long.parseLong(value);
+            } else if (targetType == double.class || targetType == Double.class) {
+                return Double.parseDouble(value);
+            } else if (targetType == String.class) {
+                return value;
+            } else if (List.class.isAssignableFrom(targetType)) {
+                // Return empty list for List types when no value is provided
+                if (value == null || value.isEmpty()) {
+                    return List.of();
+                }
+                // For complex types like List, use Jackson to parse JSON
+                return json.mapper().readValue(value, targetType);
+            } else {
+                // For complex types, use Jackson to parse JSON
+                return json.mapper().readValue(value, targetType);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse default value '" + value + "' for type " + targetType, e);
         }
     }
 }
