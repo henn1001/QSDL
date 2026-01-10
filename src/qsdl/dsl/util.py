@@ -172,3 +172,22 @@ def is_base_opaque(schema: dsl.Schema, entity: dsl.Base) -> bool:
     entity_list = xtx.get_children_of_field(schema)
 
     return any(itr.value == entity and itr.is_opaque for itr in entity_list)
+
+
+def get_composition_fields(schema: dsl.Schema, obj_name: str) -> list[dsl.Field]:
+    """Returns all Fields whose value is this Object.
+
+    Args:
+        obj_name (str): The Object which value the fields should have.
+        filter_relations (bool, optional): Include only relation fields. Defaults to True.
+
+    Returns:
+        list[dsl.Field]: The list of Fields.
+    """
+    fields = []
+
+    fields = xtx.get_children_of_field(schema)
+
+    fields = [x for x in fields if isinstance(x.parent, dsl.Object) and x.value.name == obj_name and x.is_composition]
+
+    return fields

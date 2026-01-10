@@ -14,4 +14,5 @@
 
 """Generator Models"""
 
-from .table import Table, build_jointables
+from .column import Column
+from .table import Table

@@ -22,7 +22,7 @@ from qsdl.render import render
 
 from . import util
 from .config import Config
-from .models import Table, build_jointables
+from .models import Table
 
 
 def parse_models(schema: Schema) -> list[Table]:
@@ -44,8 +44,11 @@ def parse_models(schema: Schema) -> list[Table]:
         new_model = Table.from_ref(obj)
         models.append(new_model)
 
-        # aggregation
-        jointables = build_jointables(new_model)
+        # Handle composition relationships: add foreign keys for parent references
+        util.build_composition_fks(new_model)
+
+        # Handle aggregation relationships: - creates join tables for many-to-many
+        jointables = util.build_jointables(new_model)
         models.extend(jointables)
 
     return models
