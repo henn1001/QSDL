@@ -8,27 +8,27 @@ license = "Apache-2.0"
 requires-python = ">=3.13"
 
 dependencies = [
-    "dacite>=1.9.2",
-    "flatten-json>=0.1.14",
-    "inquirer>=3.4.1",
-    "jinja2>=3.1.6",
-    "pathspec>=0.12.1",
-    "plantuml>=0.3.0",
-    "pyfiglet>=1.0.3",
-    "pyyaml>=6.0.2",
-    "stringcase>=1.2.0",
-    "textx>=4.2.2",
-    "typer>=0.19.2",
+  "dacite>=1.9.2",
+  "flatten-json>=0.1.14",
+  "inquirer>=3.4.1",
+  "jinja2>=3.1.6",
+  "pathspec>=0.12.1",
+  "plantuml>=0.3.0",
+  "pyfiglet>=1.0.3",
+  "pyyaml>=6.0.2",
+  "stringcase>=1.2.0",
+  "textx>=4.2.2",
+  "typer>=0.19.2",
 ]
 
 [dependency-groups]
 dev = [
-    "openapi-spec-validator",
-    "pytest",
-    "pytest-cov",
-    "pytest-html",
-    "pytest-order",
-    "ruff",
+  "openapi-spec-validator",
+  "pytest",
+  "pytest-cov",
+  "pytest-html",
+  "pytest-order",
+  "ruff",
 ]
 
 [project.scripts]
@@ -38,6 +38,7 @@ qsdl = "qsdl.__main__:app"
 pythonpath = ["src"]
 testpaths = ["tests"]
 junit_family = "xunit2"
+markers = ["integration: marks tests as integration tests"]
 addopts = """
   --junitxml=dist/tests/report.xml
   --html=dist/tests/report.html
@@ -45,6 +46,7 @@ addopts = """
   --cov=qsdl
   --cov-report=term
   --cov-report=html:dist/coverage
+  -m 'not integration'
 """
 
 [tool.ruff]

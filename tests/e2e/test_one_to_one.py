@@ -4,23 +4,20 @@ import pytest
 
 from tests import testcases
 
-from . import wrapper_generate
+from .base_e2e_test import BaseE2ETest
 
 
-@pytest.fixture(scope="class", autouse=True)
-def srcgen() -> Path:
-    return wrapper_generate(testcases.ONE_TO_ONE)
-
-
-class TestE2EOneToOne:
+class TestE2EOneToOne(BaseE2ETest):
     """Test XXXX"""
 
-    def test_postgres(self, srcgen: Path) -> None:
+    TESTCASE = testcases.ONE_TO_ONE
+
+    def test_postgres(self, postgres_schema: str) -> None:
         """asserts generated Postgres schema is correct"""
 
         pass
 
-    def test_openapi(self, srcgen: Path) -> None:
+    def test_openapi(self, openapi_schema: dict) -> None:
         """asserts generated OpenAPI spec is correct"""
 
         pass
@@ -30,7 +27,7 @@ class TestE2EOneToOne:
 
         pass
 
-    # run this test only when special flag
+    @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:
         """runs mvn clean test to verify generated code compiles and tests pass"""
 
