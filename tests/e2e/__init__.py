@@ -1,5 +1,5 @@
+import difflib
 import shutil
-import subprocess
 import textwrap
 from pathlib import Path
 
@@ -23,3 +23,22 @@ def wrapper_generate(test_input: str) -> Path:
     assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
 
     return test_output
+
+
+def assert_schema(schema: str, expected_schema: str) -> None:
+    """Asserts that the generated schema matches the expected schema.
+
+    Args:
+        schema (str): The generated schema.
+        expected_schema (str): The expected schema.
+
+    Raises:
+        AssertionError: If the schemas don't match, with a unified diff.
+    """
+    schema_lines = [line.strip() for line in schema.splitlines() if line.strip() and not line.startswith("--")]
+    expected_lines = [line.strip() for line in expected_schema.splitlines() if line.strip()]
+
+    if schema_lines != expected_lines:
+        diff = difflib.unified_diff(expected_lines, schema_lines, fromfile="Expected", tofile="Generated", lineterm="")
+        diff = "\n".join(diff)
+        raise AssertionError(f"Schema mismatch:\n{diff}")
