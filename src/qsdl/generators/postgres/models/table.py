@@ -110,6 +110,11 @@ class Table:
         dsl_fields = [x for x in self._ref.fields]
 
         for dsl_field in dsl_fields:
+            # Handle arrays of Object types - either composition or aggregation
+            if isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array:
+                # Join table handling in build_jointables()
+                continue
+
             # Handle arrays of Base types - ALWAYS JSONB (value objects)
             if isinstance(dsl_field.value, dsl.Base) and dsl_field.is_array:
                 new_column = Column()
@@ -119,11 +124,6 @@ class Table:
                 new_column.is_unique = dsl_field.is_unique
                 self.columns.append(new_column)
                 continue  # Skip join table creation
-
-            # Handle arrays of Object types - join tables (entity relationships)
-            if isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array:
-                # Join table handling in build_jointables()
-                continue
 
             # Handle Base types with new semantics
             if isinstance(dsl_field.value, dsl.Base):
@@ -161,50 +161,48 @@ class Table:
 
 
 def build_jointables(table: Table) -> list[Table]:
-    """Creates all jointables for many to many relations"""
+    """Creates all jointables for many to many relations (aggregation)"""
 
     return_tables = []
 
     for dsl_field in table._ref.fields:
         # Only Object type arrays create join tables (Base types are always JSONB)
-        if not (isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array):
+        if not (isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array and dsl_field.is_aggregation):
             continue
 
-        # create a new table for the many to many relation
-        if isinstance(dsl_field.value, dsl.Object):
-            source_table_name = table.name
-            field_name = qfilter.snakecase(dsl_field.name).upper()
-            ref_table_name = T_PREFIX() + qfilter.snakecase(dsl_field.value.name).upper()
+        source_table_name = table.name
+        field_name = qfilter.snakecase(dsl_field.name).upper()
+        ref_table_name = T_PREFIX() + qfilter.snakecase(dsl_field.value.name).upper()
 
-            name_left = table._ref.name.lower()
-            name_right = qfilter.snakecase(dsl_field.value.name).lower()
+        name_left = table._ref.name.lower()
+        name_right = qfilter.snakecase(dsl_field.value.name).lower()
 
-            new_table = Table()
-            new_table.name = f"{source_table_name}_{field_name}_TO_{ref_table_name}"
-            new_table.is_jointable = True
+        new_table = Table()
+        new_table.name = f"{source_table_name}_{field_name}_TO_{ref_table_name}"
+        new_table.is_jointable = True
 
-            # new table has two columns, one for each side of the relation
-            column_a = Column()
-            column_a.name = f"{name_left}_id"
-            column_a.type = "BIGINT"
-            column_a.is_required = True
-            column_b = Column()
-            column_b.name = f"{name_right}_id"
-            column_b.type = "BIGINT"
-            column_b.is_required = True
+        # new table has two columns, one for each side of the relation
+        column_a = Column()
+        column_a.name = f"{name_left}_id"
+        column_a.type = "BIGINT"
+        column_a.is_required = True
+        column_b = Column()
+        column_b.name = f"{name_right}_id"
+        column_b.type = "BIGINT"
+        column_b.is_required = True
 
-            new_table.columns.extend([column_a, column_b])
+        new_table.columns.extend([column_a, column_b])
 
-            # add the foreign key constraints
-            table.constraints.extend(
-                [
-                    _build_fk_constraint(new_table.name, name_left.upper(), column_a.name, table.name),
-                    _build_fk_constraint(new_table.name, name_right.upper(), column_b.name, ref_table_name),
-                ]
-            )
+        # add the foreign key constraints
+        table.constraints.extend(
+            [
+                _build_fk_constraint(new_table.name, name_left.upper(), column_a.name, table.name),
+                _build_fk_constraint(new_table.name, name_right.upper(), column_b.name, ref_table_name),
+            ]
+        )
 
-            # add the new table to the return list
-            return_tables.append(new_table)
+        # add the new table to the return list
+        return_tables.append(new_table)
 
     return return_tables
 

@@ -44,7 +44,7 @@ def parse_models(schema: Schema) -> list[Table]:
         new_model = Table.from_ref(obj)
         models.append(new_model)
 
-        # jointables
+        # aggregation
         jointables = build_jointables(new_model)
         models.extend(jointables)
 
