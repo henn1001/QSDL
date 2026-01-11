@@ -251,6 +251,11 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
                 msg = f"The Field {field.name} for {field.parent.name} references itself."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
+            # verify that opaque is used only for Bases
+            if field.is_opaque and field.value._tx_fqn != "entity.Base":
+                msg = f"The Field {field.name} for {field.parent.name} declares opaque on a non Base value."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+
 
 def validate_crud_generator_directive(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Check if the requested crud operations are valid

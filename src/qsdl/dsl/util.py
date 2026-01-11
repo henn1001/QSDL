@@ -15,6 +15,7 @@
 """QSDL Utility functions"""
 
 import qsdl.dsl.models as dsl
+import qsdl.dsl.textx as xtx
 
 ValueType = dsl.Scalar | dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation
 
@@ -143,3 +144,40 @@ def get_type_override(
         ret["type"] = custom_directive.value.strip()
 
     return ret
+
+
+def is_used_as_field_value(schema: dsl.Schema, entity: dsl.Base | dsl.Object) -> bool:
+    """Checks if the provided Base or Object is used anywhere.
+
+    Args:
+        entity (Union[Base, Object]): Either entity.Base or entity.Object.
+
+    Returns:
+        bool: [description]
+    """
+    entity_list = xtx.get_children_of_field(schema)
+
+    return any(itr.value == entity for itr in entity_list)
+
+
+def get_composition_fields(schema: dsl.Schema, obj_name: str) -> list[dsl.Field]:
+    """Returns all Fields whose value is this Object.
+
+    Args:
+        obj_name (str): The Object which value the fields should have.
+        filter_relations (bool, optional): Include only relation fields. Defaults to True.
+
+    Returns:
+        list[dsl.Field]: The list of Fields.
+    """
+    fields = []
+
+    fields = xtx.get_children_of_field(schema)
+
+    fields = [
+        x
+        for x in fields
+        if isinstance(x.parent, dsl.Object) and x.value.name == obj_name and x.is_array and not x.is_aggregation
+    ]
+
+    return fields
