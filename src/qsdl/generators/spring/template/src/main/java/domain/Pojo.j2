@@ -41,7 +41,7 @@ public class {{model.name}} extends AbstractClass {
     {% if field.type == "String" %}
     @Size(min = {{field.min_size}}, max = {{field.max_size}})
     {% endif %}
-    {% if field.type in ["Integer", "Long"] and field.min_size %}
+    {% if field.type in ["Integer", "Long"] and field.min_size and not field.is_array %}
     @Min({{field.min_size}})
     @Max({{field.max_size}})
     {% endif %}
