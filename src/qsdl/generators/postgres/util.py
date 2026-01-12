@@ -73,7 +73,7 @@ def build_jointables(table: Table) -> list[Table]:
         name_right = qfilter.snakecase(dsl_field.value.name).lower()
 
         new_table = Table()
-        new_table.name = f"{source_table_name}_{field_name}_TO_{ref_table_name}"
+        new_table.name = f"{source_table_name}_TO_{ref_table_name}"
         new_table.is_jointable = True
 
         # new table has two columns, one for each side of the relation
@@ -118,11 +118,11 @@ def build_composition_fks(table: Table) -> None:
         # field.parent is the parent Object that has the composition
         parent_obj = dsl_field.parent
         ref_table_name = T_PREFIX() + qfilter.snakecase(parent_obj.name).upper()
-        field_name = qfilter.snakecase(dsl_field.name).upper()
+        field_name = f"{qfilter.snakecase(dsl_field.name)}_{parent_obj.name}".upper()
 
         # Add foreign key column to this (child) table pointing to parent
         fk_column = Column()
-        fk_column.name = f"{qfilter.snakecase(dsl_field.name).lower()}_{parent_obj.name.lower()}_id"
+        fk_column.name = f"{field_name}_id".lower()
         fk_column.type = "BIGINT"
         # fk_column.is_required = True  # Compositions typically require the parent - breaks with two parents
         table.columns.append(fk_column)

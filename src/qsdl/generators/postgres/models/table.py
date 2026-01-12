@@ -92,6 +92,6 @@ class Table:
                 )
 
                 # Ensure the foreign key column is unique
-                new_column.is_unique = True
+                # new_column.is_unique = True # i think this is wrong
 
         return table
