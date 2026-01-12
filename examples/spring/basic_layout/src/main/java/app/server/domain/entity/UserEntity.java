@@ -50,7 +50,7 @@ public class UserEntity extends AbstractPersistentObject {
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "t_ticket_to_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
+    @JoinTable(name = "t_ticket_to_t_user", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ticket_id"))
     public final Set<TicketEntity> tickets = new LinkedHashSet<>();
 
     public void addToTickets(TicketEntity o) {

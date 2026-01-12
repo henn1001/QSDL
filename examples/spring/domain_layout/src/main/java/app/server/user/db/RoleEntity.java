@@ -46,6 +46,6 @@ public class RoleEntity extends AbstractPersistentObject {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "roles_project_id")
     private ProjectEntity project;
 }
