@@ -27,12 +27,12 @@ class Schema:
 
     # defined in entity.tx
     imports: list[any] = field(default_factory=list)
-    title: str = None
-    version: str = None
+    title: str | None = None
+    version: str | None = None
     description: list[str] = field(default_factory=list)
     servers: list[str] = field(default_factory=list)
     types: list[dsl.Scalar | dsl.Enum | dsl.Base | dsl.Api | dsl.Object] = field(default_factory=list)
 
     # required by textX
+    _tx_filename: str = ""
     _tx_fqn: str = "entity.Schema"
-    _tx_filename: str = None

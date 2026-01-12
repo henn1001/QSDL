@@ -25,13 +25,18 @@ from qsdl import dsl
 class Field:
     """textX Field class"""
 
+    # required by textX
+    parent: dsl.Base | dsl.Object
+
     # defined in entity.tx
-    description: list[str] = field(default_factory=list)
     # LHS
-    name: str = None
+    name: str
     # RHS
+    value: dsl.Scalar | dsl.Object | dsl.Enum
+
+    # defined in entity.tx (with defaults)
+    description: list[str] = field(default_factory=list)
     is_array: bool = False
-    value: dsl.Scalar | dsl.Object | dsl.Enum = None
     is_required: bool = False
     # Special directives
     is_query: bool = False
@@ -45,15 +50,14 @@ class Field:
     is_transient: bool = False
     is_ignored: bool = False
     is_override: bool = False
-    min_size: int = None
-    max_size: int = None
-    default: str = None
+    min_size: int | None = None
+    max_size: int | None = None
+    default: str | None = None
     # Custom directives
     directives: list[dsl.Directive] = field(default_factory=list)
 
-    # required by textX
-    parent: dsl.Base | dsl.Object = None
-    _tx_fqn: str = "entity.Field"
-
     # addons
     is_relation: bool = False
+
+    # required by textX
+    _tx_fqn: str = "entity.Field"

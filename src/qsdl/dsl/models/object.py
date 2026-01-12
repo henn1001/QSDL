@@ -25,21 +25,25 @@ from qsdl import dsl
 class Object:
     """textX Object class"""
 
+    # required by textX
+    parent: dsl.Schema
+
     # defined in entity.tx
+    name: str
+
+    # defined in entity.tx (with defaults)
     description: list[str] = field(default_factory=list)
-    name: str = None
     supertypes: list[dsl.Base] = field(default_factory=list)
     # Special directives
     is_deprecated: bool = False
-    namespace: str = None
+    namespace: str | None = None
     # Custom directives
     directives: list[dsl.Directive] = field(default_factory=list)
     fields: list[dsl.Field] = field(default_factory=list)
-    api: dsl.Api = None
-
-    # required by textX
-    parent: dsl.Schema = None
-    _tx_fqn: str = "entity.Object"
+    api: dsl.Api | None = None
 
     # addons
     flattened: bool = False
+
+    # required by textX
+    _tx_fqn: str = "entity.Object"

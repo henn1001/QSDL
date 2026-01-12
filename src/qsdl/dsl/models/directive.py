@@ -25,10 +25,12 @@ from qsdl import dsl
 class Directive:
     """textX Directive class"""
 
+    # required by textX
+    parent: dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation | dsl.Enum
+
     # defined in entity.tx
-    name: str = None
-    value: str = None
+    name: str
+    value: str | None = None
 
     # required by textX
-    parent: dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation = None
     _tx_fqn: str = "entity.Directive"

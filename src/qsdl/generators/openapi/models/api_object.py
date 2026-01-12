@@ -199,7 +199,7 @@ class ApiObject:
 
         return self
 
-    def _add_operations(self, operations: list[Operation]) -> None:
+    def _add_operations(self, operations: list[dsl.Operation]) -> None:
         new_operations: list[Operation] = []
 
         for operation in operations:

@@ -25,19 +25,21 @@ from qsdl import dsl
 class Api:
     """textX Api class"""
 
+    # required by textX
+    parent: dsl.Schema | dsl.Object
+
     # defined in entity.tx
     description: list[str] = field(default_factory=list)
     # Special directives
     is_deprecated: bool = False
-    namespace: str = None
+    namespace: str | None = None
     generate: list[str] = field(default_factory=list)
     # Custom directives
     directives: list[dsl.Directive] = field(default_factory=list)
     operations: list[dsl.Operation] = field(default_factory=list)
 
-    # required by textX
-    parent: dsl.Schema | dsl.Object = None
-    _tx_fqn: str = "entity.Api"
-
     # addons
     has_generated: bool = False
+
+    # required by textX
+    _tx_fqn: str = "entity.Api"

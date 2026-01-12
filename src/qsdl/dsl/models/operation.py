@@ -25,37 +25,42 @@ from qsdl import dsl
 class Operation:
     """textX Field class"""
 
+    # required by textX
+    parent: dsl.Api
+
     # defined in entity.tx
-    description: list[str] = field(default_factory=list)
     # LHS
-    name: str = None
+    name: str
+    path: str
+
+    # defined in entity.tx (with defaults)
+    description: list[str] = field(default_factory=list)
     arguments: list[dsl.Argument] = field(default_factory=list)
     # RHS
     is_array: bool = False
-    value: dsl.Scalar | dsl.Object | dsl.Enum = None
+    value: dsl.Scalar | dsl.Object | dsl.Enum | None = None
     is_required: bool = False
     # Special directives
-    path: str = None
-    method: str = None
+    # path: str | None = None
+    method: str | None = None
     is_pageable: bool = False
-    consumes: str = None
-    produces: str = None
+    consumes: str | None = None
+    produces: str | None = None
     response_headers: list[dsl.Argument] = field(default_factory=list)
     # Custom directives
     directives: list[dsl.Directive] = field(default_factory=list)
 
-    # required by textX
-    parent: dsl.Api = None
-    _tx_fqn: str = "entity.Operation"
-
     # addons
     is_generated: bool = False
-    summary: str = None
+    summary: str | None = None
     is_aggregated: bool = False
     path_parameters: list[dsl.Argument] = field(default_factory=list)
     query_parameters: list[dsl.Argument] = field(default_factory=list)
     header_parameters: list[dsl.Argument] = field(default_factory=list)
     body_parameters: list[dsl.Argument] = field(default_factory=list)
 
-    domain_object: dsl.Object = None
-    domain_parent: dsl.Object = None
+    domain_object: dsl.Object | None = None
+    domain_parent: dsl.Object | None = None
+
+    # required by textX
+    _tx_fqn: str = "entity.Operation"

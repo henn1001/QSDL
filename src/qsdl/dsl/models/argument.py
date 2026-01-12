@@ -25,21 +25,24 @@ from qsdl import dsl
 class Argument:
     """textX Argument class"""
 
+    # required by textX
+    parent: dsl.Operation
+
     # defined in entity.tx
     # LHS
-    name: str = None
-    # RHS
+    name: str
+    value: dsl.Scalar | dsl.Object | dsl.Enum
     is_array: bool = False
-    value: dsl.Scalar | dsl.Object | dsl.Enum = None
+
+    # Directives
     is_required: bool = False
     is_query: bool = False
     is_header: bool = False
-
-    # required by textX
-    parent: dsl.Operation = None
-    _tx_fqn: str = "entity.Argument"
 
     # addons
     is_path: bool = False
     is_query: bool = False
     is_body: bool = False
+
+    # required by textX
+    _tx_fqn: str = "entity.Argument"

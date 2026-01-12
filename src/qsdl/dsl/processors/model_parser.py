@@ -170,19 +170,16 @@ def id_builder(obj: dsl.Object) -> dsl.Field:
     Returns:
         dsl.Field: entity.dsl.Field
     """
-    field = dsl.Field()
-    field.name = "id"
-    field.value = dsl.Scalar(name="ID")
+    field = dsl.Field(parent=obj, name="id", value=dsl.Scalar(name="ID"))
     field.is_read_only = True
     field.is_required = True
-    field.parent = obj
 
     return field
 
 
 def name_builder(
     obj: dsl.Object,
-    parent_obj: dsl.Object = None,
+    parent_obj: dsl.Object | None = None,
     combiner: str = "For",
     append: str = "",
 ) -> str:
@@ -212,7 +209,7 @@ def name_builder(
 
 def path_builder(
     entity: dsl.Field | dsl.Object,
-    parent_obj: dsl.Object = None,
+    parent_obj: dsl.Object | None = None,
     append_id: bool = False,
 ) -> str:
     """Creates and returns the path string for a operation.
@@ -268,11 +265,7 @@ def path_argument_builder(operation: dsl.Operation) -> list[dsl.Argument]:
     matches = re.findall(regex, operation.path)
 
     for match in matches:
-        argument = dsl.Argument()
-        argument.parent = operation
-
-        argument.name = match.lower()
-        argument.value = dsl.Scalar(name="ID")
+        argument = dsl.Argument(operation, match.lower(), dsl.Scalar(name="ID"))
         argument.is_path = True
         argument.is_required = True
 
@@ -296,11 +289,7 @@ def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[ds
     query_fields = get_query_fields(obj)
 
     for field in query_fields:
-        argument = dsl.Argument()
-        argument.parent = operation
-
-        argument.name = field.name
-        argument.value = field.value
+        argument = dsl.Argument(operation, field.name, field.value)
         argument.is_query = True
 
         arguments.append(argument)
@@ -322,10 +311,7 @@ def body_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[dsl
     """
     arguments = []
 
-    argument = dsl.Argument()
-    argument.parent = operation
-    argument.name = "body"
-    argument.value = obj
+    argument = dsl.Argument(operation, "body", obj)
     argument.is_body = True
 
     arguments.append(argument)
@@ -335,9 +321,9 @@ def body_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[dsl
 
 def operation_builder(
     obj: dsl.Object,
-    parent_obj: dsl.Object = None,
+    parent_obj: dsl.Object | None = None,
     duplicate: bool = False,
-    method: str = None,
+    method: str | None = None,
 ) -> dsl.Operation:
     """Creates and returns the dsl.Operation for an dsl.Object.
 
@@ -353,13 +339,14 @@ def operation_builder(
     Returns:
         dsl.Field: The created dsl.Operation
     """
+    if not obj.api:
+        raise Exception("The object must have an api instance before creating operations.")
+
     # parse parameters
-    api = obj.api
+    # api = obj.api
 
-    obj = api.parent
-
-    operation = dsl.Operation()
-    operation.parent = api
+    # We need to set name later, so we'll set it to a temporary value first
+    operation = dsl.Operation(parent=obj.api, name="temp", path="temp")
     operation.domain_object = obj
     operation.domain_parent = parent_obj
     operation.is_generated = True
@@ -511,7 +498,7 @@ def operation_builder(
 
 def api_builder(
     obj: dsl.Object,
-    parent_obj: dsl.Object = None,
+    parent_obj: dsl.Object | None = None,
     aggregation: bool = False,
     duplicate: bool = False,
 ) -> dsl.Object:
@@ -555,9 +542,7 @@ def api_builder(
     # we might loop multiple times over this object to add
     # aggregations and compositions
     if not obj.api:
-        obj.api = dsl.Api()
-        obj.api.namespace = obj.namespace
-        obj.api.parent = obj
+        obj.api = dsl.Api(parent=obj, namespace=obj.namespace)
 
     for method in methods:
         operation = operation_builder(obj, parent_obj, duplicate, method)
@@ -662,7 +647,7 @@ def inherit_force_generation(schema: dsl.Schema) -> None:
         matched_entity = [x.value for x in base.fields if isinstance(x.value, dsl.Base | dsl.Enum)]
 
         for entity in matched_entity:
-            entity.directives.append(dsl.Directive(name="force-generate"))
+            entity.directives.append(dsl.Directive(entity, name="force-generate"))
 
             if isinstance(entity, dsl.Base):
                 recurser(entity)

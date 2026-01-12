@@ -25,15 +25,19 @@ from qsdl import dsl
 class Enum:
     """textX Enum class"""
 
+    # required by textX
+    parent: dsl.Schema
+
     # defined in entity.tx
+    name: str
+
+    # defined in entity.tx (with defaults)
     description: list[str] = field(default_factory=list)
-    name: str = None
     # Special directives
-    namespace: str = None
+    namespace: str | None = None
     # Custom directives
     directives: list[dsl.Directive] = field(default_factory=list)
     values: list[str] = field(default_factory=list)
 
     # required by textX
-    parent: dsl.Schema = None
     _tx_fqn: str = "entity.Enum"

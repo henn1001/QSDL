@@ -277,13 +277,10 @@ class ModelClass:
 
             # create a new field for self that represents the other side
             # of the reference
-            fk_field = dsl.Field()
+            field_name = stringcase.camelcase(parent.name)
+            field_name += "s" if dsl_field.is_aggregation else ""
+            fk_field = dsl.Field(parent=_ref, name=field_name, value=parent)
 
-            # aggregations
-            fk_field.name = stringcase.camelcase(parent.name)
-            fk_field.name += "s" if dsl_field.is_aggregation else ""
-
-            fk_field.value = parent
             fk_field.is_array = dsl_field.is_aggregation
             fk_field.is_aggregation = dsl_field.is_aggregation
             fk_field.is_composition = dsl_field.is_composition

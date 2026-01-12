@@ -25,11 +25,13 @@ from qsdl import dsl
 class Scalar:
     """textX Scalar class"""
 
+    # # required by textX
+    # parent: dsl.Schema
+
     # defined in entity.tx
-    name: str = None
+    name: str
     # Custom directives
     directives: list[dsl.Directive] = field(default_factory=list)
 
     # required by textX
-    parent: dsl.Schema = None
     _tx_fqn: str = "entity.Scalar"

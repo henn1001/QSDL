@@ -19,7 +19,7 @@ from pathlib import Path
 import stringcase
 
 import qsdl.dsl.textx as xtx
-from qsdl.dsl import Field, Object, Scalar, Schema
+from qsdl import dsl
 from qsdl.render import render
 
 from . import util
@@ -27,7 +27,7 @@ from .config import IDTYPE, Config
 from .models import ApiObject, ModelObject
 
 
-def parse_apis(schema: Schema) -> list[ApiObject]:
+def parse_apis(schema: dsl.Schema) -> list[ApiObject]:
     """Parse QSDL schema into custom API model.
 
     Args:
@@ -51,7 +51,7 @@ def parse_apis(schema: Schema) -> list[ApiObject]:
     return apis
 
 
-def parse_models(schema: Schema) -> list[ModelObject]:
+def parse_models(schema: dsl.Schema) -> list[ModelObject]:
     """Parse QSDL schema into custom models.
 
     Args:
@@ -80,7 +80,7 @@ def parse_models(schema: Schema) -> list[ModelObject]:
         pageables[operation.value.name] = operation.value
 
     for entity in pageables.values():
-        model = get_paginated_object(entity, stringcase.pascalcase(entity.name))
+        model = get_paginated_object(schema, entity, stringcase.pascalcase(entity.name))
 
         # find index and insert one before the object
         index = [i for i, x in enumerate(models) if x.name == entity.name][0]
@@ -89,7 +89,7 @@ def parse_models(schema: Schema) -> list[ModelObject]:
     return models
 
 
-def get_paginated_object(obj: Object, model_name: str) -> ModelObject:
+def get_paginated_object(schema: dsl.Schema, obj: dsl.Object, model_name: str) -> ModelObject:
     """Returns a pagable custom model that is used to return a given model.
 
     Args:
@@ -101,27 +101,22 @@ def get_paginated_object(obj: Object, model_name: str) -> ModelObject:
     """
 
     # represents the model
-    new_object = Object()
-    new_object.name = model_name + "List"
+    new_object = dsl.Object(parent=schema, name=model_name + "List")
 
     # contains the item list of the entity
-    item_field = Field()
-    item_field.name = "items"
+    item_field = dsl.Field(parent=new_object, name="items", value=obj)
     item_field.is_array = True
     item_field.is_required = True
-    item_field.value = obj
     new_object.fields.append(item_field)
 
     # next cursor
-    cursor_field = Field(name="next_cursor")
-    string_scalar = Scalar(name="String")
-    cursor_field.value = string_scalar
+    string_scalar = dsl.Scalar(name="String")
+    cursor_field = dsl.Field(parent=new_object, name="next_cursor", value=string_scalar)
     new_object.fields.append(cursor_field)
 
     # total count
-    count_field = Field(name="total_count")
-    long_scalar = Scalar(name="Long")
-    count_field.value = long_scalar
+    long_scalar = dsl.Scalar(name="Long")
+    count_field = dsl.Field(parent=new_object, name="total_count", value=long_scalar)
     new_object.fields.append(count_field)
 
     # init the new model class
@@ -130,7 +125,7 @@ def get_paginated_object(obj: Object, model_name: str) -> ModelObject:
     return model
 
 
-def generate(schema: Schema, output_path: Path, config: Config) -> None:
+def generate(schema: dsl.Schema, output_path: Path, config: Config) -> None:
     """Generator func for OpenAPI"""
 
     if config.id_type not in IDTYPE.__members__:
