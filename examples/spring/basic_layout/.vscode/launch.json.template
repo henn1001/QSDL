@@ -30,16 +30,6 @@
       "args": [
         "--spring.profiles.active=prod"
       ]
-    },
-    {
-      "type": "java",
-      "name": "Create Schema",
-      "request": "launch",
-      "mainClass": "app.server.SpringBootApp",
-      "projectName": "app",
-      "args": [
-        "--spring.profiles.active=prod-init"
-      ]
-    },
+    }
   ]
 }

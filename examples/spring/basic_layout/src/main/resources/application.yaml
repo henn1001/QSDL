@@ -89,17 +89,6 @@ spring.flyway.ignoreMigrationPatterns: "*:missing"
 
 ---
 ################################################################################
-spring.config.activate.on-profile: prod-init
-
-spring.jpa.hibernate.ddl-auto: create
-spring.jpa.properties.hibernate.hbm2ddl.delimiter: ;
-
-spring.jpa.properties.jakarta.persistence.schema-generation.scripts.action: create
-spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-target: src/main/resources/db/migration/V1000__Initial.sql
-spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-source: metadata
-
----
-################################################################################
 
 ### Default Profile
 spring.profiles.active: dev

@@ -31,6 +31,18 @@ cp .vscode/settings.json.template .vscode/settings.json
 cp .vscode/launch.json.template .vscode/launch.json
 ```
 
+## Hibernate Schema Generation
+
+To generate the initial database schema migration script, you can use the following configuration:
+
+```
+spring.jpa.hibernate.ddl-auto: create
+spring.jpa.properties.hibernate.hbm2ddl.delimiter: ;
+
+spring.jpa.properties.jakarta.persistence.schema-generation.scripts.action: create
+spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-target: src/main/resources/db/migration/V1000__Initial.sql
+spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-source: metadata
+```
 
 ## Running the application
 
