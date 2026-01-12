@@ -14,8 +14,8 @@
 
 """QSDL Utility functions"""
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
+from qsdl import dsl
 
 ValueType = dsl.Scalar | dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation
 

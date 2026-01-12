@@ -20,8 +20,8 @@ from dataclasses import dataclass, field
 
 import stringcase
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.util as qutil
+from qsdl import dsl
 
 from .. import models as spring
 from .. import util

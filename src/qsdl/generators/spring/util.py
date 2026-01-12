@@ -21,10 +21,10 @@ from pathlib import Path
 import pathspec
 import stringcase
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
 import qsdl.filter as qfilter
+from qsdl import dsl
 
 from . import models as spring
 from .config import Config, Directive

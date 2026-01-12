@@ -14,8 +14,8 @@
 
 """Generator Utility functions"""
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
+from qsdl import dsl
 
 # the parsed schema definition.
 schema: dsl.Schema = None

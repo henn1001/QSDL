@@ -16,10 +16,9 @@
 
 import re
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
-from qsdl import logger
+from qsdl import dsl, logger
 from qsdl.filter import pluralize
 
 from . import CrudGeneratorEnum as CrudEnum

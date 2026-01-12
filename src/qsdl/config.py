@@ -19,7 +19,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-import qsdl.dsl.models as dsl
+from qsdl import dsl
 from qsdl.generators import GENERATORS, ConfigType
 
 

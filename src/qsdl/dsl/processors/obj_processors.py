@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-import qsdl.dsl.models as dsl
+from qsdl import dsl
 
 from ..util import description_wrapper
 

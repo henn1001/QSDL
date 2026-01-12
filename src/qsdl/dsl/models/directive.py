@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import qsdl.dsl.models as dsl
+from qsdl import dsl
 
 
 @dataclass

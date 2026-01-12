@@ -16,9 +16,9 @@
 
 from __future__ import annotations
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
+from qsdl import dsl
 
 from .config import Directive
 

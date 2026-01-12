@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 
 import stringcase
 
-import qsdl.dsl.models as dsl
+from qsdl import dsl
 
 from .. import util
 

@@ -19,7 +19,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import qsdl.dsl.textx as xtx
-from qsdl.dsl.models import Schema
+from qsdl.dsl import Schema
 from qsdl.render import render
 
 from . import import_resolver as resolver

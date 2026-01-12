@@ -19,7 +19,7 @@ from pathlib import Path
 import plantuml
 import textx.model
 
-from qsdl.dsl.models import Schema
+from qsdl.dsl import Schema
 from qsdl.render import render
 
 from . import util

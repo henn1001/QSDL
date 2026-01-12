@@ -18,10 +18,9 @@ from __future__ import annotations
 
 from textx.metamodel import TextXMetaModel
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.processors.model_parser as parser
 import qsdl.dsl.processors.model_validator as validator
-from qsdl import logger
+from qsdl import dsl, logger
 
 log = logger.getLogger(__name__)
 

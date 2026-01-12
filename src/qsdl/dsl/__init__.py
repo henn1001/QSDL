@@ -14,7 +14,16 @@
 
 """QSDLs domain specific language module"""
 
-from qsdl.dsl.models import Api, Argument, Base, Directive, Enum, Field, Object, Operation, Scalar, Schema
+from qsdl.dsl.models.api import Api
+from qsdl.dsl.models.argument import Argument
+from qsdl.dsl.models.base import Base
+from qsdl.dsl.models.directive import Directive
+from qsdl.dsl.models.enum import Enum
+from qsdl.dsl.models.field import Field
+from qsdl.dsl.models.object import Object
+from qsdl.dsl.models.operation import Operation
+from qsdl.dsl.models.scalar import Scalar
+from qsdl.dsl.models.schema import Schema
 
 __all__ = [
     "Api",
@@ -28,3 +37,23 @@ __all__ = [
     "Scalar",
     "Schema",
 ]
+
+
+def all_dsl_models():  # noqa: ANN202
+    """Returns all DSL classes.
+
+    Returns:
+        list: List of DSL classes.
+    """
+    return [
+        Api,
+        Argument,
+        Base,
+        Directive,
+        Enum,
+        Field,
+        Object,
+        Operation,
+        Scalar,
+        Schema,
+    ]

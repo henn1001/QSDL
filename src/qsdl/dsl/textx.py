@@ -22,8 +22,7 @@ from textx import metamodel_from_file
 from textx.export import PlantUmlRenderer, metamodel_export
 from textx.metamodel import TextXMetaModel
 
-import qsdl.dsl.models as dsl
-from qsdl import __folder__, logger
+from qsdl import __folder__, dsl, logger
 from qsdl.dsl.processors.model_processor import model_merger, model_post_processor, model_processor
 from qsdl.dsl.processors.obj_processors import obj_processors
 

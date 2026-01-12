@@ -21,8 +21,8 @@ import re
 import textx.metamodel
 from textx.exceptions import TextXSemanticError
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
+from qsdl import dsl
 
 from . import CrudGeneratorEnum as CrudEnum
 

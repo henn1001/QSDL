@@ -16,7 +16,7 @@
 
 from pathlib import Path
 
-from qsdl.dsl.models import Schema
+from qsdl.dsl import Schema
 
 from .config import Config
 

@@ -19,7 +19,7 @@ from pathlib import Path
 import stringcase
 
 import qsdl.dsl.textx as xtx
-from qsdl.dsl.models import Field, Object, Scalar, Schema
+from qsdl.dsl import Field, Object, Scalar, Schema
 from qsdl.render import render
 
 from . import util

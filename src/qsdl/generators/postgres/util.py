@@ -16,9 +16,9 @@
 
 from __future__ import annotations
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.util as qutil
 import qsdl.filter as qfilter
+from qsdl import dsl
 
 from .config import Config, Directive
 from .models import Column, Table

@@ -18,7 +18,7 @@ import importlib
 from collections.abc import Callable
 from pathlib import Path
 
-from qsdl.dsl.models import Schema
+from qsdl.dsl import Schema
 from qsdl.generators.base_config import BaseConfig
 
 ConfigType = type[BaseConfig]

@@ -20,8 +20,8 @@ import flatten_json
 import stringcase
 import yaml
 
-import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
+from qsdl import dsl
 
 from .config import Config
 
