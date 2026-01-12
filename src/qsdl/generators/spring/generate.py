@@ -18,8 +18,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pathspec
-
 import qsdl.dsl.textx as xtx
 from qsdl.dsl.models import Schema
 from qsdl.render import render
@@ -27,7 +25,7 @@ from qsdl.render import render
 from . import import_resolver as resolver
 from . import util
 from .config import IDTYPE, Config
-from .models import ApiClass, ModelClass, Package
+from .models import ApiClass, EnumClass, ModelClass, Package
 
 
 def parse_apis(schema: Schema) -> list[ApiClass]:
@@ -66,11 +64,10 @@ def parse_models(schema: Schema) -> list[ModelClass]:
     """
     models = []
 
-    enum_list = xtx.get_children_of_enum(schema)
     base_list = xtx.get_children_of_base(schema)
     obj_list = xtx.get_children_of_object(schema)
 
-    for entity in enum_list + base_list + obj_list:
+    for entity in base_list + obj_list:
         new_model = ModelClass().build(entity)
         models.append(new_model)
 
@@ -83,40 +80,23 @@ def parse_models(schema: Schema) -> list[ModelClass]:
     return models
 
 
-def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list) -> None:
-    """Removes all generated files mentioned in .qsdl-ignore.
-
-    Utilizes the pathspec python package.
-    https://github.com/cpburnz/python-path-specification
+def parse_enums(schema: Schema) -> list[EnumClass]:
+    """Parse QSDL schema into custom enum models.
 
     Args:
-        output_path (Path): [description]
-        domain_files (list): [description]
-        model_files (list): [description]
-        supporting_files (list): [description]
+        schema (Schema): The QSDL schema model.
+    Returns:
+        list[ModelClass]: The parsed enum models.
     """
-    ignorefile_path = output_path / ".qsdl-ignore"
+    enums = []
 
-    if ignorefile_path.is_file():
-        supporting_files.remove((".qsdl-ignore.j2", ".qsdl-ignore"))
+    dsl_enums = xtx.get_children_of_enum(schema)
 
-        # read the spec
-        with open(ignorefile_path, encoding="utf-8") as infile:
-            spec = pathspec.PathSpec.from_lines("gitwildmatch", infile)
+    for dsl_enum in dsl_enums:
+        enum = EnumClass.from_ref(dsl_enum)
+        enums.append(enum)
 
-        # loop over each all files and remove matches
-        # note the copy() - we dont want to modify the list directly
-        for src, dest, _ in api_files.copy():
-            if spec.match_file(dest):
-                api_files.remove((src, dest, _))
-
-        for src, dest, _ in model_files.copy():
-            if spec.match_file(dest):
-                model_files.remove((src, dest, _))
-
-        for src, dest in supporting_files.copy():
-            if spec.match_file(dest):
-                supporting_files.remove((src, dest))
+    return enums
 
 
 def generate_openapi(output_path: Path) -> None:
@@ -181,8 +161,9 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
     util.Store.is_id_long = id_type == "Long"
 
     # parse models and apis
-    util.Store.models = models = parse_models(schema)
-    util.Store.apis = apis = parse_apis(schema)
+    util.Store.models = parse_models(schema)
+    util.Store.enums = parse_enums(schema)
+    util.Store.apis = parse_apis(schema)
 
     # resolve all dynamic imports
     resolver.resolve_dynamic_imports()
@@ -193,7 +174,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
     # loop and generate domain files
     api_files = []
 
-    for api in apis:
+    for api in util.Store.apis:
         api.package.slashed = True
 
         # fmt: off
@@ -212,24 +193,28 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
     # loop and generate model files
     model_files = []
 
-    for model in models:
+    for model in util.Store.models:
         model.package.slashed = True
         # fmt: off
-        if model.is_enum:
-            model_files.append(("src/main/java/constant/Enum.j2", f"src/main/java/{model.package.enum}/{model.name}.java", model))
-        else:
-            model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
-
-        # generate entities for both objects and base entities
-        if config.database == "HIBERNATE" and (model.is_object or model.is_entity) and not model.is_enum:
-            model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))
-            model_files.append(("src/main/java/domain/MapStruct.j2", f"src/main/java/{model.package.mapper}/{model.name}MapStruct.java", model))
+        model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
 
         if config.database == "HIBERNATE" and model.is_object:
+            model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))
+            model_files.append(("src/main/java/domain/MapStruct.j2", f"src/main/java/{model.package.mapper}/{model.name}MapStruct.java", model))
             model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{model.package.repository}/{model.name}Repository.java", model))
             model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{model.package.repository}/{model.name}RepositoryTest.java", model))
         # fmt: on
         model.package.slashed = False
+
+    # loop and generate enum files
+    enum_files = []
+
+    for enum in util.Store.enums:
+        enum.package.slashed = True
+        # fmt: off
+        enum_files.append(("src/main/java/constant/Enum.j2", f"src/main/java/{enum.package.enum}/{enum.name}.java", enum))
+        # fmt: on
+        enum.package.slashed = False
 
     # fmt: off
     supporting_files = [
@@ -296,7 +281,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         # fmt: on
 
     # remove ignored files from generator
-    remove_ignored_files(output_path, api_files, model_files, supporting_files)
+    util.remove_ignored_files(output_path, api_files, model_files, supporting_files)
 
     # enable dotting
     package.slashed = False
@@ -339,6 +324,14 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
     for src, dest, api in api_files:
         context["api"] = api
         context["model"] = api.model
+        output_file = output_path / dest
+        template_path = Path(__file__).parent / "template" / src
+        macro_path = Path(__file__).parent / "template" / "_macro"
+        render(output_file, context, template_path, macro_path=macro_path)
+
+    # generate enums
+    for src, dest, enum in enum_files:
+        context["enum"] = enum
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
         macro_path = Path(__file__).parent / "template" / "_macro"

@@ -13,11 +13,11 @@ package {{model.package.entity}};
 @Getter
 @Setter
 {% endif %}
-{% if model.is_object or model.is_entity %}@Entity{{"\n"}}{% endif %}
-{% if use_auditing and (model.is_object or model.is_entity) %}@Audited{{"\n"}}{% endif %}
+@Entity
+{% if use_auditing %}@Audited{{"\n"}}{% endif %}
 @Table(name = "{{table_prefix}}{{model.name|snake|lower}}")
 public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersistentObject{% else %} extends AbstractPersistentBase{% endif %} {
-{% for field in model.fields if not field.is_id and not field.is_transient %}
+{% for field in model.entity_fields if not field.is_id and not field.is_transient %}
 
     {# 
         Required fields
@@ -38,7 +38,7 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
     {# 
         Set the Field definition
     #}
-    {% set typeName = field.type + "Entity" if field.is_object or field.is_base else field.entity_type %}
+    {% set typeName = field.type + "Entity" if field.is_object else field.entity_type %}
     {% if field.is_array and field.is_relation %}
     public final Set<{{typeName}}> {{field.name}} = new LinkedHashSet<>();
     {% elif field.is_array %}
@@ -47,7 +47,7 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
     {{ "private" if use_encapsulation else "public"}} {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
     {% endif %}
 {% endfor %}
-    {% set removeHookList = model.fields| selectattr("is_aggregation") | rejectattr("is_relation_owner") | list %}
+    {% set removeHookList = model.entity_fields | selectattr("is_aggregation") | rejectattr("is_relation_owner") | list %}
     {% if removeHookList %}
 
     @PreRemove
@@ -57,7 +57,7 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
         {% endfor %}
     }
     {% endif %}
-{% for field in model.fields if field.is_relation and field.is_array %}
+{% for field in model.entity_fields if field.is_relation and field.is_array %}
 
     public void addTo{{field.type}}s({{field.type}}Entity o) {
 {% if use_encapsulation %}

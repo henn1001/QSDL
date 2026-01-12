@@ -44,8 +44,10 @@ class ModelField:
     is_required: bool = False
     is_read_only: bool = False
     is_write_only: bool = False
+    is_opaque: bool = False
     is_unique: bool = False
     is_hidden: bool = False
+    is_transient: bool = False
     is_query: bool = False
 
     is_enum: bool = False
@@ -70,6 +72,8 @@ class ModelField:
     max_size: str = None
     default: str = None
 
+    dto_nested_path: str = None  # Nested path for DTO mapping (e.g., "aField.intField")
+
     def build(self, _ref: dsl.Field) -> ModelField:
         """Init our dataclass by reading information from _ref"""
 
@@ -86,6 +90,7 @@ class ModelField:
         self.is_required = _ref.is_required
         self.is_read_only = _ref.is_read_only
         self.is_write_only = _ref.is_write_only
+        self.is_opaque = _ref.is_opaque
         self.is_unique = _ref.is_unique
         self.is_hidden = _ref.is_hidden
         self.is_transient = _ref.is_transient
@@ -151,21 +156,19 @@ class ModelClass:
     namespace: str = None
     description: list[str] = field(default_factory=list)
 
-    is_enum: bool = False
     is_base: bool = False
     is_object: bool = False
 
     fields: list[ModelField] = field(default_factory=list)
+    entity_fields: list[ModelField] = field(default_factory=list)
     constants: list[str] = field(default_factory=list)
 
     # addons
     is_supertype: bool = False
-    is_entity: bool = False
     is_aggregated: bool = False
     has_relation: bool = False
     has_required: bool = False
     has_query: bool = False
-    has_objectnode: bool = False
 
     package: spring.Package = None
 
@@ -173,7 +176,7 @@ class ModelClass:
 
     parents: list[spring.Parent] = field(default_factory=list)
 
-    def build(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> ModelClass:
+    def build(self, _ref: dsl.Base | dsl.Object) -> ModelClass:
         """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention
@@ -183,18 +186,15 @@ class ModelClass:
         self.description = _ref.description
 
         # identify type
-        self.is_enum = _ref._tx_fqn in ["entity.Enum"]
         self.is_base = _ref._tx_fqn in ["entity.Base"]
         self.is_object = _ref._tx_fqn in ["entity.Object"]
 
         # addons
         self.is_supertype = util.is_supertype(_ref) if self.is_base else False
-        self.is_entity = util.is_used_as_field_value(_ref)
         self.is_aggregated = util.has(_ref, is_aggregated=True)
         self.has_relation = util.has(_ref, has_relation=True)
         self.has_required = util.has(_ref, has_required_ignore_id=True)
         self.has_query = util.has(_ref, has_query=True)
-        self.has_objectnode = util.has(_ref, has_type=["Object"])
 
         # handle package path and imports
         self.package = spring.Package(util.Store.config)
@@ -204,18 +204,18 @@ class ModelClass:
             self.package.set_namespace(package_directive.value)
 
         # add attributes
-        self._add_attributes(_ref)
-        self._add_constants(_ref)
+        self._add_fields(_ref)
+        self._add_entity_fields(_ref)
         self._add_relations(_ref)
         self._add_foreign_keys(_ref)
 
         return self
 
-    def _add_attributes(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
+    def _add_fields(self, _ref: dsl.Base | dsl.Object) -> None:
         """Creates and adds all visible attributes to a ModelClass"""
 
         # filter on base and object
-        if not (self.is_base or self.is_object):
+        if not ((self.is_base and isinstance(_ref, dsl.Base)) or (self.is_object and isinstance(_ref, dsl.Object))):
             return
 
         # filter only non relations
@@ -226,17 +226,21 @@ class ModelClass:
 
             self.fields.append(new_model_field)
 
-    def _add_constants(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
-        """Adds all values for Enums"""
+    def _add_entity_fields(self, _ref: dsl.Base | dsl.Object) -> None:
+        """Creates and adds all visible attributes to a ModelClass"""
 
-        # filter only enum
-        if not self.is_enum:
+        # filter on base and object
+        if not ((self.is_base and isinstance(_ref, dsl.Base)) or (self.is_object and isinstance(_ref, dsl.Object))):
             return
 
-        for value in _ref.values:
-            self.constants.append(value)
+        # filter only non relations
+        dsl_fields = [x for x in _ref.fields if not x.is_relation]
 
-    def _add_relations(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
+        # Use the refactored extract_embedded_columns to handle all field processing
+        model_entity_fields = util.extract_embedded_columns(_ref, fields=dsl_fields)
+        self.entity_fields.extend(model_entity_fields)
+
+    def _add_relations(self, _ref: dsl.Base | dsl.Object) -> None:
         """Creates and adds all explicit relation attributes to a ModelClass"""
 
         # filter on object
@@ -251,9 +255,11 @@ class ModelClass:
             new_model_field.name = stringcase.camelcase(new_model_field.type)
             new_model_field.name += "s" if new_model_field.is_array else ""
 
+            # add to both is probably not needed but a workaround for now
             self.fields.append(new_model_field)
+            self.entity_fields.append(new_model_field)
 
-    def _add_foreign_keys(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
+    def _add_foreign_keys(self, _ref: dsl.Base | dsl.Object) -> None:
         """Creates and adds all implicit relation attributes to a ModelClass"""
 
         # filter on object
@@ -286,7 +292,9 @@ class ModelClass:
             new_model_field.foreign_key_name = dsl_field.name
             new_model_field.foreign_key_is_array = dsl_field.is_array
 
+            # add to both is probably not needed but a workaround for now
             self.fields.append(new_model_field)
+            self.entity_fields.append(new_model_field)
 
             # update relation flag because these do not get picked up by the util method
             self.has_relation = True
