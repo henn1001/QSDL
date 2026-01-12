@@ -16,9 +16,15 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
+import pathspec
+import stringcase
+
 import qsdl.dsl.models as dsl
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
+import qsdl.filter as qfilter
 
 from . import models as spring
 from .config import Config, Directive
@@ -31,6 +37,7 @@ class Store:
     config: Config = None
     models: list[spring.ModelClass] = []
     apis: list[spring.ApiClass] = []
+    enums: list[spring.EnumClass] = []
     package: spring.Package = None
     packages: list[spring.Package] = []
     is_id_long: bool = True
@@ -64,6 +71,42 @@ def custom_type_entity(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) ->
 def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
     """Converts builtin types to generator specific types."""
     return qutil.map_custom_type(entity, {}, None, Directive.TYPE, ["entity", "pattern"], "pattern")
+
+
+def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list) -> None:
+    """Removes all generated files mentioned in .qsdl-ignore.
+
+    Utilizes the pathspec python package.
+    https://github.com/cpburnz/python-path-specification
+
+    Args:
+        output_path (Path): [description]
+        domain_files (list): [description]
+        model_files (list): [description]
+        supporting_files (list): [description]
+    """
+    ignorefile_path = output_path / ".qsdl-ignore"
+
+    if ignorefile_path.is_file():
+        supporting_files.remove((".qsdl-ignore.j2", ".qsdl-ignore"))
+
+        # read the spec
+        with open(ignorefile_path, encoding="utf-8") as infile:
+            spec = pathspec.PathSpec.from_lines("gitwildmatch", infile)
+
+        # loop over each all files and remove matches
+        # note the copy() - we dont want to modify the list directly
+        for src, dest, _ in api_files.copy():
+            if spec.match_file(dest):
+                api_files.remove((src, dest, _))
+
+        for src, dest, _ in model_files.copy():
+            if spec.match_file(dest):
+                model_files.remove((src, dest, _))
+
+        for src, dest in supporting_files.copy():
+            if spec.match_file(dest):
+                supporting_files.remove((src, dest))
 
 
 def has(
@@ -147,55 +190,6 @@ def has(
     return ret
 
 
-def controller_has(
-    entity: dsl.Api,
-    has_objectnode: bool = False,
-    has_enum: bool = False,
-    has_gen_patch: bool = False,
-) -> bool:
-    """Checks if the Operations of a Api has various attributes.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-        has_objectnode (bool, optional): [description]. Defaults to False.
-        has_enum (bool, optional): [description]. Defaults to False.
-        has_gen_patch (bool, optional): [description]. Defaults to False.
-
-    Returns:
-        bool:  Returns True on detection.
-    """
-    if entity._tx_fqn in ["entity.Api"]:
-        for opr in entity.operations:
-            # for the api imports, we only care about the operation return value
-            # and if the body has exactly one parameter
-            args = [opr.value] if opr.value else []
-
-            if len(opr.body_parameters) == 1 and opr.body_parameters[0].value:
-                arg = opr.body_parameters[0].value
-                if arg._tx_fqn not in ["entity.Base", "entity.Object"]:
-                    return True
-                else:
-                    args.append(arg)
-
-            elif has_objectnode and len(opr.body_parameters) > 1:
-                return True
-
-            for arg in args:
-                # checks for enum parameters
-                if has_enum and arg and arg._tx_fqn == "entity.Enum":
-                    return True
-
-                # checks for objectnode parameters
-                if has_objectnode and arg and arg.name == "Object":
-                    return True
-
-            # checks for generated patch endpoints
-            if has_gen_patch and opr.method == "PATCH" and opr.is_generated:
-                return True
-
-    return False
-
-
 def is_supertype(entity: dsl.Base | dsl.Object) -> bool:
     """Checks if the Base or Object is used somewhere as a supertype.
 
@@ -213,23 +207,6 @@ def is_supertype(entity: dsl.Base | dsl.Object) -> bool:
         if supertypes and entity in supertypes:
             return True
     return False
-
-
-def is_used_as_field_value(entity: dsl.Base | dsl.Object) -> bool:
-    """Checks if the provided Base or Object is used anywhere.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-        field_only (bool, optional): Checks only fields. Defaults to False.
-
-    Returns:
-        bool: [description]
-    """
-    entity_list = []
-
-    entity_list += xtx.get_children_of_field(Store.schema)
-
-    return any(itr.value == entity for itr in entity_list)
 
 
 def add_parents_to_model(models: list[spring.ModelClass]) -> None:
@@ -294,7 +271,6 @@ def sort_api_controller(api_list: list[spring.ApiClass]) -> list[spring.ApiClass
             api_store[api_name] = api
         elif api_name in api_store and api.has_generated:
             api.operations.extend(api_store[api_name].operations)
-            api.has_objectnode = api_store[api_name].has_objectnode
             api_store[api_name] = api
         else:
             api_store[api_name].operations.extend(api.operations)
@@ -378,3 +354,46 @@ def get_parent_fields(obj_name: str, filter_relations: bool = True) -> list[dsl.
     fields = [x for x in fields if x.is_relation] if filter_relations else fields
 
     return fields
+
+
+def extract_embedded_columns(
+    ref: dsl.Base | dsl.Object, prefix: str = "", dto_path: str = "", fields: list[dsl.Field] | None = None
+) -> list[spring.ModelField]:
+    """Recursively flattens Base type fields into columns with prefixes.
+
+    Args:
+        ref: The Base or Object reference to process
+        prefix: Snake_case prefix for entity column names (e.g., "a_field_")
+        dto_path: Nested DTO path for mapping (e.g., "aField.")
+        fields: Optional pre-filtered list of fields to process
+
+    Note: This function is only called for Base types WITHOUT @opaque directive.
+    Base types with @opaque are stored as JSONB and don't reach this function.
+    """
+    model_fields = []
+
+    # Use provided fields if available, otherwise use ref.fields
+    dsl_fields = fields if fields is not None else ref.fields
+
+    for dsl_field in dsl_fields:
+        if isinstance(dsl_field.value, dsl.Base) and not (dsl_field.is_array or dsl_field.is_opaque):
+            # Flatten Base types - recursively process nested Base fields
+            embedded_prefix = prefix + qfilter.snakecase(dsl_field.name).lower() + "_"
+            embedded_dto_path = dto_path + stringcase.camelcase(dsl_field.name) + "."
+            embedded_fields = extract_embedded_columns(dsl_field.value, embedded_prefix, embedded_dto_path)
+            model_fields.extend(embedded_fields)
+        else:
+            # Handle regular fields (non-Base types or Base types that are arrays/opaque)
+            new_field = spring.ModelField().build(dsl_field)
+
+            # Apply prefix to names if we're in a nested context
+            if prefix:
+                prefixed_snake = prefix + qfilter.snakecase(dsl_field.name).lower()
+                new_field.name = stringcase.camelcase(prefixed_snake)
+                new_field.json_key = prefixed_snake
+                # Set the nested DTO path (remove trailing dot)
+                new_field.dto_nested_path = dto_path + stringcase.camelcase(dsl_field.name)
+
+            model_fields.append(new_field)
+
+    return model_fields

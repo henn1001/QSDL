@@ -42,28 +42,27 @@
             #}
             {% if field.is_aggregation and field.foreign_key_is_array %}
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "{{table_prefix}}{{field.type|lower}}_to_{{model.name|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{field.type|lower}}_id"))
-            {% elif field.is_aggregation and not field.foreign_key_is_array    %}
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(name = "{{table_prefix}}{{field.type|lower}}_to_{{table_prefix}}{{model.name|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{field.type|lower}}_id"))
+            {% elif field.is_aggregation and not field.foreign_key_is_array %}
+    @ManyToOne(fetch = FetchType.LAZY) aaaaaaaaaa
     @JoinColumn(name = "{{field.type|lower}}_id")
             {% elif field.is_composition and field.foreign_key_is_array %}
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "{{field.type|lower}}_id")
+    @JoinColumn(name = "{{field.foreign_key_name}}_{{field.type|lower}}_id")
             {% elif field.is_composition and not field.foreign_key_is_array %}
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY) aaaaaaaaaa
     @JoinColumn(name = "{{field.type|lower}}_id")
             {% endif %}
     {#
         Nested Objects
     #}
-    {% elif field.is_array and (field.is_object or field.is_base) %}
+    {% elif field.is_array and field.is_object %}
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "{{field.name|snake}}_{{model.name|snake}}_id")
-    {% elif not field.is_array and (field.is_object or field.is_base) %}
+    {% elif not field.is_array and field.is_object %}
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "{{field.name|snake}}_{{field.type|snake}}_id")
-    {% elif field.is_array %}
-    @ElementCollection
-    @CollectionTable(name="{{table_prefix}}{{model.name|lower}}_to_{{field.type|lower|lower}}")
+    {% elif (field.is_array or field.is_opaque) and field.is_base %}
+    @JdbcTypeCode(SqlTypes.JSON)
     {% endif %}
 {% endmacro %}

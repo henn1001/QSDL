@@ -131,7 +131,11 @@ def generate_imports_for_template(
         "Entity.j2": [
             # Enum imports
             *(
-                [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
+                [
+                    f"import {util.Store.package.enum}.{field.type};"
+                    for field in model_class.entity_fields
+                    if field.is_enum
+                ]
                 if model_class
                 else []
             ),
@@ -139,9 +143,19 @@ def generate_imports_for_template(
             *(
                 [
                     f"import {util.get_model_for(field.type).package.entity}.{util.get_model_for(field.type).name}Entity;"
-                    for field in model_class.fields
-                    if (field.is_object or field.is_base)
-                    and util.get_model_for(field.type).package.entity != model_class.package.entity
+                    for field in model_class.entity_fields
+                    if field.is_object and util.get_model_for(field.type).package.entity != model_class.package.entity
+                ]
+                if model_class
+                else []
+            ),
+            # Nested base imports
+            # import if base is not in same package as entity
+            *(
+                [
+                    f"import {util.get_model_for(field.type).package.domain}.{field.type};"
+                    for field in model_class.entity_fields
+                    if field.is_base and util.get_model_for(field.type).package.domain != model_class.package.entity
                 ]
                 if model_class
                 else []

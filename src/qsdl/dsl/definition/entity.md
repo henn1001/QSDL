@@ -64,6 +64,7 @@ class entity.Field  {
   is_write_only : optional<BOOL>
   is_composition : optional<BOOL>
   is_aggregation : optional<BOOL>
+  is_opaque : optional<BOOL>
   is_unique : optional<BOOL>
   is_hidden : optional<BOOL>
   is_transient : optional<BOOL>
@@ -144,11 +145,11 @@ entity.Argument -->  entity.ValueType: value
 legend
   Match rules:
   |= Name  |= Rule details |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Description |  |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | Description |  |
 end legend
 
 @enduml

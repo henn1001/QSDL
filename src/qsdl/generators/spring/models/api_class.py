@@ -189,7 +189,6 @@ class ApiClass:
 
     # addons
     has_generated: bool = False
-    has_objectnode: bool = False
 
     package: spring.Package = None
 
@@ -213,7 +212,6 @@ class ApiClass:
         self._add_operations(_ref)
 
         self.has_generated = _ref.has_generated
-        self.has_objectnode = util.controller_has(_ref, has_objectnode=True)
 
         # handle package path and imports
         if self.model:

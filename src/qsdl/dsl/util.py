@@ -146,20 +146,6 @@ def get_type_override(
     return ret
 
 
-def is_used_as_field_value(schema: dsl.Schema, entity: dsl.Base | dsl.Object) -> bool:
-    """Checks if the provided Base or Object is used anywhere.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: [description]
-    """
-    entity_list = xtx.get_children_of_field(schema)
-
-    return any(itr.value == entity for itr in entity_list)
-
-
 def get_composition_fields(schema: dsl.Schema, obj_name: str) -> list[dsl.Field]:
     """Returns all Fields whose value is this Object.
 
