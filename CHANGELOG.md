@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://gitlab.com/henn1001/qsdl/compare/v4.5.0...v5.0.0) (2026-01-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **spring:** adapt to new opaque and postgres schema behavior
+* **spring:** added include postgres to spring generator
+* **core:** added a new directive override that is now required when redefining extended fields
+* **spring:** upgrade to java 25
+* switch from poetry to uv
+
+### Features
+
+* add i18n generator ([e31ddc3](https://gitlab.com/henn1001/qsdl/commit/e31ddc3cca142097d362354d252fd6a04639e8f2))
+* **core:** added a new directive override that is now required when redefining extended fields ([17583d1](https://gitlab.com/henn1001/qsdl/commit/17583d1c22e32df71c9a4a698b961433fe844b2e))
+* **core:** added two new directives, ignore removes a field completely from further generation and transient removes it from database layers ([d2e04a2](https://gitlab.com/henn1001/qsdl/commit/d2e04a2f26251c9e0d02801f0282a2dc2359a46f))
+* **core:** allow extending multiple base types at once and added validation that prevents recursion ([0e36ce8](https://gitlab.com/henn1001/qsdl/commit/0e36ce830c6143458abb5aabf71de7b14ff8e825))
+* **core:** introduce opaque directive that will introduce breaking changes on database models ([29520f4](https://gitlab.com/henn1001/qsdl/commit/29520f449c085e55206bd56f76dc3b05846d8c57))
+* migrated from click to typer ([aa7aee6](https://gitlab.com/henn1001/qsdl/commit/aa7aee68d7f7f31c223a3eb0cb62e9f5436bea1a))
+* **postgres:** all new postgres schema generator that integrates into the spring generator ([d153cb8](https://gitlab.com/henn1001/qsdl/commit/d153cb8b5813b0649d736b3814ff3ee31ce82579))
+* **spring:** adapt to new opaque and postgres schema behavior ([b69d040](https://gitlab.com/henn1001/qsdl/commit/b69d0400a536f9d9576ede8b7e860d281921c15d))
+* **spring:** added include postgres to spring generator ([146e89c](https://gitlab.com/henn1001/qsdl/commit/146e89c6282e62d57edbcc0b51767189cf07998b))
+* **spring:** introduce new parameter table_prefix - can be used for mitigating issues with preserved database names ([2827b53](https://gitlab.com/henn1001/qsdl/commit/2827b530abab4a07bae777f5d3c225394ee857ab))
+* **spring:** introduce spotless with palantir formatting - folder restructuring and other improvements ([a8d1b80](https://gitlab.com/henn1001/qsdl/commit/a8d1b80affa7b338038ff8d781a25162894d2788))
+* **spring:** switch AppProperties from Class to Record ([64dbbf1](https://gitlab.com/henn1001/qsdl/commit/64dbbf186270e967965ef8931e3846c619c26e5f))
+* **spring:** upgrade to java 25 ([f970fab](https://gitlab.com/henn1001/qsdl/commit/f970fab2e794c9c53cd2e70db5327074ab069c5b))
+
+
+### Bug Fixes
+
+* **core:** allow empty base declarations - usefull when extending ([4934e16](https://gitlab.com/henn1001/qsdl/commit/4934e16b2055fcacbdd9edad1671d91bb406d13d))
+* re-added pv shortcut to print version ([3a23ed9](https://gitlab.com/henn1001/qsdl/commit/3a23ed9e57798ce8f452ffb032a3d4f15e7eb66c))
+* **spring:** do not use min/max annotation for lists of integer or long ([7834ae9](https://gitlab.com/henn1001/qsdl/commit/7834ae914f4c25c566a2b73c4b45c4f3046aac7b))
+* **spring:** prevent duplicates in repository and mapper package resolution ([8b5fb5b](https://gitlab.com/henn1001/qsdl/commit/8b5fb5ba848591c842c0499ad8db9a8faf662036))
+
+
+### build
+
+* switch from poetry to uv ([d28a934](https://gitlab.com/henn1001/qsdl/commit/d28a93435f62b47514687738697bad683d5a5bbc))
+
 ## [4.5.0](https://gitlab.com/henn1001/qsdl/compare/v4.4.0...v4.5.0) (2025-08-03)
 
 
