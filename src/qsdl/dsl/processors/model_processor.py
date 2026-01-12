@@ -14,8 +14,6 @@
 
 """Model post-processor"""
 
-from __future__ import annotations
-
 from textx.metamodel import TextXMetaModel
 
 import qsdl.dsl.processors.model_parser as parser

@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from typing import Self
+
 import qsdl.filter as qfilter
 from qsdl import dsl
 
@@ -42,7 +44,7 @@ class Column:
         self.is_unique: bool = False
 
     @staticmethod
-    def from_ref(_ref: dsl.Field, prefix: str = "") -> Column:
+    def from_ref(_ref: dsl.Field, prefix: str = "") -> Self:
         """Rebuilds the column from a new reference"""
         column = Column()
         column._ref = _ref

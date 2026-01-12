@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Self
 
 from qsdl import dsl
 
@@ -46,7 +47,7 @@ class Parameter:
     format: str = None
     pattern: str = None
 
-    def build(self, _ref: dsl.Argument) -> Parameter:
+    def build(self, _ref: dsl.Argument) -> Self:
         """Builds self from dsl.Argument"""
 
         self.name = _ref.name
@@ -100,7 +101,7 @@ class Operation:
     consumes: str = None
     produces: str = None
 
-    def build(self, _ref: dsl.Operation) -> Operation:
+    def build(self, _ref: dsl.Operation) -> Self:
         """Builds self from dsl.Operation"""
 
         self.name = _ref.name
@@ -187,7 +188,7 @@ class ApiObject:
     description: list[str] = field(default_factory=list)
     operations: list = field(default_factory=list)
 
-    def build(self, _ref: dsl.Api) -> ApiObject:
+    def build(self, _ref: dsl.Api) -> Self:
         """Builds self from dsl.Api"""
 
         self.name = _ref.parent.name if isinstance(_ref.parent, dsl.Object) else "Default"

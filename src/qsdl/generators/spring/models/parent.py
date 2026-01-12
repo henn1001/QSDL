@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Self
 
 from .. import models as spring
 from .. import util
@@ -31,7 +32,7 @@ class Parent:
     hibernate: spring.HibernateParentInfo = None
     predicate: str = None
 
-    def build(self, parent: spring.ModelClass, child: spring.ModelClass) -> Parent:
+    def build(self, parent: spring.ModelClass, child: spring.ModelClass) -> Self:
         """Builds self from Parent and Child spring.ModelClass"""
 
         self.model = parent

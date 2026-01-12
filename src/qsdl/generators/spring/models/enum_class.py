@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from typing import Self
+
 from qsdl import dsl
 
 from .. import models as spring
@@ -34,7 +36,7 @@ class EnumClass:
         self.package: spring.Package = spring.Package(util.Store.config)
 
     @staticmethod
-    def from_ref(_ref: dsl.Enum) -> EnumClass:
+    def from_ref(_ref: dsl.Enum) -> Self:
         """Rebuilds the enum class from a new reference"""
         enum = EnumClass()
         enum._ref = _ref

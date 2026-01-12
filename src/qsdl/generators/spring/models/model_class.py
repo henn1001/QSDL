@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Self
 
 import stringcase
 
@@ -74,7 +75,7 @@ class ModelField:
 
     dto_nested_path: str = None  # Nested path for DTO mapping (e.g., "aField.intField")
 
-    def build(self, _ref: dsl.Field) -> ModelField:
+    def build(self, _ref: dsl.Field) -> Self:
         """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention
@@ -176,7 +177,7 @@ class ModelClass:
 
     parents: list[spring.Parent] = field(default_factory=list)
 
-    def build(self, _ref: dsl.Base | dsl.Object) -> ModelClass:
+    def build(self, _ref: dsl.Base | dsl.Object) -> Self:
         """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention

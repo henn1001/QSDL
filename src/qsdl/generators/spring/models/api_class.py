@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Self
 
 import stringcase
 
@@ -47,7 +48,7 @@ class Parameter:
     is_base: bool = False
     is_object: bool = False
 
-    def build(self, _ref: dsl.Argument) -> Parameter:
+    def build(self, _ref: dsl.Argument) -> Self:
         """Builds self from dsl.Argument"""
 
         self.name = stringcase.camelcase(_ref.name)
@@ -98,7 +99,7 @@ class Operation:
     consumes: str = None
     produces: str = None
 
-    def build(self, _ref: dsl.Operation) -> Operation:
+    def build(self, _ref: dsl.Operation) -> Self:
         """Builds self from dsl.Operation"""
 
         self.name = _ref.name
@@ -192,7 +193,7 @@ class ApiClass:
 
     package: spring.Package = None
 
-    def build(self, _ref: dsl.Api) -> ApiClass:
+    def build(self, _ref: dsl.Api) -> Self:
         """Builds self from dsl.Api"""
 
         # The api name equals the object name to unless it is not part of a object

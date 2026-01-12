@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Self
 
 import stringcase
 
@@ -56,7 +57,7 @@ class ModelField:
     max_size: str = None
     default: str = None
 
-    def build(self, _ref: dsl.Field) -> ModelField:
+    def build(self, _ref: dsl.Field) -> Self:
         """Builds self from dsl.Field"""
 
         # rename to naming convention
@@ -119,7 +120,7 @@ class ModelObject:
     is_supertype: bool = False
     is_nested: bool = False
 
-    def build(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> ModelObject:
+    def build(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> Self:
         """Builds self from dsl.Enum | dsl.Base | dsl.Object"""
 
         # rename to naming convention

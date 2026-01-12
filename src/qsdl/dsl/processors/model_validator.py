@@ -14,8 +14,6 @@
 
 """Model validation"""
 
-from __future__ import annotations
-
 import re
 
 import textx.metamodel

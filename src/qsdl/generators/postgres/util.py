@@ -14,8 +14,6 @@
 
 """Generator Utility functions"""
 
-from __future__ import annotations
-
 import qsdl.dsl.util as qutil
 import qsdl.filter as qfilter
 from qsdl import dsl

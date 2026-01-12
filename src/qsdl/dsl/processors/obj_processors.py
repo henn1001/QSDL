@@ -14,8 +14,6 @@
 
 """Entity post-processor"""
 
-from __future__ import annotations
-
 from qsdl import dsl
 
 from ..util import description_wrapper

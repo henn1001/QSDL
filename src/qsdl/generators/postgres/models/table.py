@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from typing import Self
+
 import qsdl.filter as qfilter
 from qsdl import dsl
 
@@ -36,7 +38,7 @@ class Table:
         self.constraints: list[str] = []
 
     @staticmethod
-    def from_ref(_ref: dsl.Object | dsl.Base) -> Table:
+    def from_ref(_ref: dsl.Object | dsl.Base) -> Self:
         """Rebuilds the table from a new reference"""
         table = Table()
         table._ref = _ref
