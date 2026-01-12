@@ -5,7 +5,7 @@
       "updater": "util/scripts/standard-version-pyproject.js"
     },
     {
-      "filename": "qsdl/__init__.py",
+      "filename": "src/qsdl/__init__.py",
       "updater": "util/scripts/standard-version-init.js"
     }
   ]
