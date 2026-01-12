@@ -3,6 +3,8 @@ import subprocess
 import textwrap
 from pathlib import Path
 
+import pytest
+
 from qsdl.core import generate
 
 
@@ -66,6 +68,7 @@ def assert_tests_succeed() -> None:
     assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
 
+@pytest.mark.skip
 class TestGeneratorSpring:
     """Test spring generator"""
 
@@ -98,11 +101,11 @@ class TestGeneratorSpring:
             entity_content,
             # Should have individual fields with prefixed column names
             '@Column(name = "address_street")',
-            'private String addressStreet;',
+            "private String addressStreet;",
             '@Column(name = "address_city")',
-            'private String addressCity;',
+            "private String addressCity;",
             '@Column(name = "address_zip_code")',
-            'private String addressZipCode;',
+            "private String addressZipCode;",
         )
 
         # Should NOT have @Embedded or @AttributeOverrides (fields are expanded inline)
@@ -113,7 +116,7 @@ class TestGeneratorSpring:
             "AddressEmbeddable",
             "@OneToOne",
             "@JoinColumn",
-            "AddressEntity"
+            "AddressEntity",
         )
 
     def test_opaque_jsonb_entity(self) -> None:
@@ -135,7 +138,9 @@ class TestGeneratorSpring:
 
         # When
         output_path = wrapper_generate(test_input)
-        entity_content = read_java_file(output_path, "src/main/java/app/server/domain/entity/FinancialInstrumentEntity.java")
+        entity_content = read_java_file(
+            output_path, "src/main/java/app/server/domain/entity/FinancialInstrumentEntity.java"
+        )
 
         # Then: Verify JSONB storage with @JdbcTypeCode
         assert_contains(

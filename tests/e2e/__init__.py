@@ -1,5 +1,6 @@
 import difflib
 import shutil
+import subprocess
 import textwrap
 from pathlib import Path
 
@@ -25,7 +26,7 @@ def wrapper_generate(test_input: str) -> Path:
     return test_output
 
 
-def assert_schema(schema: str, expected_schema: str) -> None:
+def assert_postgres(schema: str, expected_schema: str) -> None:
     """Asserts that the generated schema matches the expected schema.
 
     Args:
@@ -42,3 +43,7 @@ def assert_schema(schema: str, expected_schema: str) -> None:
         diff = difflib.unified_diff(expected_lines, schema_lines, fromfile="Expected", tofile="Generated", lineterm="")
         diff = "\n".join(diff)
         raise AssertionError(f"Schema mismatch:\n{diff}")
+
+
+def assert_mvn() -> None:
+    assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
