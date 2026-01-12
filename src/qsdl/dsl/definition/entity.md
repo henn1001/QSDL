@@ -146,9 +146,9 @@ legend
   Match rules:
   |= Name  |= Rule details |
   | Comment | \\/\\/.*$ |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | Description |  |
 end legend
 

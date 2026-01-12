@@ -121,7 +121,7 @@ def get_enum_values(entity: dsl.Enum) -> list[dsl.Enum]:
     """
     values = []
 
-    if entity._tx_fqn in ["entity.Enum"]:
+    if isinstance(entity, dsl.Enum):
         for value in entity.values:
             if value.upper() in ["YES", "NO", "TRUE", "FALSE", "ON", "OFF"]:
                 value = f"'{value}'"

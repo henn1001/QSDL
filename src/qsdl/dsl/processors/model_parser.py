@@ -41,7 +41,7 @@ def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
 
     fields = get_parents(schema, obj)
 
-    fltr = filter(lambda x: x.is_composition and x.value._tx_fqn == "entity.Object", fields)
+    fltr = filter(lambda x: x.is_composition and isinstance(x.value, dsl.Object), fields)
     comp_fields = list(fltr)
 
     return comp_fields
@@ -61,7 +61,7 @@ def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
 
     fields = get_parents(schema, obj)
 
-    fltr = filter(lambda x: x.is_aggregation and x.value._tx_fqn == "entity.Object", fields)
+    fltr = filter(lambda x: x.is_aggregation and isinstance(x.value, dsl.Object), fields)
     agg_fields = list(fltr)
 
     return agg_fields
@@ -228,7 +228,7 @@ def path_builder(
     Returns:
         str: The path string as used by OpenApi.
     """
-    if entity._tx_fqn == "entity.Object":
+    if isinstance(entity, dsl.Object):
         path = pluralize(entity.name)
 
         if not path.startswith("/"):
@@ -240,7 +240,7 @@ def path_builder(
         if parent_obj:
             path = "/" + pluralize(parent_obj.name) + "/{" + parent_obj.name + "_id}" + path
 
-    elif entity._tx_fqn == "entity.Operation":
+    elif isinstance(entity, dsl.Operation):
         path = entity.path
 
         if not path.startswith("/"):
@@ -604,7 +604,7 @@ def is_used(schema: dsl.Schema, entity: dsl.Base | dsl.Enum) -> bool:
 
         # for nested entities, we extend the base.fields to the list
         # Note: we modify the list we are iterating on purpose
-        if itr.value and itr.value._tx_fqn == "entity.Base":
+        if itr.value and isinstance(itr.value, dsl.Base):
             entity_list.extend(itr.value.fields)
 
     return False
@@ -660,12 +660,12 @@ def inherit_force_generation(schema: dsl.Schema) -> None:
     forced_bases = [x for x in bases if qutil.get_directive_of_name("force-generate", x)]
 
     def recurser(base: dsl.Base) -> None:
-        matched_entity = [x.value for x in base.fields if x.value._tx_fqn in ["entity.Base", "entity.Enum"]]
+        matched_entity = [x.value for x in base.fields if isinstance(x.value, dsl.Base | dsl.Enum)]
 
         for entity in matched_entity:
             entity.directives.append(dsl.Directive(name="force-generate"))
 
-            if entity._tx_fqn == "entity.Base":
+            if isinstance(entity, dsl.Base):
                 recurser(entity)
 
     for base in forced_bases:
@@ -731,7 +731,7 @@ def parse_operations(schema: dsl.Schema) -> None:
     # loop over user defined APIs
     for api in apis:
         # pass down namespace of object to api
-        if api.parent._tx_fqn == "entity.Object" and not api.namespace:
+        if isinstance(api.parent, dsl.Object) and not api.namespace:
             api.namespace = api.parent.namespace
 
         # loop over operation per API

@@ -138,7 +138,7 @@ def has(
     """
     ret = False
 
-    if entity._tx_fqn in ["entity.Base", "entity.Object"]:
+    if isinstance(entity, dsl.Base | dsl.Object):
         # for the aggregation check - we want to search the parent fields
         fields = entity.fields if not is_aggregated else get_parent_fields(entity.name)
 
@@ -154,7 +154,7 @@ def has(
                 break
 
             # check for base and object references
-            if has_model and field.value._tx_fqn in ["entity.Base", "entity.Object"]:
+            if has_model and isinstance(field.value, dsl.Base | dsl.Object):
                 ret = True
                 break
 
@@ -183,7 +183,7 @@ def has(
                 break
 
             # checks if there is a query attribute
-            if has_enum and field.value._tx_fqn in ["entity.Enum"]:
+            if has_enum and isinstance(field.value, dsl.Enum):
                 ret = True
                 break
 
@@ -349,7 +349,7 @@ def get_parent_fields(obj_name: str, filter_relations: bool = True) -> list[dsl.
 
     fields = xtx.get_children_of_field(Store.schema)
 
-    fields = [x for x in fields if x.parent._tx_fqn == "entity.Object" and x.value.name == obj_name]
+    fields = [x for x in fields if isinstance(x.parent, dsl.Object) and x.value.name == obj_name]
 
     fields = [x for x in fields if x.is_relation] if filter_relations else fields
 

@@ -35,7 +35,7 @@ def dump_to_yaml(obj: dsl.Object, translate: bool) -> dict:
     data["__"] = obj.name if translate else None
 
     for field in obj.fields:
-        if field.value._tx_fqn in ["entity.Object", "entity.Base"]:
+        if isinstance(field.value, dsl.Object | dsl.Base):
             data[field.name] = dump_to_yaml(field.value, translate)
         elif translate:
             data[field.name] = stringcase.sentencecase(field.name)
@@ -92,7 +92,7 @@ def create_yaml(entity: dsl.Base | dsl.Object | dsl.Enum, locale: str, locale_fo
 
     output_data = {}
 
-    if entity._tx_fqn != "entity.Enum":
+    if not isinstance(entity, dsl.Enum):
         output_data = dump_to_yaml(entity, locale == _config.locale)
     else:
         output_data = dump_enum_to_yaml(entity, locale == _config.locale)
@@ -127,7 +127,7 @@ def create_yaml_one(
     output_data = {}
 
     for entity in entities:
-        if entity._tx_fqn != "entity.Enum":
+        if not isinstance(entity, dsl.Enum):
             output_data[append + entity.name] = dump_to_yaml(entity, locale == _config.locale)
         else:
             output_data[append + entity.name] = dump_enum_to_yaml(entity, locale == _config.locale)

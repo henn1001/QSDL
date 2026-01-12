@@ -19,7 +19,6 @@ from __future__ import annotations
 import qsdl.dsl.models as dsl
 import qsdl.dsl.util as qutil
 import qsdl.filter as qfilter
-from qsdl import dsl
 
 from .config import Config, Directive
 from .models import Column, Table
@@ -66,7 +65,7 @@ def build_jointables(table: Table) -> list[Table]:
             continue
 
         source_table_name = table.name
-        field_name = qfilter.snakecase(dsl_field.name).upper()
+        qfilter.snakecase(dsl_field.name).upper()
         ref_table_name = T_PREFIX() + qfilter.snakecase(dsl_field.value.name).upper()
 
         name_left = table._ref.name.lower()
@@ -140,7 +139,7 @@ def build_fk_constraint(table_name: str, fk_target: str, column_name: str, ref_t
     )
 
 
-def extract_embedded_columns(ref, prefix: str = "") -> list[Column]:
+def extract_embedded_columns(ref: dsl.Base, prefix: str = "") -> list[Column]:
     """Recursively flattens Base type fields into columns with prefixes.
 
     Note: This function is only called for Base types WITHOUT @opaque directive.

@@ -62,8 +62,8 @@ class Parameter:
         self.is_header = _ref.is_header
         self.is_body = _ref.is_body
 
-        self.is_base = _ref.value._tx_fqn in ["entity.Base"]
-        self.is_object = _ref.value._tx_fqn in ["entity.Object"]
+        self.is_base = isinstance(_ref.value, dsl.Base)
+        self.is_object = isinstance(_ref.value, dsl.Object)
 
         return self
 
@@ -196,7 +196,7 @@ class ApiClass:
         """Builds self from dsl.Api"""
 
         # The api name equals the object name to unless it is not part of a object
-        self.name = _ref.parent.name if _ref.parent._tx_fqn == "entity.Object" else "Default"
+        self.name = _ref.parent.name if isinstance(_ref.parent, dsl.Object) else "Default"
         self.namespace = stringcase.lowercase(_ref.namespace)
         self.description = _ref.description
 
@@ -205,7 +205,7 @@ class ApiClass:
         self.name = controller_dir.value if controller_dir else self.name
 
         # add model
-        if _ref.parent._tx_fqn == "entity.Object":
+        if isinstance(_ref.parent, dsl.Object):
             self.model = util.get_model_for(_ref.parent.name)
 
         # add methods

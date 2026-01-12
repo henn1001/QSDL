@@ -64,10 +64,10 @@ class Parameter:
         self.is_header = _ref.is_header
         self.is_body = _ref.is_body
 
-        if _ref.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
+        if isinstance(_ref.value, dsl.Enum | dsl.Base | dsl.Object):
             self.ref = f"#/components/schemas/{self.type}"
 
-        if _ref.value._tx_fqn in ["entity.Base", "entity.Object"]:
+        if isinstance(_ref.value, dsl.Base | dsl.Object):
             self.is_ref_body = True
 
         return self
@@ -163,7 +163,7 @@ class Operation:
                 new_param.type += "List"
                 new_param.is_array = False
 
-            if _ref.value._tx_fqn in ["entity.Enum", "entity.Base", "entity.Object"]:
+            if isinstance(_ref.value, dsl.Enum | dsl.Base | dsl.Object):
                 new_param.ref = f"#/components/schemas/{new_param.type}"
 
             self.response = new_param
@@ -190,7 +190,7 @@ class ApiObject:
     def build(self, _ref: dsl.Api) -> ApiObject:
         """Builds self from dsl.Api"""
 
-        self.name = _ref.parent.name if _ref.parent._tx_fqn == "entity.Object" else "Default"
+        self.name = _ref.parent.name if isinstance(_ref.parent, dsl.Object) else "Default"
         self.tag = _ref.namespace
         self.description = _ref.description
 

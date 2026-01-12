@@ -96,9 +96,9 @@ class ModelField:
         self.is_transient = _ref.is_transient
         self.is_query = _ref.is_query
 
-        self.is_enum = _ref.value._tx_fqn in ["entity.Enum"]
-        self.is_base = _ref.value._tx_fqn in ["entity.Base"]
-        self.is_object = _ref.value._tx_fqn in ["entity.Object"]
+        self.is_enum = isinstance(_ref.value, dsl.Enum)
+        self.is_base = isinstance(_ref.value, dsl.Base)
+        self.is_object = isinstance(_ref.value, dsl.Object)
         self.is_id = _ref.value.name == "ID"
         self.is_date = _ref.value.name in ["Date", "Datetime"]
 
@@ -186,8 +186,8 @@ class ModelClass:
         self.description = _ref.description
 
         # identify type
-        self.is_base = _ref._tx_fqn in ["entity.Base"]
-        self.is_object = _ref._tx_fqn in ["entity.Object"]
+        self.is_base = isinstance(_ref, dsl.Base)
+        self.is_object = isinstance(_ref, dsl.Object)
 
         # addons
         self.is_supertype = util.is_supertype(_ref) if self.is_base else False

@@ -103,7 +103,7 @@ def map_custom_type(  # pylint: disable=too-many-arguments
     name = entity.name
     override = None
 
-    if entity._tx_fqn == "entity.Scalar":
+    if isinstance(entity, dsl.Scalar):
         override = get_type_override(entity, directive, args).get(arg_picker)
 
     return override if override else mapping.get(name, default)

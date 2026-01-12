@@ -103,7 +103,6 @@ def get_paginated_object(obj: Object, model_name: str) -> ModelObject:
     # represents the model
     new_object = Object()
     new_object.name = model_name + "List"
-    new_object._tx_fqn = "entity.Object"
 
     # contains the item list of the entity
     item_field = Field()
@@ -111,23 +110,18 @@ def get_paginated_object(obj: Object, model_name: str) -> ModelObject:
     item_field.is_array = True
     item_field.is_required = True
     item_field.value = obj
-    item_field._tx_fqn = "entity.Field"
     new_object.fields.append(item_field)
 
     # next cursor
     cursor_field = Field(name="next_cursor")
     string_scalar = Scalar(name="String")
-    string_scalar._tx_fqn = "entity.Scalar"
     cursor_field.value = string_scalar
-    cursor_field._tx_fqn = "entity.Field"
     new_object.fields.append(cursor_field)
 
     # total count
     count_field = Field(name="total_count")
     long_scalar = Scalar(name="Long")
-    long_scalar._tx_fqn = "entity.Scalar"
     count_field.value = long_scalar
-    count_field._tx_fqn = "entity.Field"
     new_object.fields.append(count_field)
 
     # init the new model class

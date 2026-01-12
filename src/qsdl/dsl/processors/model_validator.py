@@ -100,15 +100,11 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
             msg = f"The {entity._tx_fqn} {entity.name} does not conform to the naming convention."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-        if (
-            entity._tx_fqn == "entity.Object"
-            and entity.namespace
-            and not re.match(r"^[A-Z][a-zA-Z]*$", entity.namespace)
-        ):
+        if isinstance(entity, dsl.Object) and entity.namespace and not re.match(r"^[A-Z][a-zA-Z]*$", entity.namespace):
             msg = f"The namespace of {entity._tx_fqn} {entity.name} does not conform to the naming convention."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-        if entity._tx_fqn == "entity.Enum":
+        if isinstance(entity, dsl.Enum):
             for value in entity.values:
                 if not re.match(r"^[A-Z_0-9]*$", value):
                     msg = f"The value of {entity._tx_fqn} {entity.name} does not conform to the naming convention. [A-Z_0-9]"
@@ -158,7 +154,7 @@ def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaM
             if not argument.is_query and not argument.is_header:
                 count = count + 1
 
-            if argument.value._tx_fqn in ["entity.Object", "entity.Base"]:
+            if isinstance(argument.value, dsl.Object | dsl.Base):
                 is_ref = True
 
         if is_ref and count > 1:
@@ -213,17 +209,17 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
         duplicate_relation = []
         for field in entity.fields:
             # verify that queries are only used on scalars
-            if field.is_query and field.value._tx_fqn not in ["entity.Scalar", "entity.Enum"]:
+            if field.is_query and not isinstance(field.value, dsl.Scalar | dsl.Enum):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as query."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
             # verify that composition is used only on Objects
-            if field.is_composition and field.value._tx_fqn != "entity.Object":
+            if field.is_composition and not isinstance(field.value, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as composition."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
             # verify that aggregation is used only on Objects and array
-            if field.is_aggregation and field.value._tx_fqn != "entity.Object":
+            if field.is_aggregation and not isinstance(field.value, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as aggregation."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
@@ -242,7 +238,7 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
                     raise TextXSemanticError(msg, filename=schema._tx_filename)
 
             # verify that composition/aggregation is used only in Objects
-            if (field.is_composition or field.is_aggregation) and entity._tx_fqn != "entity.Object":
+            if (field.is_composition or field.is_aggregation) and not isinstance(entity, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a relation inside a Base."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
@@ -252,7 +248,7 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
             # verify that opaque is used only for Bases
-            if field.is_opaque and field.value._tx_fqn != "entity.Base":
+            if field.is_opaque and not isinstance(field.value, dsl.Base):
                 msg = f"The Field {field.name} for {field.parent.name} declares opaque on a non Base value."
                 raise TextXSemanticError(msg, filename=schema._tx_filename)
 
@@ -322,7 +318,7 @@ def validate_operations(schema: dsl.Schema) -> None:
     # validate that pagination is only used for object and base responses
     for operation in operations:
         if (operation.is_pageable and not operation.value) or (
-            operation.is_pageable and operation.value._tx_fqn not in ["entity.Object", "entity.Base"]
+            operation.is_pageable and not isinstance(operation.value, dsl.Object | dsl.Base)
         ):
             msg = f"The Operation {operation.name} needs to return a 'type' or 'base' when @pagination is used."
             raise TextXSemanticError(msg, filename=schema._tx_filename)
