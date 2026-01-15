@@ -20,7 +20,8 @@ import app.server.common.constants.ErrorCode;
 import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
 import app.server.common.util.Json;
-import app.server.project.dto.Project;
+import app.server.project.dto.ProjectRequest;
+import app.server.project.dto.ProjectResponse;
 import app.server.project.service.ProjectService;
 import java.util.Arrays;
 import org.json.JSONObject;
@@ -53,9 +54,9 @@ class ProjectControllerTest {
     public void whenGetProjects_thenOk() throws Exception {
 
         // Given
-        Project request = TestUtils.getRandom(Project.class);
+        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
 
-        CursorPage<Project> ret = new CursorPage<Project>(Arrays.asList(request), null, null);
+        CursorPage<ProjectResponse> ret = new CursorPage<ProjectResponse>(Arrays.asList(responseDto), null, null);
 
         when(service.getProjects(any(), any()))
                 .thenReturn(ret);
@@ -78,14 +79,15 @@ class ProjectControllerTest {
     public void whenCreateProject_thenOk() throws Exception {
 
         // Given
-        Project request = TestUtils.getRandom(Project.class);
+        ProjectRequest requestDto = TestUtils.getRandom(ProjectRequest.class);
+        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
 
         when(service.createProject(any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/projects")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -94,7 +96,7 @@ class ProjectControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -103,10 +105,10 @@ class ProjectControllerTest {
     public void whenCreateProjectWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Project request = TestUtils.getRandom(Project.class);
+        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
 
         when(service.createProject(any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/projects")
@@ -128,10 +130,10 @@ class ProjectControllerTest {
     public void whenGetProject_thenOk() throws Exception {
 
         // Given
-        Project request = TestUtils.getRandom(Project.class);
+        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
 
         when(service.getProject(eq(one), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(get(basePath + "/projects/1"))
@@ -142,7 +144,7 @@ class ProjectControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -151,14 +153,15 @@ class ProjectControllerTest {
     public void whenReplaceProject_thenOk() throws Exception {
 
         // Given
-        Project request = TestUtils.getRandom(Project.class);
+        ProjectRequest requestDto = TestUtils.getRandom(ProjectRequest.class);
+        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
 
         when(service.replaceProject(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -167,7 +170,7 @@ class ProjectControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -176,10 +179,10 @@ class ProjectControllerTest {
     public void whenReplaceProjectWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Project request = TestUtils.getRandom(Project.class);
+        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
 
         when(service.replaceProject(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1")
@@ -201,14 +204,15 @@ class ProjectControllerTest {
     public void whenUpdateProject_thenOk() throws Exception {
 
         // Given
-        Project request = TestUtils.getRandom(Project.class);
+        ProjectRequest requestDto = TestUtils.getRandom(ProjectRequest.class);
+        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
 
         when(service.updateProject(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(patch(basePath + "/projects/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -217,7 +221,7 @@ class ProjectControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -226,10 +230,10 @@ class ProjectControllerTest {
     public void whenUpdateProjectWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Project request = TestUtils.getRandom(Project.class);
+        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
 
         when(service.updateProject(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1")

@@ -153,7 +153,7 @@ def generate_imports_for_template(
             # import if base is not in same package as entity
             *(
                 [
-                    f"import {util.get_model_for(field.type).package.domain}.{field.type};"
+                    f"import {util.get_model_for(field.type).package.domain}.{field.type}Response;"
                     for field in model_class.entity_fields
                     if field.is_base and util.get_model_for(field.type).package.domain != model_class.package.entity
                 ]
@@ -226,8 +226,74 @@ def generate_imports_for_template(
             "import java.time.OffsetDateTime;",
             "import java.util.List;",
         ],
+        "Request.j2": [
+            # Enum imports
+            *(
+                [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
+                if model_class
+                else []
+            ),
+            # Nested entity imports for Request (non-relation, non-read-only)
+            *(
+                [
+                    f"import {util.get_model_for(field.type).package.domain}.{util.get_model_for(field.type).name}Request;"
+                    for field in model_class.fields
+                    if (field.is_object or field.is_base)
+                    and not field.is_relation
+                    and not field.is_read_only
+                    and util.get_model_for(field.type).package.domain != model_class.package.domain
+                ]
+                if model_class
+                else []
+            ),
+            "import com.fasterxml.jackson.annotation.JsonProperty;",
+            "import com.fasterxml.jackson.databind.node.ObjectNode;",
+            "import io.soabase.recordbuilder.core.RecordBuilder;",
+            "import jakarta.validation.Valid;",
+            "import jakarta.validation.constraints.Max;",
+            "import jakarta.validation.constraints.Min;",
+            "import jakarta.validation.constraints.Pattern;",
+            "import jakarta.validation.constraints.NotNull;",
+            "import jakarta.validation.constraints.Size;",
+            "import java.time.LocalDate;",
+            "import java.time.OffsetDateTime;",
+            "import java.util.List;",
+        ],
+        "Response.j2": [
+            # Enum imports
+            *(
+                [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
+                if model_class
+                else []
+            ),
+            # Nested entity imports for Response (non-relation, non-write-only)
+            *(
+                [
+                    f"import {util.get_model_for(field.type).package.domain}.{util.get_model_for(field.type).name}Response;"
+                    for field in model_class.fields
+                    if (field.is_object or field.is_base)
+                    and not field.is_relation
+                    and not field.is_write_only
+                    and util.get_model_for(field.type).package.domain != model_class.package.domain
+                ]
+                if model_class
+                else []
+            ),
+            "import com.fasterxml.jackson.annotation.JsonProperty;",
+            "import com.fasterxml.jackson.databind.node.ObjectNode;",
+            "import io.soabase.recordbuilder.core.RecordBuilder;",
+            "import jakarta.validation.Valid;",
+            "import jakarta.validation.constraints.Max;",
+            "import jakarta.validation.constraints.Min;",
+            "import jakarta.validation.constraints.Pattern;",
+            "import jakarta.validation.constraints.Size;",
+            "import java.time.LocalDate;",
+            "import java.time.OffsetDateTime;",
+            "import java.util.List;",
+        ],
         "MapStruct.j2": [
-            f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
             "import org.mapstruct.BeanMapping;",
             "import org.mapstruct.InheritConfiguration;",
@@ -253,7 +319,8 @@ def generate_imports_for_template(
             f"import {util.Store.package.util}.Json;" if model_class else None,
             f"import {util.Store.package.model}.AppError;" if model_class else None,
             f"import {util.Store.package.model}.CursorPage;" if model_class else None,
-            f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
             f"import {model_class.package.service}.{model_class.name}Service;" if model_class else None,
             "import static org.junit.jupiter.api.Assertions.assertEquals;",
             "import static org.mockito.ArgumentMatchers.any;",
@@ -330,7 +397,8 @@ def generate_imports_for_template(
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
             f"import {util.Store.package.util}.Json;",
-            f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
             f"import {model_class.package.mapper}.{model_class.name}MapStruct;" if model_class else None,
             f"import {model_class.package.repository}.{model_class.name}Repository;" if model_class else None,

@@ -3,7 +3,6 @@
  */
 package app.server.project.dto;
 
-import app.server.common.model.AbstractClass;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.soabase.recordbuilder.core.RecordBuilder;
@@ -18,13 +17,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @RecordBuilder
-public record Project(
+public record ProjectRequest(
 // @formatter:off
-
-    @Min(0)
-    @Max(Long.MAX_VALUE)
-    @JsonProperty(value = "id", access = JsonProperty.Access.READ_ONLY)
-    Long id,
 
     @NotNull
     @Size(min = 0, max = 255)
@@ -35,24 +29,10 @@ public record Project(
     @JsonProperty(value = "description")
     String description,
 
-    @Size(min = 0, max = 255)
-    @JsonProperty(value = "creation_by", access = JsonProperty.Access.READ_ONLY)
-    String creationBy,
-
-    @JsonProperty(value = "creation_date", access = JsonProperty.Access.READ_ONLY)
-    LocalDate creationDate,
-
-    @Size(min = 0, max = 255)
-    @JsonProperty(value = "last_update_by", access = JsonProperty.Access.READ_ONLY)
-    String lastUpdateBy,
-
-    @JsonProperty(value = "last_update_date", access = JsonProperty.Access.READ_ONLY)
-    OffsetDateTime lastUpdateDate,
-
     @JsonProperty(value = "meta_inf")
     ObjectNode metaInf,
 
-    @JsonProperty(value = "archive", access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(value = "archive")
     Boolean archive
 ) {
 }

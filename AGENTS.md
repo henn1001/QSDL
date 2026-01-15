@@ -104,6 +104,21 @@ uv run pytest tests/functional/test_specifics_spring.py
 uv run pytest tests/functional/test_specifics_spring.py::TestSpecificsSpring::test_specifics_14 -v
 ```
 
+## Testing Code Generation
+
+To test code generation with the Spring Boot generator:
+
+```bash
+# Generate with basic layout (no config)
+qsdl examples/spring/relation.qsdl -g spring -o examples/spring/basic_layout
+
+# Generate with domain layout (with custom config)
+qsdl examples/spring/relation.qsdl -g spring -c util/domain_config.json -o examples/spring/domain_layout
+
+# VSCode tasks are available - see .vscode/tasks.json
+# Run "generate spring" task to generate both layouts
+```
+
 ## Project Structure
 
 ```

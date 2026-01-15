@@ -20,7 +20,8 @@ import app.server.common.constants.ErrorCode;
 import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
 import app.server.common.util.Json;
-import app.server.user.dto.Role;
+import app.server.user.dto.RoleRequest;
+import app.server.user.dto.RoleResponse;
 import app.server.user.service.RoleService;
 import java.util.Arrays;
 import org.json.JSONObject;
@@ -53,9 +54,9 @@ class RoleControllerTest {
     public void whenGetRoles_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
-        CursorPage<Role> ret = new CursorPage<Role>(Arrays.asList(request), null, null);
+        CursorPage<RoleResponse> ret = new CursorPage<RoleResponse>(Arrays.asList(responseDto), null, null);
 
         when(service.getRoles(any(), any(), any()))
                 .thenReturn(ret);
@@ -78,14 +79,15 @@ class RoleControllerTest {
     public void whenCreateRole_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.createRole(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/projects/1/roles")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -94,7 +96,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -103,10 +105,10 @@ class RoleControllerTest {
     public void whenCreateRoleWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.createRole(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/projects/1/roles")
@@ -128,10 +130,10 @@ class RoleControllerTest {
     public void whenGetRole_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.getRole(eq(one), eq(one), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(get(basePath + "/projects/1/roles/1"))
@@ -142,7 +144,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -151,14 +153,15 @@ class RoleControllerTest {
     public void whenReplaceRole_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.replaceRole(eq(one), eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -167,7 +170,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -176,10 +179,10 @@ class RoleControllerTest {
     public void whenReplaceRoleWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.replaceRole(eq(one), eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
@@ -201,14 +204,15 @@ class RoleControllerTest {
     public void whenUpdateRole_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.updateRole(eq(one), eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(patch(basePath + "/projects/1/roles/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -217,7 +221,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -226,10 +230,10 @@ class RoleControllerTest {
     public void whenUpdateRoleWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.updateRole(eq(one), eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")

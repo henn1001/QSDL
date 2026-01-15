@@ -14,7 +14,8 @@ import app.server.TestUtils;
 import app.server.common.constants.ErrorCode;
 import app.server.common.db.TicketEntity;
 import app.server.common.db.TicketRepository;
-import app.server.common.dto.Ticket;
+import app.server.common.dto.TicketRequest;
+import app.server.common.dto.TicketResponse;
 import app.server.common.exception.AppException;
 import app.server.common.mapper.TicketMapStruct;
 import app.server.common.model.AppError;
@@ -61,7 +62,7 @@ class TicketServiceTest {
 
         // Given
         List<TicketEntity> ticketEntityList = TestUtils.getRandom(TicketEntity.class, 5);
-        List<Ticket> ticketList = ticketEntityList.stream().map(mapper::toDto).toList();
+        List<TicketResponse> ticketList = ticketEntityList.stream().map(mapper::toDto).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<TicketEntity>(ticketEntityList, null, 6L));
@@ -74,7 +75,7 @@ class TicketServiceTest {
                 .thenReturn(ticketList.get(4));
 
         // When
-        CursorPage<Ticket> response = service.getTickets(new CursorPageable(null, 5, true), new Context());
+        CursorPage<TicketResponse> response = service.getTickets(new CursorPageable(null, 5, true), new Context());
 
         // Then
         assertEquals(5L, response.count());
@@ -91,23 +92,24 @@ class TicketServiceTest {
 
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
-        Ticket ticket = mapper.toDto(ticketEntity);
+        TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
+        TicketResponse ticketResponse = mapper.toDto(ticketEntity);
 
-        when(mockedMapper.toEntity(any(Ticket.class)))
+        when(mockedMapper.toEntity(any(TicketRequest.class)))
                 .thenReturn(ticketEntity);
 
         when(repository.save(eq(ticketEntity)))
                 .thenReturn(ticketEntity);
 
         when(mockedMapper.toDto(any(TicketEntity.class)))
-                .thenReturn(ticket);
+                .thenReturn(ticketResponse);
 
         // When
-        Ticket response = service.createTicket(ticket, new Context());
+        TicketResponse response = service.createTicket(ticketRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ticket),
+                Json.serializer().toString(ticketResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -117,20 +119,20 @@ class TicketServiceTest {
 
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
-        Ticket ticket = mapper.toDto(ticketEntity);
+        TicketResponse ticketResponse = mapper.toDto(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.of(ticketEntity));
 
         when(mockedMapper.toDto(any(TicketEntity.class)))
-                .thenReturn(ticket);
+                .thenReturn(ticketResponse);
 
         // When
-        Ticket response = service.getTicket(ticketEntity.getId(), new Context());
+        TicketResponse response = service.getTicket(ticketEntity.getId(), new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ticket),
+                Json.serializer().toString(ticketResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -162,7 +164,8 @@ class TicketServiceTest {
 
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
-        Ticket ticket = mapper.toDto(ticketEntity);
+        TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
+        TicketResponse ticketResponse = mapper.toDto(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.of(ticketEntity));
@@ -171,14 +174,14 @@ class TicketServiceTest {
                 .thenReturn(ticketEntity);
 
         when(mockedMapper.toDto(any(TicketEntity.class)))
-                .thenReturn(ticket);
+                .thenReturn(ticketResponse);
 
         // When
-        Ticket response = service.replaceTicket(ticketEntity.getId(), ticket, new Context());
+        TicketResponse response = service.replaceTicket(ticketEntity.getId(), ticketRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ticket),
+                Json.serializer().toString(ticketResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -188,7 +191,7 @@ class TicketServiceTest {
 
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
-        Ticket ticket = mapper.toDto(ticketEntity);
+        TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -196,7 +199,7 @@ class TicketServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.replaceTicket(ticketEntity.getId(), ticket, new Context());
+                    service.replaceTicket(ticketEntity.getId(), ticketRequest, new Context());
                 });
 
         // Then
@@ -211,7 +214,8 @@ class TicketServiceTest {
 
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
-        Ticket ticket = mapper.toDto(ticketEntity);
+        TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
+        TicketResponse ticketResponse = mapper.toDto(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.of(ticketEntity));
@@ -220,14 +224,14 @@ class TicketServiceTest {
                 .thenReturn(ticketEntity);
 
         when(mockedMapper.toDto(any(TicketEntity.class)))
-                .thenReturn(ticket);
+                .thenReturn(ticketResponse);
 
         // When
-        Ticket response = service.updateTicket(ticketEntity.getId(), ticket, new Context());
+        TicketResponse response = service.updateTicket(ticketEntity.getId(), ticketRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ticket),
+                Json.serializer().toString(ticketResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -237,7 +241,7 @@ class TicketServiceTest {
 
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
-        Ticket ticket = mapper.toDto(ticketEntity);
+        TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -245,7 +249,7 @@ class TicketServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.updateTicket(ticketEntity.getId(), ticket, new Context());
+                    service.updateTicket(ticketEntity.getId(), ticketRequest, new Context());
                 });
 
         // Then

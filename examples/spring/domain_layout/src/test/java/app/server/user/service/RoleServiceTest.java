@@ -22,7 +22,8 @@ import app.server.project.db.ProjectEntity;
 import app.server.project.db.ProjectRepository;
 import app.server.user.db.RoleEntity;
 import app.server.user.db.RoleRepository;
-import app.server.user.dto.Role;
+import app.server.user.dto.RoleRequest;
+import app.server.user.dto.RoleResponse;
 import app.server.user.mapper.RoleMapStruct;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
@@ -68,7 +69,7 @@ class RoleServiceTest {
 
         // Given
         List<RoleEntity> roleEntityList = TestUtils.getRandom(RoleEntity.class, 5);
-        List<Role> roleList = roleEntityList.stream().map(mapper::toDto).toList();
+        List<RoleResponse> roleList = roleEntityList.stream().map(mapper::toDto).toList();
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -85,7 +86,7 @@ class RoleServiceTest {
                 .thenReturn(roleList.get(4));
 
         // When
-        CursorPage<Role> response = service.getRoles(one, new CursorPageable(null, 5, true), new Context());
+        CursorPage<RoleResponse> response = service.getRoles(one, new CursorPageable(null, 5, true), new Context());
 
         // Then
         assertEquals(5L, response.count());
@@ -102,27 +103,28 @@ class RoleServiceTest {
 
         // Given
         RoleEntity roleEntity = TestUtils.getRandom(RoleEntity.class);
-        Role role = mapper.toDto(roleEntity);
+        RoleRequest roleRequest = TestUtils.getRandom(RoleRequest.class);
+        RoleResponse roleResponse = mapper.toDto(roleEntity);
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
                 .thenReturn(Optional.of(testParent));
 
-        when(mockedMapper.toEntity(any(Role.class)))
+        when(mockedMapper.toEntity(any(RoleRequest.class)))
                 .thenReturn(roleEntity);
 
         when(repository.save(eq(roleEntity)))
                 .thenReturn(roleEntity);
 
         when(mockedMapper.toDto(any(RoleEntity.class)))
-                .thenReturn(role);
+                .thenReturn(roleResponse);
 
         // When
-        Role response = service.createRole(one, role, new Context());
+        RoleResponse response = service.createRole(one, roleRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(role),
+                Json.serializer().toString(roleResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -132,7 +134,7 @@ class RoleServiceTest {
 
         // Given
         RoleEntity roleEntity = TestUtils.getRandom(RoleEntity.class);
-        Role role = mapper.toDto(roleEntity);
+        RoleResponse roleResponse = mapper.toDto(roleEntity);
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -142,14 +144,14 @@ class RoleServiceTest {
                 .thenReturn(Optional.of(roleEntity));
 
         when(mockedMapper.toDto(any(RoleEntity.class)))
-                .thenReturn(role);
+                .thenReturn(roleResponse);
 
         // When
-        Role response = service.getRole(one, roleEntity.getId(), new Context());
+        RoleResponse response = service.getRole(one, roleEntity.getId(), new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(role),
+                Json.serializer().toString(roleResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -185,7 +187,8 @@ class RoleServiceTest {
 
         // Given
         RoleEntity roleEntity = TestUtils.getRandom(RoleEntity.class);
-        Role role = mapper.toDto(roleEntity);
+        RoleRequest roleRequest = TestUtils.getRandom(RoleRequest.class);
+        RoleResponse roleResponse = mapper.toDto(roleEntity);
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -198,14 +201,14 @@ class RoleServiceTest {
                 .thenReturn(roleEntity);
 
         when(mockedMapper.toDto(any(RoleEntity.class)))
-                .thenReturn(role);
+                .thenReturn(roleResponse);
 
         // When
-        Role response = service.replaceRole(one, roleEntity.getId(), role, new Context());
+        RoleResponse response = service.replaceRole(one, roleEntity.getId(), roleRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(role),
+                Json.serializer().toString(roleResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -215,7 +218,7 @@ class RoleServiceTest {
 
         // Given
         RoleEntity roleEntity = TestUtils.getRandom(RoleEntity.class);
-        Role role = mapper.toDto(roleEntity);
+        RoleRequest roleRequest = TestUtils.getRandom(RoleRequest.class);
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -227,7 +230,7 @@ class RoleServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.replaceRole(one, roleEntity.getId(), role, new Context());
+                    service.replaceRole(one, roleEntity.getId(), roleRequest, new Context());
                 });
 
         // Then
@@ -242,7 +245,8 @@ class RoleServiceTest {
 
         // Given
         RoleEntity roleEntity = TestUtils.getRandom(RoleEntity.class);
-        Role role = mapper.toDto(roleEntity);
+        RoleRequest roleRequest = TestUtils.getRandom(RoleRequest.class);
+        RoleResponse roleResponse = mapper.toDto(roleEntity);
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -255,14 +259,14 @@ class RoleServiceTest {
                 .thenReturn(roleEntity);
 
         when(mockedMapper.toDto(any(RoleEntity.class)))
-                .thenReturn(role);
+                .thenReturn(roleResponse);
 
         // When
-        Role response = service.updateRole(one, roleEntity.getId(), role, new Context());
+        RoleResponse response = service.updateRole(one, roleEntity.getId(), roleRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(role),
+                Json.serializer().toString(roleResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -272,7 +276,7 @@ class RoleServiceTest {
 
         // Given
         RoleEntity roleEntity = TestUtils.getRandom(RoleEntity.class);
-        Role role = mapper.toDto(roleEntity);
+        RoleRequest roleRequest = TestUtils.getRandom(RoleRequest.class);
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -284,7 +288,7 @@ class RoleServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.updateRole(one, roleEntity.getId(), role, new Context());
+                    service.updateRole(one, roleEntity.getId(), roleRequest, new Context());
                 });
 
         // Then

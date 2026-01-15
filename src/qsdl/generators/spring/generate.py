@@ -194,7 +194,8 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
     for model in util.Store.models:
         model.package.slashed = True
         # fmt: off
-        model_files.append(("src/main/java/domain/Pojo.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
+        model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
+        model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{model.package.domain}/{model.name}Response.java", model))
 
         if config.database == "HIBERNATE" and model.is_object:
             model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))

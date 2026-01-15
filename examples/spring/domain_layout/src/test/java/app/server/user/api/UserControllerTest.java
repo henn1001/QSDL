@@ -20,7 +20,8 @@ import app.server.common.constants.ErrorCode;
 import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
 import app.server.common.util.Json;
-import app.server.user.dto.User;
+import app.server.user.dto.UserRequest;
+import app.server.user.dto.UserResponse;
 import app.server.user.service.UserService;
 import java.util.Arrays;
 import org.json.JSONObject;
@@ -53,9 +54,9 @@ class UserControllerTest {
     public void whenGetUsersForTicket_thenOk() throws Exception {
 
         // Given
-        User request = TestUtils.getRandom(User.class);
+        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
 
-        CursorPage<User> ret = new CursorPage<User>(Arrays.asList(request), null, null);
+        CursorPage<UserResponse> ret = new CursorPage<UserResponse>(Arrays.asList(responseDto), null, null);
 
         when(service.getUsersForTicket(any(), any(), any()))
                 .thenReturn(ret);
@@ -104,9 +105,9 @@ class UserControllerTest {
     public void whenGetUsers_thenOk() throws Exception {
 
         // Given
-        User request = TestUtils.getRandom(User.class);
+        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
 
-        CursorPage<User> ret = new CursorPage<User>(Arrays.asList(request), null, null);
+        CursorPage<UserResponse> ret = new CursorPage<UserResponse>(Arrays.asList(responseDto), null, null);
 
         when(service.getUsers(any(), any()))
                 .thenReturn(ret);
@@ -129,14 +130,15 @@ class UserControllerTest {
     public void whenCreateUser_thenOk() throws Exception {
 
         // Given
-        User request = TestUtils.getRandom(User.class);
+        UserRequest requestDto = TestUtils.getRandom(UserRequest.class);
+        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
 
         when(service.createUser(any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/users")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -145,7 +147,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -154,10 +156,10 @@ class UserControllerTest {
     public void whenCreateUserWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        User request = TestUtils.getRandom(User.class);
+        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
 
         when(service.createUser(any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/users")
@@ -179,10 +181,10 @@ class UserControllerTest {
     public void whenGetUser_thenOk() throws Exception {
 
         // Given
-        User request = TestUtils.getRandom(User.class);
+        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
 
         when(service.getUser(eq(one), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(get(basePath + "/users/1"))
@@ -193,7 +195,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -202,14 +204,15 @@ class UserControllerTest {
     public void whenReplaceUser_thenOk() throws Exception {
 
         // Given
-        User request = TestUtils.getRandom(User.class);
+        UserRequest requestDto = TestUtils.getRandom(UserRequest.class);
+        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
 
         when(service.replaceUser(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/users/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -218,7 +221,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -227,10 +230,10 @@ class UserControllerTest {
     public void whenReplaceUserWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        User request = TestUtils.getRandom(User.class);
+        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
 
         when(service.replaceUser(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/users/1")
@@ -252,14 +255,15 @@ class UserControllerTest {
     public void whenUpdateUser_thenOk() throws Exception {
 
         // Given
-        User request = TestUtils.getRandom(User.class);
+        UserRequest requestDto = TestUtils.getRandom(UserRequest.class);
+        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
 
         when(service.updateUser(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(patch(basePath + "/users/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -268,7 +272,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -277,10 +281,10 @@ class UserControllerTest {
     public void whenUpdateUserWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        User request = TestUtils.getRandom(User.class);
+        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
 
         when(service.updateUser(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/users/1")

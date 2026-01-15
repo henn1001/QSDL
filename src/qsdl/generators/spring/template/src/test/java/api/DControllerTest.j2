@@ -31,9 +31,9 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
 
-        CursorPage<{{model.name}}> ret = new CursorPage<{{model.name}}>(Arrays.asList(request), null, null);
+        CursorPage<{{model.name}}Response> ret = new CursorPage<{{model.name}}Response>(Arrays.asList(responseDto), null, null);
 
         when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
                 .thenReturn(ret);
@@ -75,14 +75,15 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
+        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
 
         when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -91,7 +92,7 @@ class {{model.name}}ControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -100,10 +101,10 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
         // Given
-        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
 
         when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
@@ -128,10 +129,10 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
 
         when(service.{{operation.name}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}, any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(get(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
@@ -142,7 +143,7 @@ class {{model.name}}ControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -154,14 +155,15 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
+        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
 
         when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -170,7 +172,7 @@ class {{model.name}}ControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -179,10 +181,10 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
         // Given
-        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
 
         when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
@@ -207,14 +209,15 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
+        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
 
         when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(patch(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.serializer().toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -223,7 +226,7 @@ class {{model.name}}ControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.serializer().toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -232,10 +235,10 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
         // Given
-        {{model.name}} request = TestUtils.getRandom({{model.name}}.class);
+        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
 
         when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")

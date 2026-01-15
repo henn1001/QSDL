@@ -36,8 +36,8 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<Role>> getRoles(Long projectId, CursorPageable pageable) {
-        CursorPage<Role> response = roleService.getRoles(projectId, pageable, super.getContext());
+    public ResponseEntity<CursorPage<RoleResponse>> getRoles(Long projectId, CursorPageable pageable) {
+        CursorPage<RoleResponse> response = roleService.getRoles(projectId, pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -45,9 +45,9 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Role> createRole(Long projectId, Role body) {
+    public ResponseEntity<RoleResponse> createRole(Long projectId, RoleRequest body) {
         Validator.validate(body);
-        Role response = roleService.createRole(projectId, body, super.getContext());
+        RoleResponse response = roleService.createRole(projectId, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -55,8 +55,8 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Role> getRole(Long projectId, Long id) {
-        Role response = roleService.getRole(projectId, id, super.getContext());
+    public ResponseEntity<RoleResponse> getRole(Long projectId, Long id) {
+        RoleResponse response = roleService.getRole(projectId, id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -64,9 +64,9 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Role> replaceRole(Long projectId, Long id, Role body) {
+    public ResponseEntity<RoleResponse> replaceRole(Long projectId, Long id, RoleRequest body) {
         Validator.validate(body);
-        Role response = roleService.replaceRole(projectId, id, body, super.getContext());
+        RoleResponse response = roleService.replaceRole(projectId, id, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -74,9 +74,9 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Role> updateRole(Long projectId, Long id, Role body) {
+    public ResponseEntity<RoleResponse> updateRole(Long projectId, Long id, RoleRequest body) {
         Validator.validateExRequired(body);
-        Role response = roleService.updateRole(projectId, id, body, super.getContext());
+        RoleResponse response = roleService.updateRole(projectId, id, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

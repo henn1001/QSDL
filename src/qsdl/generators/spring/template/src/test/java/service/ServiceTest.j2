@@ -1,7 +1,8 @@
 {% import '_macro/Parameter.j2' as macro with context %}
 {% import '_macro/Util.j2' as util with context %}
 {% set getId = "getId()" if id_type == "Long" else "getUid()" %}
-{% set m_type = model.name %}
+{% set m_request_type = model.name + "Request" %}
+{% set m_response_type = model.name + "Response" %}
 {% set m_var = model.name | lower %}
 {% set m_entity_type = model.name + "Entity" %}
 {% set m_entity_var = model.name | lower + "Entity" %}
@@ -61,7 +62,7 @@ class {{model.name}}ServiceTest {
 
         // Given
         List<{{m_entity_type}}> {{m_entity_var}}List = TestUtils.getRandom({{m_entity_type}}.class, 5);
-        List<{{m_type}}> {{m_var}}List = {{m_entity_var}}List.stream().map(mapper::toDto).toList();
+        List<{{m_response_type}}> {{m_var}}List = {{m_entity_var}}List.stream().map(mapper::toDto).toList();
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -81,9 +82,9 @@ class {{model.name}}ServiceTest {
 
         // When
         {% if operation.parent %}
-        CursorPage<{{m_type}}> response = service.{{operation.name}}(one, new CursorPageable(null, 5, true), new Context());
+        CursorPage<{{m_response_type}}> response = service.{{operation.name}}(one, new CursorPageable(null, 5, true), new Context());
         {% else %}
-        CursorPage<{{m_type}}> response = service.{{operation.name}}(new CursorPageable(null, 5, true), new Context());
+        CursorPage<{{m_response_type}}> response = service.{{operation.name}}(new CursorPageable(null, 5, true), new Context());
         {% endif %}
 
         // Then
@@ -135,7 +136,8 @@ class {{model.name}}ServiceTest {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
-        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {{m_request_type}} {{m_var}}Request = TestUtils.getRandom({{m_request_type}}.class);
+        {{m_response_type}} {{m_var}}Response = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -143,21 +145,21 @@ class {{model.name}}ServiceTest {
                 .thenReturn(Optional.of(testParent));
         {% endif %}
 
-        when(mockedMapper.toEntity(any({{m_type}}.class)))
+        when(mockedMapper.toEntity(any({{m_request_type}}.class)))
                 .thenReturn({{m_entity_var}});
 
         when(repository.save(eq({{m_entity_var}})))
                 .thenReturn({{m_entity_var}});
 
         when(mockedMapper.toDto(any({{m_entity_type}}.class)))
-                .thenReturn({{m_var}});
+                .thenReturn({{m_var}}Response);
 
         // When
-        {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_var}}, new Context());
+        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_var}}Request, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString({{m_var}}),
+                Json.serializer().toString({{m_var}}Response),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -170,7 +172,7 @@ class {{model.name}}ServiceTest {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
-        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {{m_response_type}} {{m_var}}Response = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -186,14 +188,14 @@ class {{model.name}}ServiceTest {
         {% endif %}
 
         when(mockedMapper.toDto(any({{m_entity_type}}.class)))
-                .thenReturn({{m_var}});
+                .thenReturn({{m_var}}Response);
 
         // When
-        {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
+        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString({{m_var}}),
+                Json.serializer().toString({{m_var}}Response),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -238,7 +240,8 @@ class {{model.name}}ServiceTest {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
-        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {{m_request_type}} {{m_var}}Request = TestUtils.getRandom({{m_request_type}}.class);
+        {{m_response_type}} {{m_var}}Response = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -257,14 +260,14 @@ class {{model.name}}ServiceTest {
                 .thenReturn({{m_entity_var}});
 
         when(mockedMapper.toDto(any({{m_entity_type}}.class)))
-                .thenReturn({{m_var}});
+                .thenReturn({{m_var}}Response);
 
         // When
-        {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
+        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString({{m_var}}),
+                Json.serializer().toString({{m_var}}Response),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -274,7 +277,7 @@ class {{model.name}}ServiceTest {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
-        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {{m_request_type}} {{m_var}}Request = TestUtils.getRandom({{m_request_type}}.class);
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -292,7 +295,7 @@ class {{model.name}}ServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
+                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request, new Context());
                 });
 
         // Then
@@ -310,7 +313,8 @@ class {{model.name}}ServiceTest {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
-        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {{m_request_type}} {{m_var}}Request = TestUtils.getRandom({{m_request_type}}.class);
+        {{m_response_type}} {{m_var}}Response = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -329,14 +333,14 @@ class {{model.name}}ServiceTest {
                 .thenReturn({{m_entity_var}});
 
         when(mockedMapper.toDto(any({{m_entity_type}}.class)))
-                .thenReturn({{m_var}});
+                .thenReturn({{m_var}}Response);
 
         // When
-        {{m_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
+        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString({{m_var}}),
+                Json.serializer().toString({{m_var}}Response),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -346,7 +350,7 @@ class {{model.name}}ServiceTest {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
-        {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
+        {{m_request_type}} {{m_var}}Request = TestUtils.getRandom({{m_request_type}}.class);
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -364,7 +368,7 @@ class {{model.name}}ServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}, new Context());
+                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request, new Context());
                 });
 
         // Then

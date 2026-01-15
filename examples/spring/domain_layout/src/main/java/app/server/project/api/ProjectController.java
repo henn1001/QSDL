@@ -36,8 +36,8 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
-        CursorPage<Project> response = projectService.getProjects(pageable, super.getContext());
+    public ResponseEntity<CursorPage<ProjectResponse>> getProjects(CursorPageable pageable) {
+        CursorPage<ProjectResponse> response = projectService.getProjects(pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -45,9 +45,9 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Project> createProject(Project body) {
+    public ResponseEntity<ProjectResponse> createProject(ProjectRequest body) {
         Validator.validate(body);
-        Project response = projectService.createProject(body, super.getContext());
+        ProjectResponse response = projectService.createProject(body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -55,8 +55,8 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Project> getProject(Long id) {
-        Project response = projectService.getProject(id, super.getContext());
+    public ResponseEntity<ProjectResponse> getProject(Long id) {
+        ProjectResponse response = projectService.getProject(id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -64,9 +64,9 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Project> replaceProject(Long id, Project body) {
+    public ResponseEntity<ProjectResponse> replaceProject(Long id, ProjectRequest body) {
         Validator.validate(body);
-        Project response = projectService.replaceProject(id, body, super.getContext());
+        ProjectResponse response = projectService.replaceProject(id, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -74,9 +74,9 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Project> updateProject(Long id, Project body) {
+    public ResponseEntity<ProjectResponse> updateProject(Long id, ProjectRequest body) {
         Validator.validateExRequired(body);
-        Project response = projectService.updateProject(id, body, super.getContext());
+        ProjectResponse response = projectService.updateProject(id, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

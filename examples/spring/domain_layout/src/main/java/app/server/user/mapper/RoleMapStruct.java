@@ -4,7 +4,8 @@
 package app.server.user.mapper;
 
 import app.server.user.db.RoleEntity;
-import app.server.user.dto.Role;
+import app.server.user.dto.RoleRequest;
+import app.server.user.dto.RoleResponse;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
@@ -16,21 +17,21 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface RoleMapStruct {
 
-    Role toDto(RoleEntity entity);
+    RoleResponse toDto(RoleEntity entity);
 
     // ignore read only attributes and relations
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "project", ignore = true)
-    RoleEntity toEntity(Role dto);
+    RoleEntity toEntity(RoleRequest dto);
 
     @Named("replace")
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void replace(Role source, @MappingTarget RoleEntity target);
+    void replace(RoleRequest source, @MappingTarget RoleEntity target);
 
     @Named("update")
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void update(Role source, @MappingTarget RoleEntity target);
+    void update(RoleRequest source, @MappingTarget RoleEntity target);
 }

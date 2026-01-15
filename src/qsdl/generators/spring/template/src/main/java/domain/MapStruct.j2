@@ -20,7 +20,7 @@ public interface {{model.name}}MapStruct {
     @Mapping(target = "{{field.dto_nested_path}}", source = "{{field.name}}")
         {% endif %}
     {% endfor %}
-    {{model.name}} toDto({{model.name}}Entity entity);
+    {{model.name}}Response toDto({{model.name}}Entity entity);
 
     // ignore read only attributes and relations
     @Mapping(target = "uid", ignore = true)
@@ -32,7 +32,7 @@ public interface {{model.name}}MapStruct {
     @Mapping(target = "{{field.name}}", source = "{{field.dto_nested_path}}")
         {% endif %}
     {% endfor %}
-    {{model.name}}Entity toEntity({{model.name}} dto);
+    {{model.name}}Entity toEntity({{model.name}}Request dto);
 
     @Named("replace")
     @InheritConfiguration(name = "toEntity")
@@ -40,7 +40,7 @@ public interface {{model.name}}MapStruct {
     @Mapping(target = "{{field.name}}", qualifiedByName = "replace")
     {% endfor %}
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void replace({{model.name}} source, @MappingTarget {{model.name}}Entity target);
+    void replace({{model.name}}Request source, @MappingTarget {{model.name}}Entity target);
 
     @Named("update")
     @InheritConfiguration(name = "toEntity")
@@ -48,6 +48,6 @@ public interface {{model.name}}MapStruct {
     @Mapping(target = "{{field.name}}", qualifiedByName = "update")
     {% endfor %}
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void update({{model.name}} source, @MappingTarget {{model.name}}Entity target);
+    void update({{model.name}}Request source, @MappingTarget {{model.name}}Entity target);
 }
 {{""}}

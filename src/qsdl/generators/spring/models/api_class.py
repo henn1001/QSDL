@@ -66,6 +66,10 @@ class Parameter:
         self.is_base = isinstance(_ref.value, dsl.Base)
         self.is_object = isinstance(_ref.value, dsl.Object)
 
+        # Append Request suffix for body parameters (Base/Object types)
+        if self.is_body and (self.is_base or self.is_object):
+            self.type = f"{self.type}Request"
+
         return self
 
 
@@ -158,6 +162,11 @@ class Operation:
             new_param.is_array = _ref.is_array
 
             new_param.type = util.custom_type(_ref.value)
+
+            # Append Response suffix for Base/Object types
+            is_base_or_object = isinstance(_ref.value, dsl.Base | dsl.Object)
+            if is_base_or_object:
+                new_param.type = f"{new_param.type}Response"
 
             if _ref.is_pageable:
                 new_param.name = "CursorPage"

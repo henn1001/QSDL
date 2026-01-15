@@ -41,7 +41,7 @@ public class DefaultController extends BaseController implements DefaultApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<ObjectNode> action(BaseType arg1) {
+    public ResponseEntity<ObjectNode> action(BaseTypeRequest arg1) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

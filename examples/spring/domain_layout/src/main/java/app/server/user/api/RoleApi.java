@@ -31,7 +31,7 @@ public interface RoleApi {
      * List Roles
      */
     @GetMapping(value = "/projects/{project_id}/roles", produces = {"application/json"})
-    default ResponseEntity<CursorPage<Role>> getRoles(@PathVariable("project_id") Long projectId, CursorPageable pageable) {
+    default ResponseEntity<CursorPage<RoleResponse>> getRoles(@PathVariable("project_id") Long projectId, CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -41,7 +41,7 @@ public interface RoleApi {
      * Create a Role
      */
     @PostMapping(value = "/projects/{project_id}/roles", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Role> createRole(@PathVariable("project_id") Long projectId, @RequestBody Role body) {
+    default ResponseEntity<RoleResponse> createRole(@PathVariable("project_id") Long projectId, @RequestBody RoleRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -51,7 +51,7 @@ public interface RoleApi {
      * Read the specified Role
      */
     @GetMapping(value = "/projects/{project_id}/roles/{id}", produces = {"application/json"})
-    default ResponseEntity<Role> getRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) {
+    default ResponseEntity<RoleResponse> getRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -61,7 +61,7 @@ public interface RoleApi {
      * Replace the specified Role
      */
     @PutMapping(value = "/projects/{project_id}/roles/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Role> replaceRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody Role body) {
+    default ResponseEntity<RoleResponse> replaceRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody RoleRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -71,7 +71,7 @@ public interface RoleApi {
      * Update the specified Role
      */
     @PatchMapping(value = "/projects/{project_id}/roles/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Role> updateRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody Role body) {
+    default ResponseEntity<RoleResponse> updateRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody RoleRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

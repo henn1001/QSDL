@@ -31,10 +31,10 @@ public class ProjectService {
 
     ProjectEntity fetchProjectFromDb(Long id) throws AppException {
         return projectRepository.findById(id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(ProjectResponse.class, id));
     }
 
-    public CursorPage<Project> getProjects(CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<ProjectResponse> getProjects(CursorPageable pageable, Context context) throws AppException {
 
         var queryParameters = Arrays.<String>asList("name");
         var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), ProjectEntity.class);
@@ -48,7 +48,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project createProject(Project body, Context context) throws AppException {
+    public ProjectResponse createProject(ProjectRequest body, Context context) throws AppException {
 
         var projectEntity = projectMapStruct.toEntity(body);
 
@@ -57,7 +57,7 @@ public class ProjectService {
         return projectMapStruct.toDto(projectEntity);
     }
 
-    public Project getProject(Long id, Context context) throws AppException {
+    public ProjectResponse getProject(Long id, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
@@ -65,7 +65,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project replaceProject(Long id, Project body, Context context) throws AppException {
+    public ProjectResponse replaceProject(Long id, ProjectRequest body, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
@@ -78,7 +78,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project updateProject(Long id, Project body, Context context) throws AppException {
+    public ProjectResponse updateProject(Long id, ProjectRequest body, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 

@@ -20,7 +20,8 @@ import app.server.common.model.CursorPageable;
 import app.server.common.util.Json;
 import app.server.project.db.ProjectEntity;
 import app.server.project.db.ProjectRepository;
-import app.server.project.dto.Project;
+import app.server.project.dto.ProjectRequest;
+import app.server.project.dto.ProjectResponse;
 import app.server.project.mapper.ProjectMapStruct;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
@@ -61,7 +62,7 @@ class ProjectServiceTest {
 
         // Given
         List<ProjectEntity> projectEntityList = TestUtils.getRandom(ProjectEntity.class, 5);
-        List<Project> projectList = projectEntityList.stream().map(mapper::toDto).toList();
+        List<ProjectResponse> projectList = projectEntityList.stream().map(mapper::toDto).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6L));
@@ -74,7 +75,7 @@ class ProjectServiceTest {
                 .thenReturn(projectList.get(4));
 
         // When
-        CursorPage<Project> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
+        CursorPage<ProjectResponse> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
 
         // Then
         assertEquals(5L, response.count());
@@ -91,23 +92,24 @@ class ProjectServiceTest {
 
         // Given
         ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
+        ProjectResponse projectResponse = mapper.toDto(projectEntity);
 
-        when(mockedMapper.toEntity(any(Project.class)))
+        when(mockedMapper.toEntity(any(ProjectRequest.class)))
                 .thenReturn(projectEntity);
 
         when(repository.save(eq(projectEntity)))
                 .thenReturn(projectEntity);
 
         when(mockedMapper.toDto(any(ProjectEntity.class)))
-                .thenReturn(project);
+                .thenReturn(projectResponse);
 
         // When
-        Project response = service.createProject(project, new Context());
+        ProjectResponse response = service.createProject(projectRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(project),
+                Json.serializer().toString(projectResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -117,20 +119,20 @@ class ProjectServiceTest {
 
         // Given
         ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectResponse projectResponse = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
 
         when(mockedMapper.toDto(any(ProjectEntity.class)))
-                .thenReturn(project);
+                .thenReturn(projectResponse);
 
         // When
-        Project response = service.getProject(projectEntity.getId(), new Context());
+        ProjectResponse response = service.getProject(projectEntity.getId(), new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(project),
+                Json.serializer().toString(projectResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -162,7 +164,8 @@ class ProjectServiceTest {
 
         // Given
         ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
+        ProjectResponse projectResponse = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
@@ -171,14 +174,14 @@ class ProjectServiceTest {
                 .thenReturn(projectEntity);
 
         when(mockedMapper.toDto(any(ProjectEntity.class)))
-                .thenReturn(project);
+                .thenReturn(projectResponse);
 
         // When
-        Project response = service.replaceProject(projectEntity.getId(), project, new Context());
+        ProjectResponse response = service.replaceProject(projectEntity.getId(), projectRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(project),
+                Json.serializer().toString(projectResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -188,7 +191,7 @@ class ProjectServiceTest {
 
         // Given
         ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -196,7 +199,7 @@ class ProjectServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.replaceProject(projectEntity.getId(), project, new Context());
+                    service.replaceProject(projectEntity.getId(), projectRequest, new Context());
                 });
 
         // Then
@@ -211,7 +214,8 @@ class ProjectServiceTest {
 
         // Given
         ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
+        ProjectResponse projectResponse = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
@@ -220,14 +224,14 @@ class ProjectServiceTest {
                 .thenReturn(projectEntity);
 
         when(mockedMapper.toDto(any(ProjectEntity.class)))
-                .thenReturn(project);
+                .thenReturn(projectResponse);
 
         // When
-        Project response = service.updateProject(projectEntity.getId(), project, new Context());
+        ProjectResponse response = service.updateProject(projectEntity.getId(), projectRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(project),
+                Json.serializer().toString(projectResponse),
                 new JSONObject(Json.serializer().toString(response)),
                 false);
     }
@@ -237,7 +241,7 @@ class ProjectServiceTest {
 
         // Given
         ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -245,7 +249,7 @@ class ProjectServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.updateProject(projectEntity.getId(), project, new Context());
+                    service.updateProject(projectEntity.getId(), projectRequest, new Context());
                 });
 
         // Then

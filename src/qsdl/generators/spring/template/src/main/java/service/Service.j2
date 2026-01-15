@@ -26,18 +26,18 @@ public class {{api.name}}Service {
 
     {{model.name}}Entity fetch{{model.name}}FromDb({{id_type}} id) throws AppException {
         return {{model.name|lower}}Repository.{{ model.hibernate.find_by_id }}(id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}Response.class, id));
     }
 {% for parent in model.parents %}
 
     {{model.name}}Entity fetch{{model.name}}From{{parent.model.name}}FromDb(Long {{ parent.model.hibernate.parameter_joined_id }}, {{id_type}} id) throws AppException {
         return {{model.name|lower}}Repository.{{ parent.hibernate.find_by_parentid_and_id }}({{ parent.model.hibernate.parameter_joined_id }}, id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}Response.class, id));
     }
 
     {{parent.model.name}}Entity fetch{{parent.model.name}}FromDb({{id_type}} id) throws AppException {
         return {{parent.model.name|lower}}Repository.{{ parent.model.hibernate.find_by_id }}(id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound({{parent.model.name}}.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound({{parent.model.name}}Response.class, id));
     }
 {% endfor %}
 {% endif %}

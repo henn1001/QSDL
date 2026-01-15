@@ -37,7 +37,7 @@ public interface DefaultApi {
      * POST /action : action
      */
     @PostMapping(value = "/action", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ObjectNode> action(@RequestBody BaseType arg1) {
+    default ResponseEntity<ObjectNode> action(@RequestBody BaseTypeRequest arg1) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }
