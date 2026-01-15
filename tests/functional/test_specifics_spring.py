@@ -371,25 +371,6 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
-    @pytest.mark.order(13)
-    def test_specifics_13(self) -> None:
-        """Verify usage of encapsulation"""
-
-        test_input = Path("examples/openapi/input.qsdl")
-        test_output = Path("srcgen/")
-
-        shutil.rmtree(test_output, ignore_errors=True)
-
-        config = {
-            "use_encapsulation": False,
-        }
-
-        # generate
-        assert generate(test_output, generator_name="spring", input_path=test_input, config=config) is None
-
-        # run tests
-        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
-
     @pytest.mark.order(14)
     def test_specifics_14(self) -> None:
         """Verify usage of no database"""

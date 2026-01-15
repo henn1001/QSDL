@@ -9,10 +9,8 @@ package {{model.package.entity}};
 
 {{ util.macro_imports(self._TemplateReference__context.name, model) }}
 
-{% if use_encapsulation %}
 @Getter
 @Setter
-{% endif %}
 @Entity
 {% if use_auditing %}@Audited{{"\n"}}{% endif %}
 @Table(name = "{{table_prefix}}{{model.name|snake|lower}}")
@@ -42,9 +40,9 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
     {% if field.is_array and field.is_relation %}
     public final Set<{{typeName}}> {{field.name}} = new LinkedHashSet<>();
     {% elif field.is_array %}
-    {{ "private" if use_encapsulation else "public"}} List<{{typeName}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
+    private List<{{typeName}}> {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
     {% else %}
-    {{ "private" if use_encapsulation else "public"}} {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
+    private {{typeName}} {{field.name}}{% if field.default %} = {{field.default}}{%endif%};
     {% endif %}
 {% endfor %}
     {% set removeHookList = model.entity_fields | selectattr("is_aggregation") | rejectattr("is_relation_owner") | list %}
@@ -60,36 +58,20 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
 {% for field in model.entity_fields if field.is_relation and field.is_array %}
 
     public void addTo{{field.type}}s({{field.type}}Entity o) {
-{% if use_encapsulation %}
-        {% if field.is_composition    %}
+        {% if field.is_composition %}
         o.set{{model.name}}(this);
         {% else %}
         o.get{{model.name}}s().add(this);
         {% endif %}
-{% else %}
-        {% if field.is_composition    %}
-        o.{{model.name|camel}} = this;
-        {% else %}
-        o.{{model.name|camel}}s.add(this);
-        {% endif %}
-{% endif %}
         this.{{field.name}}.add(o);
     }
 
     public void removeFrom{{field.type}}s({{field.type}}Entity o) {
-{% if use_encapsulation %}
-        {% if field.is_composition    %}
+        {% if field.is_composition %}
         o.set{{model.name}}(null);
         {% else %}
         o.get{{model.name}}s().remove(this);
         {% endif %}
-{% else %}
-        {% if field.is_composition    %}
-        o.{{model.name|camel}} = null;
-        {% else %}
-        o.{{model.name|camel}}s.remove(this);
-        {% endif %}
-{% endif %}
         this.{{field.name}}.remove(o);
     }
 {% endfor %}}

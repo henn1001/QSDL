@@ -13,8 +13,6 @@ These options may be applied when using the cli or via a config.json
   "base_package": "app.server",
   "artifact_id": "app",
   "database": "HIBERNATE | NO",
-  "use_encapsulation": false,
-  "use_builder": true,
   "use_auditing": false,
   "id_type": "LONG | STRING",
   "api_path": "api",

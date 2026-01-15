@@ -68,11 +68,7 @@
         var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
 
         // add parent relation
-            {% if use_encapsulation %}
         {{model_entity}}.set{{ p_model.name }}({{p_model_entity}});
-            {% else %}
-        {{model_entity}}.{{p_model.name|lower}} = {{p_model_entity}};
-            {% endif %}
 
         {% else %}
         var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
