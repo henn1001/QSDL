@@ -89,41 +89,6 @@ public abstract class AbstractPersistentObject extends AbstractClass {
         this.iv = o.getIv();
     }
 
-    /**
-     * Removes all relations from a give Object.
-     *
-     * <p>Affects fields annotated with OneToOne, OneToMany, ManyToOne, ManyToMany
-     */
-    public void removeRelations() {
-
-        Field[] fields = this.getClass().getDeclaredFields();
-
-        // null fields if:
-        // annotated with JsonIgnore and either of OneToOne, OneToMany, ManyToOne, ManyToMany
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(JsonIgnore.class)
-                    && (field.isAnnotationPresent(OneToOne.class)
-                            || field.isAnnotationPresent(OneToMany.class)
-                            || field.isAnnotationPresent(ManyToOne.class)
-                            || field.isAnnotationPresent(ManyToMany.class))) {
-
-                try {
-                    if (field.getType() == Set.class) {
-                        Method clear = Set.class.getDeclaredMethod("clear");
-
-                        Object f = this.getClass().getField(field.getName()).get(this);
-
-                        clear.invoke(f);
-                    } else {
-                        FieldUtils.writeField(this, field.getName(), null, true);
-                    }
-                } catch (Exception e) {
-                    log.error(UNHANDLED_EXCEPTION, e);
-                }
-            }
-        }
-    }
-
     public boolean equals(Object o) {
         if (this == o) {
             return true;

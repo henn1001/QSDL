@@ -60,10 +60,10 @@ class {{model.name}}ServiceTest {
     void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        List<{{m_entity_type}}> {{m_entity_var}}List = TestUtils.getRandomEntity({{m_entity_type}}.class, 5);
+        List<{{m_entity_type}}> {{m_entity_var}}List = TestUtils.getRandom({{m_entity_type}}.class, 5);
         List<{{m_type}}> {{m_var}}List = {{m_entity_var}}List.stream().map(mapper::toDto).toList();
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -103,8 +103,8 @@ class {{model.name}}ServiceTest {
     void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{hibernate.find_by_id}}(eq(testParent.{{getId}})))
                 .thenReturn(Optional.of(testParent));
@@ -134,10 +134,10 @@ class {{model.name}}ServiceTest {
     void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -169,10 +169,10 @@ class {{model.name}}ServiceTest {
     void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -202,9 +202,9 @@ class {{model.name}}ServiceTest {
     public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -237,10 +237,10 @@ class {{model.name}}ServiceTest {
     void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -273,10 +273,10 @@ class {{model.name}}ServiceTest {
     public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -309,10 +309,10 @@ class {{model.name}}ServiceTest {
     void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -345,10 +345,10 @@ class {{model.name}}ServiceTest {
     public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_type}} {{m_var}} = mapper.toDto({{m_entity_var}});
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -381,9 +381,9 @@ class {{model.name}}ServiceTest {
     void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -404,9 +404,9 @@ class {{model.name}}ServiceTest {
     public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
 
         // Given
-        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandomEntity({{m_entity_type}}.class);
+        {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {% if operation.parent %}
-        {{p_m_entity_type}} testParent = TestUtils.getRandomEntity({{p_m_entity_type}}.class);
+        {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));

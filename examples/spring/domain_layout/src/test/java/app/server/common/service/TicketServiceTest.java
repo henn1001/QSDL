@@ -60,7 +60,7 @@ class TicketServiceTest {
     void whenGetTickets_thenOk() throws Exception {
 
         // Given
-        List<TicketEntity> ticketEntityList = TestUtils.getRandomEntity(TicketEntity.class, 5);
+        List<TicketEntity> ticketEntityList = TestUtils.getRandom(TicketEntity.class, 5);
         List<Ticket> ticketList = ticketEntityList.stream().map(mapper::toDto).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
@@ -90,7 +90,7 @@ class TicketServiceTest {
     void whenCreateTicket_thenOk() throws Exception {
 
         // Given
-        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
         Ticket ticket = mapper.toDto(ticketEntity);
 
         when(mockedMapper.toEntity(any(Ticket.class)))
@@ -116,7 +116,7 @@ class TicketServiceTest {
     void whenGetTicket_thenOk() throws Exception {
 
         // Given
-        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
         Ticket ticket = mapper.toDto(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
@@ -139,7 +139,7 @@ class TicketServiceTest {
     public void whenGetTicketWithInvalidId_thenError() throws Exception {
 
         // Given
-        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -161,7 +161,7 @@ class TicketServiceTest {
     void whenReplaceTicket_thenOk() throws Exception {
 
         // Given
-        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
         Ticket ticket = mapper.toDto(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
@@ -187,7 +187,7 @@ class TicketServiceTest {
     public void whenReplaceTicketWithInvalidId_thenError() throws Exception {
 
         // Given
-        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
         Ticket ticket = mapper.toDto(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
@@ -210,7 +210,7 @@ class TicketServiceTest {
     void whenUpdateTicket_thenOk() throws Exception {
 
         // Given
-        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
         Ticket ticket = mapper.toDto(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
@@ -236,7 +236,7 @@ class TicketServiceTest {
     public void whenUpdateTicketWithInvalidId_thenError() throws Exception {
 
         // Given
-        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
         Ticket ticket = mapper.toDto(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
@@ -259,7 +259,7 @@ class TicketServiceTest {
     void whenDeleteTicket_thenOk() throws Exception {
 
         // Given
-        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.of(ticketEntity));
@@ -272,7 +272,7 @@ class TicketServiceTest {
     public void whenDeleteTicketWithInvalidId_thenError() throws Exception {
 
         // Given
-        TicketEntity ticketEntity = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));

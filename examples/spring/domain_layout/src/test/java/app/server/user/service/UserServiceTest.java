@@ -67,9 +67,9 @@ class UserServiceTest {
     void whenGetUsersForTicket_thenOk() throws Exception {
 
         // Given
-        List<UserEntity> userEntityList = TestUtils.getRandomEntity(UserEntity.class, 5);
+        List<UserEntity> userEntityList = TestUtils.getRandom(UserEntity.class, 5);
         List<User> userList = userEntityList.stream().map(mapper::toDto).toList();
-        TicketEntity testParent = TestUtils.getRandomEntity(TicketEntity.class);
+        TicketEntity testParent = TestUtils.getRandom(TicketEntity.class);
 
         when(ticketRepository.findById(eq(one)))
                 .thenReturn(Optional.of(testParent));
@@ -101,8 +101,8 @@ class UserServiceTest {
     void whenAddUserToTicket_thenOk() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-        TicketEntity testParent = TestUtils.getRandomEntity(TicketEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
+        TicketEntity testParent = TestUtils.getRandom(TicketEntity.class);
 
         when(ticketRepository.findById(eq(testParent.getId())))
                 .thenReturn(Optional.of(testParent));
@@ -124,8 +124,8 @@ class UserServiceTest {
     void whenRemoveUserFromTicket_thenOk() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
-        TicketEntity testParent = TestUtils.getRandomEntity(TicketEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
+        TicketEntity testParent = TestUtils.getRandom(TicketEntity.class);
 
         when(ticketRepository.findById(eq(testParent.getId())))
                 .thenReturn(Optional.of(testParent));
@@ -147,7 +147,7 @@ class UserServiceTest {
     void whenGetUsers_thenOk() throws Exception {
 
         // Given
-        List<UserEntity> userEntityList = TestUtils.getRandomEntity(UserEntity.class, 5);
+        List<UserEntity> userEntityList = TestUtils.getRandom(UserEntity.class, 5);
         List<User> userList = userEntityList.stream().map(mapper::toDto).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
@@ -177,7 +177,7 @@ class UserServiceTest {
     void whenCreateUser_thenOk() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         User user = mapper.toDto(userEntity);
 
         when(mockedMapper.toEntity(any(User.class)))
@@ -203,7 +203,7 @@ class UserServiceTest {
     void whenGetUser_thenOk() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         User user = mapper.toDto(userEntity);
 
         when(repository.findById(eq(userEntity.getId())))
@@ -226,7 +226,7 @@ class UserServiceTest {
     public void whenGetUserWithInvalidId_thenError() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
 
         when(repository.findById(eq(userEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -248,7 +248,7 @@ class UserServiceTest {
     void whenReplaceUser_thenOk() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         User user = mapper.toDto(userEntity);
 
         when(repository.findById(eq(userEntity.getId())))
@@ -274,7 +274,7 @@ class UserServiceTest {
     public void whenReplaceUserWithInvalidId_thenError() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         User user = mapper.toDto(userEntity);
 
         when(repository.findById(eq(userEntity.getId())))
@@ -297,7 +297,7 @@ class UserServiceTest {
     void whenUpdateUser_thenOk() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         User user = mapper.toDto(userEntity);
 
         when(repository.findById(eq(userEntity.getId())))
@@ -323,7 +323,7 @@ class UserServiceTest {
     public void whenUpdateUserWithInvalidId_thenError() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         User user = mapper.toDto(userEntity);
 
         when(repository.findById(eq(userEntity.getId())))
@@ -346,7 +346,7 @@ class UserServiceTest {
     void whenDeleteUser_thenOk() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
 
         when(repository.findById(eq(userEntity.getId())))
                 .thenReturn(Optional.of(userEntity));
@@ -359,7 +359,7 @@ class UserServiceTest {
     public void whenDeleteUserWithInvalidId_thenError() throws Exception {
 
         // Given
-        UserEntity userEntity = TestUtils.getRandomEntity(UserEntity.class);
+        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
 
         when(repository.findById(eq(userEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));

@@ -60,7 +60,7 @@ class ProjectServiceTest {
     void whenGetProjects_thenOk() throws Exception {
 
         // Given
-        List<ProjectEntity> projectEntityList = TestUtils.getRandomEntity(ProjectEntity.class, 5);
+        List<ProjectEntity> projectEntityList = TestUtils.getRandom(ProjectEntity.class, 5);
         List<Project> projectList = projectEntityList.stream().map(mapper::toDto).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
@@ -90,7 +90,7 @@ class ProjectServiceTest {
     void whenCreateProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
         Project project = mapper.toDto(projectEntity);
 
         when(mockedMapper.toEntity(any(Project.class)))
@@ -116,7 +116,7 @@ class ProjectServiceTest {
     void whenGetProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
         Project project = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
@@ -139,7 +139,7 @@ class ProjectServiceTest {
     public void whenGetProjectWithInvalidId_thenError() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -161,7 +161,7 @@ class ProjectServiceTest {
     void whenReplaceProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
         Project project = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
@@ -187,7 +187,7 @@ class ProjectServiceTest {
     public void whenReplaceProjectWithInvalidId_thenError() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
         Project project = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
@@ -210,7 +210,7 @@ class ProjectServiceTest {
     void whenUpdateProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
         Project project = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
@@ -236,7 +236,7 @@ class ProjectServiceTest {
     public void whenUpdateProjectWithInvalidId_thenError() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
         Project project = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
@@ -259,7 +259,7 @@ class ProjectServiceTest {
     void whenDeleteProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
@@ -272,7 +272,7 @@ class ProjectServiceTest {
     public void whenDeleteProjectWithInvalidId_thenError() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));

@@ -381,7 +381,7 @@ class TestSpecificsSpring:
         shutil.rmtree(test_output, ignore_errors=True)
 
         config = {
-            "encapsulation": False,
+            "use_encapsulation": False,
         }
 
         # generate
@@ -439,6 +439,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
+    # TODO: fixme
     @pytest.mark.order(16)
     def test_specifics_16(self) -> None:
         """Test nested Object"""
