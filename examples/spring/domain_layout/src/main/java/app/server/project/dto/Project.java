@@ -6,6 +6,7 @@ package app.server.project.dto;
 import app.server.common.model.AbstractClass;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -15,15 +16,10 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.extern.jackson.Jacksonized;
 
-@Builder
+@RecordBuilder
 public record Project(
+// @formatter:off
 
     @Min(0)
     @Max(Long.MAX_VALUE)

@@ -28,6 +28,7 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <instancio.version>6.0.0-RC1</instancio.version>
     <hypersistence.version>3.14.1</hypersistence.version>
+    <record-builder.version>51</record-builder.version>
   </properties>
 
   <dependencies>
@@ -136,6 +137,11 @@
       <artifactId>mapstruct</artifactId>
       <version>${mapstruct.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.soabase.record-builder</groupId>
+      <artifactId>record-builder-core</artifactId>
+      <version>${record-builder.version}</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>
@@ -189,6 +195,11 @@
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
               <version>${mapstruct.version}</version>
+            </path>
+            <path>
+              <groupId>io.soabase.record-builder</groupId>
+              <artifactId>record-builder-processor</artifactId>
+              <version>${record-builder.version}</version>
             </path>
             <!-- To generate Jakarta compatible model for querydsl -->
             <path>

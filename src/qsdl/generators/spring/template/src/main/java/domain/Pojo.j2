@@ -8,10 +8,9 @@ package {{model.package.domain}};
 
 {{ util.macro_imports(self._TemplateReference__context.name, model) }}
 
-{% if use_builder %}
-@Builder
-{% endif %}
+@RecordBuilder
 public record {{model.name}}(
+// @formatter:off
 {% for field in model.fields if not field.is_relation and not field.is_hidden %}
 
     {# 
@@ -54,7 +53,8 @@ public record {{model.name}}(
     {% else %}
     {{field.type}} {{field.name}}{{ "," if not loop.last else "" }}
     {% endif %}
-{% endfor %}) {
+{% endfor %}
+) {
     {# Compact constructor for default value initialization if needed #}
     {% set fields_with_defaults = model.fields|selectattr('default')|rejectattr('is_relation')|rejectattr('is_hidden')|list %}
     {% if fields_with_defaults %}
