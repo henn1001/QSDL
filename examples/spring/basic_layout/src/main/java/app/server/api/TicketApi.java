@@ -7,7 +7,6 @@ import app.server.constant.*;
 import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.databind.node.ObjectNode;
 
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
@@ -31,7 +31,7 @@ public interface TicketApi {
      * List Tickets
      */
     @GetMapping(value = "/tickets", produces = {"application/json"})
-    default ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
+    default ResponseEntity<CursorPage<TicketResponse>> getTickets(CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -41,7 +41,7 @@ public interface TicketApi {
      * Create a Ticket
      */
     @PostMapping(value = "/tickets", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Ticket> createTicket(@RequestBody Ticket body) {
+    default ResponseEntity<TicketResponse> createTicket(@RequestBody TicketRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -51,7 +51,7 @@ public interface TicketApi {
      * Read the specified Ticket
      */
     @GetMapping(value = "/tickets/{id}", produces = {"application/json"})
-    default ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) {
+    default ResponseEntity<TicketResponse> getTicket(@PathVariable("id") Long id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -61,7 +61,7 @@ public interface TicketApi {
      * Replace the specified Ticket
      */
     @PutMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Ticket> replaceTicket(@PathVariable("id") Long id, @RequestBody Ticket body) {
+    default ResponseEntity<TicketResponse> replaceTicket(@PathVariable("id") Long id, @RequestBody TicketRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -71,7 +71,7 @@ public interface TicketApi {
      * Update the specified Ticket
      */
     @PatchMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody Ticket body) {
+    default ResponseEntity<TicketResponse> updateTicket(@PathVariable("id") Long id, @RequestBody TicketRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

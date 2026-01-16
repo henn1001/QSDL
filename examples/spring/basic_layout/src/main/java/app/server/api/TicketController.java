@@ -11,7 +11,6 @@ import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.TicketService;
 import app.server.util.Validator;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.databind.node.ObjectNode;
 
 @Controller
 @AllArgsConstructor
@@ -36,8 +36,8 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
-        CursorPage<Ticket> response = ticketService.getTickets(pageable, super.getContext());
+    public ResponseEntity<CursorPage<TicketResponse>> getTickets(CursorPageable pageable) {
+        CursorPage<TicketResponse> response = ticketService.getTickets(pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -45,9 +45,9 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Ticket> createTicket(Ticket body) {
+    public ResponseEntity<TicketResponse> createTicket(TicketRequest body) {
         Validator.validate(body);
-        Ticket response = ticketService.createTicket(body, super.getContext());
+        TicketResponse response = ticketService.createTicket(body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -55,8 +55,8 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Ticket> getTicket(Long id) {
-        Ticket response = ticketService.getTicket(id, super.getContext());
+    public ResponseEntity<TicketResponse> getTicket(Long id) {
+        TicketResponse response = ticketService.getTicket(id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -64,9 +64,9 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Ticket> replaceTicket(Long id, Ticket body) {
+    public ResponseEntity<TicketResponse> replaceTicket(Long id, TicketRequest body) {
         Validator.validate(body);
-        Ticket response = ticketService.replaceTicket(id, body, super.getContext());
+        TicketResponse response = ticketService.replaceTicket(id, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -74,9 +74,9 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Ticket> updateTicket(Long id, Ticket body) {
+    public ResponseEntity<TicketResponse> updateTicket(Long id, TicketRequest body) {
         Validator.validateExRequired(body);
-        Ticket response = ticketService.updateTicket(id, body, super.getContext());
+        TicketResponse response = ticketService.updateTicket(id, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

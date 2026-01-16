@@ -7,7 +7,6 @@ import app.server.common.model.AbstractPersistentBase;
 import app.server.common.model.AbstractPersistentObject;
 import app.server.user.db.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -34,6 +33,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import tools.jackson.databind.node.ObjectNode;
 
 @Getter
 @Setter

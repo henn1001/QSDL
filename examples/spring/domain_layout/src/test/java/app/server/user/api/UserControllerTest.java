@@ -29,17 +29,17 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
 @Import(TestConfig.class)
 class UserControllerTest {
 
-    @MockBean
+    @MockitoBean
     UserService service;
 
     @Value("${server.base-path:/}")
@@ -70,7 +70,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ret),
+                Json.toString(ret),
                 new JSONObject(response),
                 false);
     }
@@ -121,7 +121,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ret),
+                Json.toString(ret),
                 new JSONObject(response),
                 false);
     }
@@ -138,7 +138,7 @@ class UserControllerTest {
 
         // When
         String response = mockMvc.perform(post(basePath + "/users")
-                        .content(Json.serializer().toString(requestDto))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -147,7 +147,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -171,7 +171,7 @@ class UserControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -195,7 +195,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -212,7 +212,7 @@ class UserControllerTest {
 
         // When
         String response = mockMvc.perform(put(basePath + "/users/1")
-                        .content(Json.serializer().toString(requestDto))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -221,7 +221,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -245,7 +245,7 @@ class UserControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -263,7 +263,7 @@ class UserControllerTest {
 
         // When
         String response = mockMvc.perform(patch(basePath + "/users/1")
-                        .content(Json.serializer().toString(requestDto))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -272,7 +272,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -296,7 +296,7 @@ class UserControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);

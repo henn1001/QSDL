@@ -17,7 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
-import app.server.domain.Ticket;
+import app.server.domain.TicketRequest;
+import app.server.domain.TicketResponse;
 import app.server.model.AppError;
 import app.server.model.CursorPage;
 import app.server.service.TicketService;
@@ -28,17 +29,17 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(TicketController.class)
 @Import(TestConfig.class)
 class TicketControllerTest {
 
-    @MockBean
+    @MockitoBean
     TicketService service;
 
     @Value("${server.base-path:/}")
@@ -53,9 +54,9 @@ class TicketControllerTest {
     public void whenGetTickets_thenOk() throws Exception {
 
         // Given
-        Ticket request = TestUtils.getRandom(Ticket.class);
+        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
 
-        CursorPage<Ticket> ret = new CursorPage<Ticket>(Arrays.asList(request), null, null);
+        CursorPage<TicketResponse> ret = new CursorPage<TicketResponse>(Arrays.asList(responseDto), null, null);
 
         when(service.getTickets(any(), any()))
                 .thenReturn(ret);
@@ -69,7 +70,7 @@ class TicketControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ret),
+                Json.toString(ret),
                 new JSONObject(response),
                 false);
     }
@@ -78,14 +79,15 @@ class TicketControllerTest {
     public void whenCreateTicket_thenOk() throws Exception {
 
         // Given
-        Ticket request = TestUtils.getRandom(Ticket.class);
+        TicketRequest requestDto = TestUtils.getRandom(TicketRequest.class);
+        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
 
         when(service.createTicket(any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/tickets")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -94,7 +96,7 @@ class TicketControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -103,10 +105,10 @@ class TicketControllerTest {
     public void whenCreateTicketWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Ticket request = TestUtils.getRandom(Ticket.class);
+        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
 
         when(service.createTicket(any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/tickets")
@@ -118,7 +120,7 @@ class TicketControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -128,10 +130,10 @@ class TicketControllerTest {
     public void whenGetTicket_thenOk() throws Exception {
 
         // Given
-        Ticket request = TestUtils.getRandom(Ticket.class);
+        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
 
         when(service.getTicket(eq(one), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(get(basePath + "/tickets/1"))
@@ -142,7 +144,7 @@ class TicketControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -151,14 +153,15 @@ class TicketControllerTest {
     public void whenReplaceTicket_thenOk() throws Exception {
 
         // Given
-        Ticket request = TestUtils.getRandom(Ticket.class);
+        TicketRequest requestDto = TestUtils.getRandom(TicketRequest.class);
+        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
 
         when(service.replaceTicket(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/tickets/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -167,7 +170,7 @@ class TicketControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -176,10 +179,10 @@ class TicketControllerTest {
     public void whenReplaceTicketWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Ticket request = TestUtils.getRandom(Ticket.class);
+        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
 
         when(service.replaceTicket(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/tickets/1")
@@ -191,7 +194,7 @@ class TicketControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -201,14 +204,15 @@ class TicketControllerTest {
     public void whenUpdateTicket_thenOk() throws Exception {
 
         // Given
-        Ticket request = TestUtils.getRandom(Ticket.class);
+        TicketRequest requestDto = TestUtils.getRandom(TicketRequest.class);
+        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
 
         when(service.updateTicket(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(patch(basePath + "/tickets/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -217,7 +221,7 @@ class TicketControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -226,10 +230,10 @@ class TicketControllerTest {
     public void whenUpdateTicketWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Ticket request = TestUtils.getRandom(Ticket.class);
+        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
 
         when(service.updateTicket(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/tickets/1")
@@ -241,7 +245,7 @@ class TicketControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);

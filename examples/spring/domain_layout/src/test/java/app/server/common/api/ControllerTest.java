@@ -19,7 +19,7 @@ import app.server.common.util.Json;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,7 +56,7 @@ class ControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
         assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
         assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
@@ -75,7 +75,7 @@ class ControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);

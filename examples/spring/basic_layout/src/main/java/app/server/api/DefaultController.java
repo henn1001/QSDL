@@ -10,7 +10,6 @@ import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.util.Validator;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.databind.node.ObjectNode;
 
 @Controller
 @AllArgsConstructor
@@ -41,7 +41,7 @@ public class DefaultController extends BaseController implements DefaultApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<ObjectNode> action(BaseType arg1) {
+    public ResponseEntity<ObjectNode> action(BaseTypeRequest arg1) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

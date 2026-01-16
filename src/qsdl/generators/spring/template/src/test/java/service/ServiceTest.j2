@@ -18,20 +18,19 @@ package {{api.package.service}};
 @Import(TestConfig.class)
 class {{model.name}}ServiceTest {
 
-    @Mock
+    @MockitoBean
     {{model.name}}Repository repository;
 
-    @Mock
+    @MockitoBean
     {{model.name}}MapStruct mockedMapper;
 
 {% for parent in model.parents %}
-    @Mock
+    @MockitoBean
     {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
 
 {% endfor %}
     {{model.name}}Service service;
 
-    @Autowired
     {{model.name}}MapStruct mapper;
 {% if    model.parents %}
 
@@ -40,6 +39,7 @@ class {{model.name}}ServiceTest {
 
     @BeforeEach
     void setUp() {
+        mapper = new {{model.name}}MapStructImpl();
         service = new {{model.name}}Service({% for parent in model.parents %}{{parent.model.name|lower}}Repository, {% endfor %}repository, mockedMapper);
     }
 {% for operation in api.operations if operation.is_generated %}
@@ -92,8 +92,8 @@ class {{model.name}}ServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.serializer().toString({{m_var}}List),
-                new JSONArray(Json.serializer().toString(response.items())),
+                Json.toString({{m_var}}List),
+                new JSONArray(Json.toString(response.items())),
                 false);
     }
     {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
@@ -159,8 +159,8 @@ class {{model.name}}ServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString({{m_var}}Response),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString({{m_var}}Response),
+                new JSONObject(Json.toString(response)),
                 false);
     }
     {% elif operation.method == "get" %}
@@ -195,8 +195,8 @@ class {{model.name}}ServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString({{m_var}}Response),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString({{m_var}}Response),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -267,8 +267,8 @@ class {{model.name}}ServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString({{m_var}}Response),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString({{m_var}}Response),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -340,8 +340,8 @@ class {{model.name}}ServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString({{m_var}}Response),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString({{m_var}}Response),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 

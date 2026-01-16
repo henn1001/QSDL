@@ -7,7 +7,6 @@ import app.server.constant.*;
 import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.databind.node.ObjectNode;
 
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
@@ -37,7 +37,7 @@ public interface DefaultApi {
      * POST /action : action
      */
     @PostMapping(value = "/action", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ObjectNode> action(@RequestBody BaseType arg1) {
+    default ResponseEntity<ObjectNode> action(@RequestBody BaseTypeRequest arg1) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

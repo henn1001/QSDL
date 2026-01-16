@@ -11,7 +11,7 @@ package {{api.package.controller}};
 @Import(TestConfig.class)
 class {{model.name}}ControllerTest {
 
-    @MockBean
+    @MockitoBean
     {{model.name}}Service service;
 
     @Value("${server.base-path:/}")
@@ -47,7 +47,7 @@ class {{model.name}}ControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ret),
+                Json.toString(ret),
                 new JSONObject(response),
                 false);
     }
@@ -83,7 +83,7 @@ class {{model.name}}ControllerTest {
 
         // When
         String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-                        .content(Json.serializer().toString(requestDto))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -92,7 +92,7 @@ class {{model.name}}ControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -116,7 +116,7 @@ class {{model.name}}ControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -143,7 +143,7 @@ class {{model.name}}ControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -163,7 +163,7 @@ class {{model.name}}ControllerTest {
 
         // When
         String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-                        .content(Json.serializer().toString(requestDto))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -172,7 +172,7 @@ class {{model.name}}ControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -196,7 +196,7 @@ class {{model.name}}ControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -217,7 +217,7 @@ class {{model.name}}ControllerTest {
 
         // When
         String response = mockMvc.perform(patch(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-                        .content(Json.serializer().toString(requestDto))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -226,7 +226,7 @@ class {{model.name}}ControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -250,7 +250,7 @@ class {{model.name}}ControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);

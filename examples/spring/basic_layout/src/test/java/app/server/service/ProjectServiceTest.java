@@ -12,9 +12,11 @@ import static org.mockito.Mockito.when;
 import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
-import app.server.domain.Project;
+import app.server.domain.ProjectRequest;
+import app.server.domain.ProjectResponse;
 import app.server.domain.entity.ProjectEntity;
 import app.server.domain.mapper.ProjectMapStruct;
+import app.server.domain.mapper.ProjectMapStructImpl;
 import app.server.exception.AppException;
 import app.server.model.AppError;
 import app.server.model.Context;
@@ -30,29 +32,28 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @Import(TestConfig.class)
 class ProjectServiceTest {
 
-    @Mock
+    @MockitoBean
     ProjectRepository repository;
 
-    @Mock
+    @MockitoBean
     ProjectMapStruct mockedMapper;
 
     ProjectService service;
 
-    @Autowired
     ProjectMapStruct mapper;
 
     @BeforeEach
     void setUp() {
+        mapper = new ProjectMapStructImpl();
         service = new ProjectService(repository, mockedMapper);
     }
 
@@ -60,8 +61,8 @@ class ProjectServiceTest {
     void whenGetProjects_thenOk() throws Exception {
 
         // Given
-        List<ProjectEntity> projectEntityList = TestUtils.getRandomEntity(ProjectEntity.class, 5);
-        List<Project> projectList = projectEntityList.stream().map(mapper::toDto).toList();
+        List<ProjectEntity> projectEntityList = TestUtils.getRandom(ProjectEntity.class, 5);
+        List<ProjectResponse> projectList = projectEntityList.stream().map(mapper::toDto).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6L));
@@ -74,15 +75,15 @@ class ProjectServiceTest {
                 .thenReturn(projectList.get(4));
 
         // When
-        CursorPage<Project> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
+        CursorPage<ProjectResponse> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
 
         // Then
         assertEquals(5L, response.count());
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.serializer().toString(projectList),
-                new JSONArray(Json.serializer().toString(response.items())),
+                Json.toString(projectList),
+                new JSONArray(Json.toString(response.items())),
                 false);
     }
 
@@ -90,25 +91,26 @@ class ProjectServiceTest {
     void whenCreateProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
+        ProjectResponse projectResponse = mapper.toDto(projectEntity);
 
-        when(mockedMapper.toEntity(any(Project.class)))
+        when(mockedMapper.toEntity(any(ProjectRequest.class)))
                 .thenReturn(projectEntity);
 
         when(repository.save(eq(projectEntity)))
                 .thenReturn(projectEntity);
 
         when(mockedMapper.toDto(any(ProjectEntity.class)))
-                .thenReturn(project);
+                .thenReturn(projectResponse);
 
         // When
-        Project response = service.createProject(project, new Context());
+        ProjectResponse response = service.createProject(projectRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(project),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(projectResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -116,22 +118,22 @@ class ProjectServiceTest {
     void whenGetProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
+        ProjectResponse projectResponse = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
 
         when(mockedMapper.toDto(any(ProjectEntity.class)))
-                .thenReturn(project);
+                .thenReturn(projectResponse);
 
         // When
-        Project response = service.getProject(projectEntity.getId(), new Context());
+        ProjectResponse response = service.getProject(projectEntity.getId(), new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(project),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(projectResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -139,7 +141,7 @@ class ProjectServiceTest {
     public void whenGetProjectWithInvalidId_thenError() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -161,8 +163,9 @@ class ProjectServiceTest {
     void whenReplaceProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
+        ProjectResponse projectResponse = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
@@ -171,15 +174,15 @@ class ProjectServiceTest {
                 .thenReturn(projectEntity);
 
         when(mockedMapper.toDto(any(ProjectEntity.class)))
-                .thenReturn(project);
+                .thenReturn(projectResponse);
 
         // When
-        Project response = service.replaceProject(projectEntity.getId(), project, new Context());
+        ProjectResponse response = service.replaceProject(projectEntity.getId(), projectRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(project),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(projectResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -187,8 +190,8 @@ class ProjectServiceTest {
     public void whenReplaceProjectWithInvalidId_thenError() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -196,7 +199,7 @@ class ProjectServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.replaceProject(projectEntity.getId(), project, new Context());
+                    service.replaceProject(projectEntity.getId(), projectRequest, new Context());
                 });
 
         // Then
@@ -210,8 +213,9 @@ class ProjectServiceTest {
     void whenUpdateProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
+        ProjectResponse projectResponse = mapper.toDto(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
@@ -220,15 +224,15 @@ class ProjectServiceTest {
                 .thenReturn(projectEntity);
 
         when(mockedMapper.toDto(any(ProjectEntity.class)))
-                .thenReturn(project);
+                .thenReturn(projectResponse);
 
         // When
-        Project response = service.updateProject(projectEntity.getId(), project, new Context());
+        ProjectResponse response = service.updateProject(projectEntity.getId(), projectRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(project),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(projectResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -236,8 +240,8 @@ class ProjectServiceTest {
     public void whenUpdateProjectWithInvalidId_thenError() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
-        Project project = mapper.toDto(projectEntity);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
+        ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));
@@ -245,7 +249,7 @@ class ProjectServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.updateProject(projectEntity.getId(), project, new Context());
+                    service.updateProject(projectEntity.getId(), projectRequest, new Context());
                 });
 
         // Then
@@ -259,7 +263,7 @@ class ProjectServiceTest {
     void whenDeleteProject_thenOk() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
@@ -272,7 +276,7 @@ class ProjectServiceTest {
     public void whenDeleteProjectWithInvalidId_thenError() throws Exception {
 
         // Given
-        ProjectEntity projectEntity = TestUtils.getRandomEntity(ProjectEntity.class);
+        ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.ofNullable(null));

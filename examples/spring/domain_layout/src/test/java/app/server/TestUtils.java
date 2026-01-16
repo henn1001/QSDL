@@ -9,9 +9,7 @@ import static org.instancio.Select.fields;
 
 import app.server.common.model.AbstractPersistentBase;
 import app.server.common.model.AbstractPersistentObject;
-import app.server.common.util.Json;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -28,6 +26,8 @@ import org.instancio.settings.Keys;
 import org.instancio.settings.Mode;
 import org.instancio.settings.Settings;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class TestUtils {
 
@@ -35,11 +35,11 @@ public class TestUtils {
         // not called
     }
 
-    private static final Json json;
+    private static final JsonMapper json;
     private static final Settings instanceIoSettings;
 
     static {
-        json = Json.serializer();
+        json = JsonMapper.builder().build();
 
         instanceIoSettings = Settings.create()
                 .set(Keys.MODE, Mode.LENIENT)
@@ -52,7 +52,7 @@ public class TestUtils {
     private static <T> InstancioApi<T> instanceIo(Class<T> cls) {
         return Instancio.of(cls)
                 .withSettings(instanceIoSettings)
-                .set(all(ObjectNode.class), json.nodeFromJson("{}").put("test", "data"));
+                .set(all(ObjectNode.class), ((ObjectNode) json.readTree("{}")).put("test", "data"));
     }
 
     public static <T> T getRandom(Class<T> cls) {
@@ -219,10 +219,10 @@ public class TestUtils {
                     return List.of();
                 }
                 // For complex types like List, use Jackson to parse JSON
-                return json.mapper().readValue(value, targetType);
+                return json.readValue(value, targetType);
             } else {
                 // For complex types, use Jackson to parse JSON
-                return json.mapper().readValue(value, targetType);
+                return json.readValue(value, targetType);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse default value '" + value + "' for type " + targetType, e);

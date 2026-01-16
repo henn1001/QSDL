@@ -3,7 +3,8 @@
  */
 package app.server.domain.mapper;
 
-import app.server.domain.Ticket;
+import app.server.domain.TicketRequest;
+import app.server.domain.TicketResponse;
 import app.server.domain.entity.TicketEntity;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritConfiguration;
@@ -16,21 +17,21 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface TicketMapStruct {
 
-    Ticket toDto(TicketEntity entity);
+    TicketResponse toDto(TicketEntity entity);
 
     // ignore read only attributes and relations
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "users", ignore = true)
-    TicketEntity toEntity(Ticket dto);
+    TicketEntity toEntity(TicketRequest dto);
 
     @Named("replace")
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void replace(Ticket source, @MappingTarget TicketEntity target);
+    void replace(TicketRequest source, @MappingTarget TicketEntity target);
 
     @Named("update")
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void update(Ticket source, @MappingTarget TicketEntity target);
+    void update(TicketRequest source, @MappingTarget TicketEntity target);
 }

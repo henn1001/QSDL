@@ -11,7 +11,6 @@ import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.UserService;
 import app.server.util.Validator;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.databind.node.ObjectNode;
 
 @Controller
 @AllArgsConstructor
@@ -36,8 +36,8 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<User>> getUsersForTicket(Long ticketId, CursorPageable pageable) {
-        CursorPage<User> response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
+    public ResponseEntity<CursorPage<UserResponse>> getUsersForTicket(Long ticketId, CursorPageable pageable) {
+        CursorPage<UserResponse> response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -63,8 +63,8 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<User>> getUsers(CursorPageable pageable) {
-        CursorPage<User> response = userService.getUsers(pageable, super.getContext());
+    public ResponseEntity<CursorPage<UserResponse>> getUsers(CursorPageable pageable) {
+        CursorPage<UserResponse> response = userService.getUsers(pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -72,9 +72,9 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<User> createUser(User body) {
+    public ResponseEntity<UserResponse> createUser(UserRequest body) {
         Validator.validate(body);
-        User response = userService.createUser(body, super.getContext());
+        UserResponse response = userService.createUser(body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -82,8 +82,8 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<User> getUser(Long id) {
-        User response = userService.getUser(id, super.getContext());
+    public ResponseEntity<UserResponse> getUser(Long id) {
+        UserResponse response = userService.getUser(id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -91,9 +91,9 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<User> replaceUser(Long id, User body) {
+    public ResponseEntity<UserResponse> replaceUser(Long id, UserRequest body) {
         Validator.validate(body);
-        User response = userService.replaceUser(id, body, super.getContext());
+        UserResponse response = userService.replaceUser(id, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -101,9 +101,9 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<User> updateUser(Long id, User body) {
+    public ResponseEntity<UserResponse> updateUser(Long id, UserRequest body) {
         Validator.validateExRequired(body);
-        User response = userService.updateUser(id, body, super.getContext());
+        UserResponse response = userService.updateUser(id, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

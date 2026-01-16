@@ -7,7 +7,6 @@ import app.server.constant.*;
 import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.databind.node.ObjectNode;
 
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
@@ -31,7 +31,7 @@ public interface ProjectApi {
      * List Projects
      */
     @GetMapping(value = "/projects", produces = {"application/json"})
-    default ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
+    default ResponseEntity<CursorPage<ProjectResponse>> getProjects(CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -41,7 +41,7 @@ public interface ProjectApi {
      * Create a Project
      */
     @PostMapping(value = "/projects", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Project> createProject(@RequestBody Project body) {
+    default ResponseEntity<ProjectResponse> createProject(@RequestBody ProjectRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -51,7 +51,7 @@ public interface ProjectApi {
      * Read the specified Project
      */
     @GetMapping(value = "/projects/{id}", produces = {"application/json"})
-    default ResponseEntity<Project> getProject(@PathVariable("id") Long id) {
+    default ResponseEntity<ProjectResponse> getProject(@PathVariable("id") Long id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -61,7 +61,7 @@ public interface ProjectApi {
      * Replace the specified Project
      */
     @PutMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Project> replaceProject(@PathVariable("id") Long id, @RequestBody Project body) {
+    default ResponseEntity<ProjectResponse> replaceProject(@PathVariable("id") Long id, @RequestBody ProjectRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -71,7 +71,7 @@ public interface ProjectApi {
      * Update the specified Project
      */
     @PatchMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project body) {
+    default ResponseEntity<ProjectResponse> updateProject(@PathVariable("id") Long id, @RequestBody ProjectRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

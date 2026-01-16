@@ -3,247 +3,122 @@
  */
 package {{package.util}};
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonInclude.Value;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
-/**
- * https://www.stubbornjava.com/posts/practical-jackson-objectmapper-configuration
- * https://github.com/StubbornJava/StubbornJava/blob/master/stubbornjava-common/src/main/java/com/stubbornjava/common/Json.java
- */
+@Component
 public class Json {
 
-    private static final Json DEFAULT_SERIALIZER;
+    private static JsonMapper mapper;
+    private static ObjectWriter writer;
+    private static ObjectWriter prettyWriter;
 
-    static {
-        ObjectMapper mapper = new ObjectMapper();
+    private static final String JSON_NOT_INITIALIZED = "Json not initialized";
 
-        // Don't throw an exception when json has extra fields you are
-        // not serializing on. This is useful when you want to use a pojo
-        // for deserialization and only care about a portion of the json
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        // Don't throw an exception when json has empty beans
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-
-        // Ignore JsonProperty on accessor and check only on fields.
-        mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
-        mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-
-        // Ignore null values when writing json.
-        Value mapValue = Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY);
-        mapper.configOverride(Map.class).setInclude(mapValue);
-        mapper.setSerializationInclusion(Include.NON_NULL);
-
-        // Write times as a String instead of a Long so its human readable.
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.registerModule(new JavaTimeModule());
-
-        // disable indent by default for the normal writer
-        // use prettyWriter instead
-        mapper.disable(SerializationFeature.INDENT_OUTPUT);
-
-        DEFAULT_SERIALIZER = new Json(mapper);
+    public Json(JsonMapper jsonMapper) {
+        Json.mapper = jsonMapper;
+        Json.writer = jsonMapper.writer();
+        Json.prettyWriter = jsonMapper.writerWithDefaultPrettyPrinter();
     }
 
-    public static Json serializer() {
-        return DEFAULT_SERIALIZER;
-    }
-
-    private final ObjectMapper mapper;
-    private final ObjectWriter writer;
-    private final ObjectWriter prettyWriter;
-
-    // Only let this be called statically. Hide the constructor
-    private Json(ObjectMapper mapper) {
-        this.mapper = mapper;
-        this.writer = mapper.writer();
-        this.prettyWriter = mapper.writerWithDefaultPrettyPrinter();
-    }
-
-    public ObjectMapper mapper() {
+    public static JsonMapper mapper() {
+        if (mapper == null) throw new IllegalStateException(JSON_NOT_INITIALIZED);
         return mapper;
     }
 
-    public ObjectWriter writer() {
+    public static ObjectWriter writer() {
+        if (writer == null) throw new IllegalStateException(JSON_NOT_INITIALIZED);
         return writer;
     }
 
-    public ObjectWriter prettyWriter() {
+    public static ObjectWriter prettyWriter() {
+        if (prettyWriter == null) throw new IllegalStateException(JSON_NOT_INITIALIZED);
         return prettyWriter;
     }
 
-    public <T> T fromJson(byte[] bytes, TypeReference<T> typeRef) {
-        try {
-            return mapper.readValue(bytes, typeRef);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromJson(byte[] bytes, TypeReference<T> typeRef) throws JacksonException {
+        return mapper().readValue(bytes, typeRef);
     }
 
-    public <T> T fromJson(byte[] bytes, Class<T> type) {
-        try {
-            return mapper.readValue(bytes, type);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromJson(byte[] bytes, Class<T> type) throws JacksonException {
+        return mapper().readValue(bytes, type);
     }
 
-    public <T> T fromJson(String json, TypeReference<T> typeRef) {
-        try {
-            return mapper.readValue(json, typeRef);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromJson(String json, TypeReference<T> typeRef) throws JacksonException {
+        return mapper().readValue(json, typeRef);
     }
 
-    public <T> T fromJson(String json, Class<T> type) {
-        try {
-            return mapper.readValue(json, type);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromJson(String json, Class<T> type) throws JacksonException {
+        return mapper().readValue(json, type);
     }
 
-    public <T> T fromNode(JsonNode node, TypeReference<T> typeRef) {
-        try {
-            return mapper.readValue(node.toString(), typeRef);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromNode(JsonNode node, TypeReference<T> typeRef) throws JacksonException {
+        return mapper().readValue(node.toString(), typeRef);
     }
 
-    public <T> T fromNode(JsonNode node, Class<T> type) {
-        try {
-            return mapper.readValue(node.toString(), type);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromNode(JsonNode node, Class<T> type) throws JacksonException {
+        return mapper().readValue(node.toString(), type);
     }
 
-    public <T> T fromObject(Object obj, TypeReference<T> typeRef) {
-        try {
-            return mapper.readValue(toString(obj), typeRef);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromObject(Object obj, TypeReference<T> typeRef) throws JacksonException {
+        return mapper().readValue(toString(obj), typeRef);
     }
 
-    public <T> T fromObject(Object obj, Class<T> type) {
-        try {
-            return mapper.readValue(toString(obj), type);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromObject(Object obj, Class<T> type) throws JacksonException {
+        return mapper().readValue(toString(obj), type);
     }
 
-    public <T> T fromInputStream(InputStream is, TypeReference<T> typeRef) {
-        try {
-            return mapper.readValue(is, typeRef);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromInputStream(InputStream is, TypeReference<T> typeRef) throws JacksonException {
+        return mapper().readValue(is, typeRef);
     }
 
-    public <T> T fromInputStream(InputStream is, Class<T> type) {
-        try {
-            return mapper.readValue(is, type);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static <T> T fromInputStream(InputStream is, Class<T> type) throws JacksonException {
+        return mapper().readValue(is, type);
     }
 
-    public String toString(Object obj) {
-        try {
-            return writer.writeValueAsString(obj);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static String toString(Object obj) throws JacksonException {
+        return writer().writeValueAsString(obj);
     }
 
-    public String toPrettyString(Object obj) {
-        try {
-            return prettyWriter.writeValueAsString(obj);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static String toPrettyString(Object obj) throws JacksonException {
+        return prettyWriter().writeValueAsString(obj);
     }
 
-    public byte[] toByteArray(Object obj) {
-        try {
-            return prettyWriter.writeValueAsBytes(obj);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static byte[] toByteArray(Object obj) throws JacksonException {
+        return prettyWriter().writeValueAsBytes(obj);
     }
 
-    public Map<String, Object> mapFromJson(byte[] bytes) {
-        try {
-            return mapper.readValue(bytes, new TypeReference<Map<String, Object>>() {});
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static Map<String, Object> mapFromJson(byte[] bytes) throws JacksonException {
+        return mapper().readValue(bytes, new TypeReference<Map<String, Object>>() {});
     }
 
-    public Map<String, Object> mapFromJson(String json) {
-        try {
-            return mapper.readValue(json, new TypeReference<Map<String, Object>>() {});
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static Map<String, Object> mapFromJson(String json) throws JacksonException {
+        return mapper().readValue(json, new TypeReference<Map<String, Object>>() {});
     }
 
-    public Map<String, Object> mapFromObject(Object obj) {
-        try {
-            return mapper.convertValue(obj, new TypeReference<Map<String, Object>>() {});
-        } catch (IllegalArgumentException e) {
-            throw new JsonException(e);
-        }
+    public static Map<String, Object> mapFromObject(Object obj) throws JacksonException {
+        return mapper().convertValue(obj, new TypeReference<Map<String, Object>>() {});
     }
 
-    public ObjectNode nodeFromJson(String json) {
-        try {
-            return (ObjectNode) mapper.readTree(json);
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static ObjectNode nodeFromJson(String json) throws JacksonException {
+        return (ObjectNode) mapper().readTree(json);
     }
 
-    public ObjectNode nodeFromObject(Object obj) {
-        try {
-            return (ObjectNode) mapper.readTree(toString(obj));
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
+    public static ObjectNode nodeFromObject(Object obj) throws JacksonException {
+        return (ObjectNode) mapper().readTree(toString(obj));
     }
 
-    public ArrayNode nodeFromList(List<? extends Object> obj) {
-        try {
-            return (ArrayNode) mapper.readTree(toString(obj));
-        } catch (IOException e) {
-            throw new JsonException(e);
-        }
-    }
-
-    public static class JsonException extends RuntimeException {
-        private JsonException(Exception ex) {
-            super(ex);
-        }
+    public static ArrayNode nodeFromList(List<? extends Object> obj) throws JacksonException {
+        return (ArrayNode) mapper().readTree(toString(obj));
     }
 }
 {{""}}

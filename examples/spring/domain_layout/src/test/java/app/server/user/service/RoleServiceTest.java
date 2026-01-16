@@ -25,6 +25,7 @@ import app.server.user.db.RoleRepository;
 import app.server.user.dto.RoleRequest;
 import app.server.user.dto.RoleResponse;
 import app.server.user.mapper.RoleMapStruct;
+import app.server.user.mapper.RoleMapStructImpl;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -33,34 +34,33 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @Import(TestConfig.class)
 class RoleServiceTest {
 
-    @Mock
+    @MockitoBean
     RoleRepository repository;
 
-    @Mock
+    @MockitoBean
     RoleMapStruct mockedMapper;
 
-    @Mock
+    @MockitoBean
     ProjectRepository projectRepository;
 
     RoleService service;
 
-    @Autowired
     RoleMapStruct mapper;
 
     static Long one = 1L;
 
     @BeforeEach
     void setUp() {
+        mapper = new RoleMapStructImpl();
         service = new RoleService(projectRepository, repository, mockedMapper);
     }
 
@@ -93,8 +93,8 @@ class RoleServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.serializer().toString(roleList),
-                new JSONArray(Json.serializer().toString(response.items())),
+                Json.toString(roleList),
+                new JSONArray(Json.toString(response.items())),
                 false);
     }
 
@@ -124,8 +124,8 @@ class RoleServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(roleResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(roleResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -151,8 +151,8 @@ class RoleServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(roleResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(roleResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -208,8 +208,8 @@ class RoleServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(roleResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(roleResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -266,8 +266,8 @@ class RoleServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(roleResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(roleResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 

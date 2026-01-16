@@ -3,9 +3,15 @@
  */
 package app.server;
 
+import app.server.config.AppJacksonConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
 @TestConfiguration
-@ComponentScan({"app.server.domain.mapper"})
+@Import(AppJacksonConfiguration.class)
+@ImportAutoConfiguration(JacksonAutoConfiguration.class)
+@ComponentScan({"app.server.domain.mapper", "app.server.util"})
 public class TestConfig {}

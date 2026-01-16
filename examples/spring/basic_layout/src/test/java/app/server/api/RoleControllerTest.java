@@ -17,7 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
-import app.server.domain.Role;
+import app.server.domain.RoleRequest;
+import app.server.domain.RoleResponse;
 import app.server.model.AppError;
 import app.server.model.CursorPage;
 import app.server.service.RoleService;
@@ -28,17 +29,17 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(RoleController.class)
 @Import(TestConfig.class)
 class RoleControllerTest {
 
-    @MockBean
+    @MockitoBean
     RoleService service;
 
     @Value("${server.base-path:/}")
@@ -53,9 +54,9 @@ class RoleControllerTest {
     public void whenGetRoles_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
-        CursorPage<Role> ret = new CursorPage<Role>(Arrays.asList(request), null, null);
+        CursorPage<RoleResponse> ret = new CursorPage<RoleResponse>(Arrays.asList(responseDto), null, null);
 
         when(service.getRoles(any(), any(), any()))
                 .thenReturn(ret);
@@ -69,7 +70,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ret),
+                Json.toString(ret),
                 new JSONObject(response),
                 false);
     }
@@ -78,14 +79,15 @@ class RoleControllerTest {
     public void whenCreateRole_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.createRole(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/projects/1/roles")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -94,7 +96,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -103,10 +105,10 @@ class RoleControllerTest {
     public void whenCreateRoleWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.createRole(eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(post(basePath + "/projects/1/roles")
@@ -118,7 +120,7 @@ class RoleControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -128,10 +130,10 @@ class RoleControllerTest {
     public void whenGetRole_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.getRole(eq(one), eq(one), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(get(basePath + "/projects/1/roles/1"))
@@ -142,7 +144,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -151,14 +153,15 @@ class RoleControllerTest {
     public void whenReplaceRole_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.replaceRole(eq(one), eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -167,7 +170,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -176,10 +179,10 @@ class RoleControllerTest {
     public void whenReplaceRoleWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.replaceRole(eq(one), eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
@@ -191,7 +194,7 @@ class RoleControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -201,14 +204,15 @@ class RoleControllerTest {
     public void whenUpdateRole_thenOk() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.updateRole(eq(one), eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(patch(basePath + "/projects/1/roles/1")
-                        .content(Json.serializer().toString(request))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -217,7 +221,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(request),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -226,10 +230,10 @@ class RoleControllerTest {
     public void whenUpdateRoleWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        Role request = TestUtils.getRandom(Role.class);
+        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
 
         when(service.updateRole(eq(one), eq(one), any(), any()))
-                .thenReturn(request);
+                .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
@@ -241,7 +245,7 @@ class RoleControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);

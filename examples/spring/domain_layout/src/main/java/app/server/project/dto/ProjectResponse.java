@@ -4,7 +4,6 @@
 package app.server.project.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -14,6 +13,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import tools.jackson.databind.node.ObjectNode;
 
 @RecordBuilder
 public record ProjectResponse(

@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
 class UserRepositoryTest extends AbstractDataJpaTest {
 
@@ -66,8 +66,8 @@ class UserRepositoryTest extends AbstractDataJpaTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(testData),
-                new JSONObject(Json.serializer().toString(findData)),
+                Json.toString(testData),
+                new JSONObject(Json.toString(findData)),
                 false);
     }
 

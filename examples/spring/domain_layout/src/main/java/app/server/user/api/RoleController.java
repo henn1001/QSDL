@@ -11,7 +11,6 @@ import app.server.common.util.Validator;
 import app.server.user.api.RoleApi;
 import app.server.user.dto.*;
 import app.server.user.service.RoleService;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.databind.node.ObjectNode;
 
 @Controller
 @AllArgsConstructor

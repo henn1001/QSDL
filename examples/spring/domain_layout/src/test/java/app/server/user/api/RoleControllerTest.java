@@ -29,17 +29,17 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(RoleController.class)
 @Import(TestConfig.class)
 class RoleControllerTest {
 
-    @MockBean
+    @MockitoBean
     RoleService service;
 
     @Value("${server.base-path:/}")
@@ -70,7 +70,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ret),
+                Json.toString(ret),
                 new JSONObject(response),
                 false);
     }
@@ -87,7 +87,7 @@ class RoleControllerTest {
 
         // When
         String response = mockMvc.perform(post(basePath + "/projects/1/roles")
-                        .content(Json.serializer().toString(requestDto))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -96,7 +96,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -120,7 +120,7 @@ class RoleControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -144,7 +144,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -161,7 +161,7 @@ class RoleControllerTest {
 
         // When
         String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
-                        .content(Json.serializer().toString(requestDto))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -170,7 +170,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -194,7 +194,7 @@ class RoleControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
@@ -212,7 +212,7 @@ class RoleControllerTest {
 
         // When
         String response = mockMvc.perform(patch(basePath + "/projects/1/roles/1")
-                        .content(Json.serializer().toString(requestDto))
+                        .content(Json.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -221,7 +221,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(responseDto),
+                Json.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -245,7 +245,7 @@ class RoleControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.serializer().fromJson(response, AppError.class);
+        AppError error = Json.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);

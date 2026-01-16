@@ -25,6 +25,7 @@ import app.server.user.db.UserRepository;
 import app.server.user.dto.UserRequest;
 import app.server.user.dto.UserResponse;
 import app.server.user.mapper.UserMapStruct;
+import app.server.user.mapper.UserMapStructImpl;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -33,34 +34,33 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @Import(TestConfig.class)
 class UserServiceTest {
 
-    @Mock
+    @MockitoBean
     UserRepository repository;
 
-    @Mock
+    @MockitoBean
     UserMapStruct mockedMapper;
 
-    @Mock
+    @MockitoBean
     TicketRepository ticketRepository;
 
     UserService service;
 
-    @Autowired
     UserMapStruct mapper;
 
     static Long one = 1L;
 
     @BeforeEach
     void setUp() {
+        mapper = new UserMapStructImpl();
         service = new UserService(ticketRepository, repository, mockedMapper);
     }
 
@@ -93,8 +93,8 @@ class UserServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.serializer().toString(userList),
-                new JSONArray(Json.serializer().toString(response.items())),
+                Json.toString(userList),
+                new JSONArray(Json.toString(response.items())),
                 false);
     }
 
@@ -169,8 +169,8 @@ class UserServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.serializer().toString(userList),
-                new JSONArray(Json.serializer().toString(response.items())),
+                Json.toString(userList),
+                new JSONArray(Json.toString(response.items())),
                 false);
     }
 
@@ -196,8 +196,8 @@ class UserServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(userResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(userResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -219,8 +219,8 @@ class UserServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(userResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(userResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -268,8 +268,8 @@ class UserServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(userResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(userResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -318,8 +318,8 @@ class UserServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(userResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(userResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 

@@ -3,7 +3,8 @@
  */
 package app.server.domain.mapper;
 
-import app.server.domain.Project;
+import app.server.domain.ProjectRequest;
+import app.server.domain.ProjectResponse;
 import app.server.domain.entity.ProjectEntity;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritConfiguration;
@@ -16,7 +17,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProjectMapStruct {
 
-    Project toDto(ProjectEntity entity);
+    ProjectResponse toDto(ProjectEntity entity);
 
     // ignore read only attributes and relations
     @Mapping(target = "uid", ignore = true)
@@ -26,15 +27,15 @@ public interface ProjectMapStruct {
     @Mapping(target = "lastUpdateBy", ignore = true)
     @Mapping(target = "lastUpdateDate", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    ProjectEntity toEntity(Project dto);
+    ProjectEntity toEntity(ProjectRequest dto);
 
     @Named("replace")
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void replace(Project source, @MappingTarget ProjectEntity target);
+    void replace(ProjectRequest source, @MappingTarget ProjectEntity target);
 
     @Named("update")
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void update(Project source, @MappingTarget ProjectEntity target);
+    void update(ProjectRequest source, @MappingTarget ProjectEntity target);
 }

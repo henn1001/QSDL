@@ -3,25 +3,31 @@
  */
 package app.server;
 
+import static org.instancio.Select.all;
+import static org.instancio.Select.field;
+import static org.instancio.Select.fields;
+
 import app.server.model.AbstractPersistentBase;
 import app.server.model.AbstractPersistentObject;
-import app.server.util.Json;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.jeasy.random.EasyRandom;
-import org.jeasy.random.EasyRandomParameters;
-import org.jeasy.random.FieldPredicates;
-import org.jeasy.random.randomizers.AbstractRandomizer;
-import org.jeasy.random.randomizers.range.IntegerRangeRandomizer;
-import org.jeasy.random.randomizers.range.LongRangeRandomizer;
+import org.instancio.Instancio;
+import org.instancio.InstancioApi;
+import org.instancio.settings.Keys;
+import org.instancio.settings.Mode;
+import org.instancio.settings.Settings;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class TestUtils {
 
@@ -29,78 +35,52 @@ public class TestUtils {
         // not called
     }
 
-    public static EasyRandom easyRandom;
-    public static EasyRandom easyRandomJpa;
-
-    private static final Json json = Json.serializer();
+    private static final JsonMapper json;
+    private static final Settings instanceIoSettings;
 
     static {
-        EasyRandomParameters parameters = new EasyRandomParameters()
-                .randomize(ObjectNode.class, () -> json.nodeFromJson("{}").put("test", "data"))
-                .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
-                .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
-                .randomize(BigInteger.class, new MyBigIntegerRandomizer())
-                .collectionSizeRange(1, 10)
-                .objectPoolSize(10000);
+        json = JsonMapper.builder().build();
 
-        EasyRandomParameters jpaParameters = new EasyRandomParameters()
-                .randomize(ObjectNode.class, () -> json.nodeFromJson("{}").put("test", "data"))
-                .randomize(Integer.class, new IntegerRangeRandomizer(0, Integer.MAX_VALUE))
-                .randomize(Long.class, new LongRangeRandomizer(0L, Long.MAX_VALUE))
-                .randomize(BigInteger.class, new MyBigIntegerRandomizer())
-                .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentObject.class)))
-                .excludeField(FieldPredicates.named("id").and(FieldPredicates.inClass(AbstractPersistentBase.class)))
-                .excludeField(FieldPredicates.named("uid").and(FieldPredicates.inClass(AbstractPersistentObject.class)))
-                .excludeField(FieldPredicates.named("uid").and(FieldPredicates.inClass(AbstractPersistentBase.class)))
-                .collectionSizeRange(1, 10)
-                .objectPoolSize(10000);
-
-        easyRandom = new EasyRandom(parameters);
-        easyRandomJpa = new EasyRandom(jpaParameters);
+        instanceIoSettings = Settings.create()
+                .set(Keys.MODE, Mode.LENIENT)
+                .set(Keys.COLLECTION_MIN_SIZE, 1)
+                .set(Keys.COLLECTION_MAX_SIZE, 10)
+                .set(Keys.BEAN_VALIDATION_ENABLED, true);
     }
 
-    static class MyBigIntegerRandomizer extends AbstractRandomizer<BigInteger> {
-
-        @Override
-        public BigInteger getRandomValue() {
-            // The maximum value for numeric(38, 0) is 10^38 - 1
-            // 99999999999999999999999999999999999999
-            return new BigInteger(38 * 3 + 1, random);
-        }
+    // helper to centralize ObjectNode override + settings
+    private static <T> InstancioApi<T> instanceIo(Class<T> cls) {
+        return Instancio.of(cls)
+                .withSettings(instanceIoSettings)
+                .set(all(ObjectNode.class), ((ObjectNode) json.readTree("{}")).put("test", "data"));
     }
 
     public static <T> T getRandom(Class<T> cls) {
-        T o = easyRandom.nextObject(cls);
-        return o;
+        return instanceIo(cls).create();
     }
 
     public static <T> List<T> getRandom(Class<T> cls, int count) {
-        List<T> ol = easyRandom.objects(cls, count).collect(Collectors.toList());
-        return ol;
+        return instanceIo(cls).stream().limit(count).collect(Collectors.toList());
     }
 
-    public static <T extends AbstractPersistentObject> T getRandomEntity(Class<T> cls) {
-        T o = easyRandom.nextObject(cls);
-        o.removeRelations();
-        return o;
-    }
-
-    public static <T extends AbstractPersistentObject> List<T> getRandomEntity(Class<T> cls, int count) {
-        List<T> ol = easyRandom.objects(cls, count).collect(Collectors.toList());
-        ol.forEach(o -> o.removeRelations());
-        return ol;
+    private static <T extends AbstractPersistentObject> InstancioApi<T> instanceIoIgnoreIds(Class<T> cls) {
+        return instanceIo(cls)
+                .ignore(field(AbstractPersistentObject::getId))
+                .ignore(field(AbstractPersistentObject::getUid))
+                .ignore(field(AbstractPersistentBase::getId))
+                .ignore(field(AbstractPersistentBase::getUid))
+                .ignore(fields().annotated(OneToOne.class))
+                .ignore(fields().annotated(OneToMany.class))
+                .ignore(fields().annotated(ManyToOne.class))
+                .ignore(fields().annotated(ManyToMany.class));
     }
 
     public static <T extends AbstractPersistentObject> T getRandomEntityWithNullId(Class<T> cls) {
-        T o = easyRandomJpa.nextObject(cls);
-        o.removeRelations();
-        return o;
+        return instanceIoIgnoreIds(cls).create();
     }
 
     public static <T extends AbstractPersistentObject> List<T> getRandomEntityWithNullId(Class<T> cls, int count) {
-        List<T> ol = easyRandomJpa.objects(cls, count).collect(Collectors.toList());
-        ol.forEach(o -> o.removeRelations());
-        return ol;
+        return instanceIoIgnoreIds(cls).stream().limit(count).collect(Collectors.toList());
     }
 
     /**
@@ -239,10 +219,10 @@ public class TestUtils {
                     return List.of();
                 }
                 // For complex types like List, use Jackson to parse JSON
-                return json.mapper().readValue(value, targetType);
+                return json.readValue(value, targetType);
             } else {
                 // For complex types, use Jackson to parse JSON
-                return json.mapper().readValue(value, targetType);
+                return json.readValue(value, targetType);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse default value '" + value + "' for type " + targetType, e);

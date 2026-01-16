@@ -3,6 +3,7 @@
  */
 package app.server;
 
+import java.util.TimeZone;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -12,6 +13,9 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 public class SpringBootApp {
 
     public static void main(String[] args) {
+        // set default JVM timezone before Spring starts
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
         SpringApplication.run(SpringBootApp.class, args);
     }
 }

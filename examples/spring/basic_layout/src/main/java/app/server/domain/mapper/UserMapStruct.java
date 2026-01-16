@@ -3,7 +3,8 @@
  */
 package app.server.domain.mapper;
 
-import app.server.domain.User;
+import app.server.domain.UserRequest;
+import app.server.domain.UserResponse;
 import app.server.domain.entity.UserEntity;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritConfiguration;
@@ -17,22 +18,22 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface UserMapStruct {
 
     @Mapping(target = "tmp", ignore = true)
-    User toDto(UserEntity entity);
+    UserResponse toDto(UserEntity entity);
 
     // ignore read only attributes and relations
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "count", ignore = true)
     @Mapping(target = "tickets", ignore = true)
-    UserEntity toEntity(User dto);
+    UserEntity toEntity(UserRequest dto);
 
     @Named("replace")
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void replace(User source, @MappingTarget UserEntity target);
+    void replace(UserRequest source, @MappingTarget UserEntity target);
 
     @Named("update")
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void update(User source, @MappingTarget UserEntity target);
+    void update(UserRequest source, @MappingTarget UserEntity target);
 }

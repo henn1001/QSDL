@@ -7,7 +7,6 @@ import app.server.constant.*;
 import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.databind.node.ObjectNode;
 
 @RequestMapping("${server.base-path:/api/v1}")
 @Controller
@@ -31,7 +31,7 @@ public interface UserApi {
      * List Users
      */
     @GetMapping(value = "/tickets/{ticket_id}/users", produces = {"application/json"})
-    default ResponseEntity<CursorPage<User>> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) {
+    default ResponseEntity<CursorPage<UserResponse>> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -61,7 +61,7 @@ public interface UserApi {
      * List Users
      */
     @GetMapping(value = "/users", produces = {"application/json"})
-    default ResponseEntity<CursorPage<User>> getUsers(CursorPageable pageable) {
+    default ResponseEntity<CursorPage<UserResponse>> getUsers(CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -71,7 +71,7 @@ public interface UserApi {
      * Create a User
      */
     @PostMapping(value = "/users", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<User> createUser(@RequestBody User body) {
+    default ResponseEntity<UserResponse> createUser(@RequestBody UserRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -81,7 +81,7 @@ public interface UserApi {
      * Read the specified User
      */
     @GetMapping(value = "/users/{id}", produces = {"application/json"})
-    default ResponseEntity<User> getUser(@PathVariable("id") Long id) {
+    default ResponseEntity<UserResponse> getUser(@PathVariable("id") Long id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -91,7 +91,7 @@ public interface UserApi {
      * Replace the specified User
      */
     @PutMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<User> replaceUser(@PathVariable("id") Long id, @RequestBody User body) {
+    default ResponseEntity<UserResponse> replaceUser(@PathVariable("id") Long id, @RequestBody UserRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -101,7 +101,7 @@ public interface UserApi {
      * Update the specified User
      */
     @PatchMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User body) {
+    default ResponseEntity<UserResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

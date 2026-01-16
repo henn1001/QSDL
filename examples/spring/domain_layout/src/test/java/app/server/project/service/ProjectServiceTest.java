@@ -23,6 +23,7 @@ import app.server.project.db.ProjectRepository;
 import app.server.project.dto.ProjectRequest;
 import app.server.project.dto.ProjectResponse;
 import app.server.project.mapper.ProjectMapStruct;
+import app.server.project.mapper.ProjectMapStructImpl;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -31,29 +32,28 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @Import(TestConfig.class)
 class ProjectServiceTest {
 
-    @Mock
+    @MockitoBean
     ProjectRepository repository;
 
-    @Mock
+    @MockitoBean
     ProjectMapStruct mockedMapper;
 
     ProjectService service;
 
-    @Autowired
     ProjectMapStruct mapper;
 
     @BeforeEach
     void setUp() {
+        mapper = new ProjectMapStructImpl();
         service = new ProjectService(repository, mockedMapper);
     }
 
@@ -82,8 +82,8 @@ class ProjectServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.serializer().toString(projectList),
-                new JSONArray(Json.serializer().toString(response.items())),
+                Json.toString(projectList),
+                new JSONArray(Json.toString(response.items())),
                 false);
     }
 
@@ -109,8 +109,8 @@ class ProjectServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(projectResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(projectResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -132,8 +132,8 @@ class ProjectServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(projectResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(projectResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -181,8 +181,8 @@ class ProjectServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(projectResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(projectResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -231,8 +231,8 @@ class ProjectServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(projectResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(projectResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 

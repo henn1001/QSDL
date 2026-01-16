@@ -3,10 +3,16 @@
  */
 package {{base_package}};
 
+import {{package.config}}.AppJacksonConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
 @TestConfiguration
-@ComponentScan({{"{"}}{% for pkg in packages | map(attribute='mapper') | unique | list %}"{{pkg}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}})
+@Import(AppJacksonConfiguration.class)
+@ImportAutoConfiguration(JacksonAutoConfiguration.class)
+@ComponentScan({{"{"}}{% for pkg in packages | map(attribute='mapper') | unique | list %}"{{pkg}}"{{ ", " if not loop.last }}{% endfor %}{{ ", " if packages | map(attribute='mapper') | unique | list }}"{{package.util}}"{{"}"}})
 public class TestConfig {}
 {{""}}

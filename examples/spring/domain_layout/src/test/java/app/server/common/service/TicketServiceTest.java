@@ -18,6 +18,7 @@ import app.server.common.dto.TicketRequest;
 import app.server.common.dto.TicketResponse;
 import app.server.common.exception.AppException;
 import app.server.common.mapper.TicketMapStruct;
+import app.server.common.mapper.TicketMapStructImpl;
 import app.server.common.model.AppError;
 import app.server.common.model.Context;
 import app.server.common.model.CursorPage;
@@ -31,29 +32,28 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @Import(TestConfig.class)
 class TicketServiceTest {
 
-    @Mock
+    @MockitoBean
     TicketRepository repository;
 
-    @Mock
+    @MockitoBean
     TicketMapStruct mockedMapper;
 
     TicketService service;
 
-    @Autowired
     TicketMapStruct mapper;
 
     @BeforeEach
     void setUp() {
+        mapper = new TicketMapStructImpl();
         service = new TicketService(repository, mockedMapper);
     }
 
@@ -82,8 +82,8 @@ class TicketServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.serializer().toString(ticketList),
-                new JSONArray(Json.serializer().toString(response.items())),
+                Json.toString(ticketList),
+                new JSONArray(Json.toString(response.items())),
                 false);
     }
 
@@ -109,8 +109,8 @@ class TicketServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ticketResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(ticketResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -132,8 +132,8 @@ class TicketServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ticketResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(ticketResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -181,8 +181,8 @@ class TicketServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ticketResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(ticketResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 
@@ -231,8 +231,8 @@ class TicketServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.serializer().toString(ticketResponse),
-                new JSONObject(Json.serializer().toString(response)),
+                Json.toString(ticketResponse),
+                new JSONObject(Json.toString(response)),
                 false);
     }
 

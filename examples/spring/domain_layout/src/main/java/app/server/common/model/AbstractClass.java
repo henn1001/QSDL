@@ -4,15 +4,16 @@
 package app.server.common.model;
 
 import app.server.common.util.Json;
+import tools.jackson.core.JacksonException;
 
 public abstract class AbstractClass {
 
     @Override
-    public String toString() throws Json.JsonException {
-        return Json.serializer().toString(this);
+    public String toString() throws JacksonException {
+        return Json.toString(this);
     }
 
-    public String toPrettyString() throws Json.JsonException {
-        return Json.serializer().toPrettyString(this);
+    public String toPrettyString() throws JacksonException {
+        return Json.toPrettyString(this);
     }
 }

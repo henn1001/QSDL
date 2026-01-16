@@ -11,28 +11,7 @@ package {{package.config}};
 {% if database == "HIBERNATE" %}
 @EnableJpaRepositories(basePackages = "{{package.repository}}", repositoryBaseClass = BaseRepositoryImpl.class)
 {% endif%}
-class AppConfiguration {
-
-    @Value("${server.port}")
-    String serverPort;
-
-    @EventListener(ApplicationReadyEvent.class)
-    void doSomethingAfterStartup() {
-        System.out.println("listening on port " + serverPort);
-
-        // set timezone to UTC
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
-
-    @Bean
-    ObjectMapper objectMapper() {
-        return Json.serializer().mapper();
-    }
-
-    @Bean
-    YAMLMapper yamlMapper() {
-        return new YAMLMapper();
-    }
+public class AppConfiguration {
 
     @Bean
     WebMvcConfigurer webConfigurer() {
