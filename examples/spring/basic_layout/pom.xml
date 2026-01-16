@@ -164,9 +164,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.instancio</groupId>
-      <artifactId>instancio-junit</artifactId>
-      <version>${instancio.version}</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-testcontainers</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -177,6 +176,12 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.instancio</groupId>
+      <artifactId>instancio-junit</artifactId>
+      <version>${instancio.version}</version>
       <scope>test</scope>
     </dependency>
 
