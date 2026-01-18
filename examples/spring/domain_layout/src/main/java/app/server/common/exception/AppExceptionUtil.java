@@ -59,17 +59,17 @@ public class AppExceptionUtil {
         }
     }
 
-    public static AppException entityNotFound(Class<?> cls, Long id) {
+    public static AppException entityNotFound(Class<?> cls, String id) {
         String msg = "No %s entity with id %s exists!".formatted(cls.getSimpleName(), id);
         return new AppException(ErrorCode.ENTITY_NOT_FOUND, msg);
     }
 
-    public static AppException entityAlreadyAdded(Class<?> cls, Long id) {
+    public static AppException entityAlreadyAdded(Class<?> cls, String id) {
         String msg = "Entity %s with id %s already added!".formatted(cls.getSimpleName(), id);
         return new AppException(ErrorCode.BAD_REQUEST, msg);
     }
 
-    public static AppException entityNotAttached(Class<?> cls, Long id) {
+    public static AppException entityNotAttached(Class<?> cls, String id) {
         String msg = "Entity %s with id %s not attached!".formatted(cls.getSimpleName(), id);
         return new AppException(ErrorCode.BAD_REQUEST, msg);
     }

@@ -7,6 +7,7 @@ import app.server.common.constants.*;
 import app.server.common.dto.*;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,17 +52,7 @@ public interface TicketApi {
      * Read the specified Ticket
      */
     @GetMapping(value = "/tickets/{id}", produces = {"application/json"})
-    default ResponseEntity<TicketResponse> getTicket(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    /**
-     * PUT /tickets/{id} : replaceTicket
-     *
-     * Replace the specified Ticket
-     */
-    @PutMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<TicketResponse> replaceTicket(@PathVariable("id") Long id, @RequestBody TicketRequest body) {
+    default ResponseEntity<TicketResponse> getTicket(@PathVariable("id") String id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -70,8 +61,8 @@ public interface TicketApi {
      *
      * Update the specified Ticket
      */
-    @PatchMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<TicketResponse> updateTicket(@PathVariable("id") Long id, @RequestBody TicketRequest body) {
+    @PatchMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/merge-patch+json"})
+    default ResponseEntity<TicketResponse> updateTicket(@PathVariable("id") String id, @RequestBody JsonMergePatch patch) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -81,7 +72,7 @@ public interface TicketApi {
      * Delete the specified Ticket
      */
     @DeleteMapping(value = "/tickets/{id}")
-    default ResponseEntity<Void> deleteTicket(@PathVariable("id") Long id) {
+    default ResponseEntity<Void> deleteTicket(@PathVariable("id") String id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

@@ -62,12 +62,12 @@ class TicketServiceTest {
 
         // Given
         List<TicketEntity> ticketEntityList = TestUtils.getRandom(TicketEntity.class, 5);
-        List<TicketResponse> ticketList = ticketEntityList.stream().map(mapper::toDto).toList();
+        List<TicketResponse> ticketList = ticketEntityList.stream().map(mapper::toResponse).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<TicketEntity>(ticketEntityList, null, 6L));
 
-        when(mockedMapper.toDto(any(TicketEntity.class)))
+        when(mockedMapper.toResponse(any(TicketEntity.class)))
                 .thenReturn(ticketList.get(0))
                 .thenReturn(ticketList.get(1))
                 .thenReturn(ticketList.get(2))
@@ -93,7 +93,7 @@ class TicketServiceTest {
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
         TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
-        TicketResponse ticketResponse = mapper.toDto(ticketEntity);
+        TicketResponse ticketResponse = mapper.toResponse(ticketEntity);
 
         when(mockedMapper.toEntity(any(TicketRequest.class)))
                 .thenReturn(ticketEntity);
@@ -101,7 +101,7 @@ class TicketServiceTest {
         when(repository.save(eq(ticketEntity)))
                 .thenReturn(ticketEntity);
 
-        when(mockedMapper.toDto(any(TicketEntity.class)))
+        when(mockedMapper.toResponse(any(TicketEntity.class)))
                 .thenReturn(ticketResponse);
 
         // When
@@ -119,12 +119,12 @@ class TicketServiceTest {
 
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
-        TicketResponse ticketResponse = mapper.toDto(ticketEntity);
+        TicketResponse ticketResponse = mapper.toResponse(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.of(ticketEntity));
 
-        when(mockedMapper.toDto(any(TicketEntity.class)))
+        when(mockedMapper.toResponse(any(TicketEntity.class)))
                 .thenReturn(ticketResponse);
 
         // When
@@ -160,62 +160,12 @@ class TicketServiceTest {
     }
 
     @Test
-    void whenReplaceTicket_thenOk() throws Exception {
-
-        // Given
-        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
-        TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
-        TicketResponse ticketResponse = mapper.toDto(ticketEntity);
-
-        when(repository.findById(eq(ticketEntity.getId())))
-                .thenReturn(Optional.of(ticketEntity));
-
-        when(repository.save(eq(ticketEntity)))
-                .thenReturn(ticketEntity);
-
-        when(mockedMapper.toDto(any(TicketEntity.class)))
-                .thenReturn(ticketResponse);
-
-        // When
-        TicketResponse response = service.replaceTicket(ticketEntity.getId(), ticketRequest, new Context());
-
-        // Then
-        JSONAssert.assertEquals(
-                Json.toString(ticketResponse),
-                new JSONObject(Json.toString(response)),
-                false);
-    }
-
-    @Test
-    public void whenReplaceTicketWithInvalidId_thenError() throws Exception {
-
-        // Given
-        TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
-        TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
-
-        when(repository.findById(eq(ticketEntity.getId())))
-                .thenReturn(Optional.ofNullable(null));
-
-        // When
-        AppException thrown = assertThrows(AppException.class,
-                () -> {
-                    service.replaceTicket(ticketEntity.getId(), ticketRequest, new Context());
-                });
-
-        // Then
-        AppError error = thrown.getAppError();
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-    }
-
-    @Test
     void whenUpdateTicket_thenOk() throws Exception {
 
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
         TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
-        TicketResponse ticketResponse = mapper.toDto(ticketEntity);
+        TicketResponse ticketResponse = mapper.toResponse(ticketEntity);
 
         when(repository.findById(eq(ticketEntity.getId())))
                 .thenReturn(Optional.of(ticketEntity));
@@ -223,7 +173,7 @@ class TicketServiceTest {
         when(repository.save(eq(ticketEntity)))
                 .thenReturn(ticketEntity);
 
-        when(mockedMapper.toDto(any(TicketEntity.class)))
+        when(mockedMapper.toResponse(any(TicketEntity.class)))
                 .thenReturn(ticketResponse);
 
         // When

@@ -92,35 +92,6 @@ paths:
                 $ref: '#/components/schemas/Project'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceProject
-      description: |
-        Replace the specified Project
-      operationId: replaceProject
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Project'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Management
@@ -138,7 +109,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Project'
       responses:
@@ -255,41 +226,6 @@ paths:
                 $ref: '#/components/schemas/Role'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceRole
-      description: |
-        Replace the specified Role
-      operationId: replaceRole
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Role'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Management
@@ -313,7 +249,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Role'
       responses:
@@ -496,35 +432,6 @@ paths:
                 $ref: '#/components/schemas/User'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceUser
-      description: |
-        Replace the specified User
-      operationId: replaceUser
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Management
@@ -542,7 +449,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/User'
       responses:
@@ -640,35 +547,6 @@ paths:
                 $ref: '#/components/schemas/Ticket'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Incident
-      summary: replaceTicket
-      description: |
-        Replace the specified Ticket
-      operationId: replaceTicket
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Ticket'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Ticket'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Incident
@@ -686,7 +564,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Ticket'
       responses:

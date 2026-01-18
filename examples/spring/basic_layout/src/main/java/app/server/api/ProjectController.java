@@ -7,10 +7,13 @@ import app.server.api.BaseController;
 import app.server.api.ProjectApi;
 import app.server.constant.*;
 import app.server.domain.*;
+import app.server.domain.mapper.ProjectMapStruct;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.ProjectService;
+import app.server.util.JsonMergePatchUtil;
 import app.server.util.Validator;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class ProjectController extends BaseController implements ProjectApi {
 
     final ProjectService projectService;
+    final ProjectMapStruct projectMapper;
 
     /**
      * {@inheritDoc}.
@@ -64,19 +68,13 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<ProjectResponse> replaceProject(Long id, ProjectRequest body) {
-        Validator.validate(body);
-        ProjectResponse response = projectService.replaceProject(id, body, super.getContext());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+    public ResponseEntity<ProjectResponse> updateProject(Long id, JsonMergePatch patch) {
+        ProjectResponse current = projectService.getProject(id, super.getContext());
+        ProjectRequest target = projectMapper.toRequest(current);
+        ProjectRequest request = JsonMergePatchUtil.apply(patch, target);
 
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public ResponseEntity<ProjectResponse> updateProject(Long id, ProjectRequest body) {
-        Validator.validateExRequired(body);
-        ProjectResponse response = projectService.updateProject(id, body, super.getContext());
+        Validator.validate(request);
+        ProjectResponse response = projectService.updateProject(id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

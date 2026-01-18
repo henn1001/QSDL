@@ -7,10 +7,13 @@ import app.server.common.api.BaseController;
 import app.server.common.constants.*;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
+import app.server.common.util.JsonMergePatchUtil;
 import app.server.common.util.Validator;
 import app.server.user.api.UserApi;
 import app.server.user.dto.*;
+import app.server.user.mapper.UserMapStruct;
 import app.server.user.service.UserService;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,12 +34,13 @@ import tools.jackson.databind.node.ObjectNode;
 public class UserController extends BaseController implements UserApi {
 
     final UserService userService;
+    final UserMapStruct userMapper;
 
     /**
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<UserResponse>> getUsersForTicket(Long ticketId, CursorPageable pageable) {
+    public ResponseEntity<CursorPage<UserResponse>> getUsersForTicket(String ticketId, CursorPageable pageable) {
         CursorPage<UserResponse> response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -45,7 +49,7 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Void> addUserToTicket(Long ticketId, Long id) {
+    public ResponseEntity<Void> addUserToTicket(String ticketId, String id) {
         userService.addUserToTicket(ticketId, id, super.getContext());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -54,7 +58,7 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Void> removeUserFromTicket(Long ticketId, Long id) {
+    public ResponseEntity<Void> removeUserFromTicket(String ticketId, String id) {
         userService.removeUserFromTicket(ticketId, id, super.getContext());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -82,7 +86,7 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<UserResponse> getUser(Long id) {
+    public ResponseEntity<UserResponse> getUser(String id) {
         UserResponse response = userService.getUser(id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -91,9 +95,13 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<UserResponse> replaceUser(Long id, UserRequest body) {
-        Validator.validate(body);
-        UserResponse response = userService.replaceUser(id, body, super.getContext());
+    public ResponseEntity<UserResponse> updateUser(String id, JsonMergePatch patch) {
+        UserResponse current = userService.getUser(id, super.getContext());
+        UserRequest target = userMapper.toRequest(current);
+        UserRequest request = JsonMergePatchUtil.apply(patch, target);
+
+        Validator.validate(request);
+        UserResponse response = userService.updateUser(id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -101,17 +109,7 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<UserResponse> updateUser(Long id, UserRequest body) {
-        Validator.validateExRequired(body);
-        UserResponse response = userService.updateUser(id, body, super.getContext());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public ResponseEntity<Void> deleteUser(Long id) {
+    public ResponseEntity<Void> deleteUser(String id) {
         userService.deleteUser(id, super.getContext());
         return new ResponseEntity<>(HttpStatus.OK);
     }

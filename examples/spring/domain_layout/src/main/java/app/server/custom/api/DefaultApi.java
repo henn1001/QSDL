@@ -7,6 +7,7 @@ import app.server.common.constants.*;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.custom.dto.*;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

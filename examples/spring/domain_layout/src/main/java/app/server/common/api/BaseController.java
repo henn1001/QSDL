@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class BaseController {
 
     @Autowired
-    protected HttpServletRequest request;
+    protected HttpServletRequest httpServletRequest;
 
     protected Context getContext() {
-        return new Context(request);
+        return new Context(httpServletRequest);
     }
 }

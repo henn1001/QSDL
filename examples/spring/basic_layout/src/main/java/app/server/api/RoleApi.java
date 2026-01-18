@@ -7,6 +7,7 @@ import app.server.constant.*;
 import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,22 +57,12 @@ public interface RoleApi {
     }
 
     /**
-     * PUT /projects/{project_id}/roles/{id} : replaceRole
-     *
-     * Replace the specified Role
-     */
-    @PutMapping(value = "/projects/{project_id}/roles/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<RoleResponse> replaceRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody RoleRequest body) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    /**
      * PATCH /projects/{project_id}/roles/{id} : updateRole
      *
      * Update the specified Role
      */
-    @PatchMapping(value = "/projects/{project_id}/roles/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<RoleResponse> updateRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody RoleRequest body) {
+    @PatchMapping(value = "/projects/{project_id}/roles/{id}", produces = {"application/json"}, consumes = {"application/merge-patch+json"})
+    default ResponseEntity<RoleResponse> updateRole(@PathVariable("project_id") Long projectId, @PathVariable("id") Long id, @RequestBody JsonMergePatch patch) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

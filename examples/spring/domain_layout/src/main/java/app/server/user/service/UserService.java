@@ -33,22 +33,22 @@ public class UserService {
 
     final UserMapStruct userMapStruct;
 
-    UserEntity fetchUserFromDb(Long id) throws AppException {
-        return userRepository.findById(id)
+    UserEntity fetchUserFromDb(String id) throws AppException {
+        return userRepository.findByUid(id)
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(UserResponse.class, id));
     }
 
-    UserEntity fetchUserFromTicketFromDb(Long ticketId, Long id) throws AppException {
-        return userRepository.findByTicketsIdAndId(ticketId, id)
+    UserEntity fetchUserFromTicketFromDb(Long ticketId, String id) throws AppException {
+        return userRepository.findByTicketsIdAndUid(ticketId, id)
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(UserResponse.class, id));
     }
 
-    TicketEntity fetchTicketFromDb(Long id) throws AppException {
-        return ticketRepository.findById(id)
+    TicketEntity fetchTicketFromDb(String id) throws AppException {
+        return ticketRepository.findByUid(id)
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(TicketResponse.class, id));
     }
 
-    public CursorPage<UserResponse> getUsersForTicket(Long ticketId, CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<UserResponse> getUsersForTicket(String ticketId, CursorPageable pageable, Context context) throws AppException {
 
         // confirm existence of parent
         // should be optimized with something like getReferenceById
@@ -61,13 +61,13 @@ public class UserService {
         var cursorPage = userRepository.findAll(predicate, pageable);
 
         var userEntities = cursorPage.items();
-        var userDtos = userEntities.stream().map(userMapStruct::toDto).toList();
+        var userDtos = userEntities.stream().map(userMapStruct::toResponse).toList();
 
         return new CursorPage<>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
 
     @Transactional
-    public Void addUserToTicket(Long ticketId, Long id, Context context) throws AppException {
+    public Void addUserToTicket(String ticketId, String id, Context context) throws AppException {
 
         // get and confirm existence
         var ticketEntity = fetchTicketFromDb(ticketId);
@@ -86,7 +86,7 @@ public class UserService {
     }
 
     @Transactional
-    public Void removeUserFromTicket(Long ticketId, Long id, Context context) throws AppException {
+    public Void removeUserFromTicket(String ticketId, String id, Context context) throws AppException {
 
         // get and confirm existence
         var ticketEntity = fetchTicketFromDb(ticketId);
@@ -108,7 +108,7 @@ public class UserService {
         var cursorPage = userRepository.findAll(predicate, pageable);
 
         var userEntities = cursorPage.items();
-        var userDtos = userEntities.stream().map(userMapStruct::toDto).toList();
+        var userDtos = userEntities.stream().map(userMapStruct::toResponse).toList();
 
         return new CursorPage<>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -120,44 +120,31 @@ public class UserService {
 
         userEntity = userRepository.save(userEntity);
 
-        return userMapStruct.toDto(userEntity);
+        return userMapStruct.toResponse(userEntity);
     }
 
-    public UserResponse getUser(Long id, Context context) throws AppException {
+    public UserResponse getUser(String id, Context context) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 
-        return userMapStruct.toDto(userEntity);
+        return userMapStruct.toResponse(userEntity);
     }
 
     @Transactional
-    public UserResponse replaceUser(Long id, UserRequest body, Context context) throws AppException {
+    public UserResponse updateUser(String id, UserRequest body, Context context) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 
-        // replace userEntity with all writeable fields - nulls included
+        // replace dbEntity with all writeable fields - nulls included
         userMapStruct.replace(body, userEntity);
 
         userEntity = userRepository.save(userEntity);
 
-        return userMapStruct.toDto(userEntity);
+        return userMapStruct.toResponse(userEntity);
     }
 
     @Transactional
-    public UserResponse updateUser(Long id, UserRequest body, Context context) throws AppException {
-
-        var userEntity = fetchUserFromDb(id);
-
-        // update dbEntity with all writeable fields if present
-        userMapStruct.update(body, userEntity);
-
-        userEntity = userRepository.save(userEntity);
-
-        return userMapStruct.toDto(userEntity);
-    }
-
-    @Transactional
-    public Void deleteUser(Long id, Context context) throws AppException {
+    public Void deleteUser(String id, Context context) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 

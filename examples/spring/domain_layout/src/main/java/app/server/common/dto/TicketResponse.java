@@ -20,10 +20,9 @@ import tools.jackson.databind.node.ObjectNode;
 public record TicketResponse(
 // @formatter:off
 
-    @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Size(min = 0, max = 255)
     @JsonProperty(value = "id")
-    Long id,
+    String id,
 
     @Min(0)
     @Max(Integer.MAX_VALUE)

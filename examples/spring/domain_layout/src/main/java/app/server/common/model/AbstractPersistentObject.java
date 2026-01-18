@@ -32,11 +32,11 @@ public abstract class AbstractPersistentObject extends AbstractClass {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
+    @JsonIgnore
     private Long id;
 
     @Column(unique = true, updatable = false)
-    @JsonIgnore
+    @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
     private String uid;
 
     @Version

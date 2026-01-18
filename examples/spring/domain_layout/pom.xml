@@ -30,6 +30,7 @@
     <hypersistence.version>3.14.1</hypersistence.version>
     <record-builder.version>51</record-builder.version>
     <spotless.version>3.1.0</spotless.version>
+    <json-patch-parsson.version>1.1.7</json-patch-parsson.version>
   </properties>
 
   <dependencies>
@@ -145,6 +146,17 @@
       <groupId>io.soabase.record-builder</groupId>
       <artifactId>record-builder-core</artifactId>
       <version>${record-builder.version}</version>
+    </dependency>
+
+    <!-- JSON Merge Patch support (RFC 7396) -->
+    <dependency>
+      <groupId>jakarta.json</groupId>
+      <artifactId>jakarta.json-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.parsson</groupId>
+      <artifactId>jakarta.json</artifactId>
+      <version>${json-patch-parsson.version}</version>
     </dependency>
 
     <!-- Testing -->

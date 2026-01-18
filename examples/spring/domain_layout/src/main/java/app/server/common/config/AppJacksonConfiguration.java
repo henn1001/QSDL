@@ -8,24 +8,18 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import tools.jackson.databind.DeserializationFeature;
-import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.MapperFeature;
 
 @Configuration
 public class AppJacksonConfiguration {
 
     @Bean
     JsonMapperBuilderCustomizer jacksonCustomizer() {
-        return builder -> {
-            // Ignore null values when writing json.
-            builder.changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(Include.NON_NULL));
-
-            builder.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            builder.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-
-            // disable indent by default for the normal writer
-            builder.disable(SerializationFeature.INDENT_OUTPUT);
-        };
+        return builder -> builder
+                // Ignore null and empty values when writing json.
+                .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(Include.NON_EMPTY))
+                .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
+                .build();
     }
 
     @Bean

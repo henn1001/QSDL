@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -23,6 +24,9 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.MismatchedInputException;
 
 @Slf4j
 @ControllerAdvice
@@ -71,6 +75,59 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Handles JSON deserialization errors from Jackson.
+     */
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        HttpServletRequest httpRequest = ((ServletWebRequest) request).getRequest();
+
+        Throwable cause = ex.getCause();
+        List<String> errors = new ArrayList<>();
+
+        if (cause instanceof InvalidFormatException ife) {
+            String fieldName = extractFieldPath(ife);
+            String error = String.format("%s: Invalid format for value '%s'", fieldName, ife.getValue());
+            errors.add(error);
+        } else if (cause instanceof MismatchedInputException mie) {
+            String fieldName = extractFieldPath(mie);
+            String fieldType = mie.getTargetType() != null ? mie.getTargetType().getSimpleName() : "unknown";
+            String error = String.format("%s: Invalid type, expected %s", fieldName, fieldType);
+            errors.add(error);
+        } else if (cause instanceof JacksonException je) {
+            errors.add("Invalid JSON format: " + je.getOriginalMessage());
+        } else {
+            errors.add("Malformed JSON request: " + ex.getMessage());
+        }
+
+        AppError appError = ErrorCode.BAD_REQUEST.toAppError(errors);
+        return buildResponseEntity(appError, httpRequest);
+    }
+
+    /**
+     * Extracts the field path from Jackson exceptions in Jakarta Validator format (dot-separated).
+     */
+    private String extractFieldPath(JacksonException ex) {
+        if (ex.getPath() == null || ex.getPath().isEmpty()) {
+            return "unknown";
+        }
+        return ex.getPath().stream()
+                .map(ref -> {
+                    String str = ref.toString();
+                    int idx = str.indexOf("[\"");
+                    if (idx >= 0) {
+                        int endIdx = str.indexOf("\"]", idx);
+                        if (endIdx > idx) {
+                            return str.substring(idx + 2, endIdx);
+                        }
+                    }
+                    return str;
+                })
+                .collect(java.util.stream.Collectors.joining("."));
+    }
+
+    /**
      * Handles standard Spring MVC Exceptions.
      */
     @Override
@@ -86,6 +143,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Handles bean validation related Exceptions.
+     *
+     * <p>Called when @Valid or @Validated is used on @RequestBody, @ModelAttribute, or @RequestPart
+     * method parameters and validation fails.
      */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(

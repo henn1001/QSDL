@@ -7,10 +7,13 @@ import app.server.common.api.BaseController;
 import app.server.common.constants.*;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
+import app.server.common.util.JsonMergePatchUtil;
 import app.server.common.util.Validator;
 import app.server.user.api.RoleApi;
 import app.server.user.dto.*;
+import app.server.user.mapper.RoleMapStruct;
 import app.server.user.service.RoleService;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,12 +34,13 @@ import tools.jackson.databind.node.ObjectNode;
 public class RoleController extends BaseController implements RoleApi {
 
     final RoleService roleService;
+    final RoleMapStruct roleMapper;
 
     /**
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<RoleResponse>> getRoles(Long projectId, CursorPageable pageable) {
+    public ResponseEntity<CursorPage<RoleResponse>> getRoles(String projectId, CursorPageable pageable) {
         CursorPage<RoleResponse> response = roleService.getRoles(projectId, pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -45,7 +49,7 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<RoleResponse> createRole(Long projectId, RoleRequest body) {
+    public ResponseEntity<RoleResponse> createRole(String projectId, RoleRequest body) {
         Validator.validate(body);
         RoleResponse response = roleService.createRole(projectId, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -55,7 +59,7 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<RoleResponse> getRole(Long projectId, Long id) {
+    public ResponseEntity<RoleResponse> getRole(String projectId, String id) {
         RoleResponse response = roleService.getRole(projectId, id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -64,9 +68,13 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<RoleResponse> replaceRole(Long projectId, Long id, RoleRequest body) {
-        Validator.validate(body);
-        RoleResponse response = roleService.replaceRole(projectId, id, body, super.getContext());
+    public ResponseEntity<RoleResponse> updateRole(String projectId, String id, JsonMergePatch patch) {
+        RoleResponse current = roleService.getRole(projectId, id, super.getContext());
+        RoleRequest target = roleMapper.toRequest(current);
+        RoleRequest request = JsonMergePatchUtil.apply(patch, target);
+
+        Validator.validate(request);
+        RoleResponse response = roleService.updateRole(projectId, id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -74,17 +82,7 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<RoleResponse> updateRole(Long projectId, Long id, RoleRequest body) {
-        Validator.validateExRequired(body);
-        RoleResponse response = roleService.updateRole(projectId, id, body, super.getContext());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public ResponseEntity<Void> deleteRole(Long projectId, Long id) {
+    public ResponseEntity<Void> deleteRole(String projectId, String id) {
         roleService.deleteRole(projectId, id, super.getContext());
         return new ResponseEntity<>(HttpStatus.OK);
     }

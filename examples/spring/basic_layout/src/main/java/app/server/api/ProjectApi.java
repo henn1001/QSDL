@@ -7,6 +7,7 @@ import app.server.constant.*;
 import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,22 +57,12 @@ public interface ProjectApi {
     }
 
     /**
-     * PUT /projects/{id} : replaceProject
-     *
-     * Replace the specified Project
-     */
-    @PutMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ProjectResponse> replaceProject(@PathVariable("id") Long id, @RequestBody ProjectRequest body) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    /**
      * PATCH /projects/{id} : updateProject
      *
      * Update the specified Project
      */
-    @PatchMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ProjectResponse> updateProject(@PathVariable("id") Long id, @RequestBody ProjectRequest body) {
+    @PatchMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/merge-patch+json"})
+    default ResponseEntity<ProjectResponse> updateProject(@PathVariable("id") Long id, @RequestBody JsonMergePatch patch) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

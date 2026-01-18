@@ -23,6 +23,7 @@ import app.server.model.AppError;
 import app.server.model.CursorPage;
 import app.server.service.TicketService;
 import app.server.util.Json;
+import app.server.util.JsonMergePatchConverter.MediaTypeExtension;
 import java.util.Arrays;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -150,62 +151,14 @@ class TicketControllerTest {
     }
 
     @Test
-    public void whenReplaceTicket_thenOk() throws Exception {
-
-        // Given
-        TicketRequest requestDto = TestUtils.getRandom(TicketRequest.class);
-        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
-
-        when(service.replaceTicket(eq(one), any(), any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "/tickets/1")
-                        .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        JSONAssert.assertEquals(
-                Json.toString(responseDto),
-                new JSONObject(response),
-                false);
-    }
-
-    @Test
-    public void whenReplaceTicketWithInvalidPayload_thenError() throws Exception {
-
-        // Given
-        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
-
-        when(service.replaceTicket(eq(one), any(), any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "/tickets/1")
-                .content("")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        AppError error = Json.fromJson(response, AppError.class);
-        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-    }
-
-    @Test
     public void whenUpdateTicket_thenOk() throws Exception {
 
         // Given
         TicketRequest requestDto = TestUtils.getRandom(TicketRequest.class);
         TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
+
+        when(service.getTicket(eq(one), any()))
+                .thenReturn(responseDto);
 
         when(service.updateTicket(eq(one), any(), any()))
                 .thenReturn(responseDto);
@@ -213,7 +166,7 @@ class TicketControllerTest {
         // When
         String response = mockMvc.perform(patch(basePath + "/tickets/1")
                         .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -236,9 +189,9 @@ class TicketControllerTest {
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(put(basePath + "/tickets/1")
+        String response = mockMvc.perform(patch(basePath + "/tickets/1")
                 .content("")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()

@@ -7,10 +7,13 @@ import app.server.api.BaseController;
 import app.server.api.TicketApi;
 import app.server.constant.*;
 import app.server.domain.*;
+import app.server.domain.mapper.TicketMapStruct;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.TicketService;
+import app.server.util.JsonMergePatchUtil;
 import app.server.util.Validator;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class TicketController extends BaseController implements TicketApi {
 
     final TicketService ticketService;
+    final TicketMapStruct ticketMapper;
 
     /**
      * {@inheritDoc}.
@@ -64,19 +68,13 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<TicketResponse> replaceTicket(Long id, TicketRequest body) {
-        Validator.validate(body);
-        TicketResponse response = ticketService.replaceTicket(id, body, super.getContext());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+    public ResponseEntity<TicketResponse> updateTicket(Long id, JsonMergePatch patch) {
+        TicketResponse current = ticketService.getTicket(id, super.getContext());
+        TicketRequest target = ticketMapper.toRequest(current);
+        TicketRequest request = JsonMergePatchUtil.apply(patch, target);
 
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public ResponseEntity<TicketResponse> updateTicket(Long id, TicketRequest body) {
-        Validator.validateExRequired(body);
-        TicketResponse response = ticketService.updateTicket(id, body, super.getContext());
+        Validator.validate(request);
+        TicketResponse response = ticketService.updateTicket(id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

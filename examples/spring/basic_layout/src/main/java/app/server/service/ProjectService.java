@@ -42,7 +42,7 @@ public class ProjectService {
         var cursorPage = projectRepository.findAll(predicate, pageable);
 
         var projectEntities = cursorPage.items();
-        var projectDtos = projectEntities.stream().map(projectMapStruct::toDto).toList();
+        var projectDtos = projectEntities.stream().map(projectMapStruct::toResponse).toList();
 
         return new CursorPage<>(projectDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -54,27 +54,14 @@ public class ProjectService {
 
         projectEntity = projectRepository.save(projectEntity);
 
-        return projectMapStruct.toDto(projectEntity);
+        return projectMapStruct.toResponse(projectEntity);
     }
 
     public ProjectResponse getProject(Long id, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
-        return projectMapStruct.toDto(projectEntity);
-    }
-
-    @Transactional
-    public ProjectResponse replaceProject(Long id, ProjectRequest body, Context context) throws AppException {
-
-        var projectEntity = fetchProjectFromDb(id);
-
-        // replace projectEntity with all writeable fields - nulls included
-        projectMapStruct.replace(body, projectEntity);
-
-        projectEntity = projectRepository.save(projectEntity);
-
-        return projectMapStruct.toDto(projectEntity);
+        return projectMapStruct.toResponse(projectEntity);
     }
 
     @Transactional
@@ -82,12 +69,12 @@ public class ProjectService {
 
         var projectEntity = fetchProjectFromDb(id);
 
-        // update dbEntity with all writeable fields if present
-        projectMapStruct.update(body, projectEntity);
+        // replace dbEntity with all writeable fields - nulls included
+        projectMapStruct.replace(body, projectEntity);
 
         projectEntity = projectRepository.save(projectEntity);
 
-        return projectMapStruct.toDto(projectEntity);
+        return projectMapStruct.toResponse(projectEntity);
     }
 
     @Transactional

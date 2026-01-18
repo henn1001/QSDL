@@ -20,6 +20,7 @@ import app.server.common.constants.ErrorCode;
 import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
 import app.server.common.util.Json;
+import app.server.common.util.JsonMergePatchConverter.MediaTypeExtension;
 import app.server.project.dto.ProjectRequest;
 import app.server.project.dto.ProjectResponse;
 import app.server.project.service.ProjectService;
@@ -48,7 +49,7 @@ class ProjectControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    static Long one = 1L;
+    static String one = "1";
 
     @Test
     public void whenGetProjects_thenOk() throws Exception {
@@ -150,62 +151,14 @@ class ProjectControllerTest {
     }
 
     @Test
-    public void whenReplaceProject_thenOk() throws Exception {
-
-        // Given
-        ProjectRequest requestDto = TestUtils.getRandom(ProjectRequest.class);
-        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
-
-        when(service.replaceProject(eq(one), any(), any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "/projects/1")
-                        .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        JSONAssert.assertEquals(
-                Json.toString(responseDto),
-                new JSONObject(response),
-                false);
-    }
-
-    @Test
-    public void whenReplaceProjectWithInvalidPayload_thenError() throws Exception {
-
-        // Given
-        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
-
-        when(service.replaceProject(eq(one), any(), any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "/projects/1")
-                .content("{}")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        AppError error = Json.fromJson(response, AppError.class);
-        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-    }
-
-    @Test
     public void whenUpdateProject_thenOk() throws Exception {
 
         // Given
         ProjectRequest requestDto = TestUtils.getRandom(ProjectRequest.class);
         ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
+
+        when(service.getProject(eq(one), any()))
+                .thenReturn(responseDto);
 
         when(service.updateProject(eq(one), any(), any()))
                 .thenReturn(responseDto);
@@ -213,7 +166,7 @@ class ProjectControllerTest {
         // When
         String response = mockMvc.perform(patch(basePath + "/projects/1")
                         .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -236,9 +189,9 @@ class ProjectControllerTest {
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(put(basePath + "/projects/1")
+        String response = mockMvc.perform(patch(basePath + "/projects/1")
                 .content("{}")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()

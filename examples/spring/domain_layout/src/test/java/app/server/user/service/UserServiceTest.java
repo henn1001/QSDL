@@ -56,7 +56,7 @@ class UserServiceTest {
 
     UserMapStruct mapper;
 
-    static Long one = 1L;
+    static String one = "1";
 
     @BeforeEach
     void setUp() {
@@ -69,16 +69,16 @@ class UserServiceTest {
 
         // Given
         List<UserEntity> userEntityList = TestUtils.getRandom(UserEntity.class, 5);
-        List<UserResponse> userList = userEntityList.stream().map(mapper::toDto).toList();
+        List<UserResponse> userList = userEntityList.stream().map(mapper::toResponse).toList();
         TicketEntity testParent = TestUtils.getRandom(TicketEntity.class);
 
-        when(ticketRepository.findById(eq(one)))
+        when(ticketRepository.findByUid(eq(one)))
                 .thenReturn(Optional.of(testParent));
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
-        when(mockedMapper.toDto(any(UserEntity.class)))
+        when(mockedMapper.toResponse(any(UserEntity.class)))
                 .thenReturn(userList.get(0))
                 .thenReturn(userList.get(1))
                 .thenReturn(userList.get(2))
@@ -105,17 +105,17 @@ class UserServiceTest {
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         TicketEntity testParent = TestUtils.getRandom(TicketEntity.class);
 
-        when(ticketRepository.findById(eq(testParent.getId())))
+        when(ticketRepository.findByUid(eq(testParent.getUid())))
                 .thenReturn(Optional.of(testParent));
 
-        when(repository.findById(eq(userEntity.getId())))
+        when(repository.findByUid(eq(userEntity.getUid())))
                 .thenReturn(Optional.of(userEntity));
 
         when(repository.save(eq(userEntity)))
                 .thenReturn(null);
 
         // When
-        service.addUserToTicket(testParent.getId(), userEntity.getId(), new Context());
+        service.addUserToTicket(testParent.getUid(), userEntity.getUid(), new Context());
 
         // Then
 
@@ -128,17 +128,17 @@ class UserServiceTest {
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         TicketEntity testParent = TestUtils.getRandom(TicketEntity.class);
 
-        when(ticketRepository.findById(eq(testParent.getId())))
+        when(ticketRepository.findByUid(eq(testParent.getUid())))
                 .thenReturn(Optional.of(testParent));
 
-        when(repository.findByTicketsIdAndId(eq(testParent.getId()), eq(userEntity.getId())))
+        when(repository.findByTicketsIdAndUid(eq(testParent.getId()), eq(userEntity.getUid())))
                 .thenReturn(Optional.of(userEntity));
 
         when(repository.save(eq(userEntity)))
                 .thenReturn(null);
 
         // When
-        service.removeUserFromTicket(testParent.getId(), userEntity.getId(), new Context());
+        service.removeUserFromTicket(testParent.getUid(), userEntity.getUid(), new Context());
 
         // Then
 
@@ -149,12 +149,12 @@ class UserServiceTest {
 
         // Given
         List<UserEntity> userEntityList = TestUtils.getRandom(UserEntity.class, 5);
-        List<UserResponse> userList = userEntityList.stream().map(mapper::toDto).toList();
+        List<UserResponse> userList = userEntityList.stream().map(mapper::toResponse).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
-        when(mockedMapper.toDto(any(UserEntity.class)))
+        when(mockedMapper.toResponse(any(UserEntity.class)))
                 .thenReturn(userList.get(0))
                 .thenReturn(userList.get(1))
                 .thenReturn(userList.get(2))
@@ -180,7 +180,7 @@ class UserServiceTest {
         // Given
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         UserRequest userRequest = TestUtils.getRandom(UserRequest.class);
-        UserResponse userResponse = mapper.toDto(userEntity);
+        UserResponse userResponse = mapper.toResponse(userEntity);
 
         when(mockedMapper.toEntity(any(UserRequest.class)))
                 .thenReturn(userEntity);
@@ -188,7 +188,7 @@ class UserServiceTest {
         when(repository.save(eq(userEntity)))
                 .thenReturn(userEntity);
 
-        when(mockedMapper.toDto(any(UserEntity.class)))
+        when(mockedMapper.toResponse(any(UserEntity.class)))
                 .thenReturn(userResponse);
 
         // When
@@ -206,16 +206,16 @@ class UserServiceTest {
 
         // Given
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
-        UserResponse userResponse = mapper.toDto(userEntity);
+        UserResponse userResponse = mapper.toResponse(userEntity);
 
-        when(repository.findById(eq(userEntity.getId())))
+        when(repository.findByUid(eq(userEntity.getUid())))
                 .thenReturn(Optional.of(userEntity));
 
-        when(mockedMapper.toDto(any(UserEntity.class)))
+        when(mockedMapper.toResponse(any(UserEntity.class)))
                 .thenReturn(userResponse);
 
         // When
-        UserResponse response = service.getUser(userEntity.getId(), new Context());
+        UserResponse response = service.getUser(userEntity.getUid(), new Context());
 
         // Then
         JSONAssert.assertEquals(
@@ -230,63 +230,13 @@ class UserServiceTest {
         // Given
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
 
-        when(repository.findById(eq(userEntity.getId())))
+        when(repository.findByUid(eq(userEntity.getUid())))
                 .thenReturn(Optional.ofNullable(null));
 
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.getUser(userEntity.getId(), new Context());
-                });
-
-        // Then
-        AppError error = thrown.getAppError();
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
-    }
-
-    @Test
-    void whenReplaceUser_thenOk() throws Exception {
-
-        // Given
-        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
-        UserRequest userRequest = TestUtils.getRandom(UserRequest.class);
-        UserResponse userResponse = mapper.toDto(userEntity);
-
-        when(repository.findById(eq(userEntity.getId())))
-                .thenReturn(Optional.of(userEntity));
-
-        when(repository.save(eq(userEntity)))
-                .thenReturn(userEntity);
-
-        when(mockedMapper.toDto(any(UserEntity.class)))
-                .thenReturn(userResponse);
-
-        // When
-        UserResponse response = service.replaceUser(userEntity.getId(), userRequest, new Context());
-
-        // Then
-        JSONAssert.assertEquals(
-                Json.toString(userResponse),
-                new JSONObject(Json.toString(response)),
-                false);
-    }
-
-    @Test
-    public void whenReplaceUserWithInvalidId_thenError() throws Exception {
-
-        // Given
-        UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
-        UserRequest userRequest = TestUtils.getRandom(UserRequest.class);
-
-        when(repository.findById(eq(userEntity.getId())))
-                .thenReturn(Optional.ofNullable(null));
-
-        // When
-        AppException thrown = assertThrows(AppException.class,
-                () -> {
-                    service.replaceUser(userEntity.getId(), userRequest, new Context());
+                    service.getUser(userEntity.getUid(), new Context());
                 });
 
         // Then
@@ -302,19 +252,19 @@ class UserServiceTest {
         // Given
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         UserRequest userRequest = TestUtils.getRandom(UserRequest.class);
-        UserResponse userResponse = mapper.toDto(userEntity);
+        UserResponse userResponse = mapper.toResponse(userEntity);
 
-        when(repository.findById(eq(userEntity.getId())))
+        when(repository.findByUid(eq(userEntity.getUid())))
                 .thenReturn(Optional.of(userEntity));
 
         when(repository.save(eq(userEntity)))
                 .thenReturn(userEntity);
 
-        when(mockedMapper.toDto(any(UserEntity.class)))
+        when(mockedMapper.toResponse(any(UserEntity.class)))
                 .thenReturn(userResponse);
 
         // When
-        UserResponse response = service.updateUser(userEntity.getId(), userRequest, new Context());
+        UserResponse response = service.updateUser(userEntity.getUid(), userRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
@@ -330,13 +280,13 @@ class UserServiceTest {
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         UserRequest userRequest = TestUtils.getRandom(UserRequest.class);
 
-        when(repository.findById(eq(userEntity.getId())))
+        when(repository.findByUid(eq(userEntity.getUid())))
                 .thenReturn(Optional.ofNullable(null));
 
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.updateUser(userEntity.getId(), userRequest, new Context());
+                    service.updateUser(userEntity.getUid(), userRequest, new Context());
                 });
 
         // Then
@@ -352,11 +302,11 @@ class UserServiceTest {
         // Given
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
 
-        when(repository.findById(eq(userEntity.getId())))
+        when(repository.findByUid(eq(userEntity.getUid())))
                 .thenReturn(Optional.of(userEntity));
 
         // When & Then
-        service.deleteUser(userEntity.getId(), new Context());
+        service.deleteUser(userEntity.getUid(), new Context());
     }
 
     @Test
@@ -365,13 +315,13 @@ class UserServiceTest {
         // Given
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
 
-        when(repository.findById(eq(userEntity.getId())))
+        when(repository.findByUid(eq(userEntity.getUid())))
                 .thenReturn(Optional.ofNullable(null));
 
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.deleteUser(userEntity.getId(), new Context());
+                    service.deleteUser(userEntity.getUid(), new Context());
                 });
 
         // Then

@@ -7,6 +7,7 @@ import app.server.constant.*;
 import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,22 +87,12 @@ public interface UserApi {
     }
 
     /**
-     * PUT /users/{id} : replaceUser
-     *
-     * Replace the specified User
-     */
-    @PutMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<UserResponse> replaceUser(@PathVariable("id") Long id, @RequestBody UserRequest body) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    /**
      * PATCH /users/{id} : updateUser
      *
      * Update the specified User
      */
-    @PatchMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<UserResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserRequest body) {
+    @PatchMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/merge-patch+json"})
+    default ResponseEntity<UserResponse> updateUser(@PathVariable("id") Long id, @RequestBody JsonMergePatch patch) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

@@ -7,10 +7,13 @@ import app.server.api.BaseController;
 import app.server.api.UserApi;
 import app.server.constant.*;
 import app.server.domain.*;
+import app.server.domain.mapper.UserMapStruct;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.UserService;
+import app.server.util.JsonMergePatchUtil;
 import app.server.util.Validator;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class UserController extends BaseController implements UserApi {
 
     final UserService userService;
+    final UserMapStruct userMapper;
 
     /**
      * {@inheritDoc}.
@@ -91,19 +95,13 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<UserResponse> replaceUser(Long id, UserRequest body) {
-        Validator.validate(body);
-        UserResponse response = userService.replaceUser(id, body, super.getContext());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+    public ResponseEntity<UserResponse> updateUser(Long id, JsonMergePatch patch) {
+        UserResponse current = userService.getUser(id, super.getContext());
+        UserRequest target = userMapper.toRequest(current);
+        UserRequest request = JsonMergePatchUtil.apply(patch, target);
 
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public ResponseEntity<UserResponse> updateUser(Long id, UserRequest body) {
-        Validator.validateExRequired(body);
-        UserResponse response = userService.updateUser(id, body, super.getContext());
+        Validator.validate(request);
+        UserResponse response = userService.updateUser(id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

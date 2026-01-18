@@ -42,7 +42,7 @@ public class TicketService {
         var cursorPage = ticketRepository.findAll(predicate, pageable);
 
         var ticketEntities = cursorPage.items();
-        var ticketDtos = ticketEntities.stream().map(ticketMapStruct::toDto).toList();
+        var ticketDtos = ticketEntities.stream().map(ticketMapStruct::toResponse).toList();
 
         return new CursorPage<>(ticketDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -54,27 +54,14 @@ public class TicketService {
 
         ticketEntity = ticketRepository.save(ticketEntity);
 
-        return ticketMapStruct.toDto(ticketEntity);
+        return ticketMapStruct.toResponse(ticketEntity);
     }
 
     public TicketResponse getTicket(Long id, Context context) throws AppException {
 
         var ticketEntity = fetchTicketFromDb(id);
 
-        return ticketMapStruct.toDto(ticketEntity);
-    }
-
-    @Transactional
-    public TicketResponse replaceTicket(Long id, TicketRequest body, Context context) throws AppException {
-
-        var ticketEntity = fetchTicketFromDb(id);
-
-        // replace ticketEntity with all writeable fields - nulls included
-        ticketMapStruct.replace(body, ticketEntity);
-
-        ticketEntity = ticketRepository.save(ticketEntity);
-
-        return ticketMapStruct.toDto(ticketEntity);
+        return ticketMapStruct.toResponse(ticketEntity);
     }
 
     @Transactional
@@ -82,12 +69,12 @@ public class TicketService {
 
         var ticketEntity = fetchTicketFromDb(id);
 
-        // update dbEntity with all writeable fields if present
-        ticketMapStruct.update(body, ticketEntity);
+        // replace dbEntity with all writeable fields - nulls included
+        ticketMapStruct.replace(body, ticketEntity);
 
         ticketEntity = ticketRepository.save(ticketEntity);
 
-        return ticketMapStruct.toDto(ticketEntity);
+        return ticketMapStruct.toResponse(ticketEntity);
     }
 
     @Transactional

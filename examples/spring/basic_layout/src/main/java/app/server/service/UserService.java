@@ -59,7 +59,7 @@ public class UserService {
         var cursorPage = userRepository.findAll(predicate, pageable);
 
         var userEntities = cursorPage.items();
-        var userDtos = userEntities.stream().map(userMapStruct::toDto).toList();
+        var userDtos = userEntities.stream().map(userMapStruct::toResponse).toList();
 
         return new CursorPage<>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -106,7 +106,7 @@ public class UserService {
         var cursorPage = userRepository.findAll(predicate, pageable);
 
         var userEntities = cursorPage.items();
-        var userDtos = userEntities.stream().map(userMapStruct::toDto).toList();
+        var userDtos = userEntities.stream().map(userMapStruct::toResponse).toList();
 
         return new CursorPage<>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -118,27 +118,14 @@ public class UserService {
 
         userEntity = userRepository.save(userEntity);
 
-        return userMapStruct.toDto(userEntity);
+        return userMapStruct.toResponse(userEntity);
     }
 
     public UserResponse getUser(Long id, Context context) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 
-        return userMapStruct.toDto(userEntity);
-    }
-
-    @Transactional
-    public UserResponse replaceUser(Long id, UserRequest body, Context context) throws AppException {
-
-        var userEntity = fetchUserFromDb(id);
-
-        // replace userEntity with all writeable fields - nulls included
-        userMapStruct.replace(body, userEntity);
-
-        userEntity = userRepository.save(userEntity);
-
-        return userMapStruct.toDto(userEntity);
+        return userMapStruct.toResponse(userEntity);
     }
 
     @Transactional
@@ -146,12 +133,12 @@ public class UserService {
 
         var userEntity = fetchUserFromDb(id);
 
-        // update dbEntity with all writeable fields if present
-        userMapStruct.update(body, userEntity);
+        // replace dbEntity with all writeable fields - nulls included
+        userMapStruct.replace(body, userEntity);
 
         userEntity = userRepository.save(userEntity);
 
-        return userMapStruct.toDto(userEntity);
+        return userMapStruct.toResponse(userEntity);
     }
 
     @Transactional

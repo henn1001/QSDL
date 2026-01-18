@@ -7,6 +7,7 @@ import app.server.common.constants.*;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.user.dto.*;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public interface UserApi {
      * List Users
      */
     @GetMapping(value = "/tickets/{ticket_id}/users", produces = {"application/json"})
-    default ResponseEntity<CursorPage<UserResponse>> getUsersForTicket(@PathVariable("ticket_id") Long ticketId, CursorPageable pageable) {
+    default ResponseEntity<CursorPage<UserResponse>> getUsersForTicket(@PathVariable("ticket_id") String ticketId, CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -41,7 +42,7 @@ public interface UserApi {
      * Add User
      */
     @PostMapping(value = "/tickets/{ticket_id}/users/{id}/add")
-    default ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) {
+    default ResponseEntity<Void> addUserToTicket(@PathVariable("ticket_id") String ticketId, @PathVariable("id") String id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -51,7 +52,7 @@ public interface UserApi {
      * Remove User
      */
     @PostMapping(value = "/tickets/{ticket_id}/users/{id}/remove")
-    default ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") Long ticketId, @PathVariable("id") Long id) {
+    default ResponseEntity<Void> removeUserFromTicket(@PathVariable("ticket_id") String ticketId, @PathVariable("id") String id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -81,17 +82,7 @@ public interface UserApi {
      * Read the specified User
      */
     @GetMapping(value = "/users/{id}", produces = {"application/json"})
-    default ResponseEntity<UserResponse> getUser(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    /**
-     * PUT /users/{id} : replaceUser
-     *
-     * Replace the specified User
-     */
-    @PutMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<UserResponse> replaceUser(@PathVariable("id") Long id, @RequestBody UserRequest body) {
+    default ResponseEntity<UserResponse> getUser(@PathVariable("id") String id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -100,8 +91,8 @@ public interface UserApi {
      *
      * Update the specified User
      */
-    @PatchMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<UserResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserRequest body) {
+    @PatchMapping(value = "/users/{id}", produces = {"application/json"}, consumes = {"application/merge-patch+json"})
+    default ResponseEntity<UserResponse> updateUser(@PathVariable("id") String id, @RequestBody JsonMergePatch patch) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -111,7 +102,7 @@ public interface UserApi {
      * Delete the specified User
      */
     @DeleteMapping(value = "/users/{id}")
-    default ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
+    default ResponseEntity<Void> deleteUser(@PathVariable("id") String id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

@@ -7,6 +7,7 @@ import app.server.common.constants.*;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.project.dto.*;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,17 +52,7 @@ public interface ProjectApi {
      * Read the specified Project
      */
     @GetMapping(value = "/projects/{id}", produces = {"application/json"})
-    default ResponseEntity<ProjectResponse> getProject(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    /**
-     * PUT /projects/{id} : replaceProject
-     *
-     * Replace the specified Project
-     */
-    @PutMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ProjectResponse> replaceProject(@PathVariable("id") Long id, @RequestBody ProjectRequest body) {
+    default ResponseEntity<ProjectResponse> getProject(@PathVariable("id") String id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -70,8 +61,8 @@ public interface ProjectApi {
      *
      * Update the specified Project
      */
-    @PatchMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ProjectResponse> updateProject(@PathVariable("id") Long id, @RequestBody ProjectRequest body) {
+    @PatchMapping(value = "/projects/{id}", produces = {"application/json"}, consumes = {"application/merge-patch+json"})
+    default ResponseEntity<ProjectResponse> updateProject(@PathVariable("id") String id, @RequestBody JsonMergePatch patch) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -81,7 +72,7 @@ public interface ProjectApi {
      * Delete the specified Project
      */
     @DeleteMapping(value = "/projects/{id}")
-    default ResponseEntity<Void> deleteProject(@PathVariable("id") Long id) {
+    default ResponseEntity<Void> deleteProject(@PathVariable("id") String id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

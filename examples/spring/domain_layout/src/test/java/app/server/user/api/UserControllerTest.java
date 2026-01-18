@@ -20,6 +20,7 @@ import app.server.common.constants.ErrorCode;
 import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
 import app.server.common.util.Json;
+import app.server.common.util.JsonMergePatchConverter.MediaTypeExtension;
 import app.server.user.dto.UserRequest;
 import app.server.user.dto.UserResponse;
 import app.server.user.service.UserService;
@@ -48,7 +49,7 @@ class UserControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    static Long one = 1L;
+    static String one = "1";
 
     @Test
     public void whenGetUsersForTicket_thenOk() throws Exception {
@@ -201,62 +202,14 @@ class UserControllerTest {
     }
 
     @Test
-    public void whenReplaceUser_thenOk() throws Exception {
-
-        // Given
-        UserRequest requestDto = TestUtils.getRandom(UserRequest.class);
-        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
-
-        when(service.replaceUser(eq(one), any(), any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "/users/1")
-                        .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        JSONAssert.assertEquals(
-                Json.toString(responseDto),
-                new JSONObject(response),
-                false);
-    }
-
-    @Test
-    public void whenReplaceUserWithInvalidPayload_thenError() throws Exception {
-
-        // Given
-        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
-
-        when(service.replaceUser(eq(one), any(), any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "/users/1")
-                .content("{}")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        AppError error = Json.fromJson(response, AppError.class);
-        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-    }
-
-    @Test
     public void whenUpdateUser_thenOk() throws Exception {
 
         // Given
         UserRequest requestDto = TestUtils.getRandom(UserRequest.class);
         UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
+
+        when(service.getUser(eq(one), any()))
+                .thenReturn(responseDto);
 
         when(service.updateUser(eq(one), any(), any()))
                 .thenReturn(responseDto);
@@ -264,7 +217,7 @@ class UserControllerTest {
         // When
         String response = mockMvc.perform(patch(basePath + "/users/1")
                         .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -287,9 +240,9 @@ class UserControllerTest {
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(put(basePath + "/users/1")
+        String response = mockMvc.perform(patch(basePath + "/users/1")
                 .content("{}")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()

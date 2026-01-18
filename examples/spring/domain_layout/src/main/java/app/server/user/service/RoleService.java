@@ -34,22 +34,22 @@ public class RoleService {
 
     final RoleMapStruct roleMapStruct;
 
-    RoleEntity fetchRoleFromDb(Long id) throws AppException {
-        return roleRepository.findById(id)
+    RoleEntity fetchRoleFromDb(String id) throws AppException {
+        return roleRepository.findByUid(id)
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(RoleResponse.class, id));
     }
 
-    RoleEntity fetchRoleFromProjectFromDb(Long projectId, Long id) throws AppException {
-        return roleRepository.findByProjectIdAndId(projectId, id)
+    RoleEntity fetchRoleFromProjectFromDb(Long projectId, String id) throws AppException {
+        return roleRepository.findByProjectIdAndUid(projectId, id)
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(RoleResponse.class, id));
     }
 
-    ProjectEntity fetchProjectFromDb(Long id) throws AppException {
-        return projectRepository.findById(id)
+    ProjectEntity fetchProjectFromDb(String id) throws AppException {
+        return projectRepository.findByUid(id)
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(ProjectResponse.class, id));
     }
 
-    public CursorPage<RoleResponse> getRoles(Long projectId, CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<RoleResponse> getRoles(String projectId, CursorPageable pageable, Context context) throws AppException {
 
         // confirm existence of parent
         // should be optimized with something like getReferenceById
@@ -62,13 +62,13 @@ public class RoleService {
         var cursorPage = roleRepository.findAll(predicate, pageable);
 
         var roleEntities = cursorPage.items();
-        var roleDtos = roleEntities.stream().map(roleMapStruct::toDto).toList();
+        var roleDtos = roleEntities.stream().map(roleMapStruct::toResponse).toList();
 
         return new CursorPage<>(roleDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
 
     @Transactional
-    public RoleResponse createRole(Long projectId, RoleRequest body, Context context) throws AppException {
+    public RoleResponse createRole(String projectId, RoleRequest body, Context context) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
@@ -80,53 +80,37 @@ public class RoleService {
 
         roleEntity = roleRepository.save(roleEntity);
 
-        return roleMapStruct.toDto(roleEntity);
+        return roleMapStruct.toResponse(roleEntity);
     }
 
-    public RoleResponse getRole(Long projectId, Long id, Context context) throws AppException {
+    public RoleResponse getRole(String projectId, String id, Context context) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
 
         var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
 
-        return roleMapStruct.toDto(roleEntity);
+        return roleMapStruct.toResponse(roleEntity);
     }
 
     @Transactional
-    public RoleResponse replaceRole(Long projectId, Long id, RoleRequest body, Context context) throws AppException {
+    public RoleResponse updateRole(String projectId, String id, RoleRequest body, Context context) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
 
         var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
 
-        // replace roleEntity with all writeable fields - nulls included
+        // replace dbEntity with all writeable fields - nulls included
         roleMapStruct.replace(body, roleEntity);
 
         roleEntity = roleRepository.save(roleEntity);
 
-        return roleMapStruct.toDto(roleEntity);
+        return roleMapStruct.toResponse(roleEntity);
     }
 
     @Transactional
-    public RoleResponse updateRole(Long projectId, Long id, RoleRequest body, Context context) throws AppException {
-
-        // confirm existence of parent
-        var projectEntity = fetchProjectFromDb(projectId);
-
-        var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
-
-        // update dbEntity with all writeable fields if present
-        roleMapStruct.update(body, roleEntity);
-
-        roleEntity = roleRepository.save(roleEntity);
-
-        return roleMapStruct.toDto(roleEntity);
-    }
-
-    @Transactional
-    public Void deleteRole(Long projectId, Long id, Context context) throws AppException {
+    public Void deleteRole(String projectId, String id, Context context) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);

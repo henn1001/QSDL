@@ -7,10 +7,13 @@ import app.server.api.BaseController;
 import app.server.api.RoleApi;
 import app.server.constant.*;
 import app.server.domain.*;
+import app.server.domain.mapper.RoleMapStruct;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.RoleService;
+import app.server.util.JsonMergePatchUtil;
 import app.server.util.Validator;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class RoleController extends BaseController implements RoleApi {
 
     final RoleService roleService;
+    final RoleMapStruct roleMapper;
 
     /**
      * {@inheritDoc}.
@@ -64,19 +68,13 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<RoleResponse> replaceRole(Long projectId, Long id, RoleRequest body) {
-        Validator.validate(body);
-        RoleResponse response = roleService.replaceRole(projectId, id, body, super.getContext());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+    public ResponseEntity<RoleResponse> updateRole(Long projectId, Long id, JsonMergePatch patch) {
+        RoleResponse current = roleService.getRole(projectId, id, super.getContext());
+        RoleRequest target = roleMapper.toRequest(current);
+        RoleRequest request = JsonMergePatchUtil.apply(patch, target);
 
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public ResponseEntity<RoleResponse> updateRole(Long projectId, Long id, RoleRequest body) {
-        Validator.validateExRequired(body);
-        RoleResponse response = roleService.updateRole(projectId, id, body, super.getContext());
+        Validator.validate(request);
+        RoleResponse response = roleService.updateRole(projectId, id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

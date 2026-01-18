@@ -7,6 +7,7 @@ import app.server.constant.*;
 import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,22 +57,12 @@ public interface TicketApi {
     }
 
     /**
-     * PUT /tickets/{id} : replaceTicket
-     *
-     * Replace the specified Ticket
-     */
-    @PutMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<TicketResponse> replaceTicket(@PathVariable("id") Long id, @RequestBody TicketRequest body) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    /**
      * PATCH /tickets/{id} : updateTicket
      *
      * Update the specified Ticket
      */
-    @PatchMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<TicketResponse> updateTicket(@PathVariable("id") Long id, @RequestBody TicketRequest body) {
+    @PatchMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/merge-patch+json"})
+    default ResponseEntity<TicketResponse> updateTicket(@PathVariable("id") Long id, @RequestBody JsonMergePatch patch) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

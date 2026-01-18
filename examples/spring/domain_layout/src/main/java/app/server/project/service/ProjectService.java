@@ -29,8 +29,8 @@ public class ProjectService {
 
     final ProjectMapStruct projectMapStruct;
 
-    ProjectEntity fetchProjectFromDb(Long id) throws AppException {
-        return projectRepository.findById(id)
+    ProjectEntity fetchProjectFromDb(String id) throws AppException {
+        return projectRepository.findByUid(id)
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(ProjectResponse.class, id));
     }
 
@@ -42,7 +42,7 @@ public class ProjectService {
         var cursorPage = projectRepository.findAll(predicate, pageable);
 
         var projectEntities = cursorPage.items();
-        var projectDtos = projectEntities.stream().map(projectMapStruct::toDto).toList();
+        var projectDtos = projectEntities.stream().map(projectMapStruct::toResponse).toList();
 
         return new CursorPage<>(projectDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -54,44 +54,31 @@ public class ProjectService {
 
         projectEntity = projectRepository.save(projectEntity);
 
-        return projectMapStruct.toDto(projectEntity);
+        return projectMapStruct.toResponse(projectEntity);
     }
 
-    public ProjectResponse getProject(Long id, Context context) throws AppException {
+    public ProjectResponse getProject(String id, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
-        return projectMapStruct.toDto(projectEntity);
+        return projectMapStruct.toResponse(projectEntity);
     }
 
     @Transactional
-    public ProjectResponse replaceProject(Long id, ProjectRequest body, Context context) throws AppException {
+    public ProjectResponse updateProject(String id, ProjectRequest body, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
-        // replace projectEntity with all writeable fields - nulls included
+        // replace dbEntity with all writeable fields - nulls included
         projectMapStruct.replace(body, projectEntity);
 
         projectEntity = projectRepository.save(projectEntity);
 
-        return projectMapStruct.toDto(projectEntity);
+        return projectMapStruct.toResponse(projectEntity);
     }
 
     @Transactional
-    public ProjectResponse updateProject(Long id, ProjectRequest body, Context context) throws AppException {
-
-        var projectEntity = fetchProjectFromDb(id);
-
-        // update dbEntity with all writeable fields if present
-        projectMapStruct.update(body, projectEntity);
-
-        projectEntity = projectRepository.save(projectEntity);
-
-        return projectMapStruct.toDto(projectEntity);
-    }
-
-    @Transactional
-    public Void deleteProject(Long id, Context context) throws AppException {
+    public Void deleteProject(String id, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 

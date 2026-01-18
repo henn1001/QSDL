@@ -59,7 +59,7 @@ public class RoleService {
         var cursorPage = roleRepository.findAll(predicate, pageable);
 
         var roleEntities = cursorPage.items();
-        var roleDtos = roleEntities.stream().map(roleMapStruct::toDto).toList();
+        var roleDtos = roleEntities.stream().map(roleMapStruct::toResponse).toList();
 
         return new CursorPage<>(roleDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -77,7 +77,7 @@ public class RoleService {
 
         roleEntity = roleRepository.save(roleEntity);
 
-        return roleMapStruct.toDto(roleEntity);
+        return roleMapStruct.toResponse(roleEntity);
     }
 
     public RoleResponse getRole(Long projectId, Long id, Context context) throws AppException {
@@ -87,23 +87,7 @@ public class RoleService {
 
         var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
 
-        return roleMapStruct.toDto(roleEntity);
-    }
-
-    @Transactional
-    public RoleResponse replaceRole(Long projectId, Long id, RoleRequest body, Context context) throws AppException {
-
-        // confirm existence of parent
-        var projectEntity = fetchProjectFromDb(projectId);
-
-        var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
-
-        // replace roleEntity with all writeable fields - nulls included
-        roleMapStruct.replace(body, roleEntity);
-
-        roleEntity = roleRepository.save(roleEntity);
-
-        return roleMapStruct.toDto(roleEntity);
+        return roleMapStruct.toResponse(roleEntity);
     }
 
     @Transactional
@@ -114,12 +98,12 @@ public class RoleService {
 
         var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
 
-        // update dbEntity with all writeable fields if present
-        roleMapStruct.update(body, roleEntity);
+        // replace dbEntity with all writeable fields - nulls included
+        roleMapStruct.replace(body, roleEntity);
 
         roleEntity = roleRepository.save(roleEntity);
 
-        return roleMapStruct.toDto(roleEntity);
+        return roleMapStruct.toResponse(roleEntity);
     }
 
     @Transactional

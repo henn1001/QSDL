@@ -81,37 +81,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceProject
-      description: |
-        Replace the specified Project
-      operationId: replaceProject
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Project'
+            type: string
       responses:
         '200':
           description: OK
@@ -133,12 +103,11 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Project'
       responses:
@@ -162,8 +131,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: OK
@@ -182,8 +150,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -208,8 +175,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       requestBody:
         required: true
         content:
@@ -238,49 +204,12 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: id
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceRole
-      description: |
-        Replace the specified Role
-      operationId: replaceRole
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Role'
+            type: string
       responses:
         '200':
           description: OK
@@ -302,18 +231,16 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: id
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Role'
       responses:
@@ -337,14 +264,12 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: id
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: OK
@@ -363,8 +288,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -390,14 +314,12 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: id
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: OK
@@ -416,14 +338,12 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: id
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: OK
@@ -485,37 +405,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceUser
-      description: |
-        Replace the specified User
-      operationId: replaceUser
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
+            type: string
       responses:
         '200':
           description: OK
@@ -537,12 +427,11 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/User'
       responses:
@@ -566,8 +455,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: OK
@@ -629,37 +517,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Ticket'
-        default:
-          $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Incident
-      summary: replaceTicket
-      description: |
-        Replace the specified Ticket
-      operationId: replaceTicket
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Ticket'
+            type: string
       responses:
         '200':
           description: OK
@@ -681,12 +539,11 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Ticket'
       responses:
@@ -710,8 +567,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: OK
@@ -879,10 +735,9 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
           readOnly: true
-          minimum: 0
+          maxLength: 255
         name:
           type: string
           maxLength: 255
@@ -935,10 +790,9 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
           readOnly: true
-          minimum: 0
+          maxLength: 255
         name:
           type: string
           maxLength: 255
@@ -967,10 +821,9 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
           readOnly: true
-          minimum: 0
+          maxLength: 255
         name:
           type: string
           maxLength: 255
@@ -1004,10 +857,9 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
           readOnly: true
-          minimum: 0
+          maxLength: 255
         number:
           type: integer
           format: int32

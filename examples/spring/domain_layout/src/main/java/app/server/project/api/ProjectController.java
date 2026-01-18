@@ -7,10 +7,13 @@ import app.server.common.api.BaseController;
 import app.server.common.constants.*;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
+import app.server.common.util.JsonMergePatchUtil;
 import app.server.common.util.Validator;
 import app.server.project.api.ProjectApi;
 import app.server.project.dto.*;
+import app.server.project.mapper.ProjectMapStruct;
 import app.server.project.service.ProjectService;
+import jakarta.json.JsonMergePatch;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class ProjectController extends BaseController implements ProjectApi {
 
     final ProjectService projectService;
+    final ProjectMapStruct projectMapper;
 
     /**
      * {@inheritDoc}.
@@ -55,7 +59,7 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<ProjectResponse> getProject(Long id) {
+    public ResponseEntity<ProjectResponse> getProject(String id) {
         ProjectResponse response = projectService.getProject(id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -64,9 +68,13 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<ProjectResponse> replaceProject(Long id, ProjectRequest body) {
-        Validator.validate(body);
-        ProjectResponse response = projectService.replaceProject(id, body, super.getContext());
+    public ResponseEntity<ProjectResponse> updateProject(String id, JsonMergePatch patch) {
+        ProjectResponse current = projectService.getProject(id, super.getContext());
+        ProjectRequest target = projectMapper.toRequest(current);
+        ProjectRequest request = JsonMergePatchUtil.apply(patch, target);
+
+        Validator.validate(request);
+        ProjectResponse response = projectService.updateProject(id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -74,17 +82,7 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<ProjectResponse> updateProject(Long id, ProjectRequest body) {
-        Validator.validateExRequired(body);
-        ProjectResponse response = projectService.updateProject(id, body, super.getContext());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public ResponseEntity<Void> deleteProject(Long id) {
+    public ResponseEntity<Void> deleteProject(String id) {
         projectService.deleteProject(id, super.getContext());
         return new ResponseEntity<>(HttpStatus.OK);
     }

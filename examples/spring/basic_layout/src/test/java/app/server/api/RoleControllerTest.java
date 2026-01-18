@@ -23,6 +23,7 @@ import app.server.model.AppError;
 import app.server.model.CursorPage;
 import app.server.service.RoleService;
 import app.server.util.Json;
+import app.server.util.JsonMergePatchConverter.MediaTypeExtension;
 import java.util.Arrays;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -150,62 +151,14 @@ class RoleControllerTest {
     }
 
     @Test
-    public void whenReplaceRole_thenOk() throws Exception {
-
-        // Given
-        RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
-        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
-
-        when(service.replaceRole(eq(one), eq(one), any(), any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
-                        .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        JSONAssert.assertEquals(
-                Json.toString(responseDto),
-                new JSONObject(response),
-                false);
-    }
-
-    @Test
-    public void whenReplaceRoleWithInvalidPayload_thenError() throws Exception {
-
-        // Given
-        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
-
-        when(service.replaceRole(eq(one), eq(one), any(), any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
-                .content("{}")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        AppError error = Json.fromJson(response, AppError.class);
-        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-    }
-
-    @Test
     public void whenUpdateRole_thenOk() throws Exception {
 
         // Given
         RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
         RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
+
+        when(service.getRole(eq(one), eq(one), any()))
+                .thenReturn(responseDto);
 
         when(service.updateRole(eq(one), eq(one), any(), any()))
                 .thenReturn(responseDto);
@@ -213,7 +166,7 @@ class RoleControllerTest {
         // When
         String response = mockMvc.perform(patch(basePath + "/projects/1/roles/1")
                         .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -236,9 +189,9 @@ class RoleControllerTest {
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(put(basePath + "/projects/1/roles/1")
+        String response = mockMvc.perform(patch(basePath + "/projects/1/roles/1")
                 .content("{}")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()

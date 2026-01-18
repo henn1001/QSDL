@@ -13,13 +13,17 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface ProjectMapStruct {
 
-    ProjectResponse toDto(ProjectEntity entity);
+    @Mapping(target = "archive", ignore = true)
+    ProjectRequest toRequest(ProjectResponse dto);
 
-    // ignore read only attributes and relations
+    @Mapping(target = "id", source = "uid")
+    ProjectResponse toResponse(ProjectEntity entity);
+
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "creationBy", ignore = true)

@@ -13,13 +13,15 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface RoleMapStruct {
 
-    RoleResponse toDto(RoleEntity entity);
+    RoleRequest toRequest(RoleResponse dto);
 
-    // ignore read only attributes and relations
+    RoleResponse toResponse(RoleEntity entity);
+
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "project", ignore = true)

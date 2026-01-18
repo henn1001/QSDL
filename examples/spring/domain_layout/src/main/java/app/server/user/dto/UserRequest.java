@@ -22,7 +22,7 @@ public record UserRequest(
 
     @NotNull
     @Size(min = 0, max = 255)
-    @JsonProperty(value = "name", required = true)
+    @JsonProperty(value = "name")
     String name,
 
     @Size(min = 0, max = 255)

@@ -19,10 +19,9 @@ import tools.jackson.databind.node.ObjectNode;
 public record RoleResponse(
 // @formatter:off
 
-    @Min(0)
-    @Max(Long.MAX_VALUE)
+    @Size(min = 0, max = 255)
     @JsonProperty(value = "id")
-    Long id,
+    String id,
 
     @Size(min = 0, max = 255)
     @JsonProperty(value = "name")
