@@ -53,6 +53,7 @@ def generate_imports_for_template(
             f"import {util.Store.package.enum}.*;",
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
+            "import jakarta.json.JsonMergePatch;",
             "import org.springframework.http.HttpStatus;",
             "import org.springframework.http.ResponseEntity;",
             "import org.springframework.stereotype.Controller;",
@@ -70,14 +71,21 @@ def generate_imports_for_template(
         "Controller.j2": [
             f"import {api_class.package.api}.{api_class.name}Api;" if api_class else None,
             f"import {api_class.package.domain}.*;" if api_class else None,
-            f"import {api_class.package.service}.{api_class.name}Service;"
-            if api_class and api_class.has_generated
-            else None,
+            *(
+                [
+                    f"import {api_class.package.mapper}.{api_class.name}MapStruct;",
+                    f"import {api_class.package.service}.{api_class.name}Service;",
+                ]
+                if api_class and api_class.has_generated
+                else []
+            ),
             f"import {util.Store.package.controller}.BaseController;",
+            f"import {util.Store.package.util}.JsonMergePatchUtil;",
             f"import {util.Store.package.util}.Validator;",
             f"import {util.Store.package.enum}.*;",
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
+            "import jakarta.json.JsonMergePatch;",
             "import org.springframework.http.HttpStatus;",
             "import org.springframework.http.ResponseEntity;",
             "import org.springframework.stereotype.Controller;",
@@ -294,7 +302,7 @@ def generate_imports_for_template(
         "MapStruct.j2": [
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
             f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
-            f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
+            f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class and is_db else None,
             "import org.mapstruct.BeanMapping;",
             "import org.mapstruct.InheritConfiguration;",
             "import org.mapstruct.Mapper;",
@@ -302,6 +310,7 @@ def generate_imports_for_template(
             "import org.mapstruct.MappingTarget;",
             "import org.mapstruct.Named;",
             "import org.mapstruct.NullValuePropertyMappingStrategy;",
+            "import org.mapstruct.ReportingPolicy;",
         ],
         "Repository.j2": [
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
@@ -313,12 +322,13 @@ def generate_imports_for_template(
         ],
         "DControllerTest.j2": [
             # Model-specific imports
-            f"import {util.Store.config.base_package}.TestConfig;" if model_class else None,
-            f"import {util.Store.config.base_package}.TestUtils;" if model_class else None,
-            f"import {util.Store.package.enum}.ErrorCode;" if model_class else None,
-            f"import {util.Store.package.util}.Json;" if model_class else None,
-            f"import {util.Store.package.model}.AppError;" if model_class else None,
-            f"import {util.Store.package.model}.CursorPage;" if model_class else None,
+            f"import {util.Store.config.base_package}.TestConfig;",
+            f"import {util.Store.config.base_package}.TestUtils;",
+            f"import {util.Store.package.enum}.ErrorCode;",
+            f"import {util.Store.package.util}.Json;",
+            f"import {util.Store.package.util}.JsonMergePatchConverter.MediaTypeExtension;",
+            f"import {util.Store.package.model}.AppError;",
+            f"import {util.Store.package.model}.CursorPage;",
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
             f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
             f"import {model_class.package.service}.{model_class.name}Service;" if model_class else None,
@@ -442,9 +452,12 @@ def generate_imports_for_template(
         ],
         "AppConfiguration.j2": [
             f"import {util.Store.package.repository}.BaseRepositoryImpl;" if is_db else None,
+            f"import {util.Store.package.util}.JsonMergePatchConverter;",
+            "import java.util.List;",
             "import org.springframework.context.annotation.Bean;",
             "import org.springframework.context.annotation.Configuration;",
             "import org.springframework.data.jpa.repository.config.EnableJpaRepositories;",
+            "import org.springframework.http.converter.HttpMessageConverter;",
             "import org.springframework.scheduling.annotation.EnableScheduling;",
             "import org.springframework.web.servlet.config.annotation.CorsRegistry;",
             "import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;",
@@ -473,6 +486,7 @@ def generate_imports_for_template(
             "import org.springframework.http.HttpStatus;",
             "import org.springframework.http.HttpStatusCode;",
             "import org.springframework.http.ResponseEntity;",
+            "import org.springframework.http.converter.HttpMessageNotReadableException;",
             "import org.springframework.validation.DataBinder;",
             "import org.springframework.validation.FieldError;",
             "import org.springframework.validation.ObjectError;",
@@ -483,6 +497,9 @@ def generate_imports_for_template(
             "import org.springframework.web.context.request.ServletWebRequest;",
             "import org.springframework.web.context.request.WebRequest;",
             "import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;",
+            "import tools.jackson.core.JacksonException;",
+            "import tools.jackson.databind.exc.InvalidFormatException;",
+            "import tools.jackson.databind.exc.MismatchedInputException;",
             "import jakarta.servlet.http.HttpServletRequest;",
             "import java.util.ArrayList;",
             "import java.util.List;",

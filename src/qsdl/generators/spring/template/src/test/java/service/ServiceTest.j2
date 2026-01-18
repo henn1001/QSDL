@@ -62,7 +62,7 @@ class {{model.name}}ServiceTest {
 
         // Given
         List<{{m_entity_type}}> {{m_entity_var}}List = TestUtils.getRandom({{m_entity_type}}.class, 5);
-        List<{{m_response_type}}> {{m_var}}List = {{m_entity_var}}List.stream().map(mapper::toDto).toList();
+        List<{{m_response_type}}> {{m_var}}List = {{m_entity_var}}List.stream().map(mapper::toResponse).toList();
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -73,7 +73,7 @@ class {{model.name}}ServiceTest {
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<{{m_entity_type}}>({{m_entity_var}}List, null, 6L));
 
-        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
                 .thenReturn({{m_var}}List.get(0))
                 .thenReturn({{m_var}}List.get(1))
                 .thenReturn({{m_var}}List.get(2))
@@ -137,7 +137,7 @@ class {{model.name}}ServiceTest {
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_request_type}} {{m_var}}Request = TestUtils.getRandom({{m_request_type}}.class);
-        {{m_response_type}} {{m_var}}Response = mapper.toDto({{m_entity_var}});
+        {{m_response_type}} {{m_var}}Response = mapper.toResponse({{m_entity_var}});
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -151,7 +151,7 @@ class {{model.name}}ServiceTest {
         when(repository.save(eq({{m_entity_var}})))
                 .thenReturn({{m_entity_var}});
 
-        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
                 .thenReturn({{m_var}}Response);
 
         // When
@@ -172,7 +172,7 @@ class {{model.name}}ServiceTest {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
-        {{m_response_type}} {{m_var}}Response = mapper.toDto({{m_entity_var}});
+        {{m_response_type}} {{m_var}}Response = mapper.toResponse({{m_entity_var}});
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -187,7 +187,7 @@ class {{model.name}}ServiceTest {
                 .thenReturn(Optional.of({{m_entity_var}}));
         {% endif %}
 
-        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
                 .thenReturn({{m_var}}Response);
 
         // When
@@ -241,7 +241,7 @@ class {{model.name}}ServiceTest {
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_request_type}} {{m_var}}Request = TestUtils.getRandom({{m_request_type}}.class);
-        {{m_response_type}} {{m_var}}Response = mapper.toDto({{m_entity_var}});
+        {{m_response_type}} {{m_var}}Response = mapper.toResponse({{m_entity_var}});
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -259,7 +259,7 @@ class {{model.name}}ServiceTest {
         when(repository.save(eq({{m_entity_var}})))
                 .thenReturn({{m_entity_var}});
 
-        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
                 .thenReturn({{m_var}}Response);
 
         // When
@@ -314,7 +314,7 @@ class {{model.name}}ServiceTest {
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_request_type}} {{m_var}}Request = TestUtils.getRandom({{m_request_type}}.class);
-        {{m_response_type}} {{m_var}}Response = mapper.toDto({{m_entity_var}});
+        {{m_response_type}} {{m_var}}Response = mapper.toResponse({{m_entity_var}});
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -332,7 +332,7 @@ class {{model.name}}ServiceTest {
         when(repository.save(eq({{m_entity_var}})))
                 .thenReturn({{m_entity_var}});
 
-        when(mockedMapper.toDto(any({{m_entity_type}}.class)))
+        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
                 .thenReturn({{m_var}}Response);
 
         // When

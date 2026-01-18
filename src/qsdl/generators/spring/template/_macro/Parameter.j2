@@ -28,7 +28,7 @@
     {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
             @RequestBody ObjectNode body
     {%- elif operation.body_parameters and operation.method == "patch" -%}
-            @RequestBody {{ param_helper(operation.body_parameters[0]) }}
+            @RequestBody JsonMergePatch patch
     {%- elif operation.body_parameters -%}
             @RequestBody {{ param_helper(operation.body_parameters[0]) }}
     {%- endif -%}
@@ -51,7 +51,7 @@
     {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
             ObjectNode body
     {%- elif operation.body_parameters and operation.method == "patch" -%}
-            {{ param_helper(operation.body_parameters[0]) }}
+            JsonMergePatch patch
     {%- elif operation.body_parameters -%}
             {{ param_helper(operation.body_parameters[0]) }}
     {%- endif -%}
@@ -90,8 +90,24 @@
 
     {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
             body{{", "}}
+    {%- elif operation.body_parameters and operation.method == "patch" -%}
+            request{{", "}}
     {%- elif operation.body_parameters -%}
             {{operation.body_parameters[0].name}}{{", "}}
+    {%- endif -%}
+
+            super.getContext()
+
+{%- endmacro %}
+
+{%- macro paramsCallServiceGetter(operation) -%}
+
+    {%- for parameter in operation.path_parameters -%}
+            {{parameter.name}}{{", "}}
+    {%- endfor %}
+
+    {%- if operation.is_pageable -%}
+            pageable{{", "}}
     {%- endif -%}
 
             super.getContext()

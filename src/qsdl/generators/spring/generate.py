@@ -22,7 +22,7 @@ from qsdl.render import render
 
 from . import import_resolver as resolver
 from . import util
-from .config import IDTYPE, Config
+from .config import IDTYPE, Config, Database
 from .models import ApiClass, EnumClass, ModelClass, Package
 
 
@@ -183,7 +183,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
             api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{api.package.service}/{api.name}Service.java", api))
             api_files.append(("src/test/java/api/DControllerTest.j2", f"src/test/java/{api.package.controller}/{api.name}ControllerTest.java", api))
 
-            if config.database == "HIBERNATE":
+            if config.database == Database.HIBERNATE:
                 api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{api.package.service}/{api.name}ServiceTest.java", api))
         # fmt: on
         api.package.slashed = False
@@ -197,9 +197,11 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
         model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{model.package.domain}/{model.name}Response.java", model))
 
-        if config.database == "HIBERNATE" and model.is_object:
-            model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))
+        if model.is_object:
             model_files.append(("src/main/java/domain/MapStruct.j2", f"src/main/java/{model.package.mapper}/{model.name}MapStruct.java", model))
+
+        if config.database == Database.HIBERNATE and model.is_object:
+            model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))
             model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{model.package.repository}/{model.name}Repository.java", model))
             model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{model.package.repository}/{model.name}RepositoryTest.java", model))
         # fmt: on
@@ -249,6 +251,8 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         ("src/main/java/api/HomeController.j2", f"src/main/java/{package.controller}/HomeController.java"),
         # util
         ("src/main/java/util/Json.j2", f"src/main/java/{package.util}/Json.java"),
+        ("src/main/java/util/JsonMergePatchConverter.j2", f"src/main/java/{package.util}/JsonMergePatchConverter.java"),
+        ("src/main/java/util/JsonMergePatchUtil.j2", f"src/main/java/{package.util}/JsonMergePatchUtil.java"),
         ("src/main/java/util/ObjectNodeConverter.j2", f"src/main/java/{package.util}/ObjectNodeConverter.java"),
         ("src/main/java/util/Time.j2", f"src/main/java/{package.util}/Time.java"),
         ("src/main/java/util/Validator.j2", f"src/main/java/{package.util}/Validator.java"),

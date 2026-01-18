@@ -14,16 +14,16 @@ public record {{model.name}}Request(
 {% for field in model.fields if not field.is_relation and not field.is_hidden and not field.is_read_only %}
 
     {# 
-        Required fields
-    #}
-    {% if field.is_required %}
-    @NotNull
-    {% endif %}
-    {# 
         Set @Valid for any container
     #}
     {% if (field.is_array or field.is_base or field.is_object) %}
     @Valid
+    {% endif %}
+    {# 
+        Required fields
+    #}
+    {% if field.is_required %}
+    @NotNull
     {% endif %}
     {# 
         Size limits
@@ -44,7 +44,7 @@ public record {{model.name}}Request(
     {# 
         Set JsonProperty annotation
     #}
-    @JsonProperty(value = "{{field.json_key}}"{% if field.is_required %}, required = true{% endif %})
+    @JsonProperty(value = "{{field.json_key}}")
     {# 
         Set the Field definition
     #}

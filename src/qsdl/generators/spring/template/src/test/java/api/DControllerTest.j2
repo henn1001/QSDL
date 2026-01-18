@@ -212,13 +212,16 @@ class {{model.name}}ControllerTest {
         {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
         {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
 
+        when(service.{{operation.name | replace("update", "get")}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}, any()))
+                .thenReturn(responseDto);
+
         when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
                 .thenReturn(responseDto);
 
         // When
         String response = mockMvc.perform(patch(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
                         .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -241,9 +244,9 @@ class {{model.name}}ControllerTest {
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+        String response = mockMvc.perform(patch(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
                 .content("{{ "{}" if model.has_required else "" }}")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()

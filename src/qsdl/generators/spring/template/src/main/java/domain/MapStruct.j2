@@ -6,11 +6,17 @@ package {{model.package.mapper}};
 
 {{ util.macro_imports(self._TemplateReference__context.name, model) }}
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface {{model.name}}MapStruct {
 
-    {% if id_type == "String" and model.is_object %}
-    @Mapping(source = "uid", target = "id")
+    {% for field in model.fields if field.is_write_only %}
+    @Mapping(target = "{{field.name}}", ignore = true)
+    {% endfor %}
+    {{model.name}}Request toRequest({{model.name}}Response dto);
+
+{% if database == "HIBERNATE" %}
+    {% if id_type == "String" %}
+    @Mapping(target = "id", source = "uid")
     {% endif %}
     {% for field in model.entity_fields %}
         {% if field.is_transient %}
@@ -20,9 +26,8 @@ public interface {{model.name}}MapStruct {
     @Mapping(target = "{{field.dto_nested_path}}", source = "{{field.name}}")
         {% endif %}
     {% endfor %}
-    {{model.name}}Response toDto({{model.name}}Entity entity);
+    {{model.name}}Response toResponse({{model.name}}Entity entity);
 
-    // ignore read only attributes and relations
     @Mapping(target = "uid", ignore = true)
     {% for field in model.entity_fields %}
         {% if field.is_read_only or field.is_relation or field.is_hidden %}
@@ -49,5 +54,6 @@ public interface {{model.name}}MapStruct {
     {% endfor %}
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void update({{model.name}}Request source, @MappingTarget {{model.name}}Entity target);
+{% endif %}
 }
 {{""}}

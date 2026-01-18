@@ -14,7 +14,7 @@ package {{package.config}};
 public class AppConfiguration {
 
     @Bean
-    WebMvcConfigurer webConfigurer() {
+    WebMvcConfigurer webConfigurer(JsonMergePatchConverter jsonMergePatchConverter) {
         return new WebMvcConfigurer() {
 
             @Override
@@ -23,6 +23,11 @@ public class AppConfiguration {
                         .allowedOrigins("*")
                         .allowedMethods("*")
                         .allowedHeaders("Content-Type");
+            }
+
+            @Override
+            public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+                converters.addFirst(jsonMergePatchConverter);
             }
         };
     }
