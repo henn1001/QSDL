@@ -149,7 +149,6 @@ A simple Object definition generates:
 - GET ALL (collection endpoint)
 - POST (create endpoint)
 - GET (single item endpoint)
-- PUT (replace endpoint)
 - PATCH (update endpoint)
 - DELETE (delete endpoint)
 

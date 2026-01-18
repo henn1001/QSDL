@@ -23,7 +23,6 @@ class CrudGeneratorEnum(str, Enum):
     GET_ALL = "GET_ALL"
     CREATE = "CREATE"
     GET = "GET"
-    REPLACE = "REPLACE"
     UPDATE = "UPDATE"
     DELETE = "DELETE"
     ADD = "ADD"

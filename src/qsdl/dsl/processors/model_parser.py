@@ -404,23 +404,6 @@ def operation_builder(
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    elif method == CrudEnum.REPLACE:
-        name = "replace" + name_builder(obj, parent_obj if duplicate else None)
-        path = path_builder(obj, parent_obj, True)
-
-        operation.name = name
-        operation.value = obj
-        operation.path = path
-        operation.method = "PUT"
-
-        operation.summary = name
-        operation.description = [f"Replace the specified {obj.name}"]
-
-        operation.path_parameters = path_argument_builder(operation)
-        operation.query_parameters = []
-        operation.body_parameters = body_argument_builder(operation, obj)
-        operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
-
     elif method == CrudEnum.UPDATE:
         name = "update" + name_builder(obj, parent_obj if duplicate else None)
         path = path_builder(obj, parent_obj, True)
@@ -492,6 +475,7 @@ def operation_builder(
     # add produces/consumes
     operation.produces = "application/json" if operation.value else None
     operation.consumes = "application/json" if operation.body_parameters else None
+    operation.consumes = "application/merge-patch+json" if operation.method == "PATCH" else operation.consumes
 
     return operation
 
@@ -529,7 +513,6 @@ def api_builder(
             CrudEnum.GET_ALL,
             CrudEnum.CREATE,
             CrudEnum.GET,
-            CrudEnum.REPLACE,
             CrudEnum.UPDATE,
             CrudEnum.DELETE,
         ]
