@@ -7,7 +7,7 @@ import app.server.api.BaseController;
 import app.server.api.TicketApi;
 import app.server.constant.*;
 import app.server.domain.*;
-import app.server.domain.mapper.TicketMapStruct;
+import app.server.domain.mapper.TicketMapper;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.TicketService;
@@ -34,7 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class TicketController extends BaseController implements TicketApi {
 
     final TicketService ticketService;
-    final TicketMapStruct ticketMapper;
+    final TicketMapper ticketMapper;
 
     /**
      * {@inheritDoc}.

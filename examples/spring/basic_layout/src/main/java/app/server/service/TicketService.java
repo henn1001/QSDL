@@ -27,7 +27,7 @@ public class TicketService {
 
     final TicketRepository ticketRepository;
 
-    final TicketMapStruct ticketMapStruct;
+    final TicketMapper ticketMapper;
 
     TicketEntity fetchTicketFromDb(Long id) throws AppException {
         return ticketRepository.findById(id)
@@ -42,7 +42,7 @@ public class TicketService {
         var cursorPage = ticketRepository.findAll(predicate, pageable);
 
         var ticketEntities = cursorPage.items();
-        var ticketDtos = ticketEntities.stream().map(ticketMapStruct::toResponse).toList();
+        var ticketDtos = ticketEntities.stream().map(ticketMapper::toResponse).toList();
 
         return new CursorPage<>(ticketDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -50,18 +50,18 @@ public class TicketService {
     @Transactional
     public TicketResponse createTicket(TicketRequest body, Context context) throws AppException {
 
-        var ticketEntity = ticketMapStruct.toEntity(body);
+        var ticketEntity = ticketMapper.toEntity(body);
 
         ticketEntity = ticketRepository.save(ticketEntity);
 
-        return ticketMapStruct.toResponse(ticketEntity);
+        return ticketMapper.toResponse(ticketEntity);
     }
 
     public TicketResponse getTicket(Long id, Context context) throws AppException {
 
         var ticketEntity = fetchTicketFromDb(id);
 
-        return ticketMapStruct.toResponse(ticketEntity);
+        return ticketMapper.toResponse(ticketEntity);
     }
 
     @Transactional
@@ -70,11 +70,11 @@ public class TicketService {
         var ticketEntity = fetchTicketFromDb(id);
 
         // update dbEntity with all writeable fields - nulls included
-        ticketMapStruct.update(body, ticketEntity);
+        ticketMapper.update(body, ticketEntity);
 
         ticketEntity = ticketRepository.save(ticketEntity);
 
-        return ticketMapStruct.toResponse(ticketEntity);
+        return ticketMapper.toResponse(ticketEntity);
     }
 
     @Transactional

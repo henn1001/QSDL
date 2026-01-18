@@ -13,7 +13,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
-public interface UserMapStruct {
+public interface UserMapper {
 
     UserRequest toRequest(UserResponse dto);
 

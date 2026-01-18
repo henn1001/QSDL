@@ -24,7 +24,7 @@ import app.server.user.db.RoleEntity;
 import app.server.user.db.RoleRepository;
 import app.server.user.dto.RoleRequest;
 import app.server.user.dto.RoleResponse;
-import app.server.user.mapper.RoleMapStruct;
+import app.server.user.mapper.RoleMapper;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +52,7 @@ class RoleServiceTest {
     RoleService service;
 
     @Autowired
-    RoleMapStruct mapper;
+    RoleMapper mapper;
 
     static String one = "1";
 

@@ -7,7 +7,7 @@ import app.server.api.BaseController;
 import app.server.api.RoleApi;
 import app.server.constant.*;
 import app.server.domain.*;
-import app.server.domain.mapper.RoleMapStruct;
+import app.server.domain.mapper.RoleMapper;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.RoleService;
@@ -34,7 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class RoleController extends BaseController implements RoleApi {
 
     final RoleService roleService;
-    final RoleMapStruct roleMapper;
+    final RoleMapper roleMapper;
 
     /**
      * {@inheritDoc}.

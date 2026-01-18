@@ -198,7 +198,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{model.package.domain}/{model.name}Response.java", model))
 
         if model.is_object:
-            model_files.append(("src/main/java/domain/MapStruct.j2", f"src/main/java/{model.package.mapper}/{model.name}MapStruct.java", model))
+            model_files.append(("src/main/java/domain/Mapper.j2", f"src/main/java/{model.package.mapper}/{model.name}Mapper.java", model))
 
         if config.database == Database.HIBERNATE and model.is_object:
             model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))

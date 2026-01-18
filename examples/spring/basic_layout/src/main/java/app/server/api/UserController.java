@@ -7,7 +7,7 @@ import app.server.api.BaseController;
 import app.server.api.UserApi;
 import app.server.constant.*;
 import app.server.domain.*;
-import app.server.domain.mapper.UserMapStruct;
+import app.server.domain.mapper.UserMapper;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.UserService;
@@ -34,7 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class UserController extends BaseController implements UserApi {
 
     final UserService userService;
-    final UserMapStruct userMapper;
+    final UserMapper userMapper;
 
     /**
      * {@inheritDoc}.

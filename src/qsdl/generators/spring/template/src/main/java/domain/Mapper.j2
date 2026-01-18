@@ -9,9 +9,9 @@ package {{model.package.mapper}};
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR{{ ", " if object_mappers }}
     {%- if object_mappers -%}
-    uses = {{"{ "}}{% for mapper in object_mappers %}{{mapper.name + "MapStruct"}}.class{{ ", " if not loop.last -}}{% endfor %}{{" }"}}
+    uses = {{"{ "}}{% for mapper in object_mappers %}{{mapper.name + "Mapper"}}.class{{ ", " if not loop.last -}}{% endfor %}{{" }"}}
     {%- endif -%})
-public interface {{model.name}}MapStruct {
+public interface {{model.name}}Mapper {
 
     {% for field in model.fields if field.is_write_only %}
     @Mapping(target = "{{field.name}}", ignore = true)

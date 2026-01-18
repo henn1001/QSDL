@@ -28,7 +28,7 @@
         var cursorPage = {{model_dto}}Repository.findAll(predicate, pageable);
 
         var {{model_dto}}Entities = cursorPage.items();
-        var {{model_dto}}Dtos = {{model_dto}}Entities.stream().map({{model_dto}}MapStruct::toResponse).toList();
+        var {{model_dto}}Dtos = {{model_dto}}Entities.stream().map({{model_dto}}Mapper::toResponse).toList();
 
         return new CursorPage<>({{model_dto}}Dtos, cursorPage.nextCursor(), cursorPage.totalCount());
     {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
@@ -65,18 +65,18 @@
         // confirm existence of parent
         var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-        var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
+        var {{model_entity}} = {{model_dto}}Mapper.toEntity(body);
 
         // add parent relation
         {{model_entity}}.set{{ p_model.name }}({{p_model_entity}});
 
         {% else %}
-        var {{model_entity}} = {{model_dto}}MapStruct.toEntity(body);
+        var {{model_entity}} = {{model_dto}}Mapper.toEntity(body);
 
         {% endif %}
         {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
 
-        return {{model_dto}}MapStruct.toResponse({{model_entity}});
+        return {{model_dto}}Mapper.toResponse({{model_entity}});
     {% elif operation.method == "get" %}
         {# 
          ########################################################################################
@@ -92,7 +92,7 @@
         var {{model_entity}} = fetch{{model.name}}FromDb(id);
         {% endif %}
 
-        return {{model_dto}}MapStruct.toResponse({{model_entity}});
+        return {{model_dto}}Mapper.toResponse({{model_entity}});
     {% elif operation.method == "patch" %}
         {# 
          ########################################################################################
@@ -108,11 +108,11 @@
         {% endif %}
 
         // update dbEntity with all writeable fields - nulls included
-        {{model_dto}}MapStruct.update(body, {{model_entity}});
+        {{model_dto}}Mapper.update(body, {{model_entity}});
 
         {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
 
-        return {{model_dto}}MapStruct.toResponse({{model_entity}});
+        return {{model_dto}}Mapper.toResponse({{model_entity}});
     {% elif operation.method == "delete" %}
         {# 
          ########################################################################################

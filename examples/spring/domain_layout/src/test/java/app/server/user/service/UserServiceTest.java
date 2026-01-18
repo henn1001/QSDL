@@ -24,7 +24,7 @@ import app.server.user.db.UserEntity;
 import app.server.user.db.UserRepository;
 import app.server.user.dto.UserRequest;
 import app.server.user.dto.UserResponse;
-import app.server.user.mapper.UserMapStruct;
+import app.server.user.mapper.UserMapper;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +52,7 @@ class UserServiceTest {
     UserService service;
 
     @Autowired
-    UserMapStruct mapper;
+    UserMapper mapper;
 
     static String one = "1";
 

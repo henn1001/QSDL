@@ -16,7 +16,7 @@ import app.server.domain.UserRequest;
 import app.server.domain.UserResponse;
 import app.server.domain.entity.TicketEntity;
 import app.server.domain.entity.UserEntity;
-import app.server.domain.mapper.UserMapStruct;
+import app.server.domain.mapper.UserMapper;
 import app.server.exception.AppException;
 import app.server.model.AppError;
 import app.server.model.Context;
@@ -52,7 +52,7 @@ class UserServiceTest {
     UserService service;
 
     @Autowired
-    UserMapStruct mapper;
+    UserMapper mapper;
 
     static Long one = 1L;
 

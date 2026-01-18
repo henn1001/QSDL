@@ -29,7 +29,7 @@ public class UserService {
 
     final UserRepository userRepository;
 
-    final UserMapStruct userMapStruct;
+    final UserMapper userMapper;
 
     UserEntity fetchUserFromDb(Long id) throws AppException {
         return userRepository.findById(id)
@@ -59,7 +59,7 @@ public class UserService {
         var cursorPage = userRepository.findAll(predicate, pageable);
 
         var userEntities = cursorPage.items();
-        var userDtos = userEntities.stream().map(userMapStruct::toResponse).toList();
+        var userDtos = userEntities.stream().map(userMapper::toResponse).toList();
 
         return new CursorPage<>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -106,7 +106,7 @@ public class UserService {
         var cursorPage = userRepository.findAll(predicate, pageable);
 
         var userEntities = cursorPage.items();
-        var userDtos = userEntities.stream().map(userMapStruct::toResponse).toList();
+        var userDtos = userEntities.stream().map(userMapper::toResponse).toList();
 
         return new CursorPage<>(userDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -114,18 +114,18 @@ public class UserService {
     @Transactional
     public UserResponse createUser(UserRequest body, Context context) throws AppException {
 
-        var userEntity = userMapStruct.toEntity(body);
+        var userEntity = userMapper.toEntity(body);
 
         userEntity = userRepository.save(userEntity);
 
-        return userMapStruct.toResponse(userEntity);
+        return userMapper.toResponse(userEntity);
     }
 
     public UserResponse getUser(Long id, Context context) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 
-        return userMapStruct.toResponse(userEntity);
+        return userMapper.toResponse(userEntity);
     }
 
     @Transactional
@@ -134,11 +134,11 @@ public class UserService {
         var userEntity = fetchUserFromDb(id);
 
         // update dbEntity with all writeable fields - nulls included
-        userMapStruct.update(body, userEntity);
+        userMapper.update(body, userEntity);
 
         userEntity = userRepository.save(userEntity);
 
-        return userMapStruct.toResponse(userEntity);
+        return userMapper.toResponse(userEntity);
     }
 
     @Transactional

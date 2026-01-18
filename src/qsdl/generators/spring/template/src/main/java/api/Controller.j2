@@ -13,7 +13,7 @@ public class {{api.name}}Controller extends BaseController implements {{api.name
 {% if api.has_generated %}
 
     final {{api.name}}Service {{api.name|lower}}Service;
-    final {{api.name}}MapStruct {{api.name|lower}}Mapper;
+    final {{api.name}}Mapper {{api.name|lower}}Mapper;
 {% endif %}
 {% for operation in api.operations %}
 

@@ -16,7 +16,7 @@ import app.server.domain.RoleRequest;
 import app.server.domain.RoleResponse;
 import app.server.domain.entity.ProjectEntity;
 import app.server.domain.entity.RoleEntity;
-import app.server.domain.mapper.RoleMapStruct;
+import app.server.domain.mapper.RoleMapper;
 import app.server.exception.AppException;
 import app.server.model.AppError;
 import app.server.model.Context;
@@ -52,7 +52,7 @@ class RoleServiceTest {
     RoleService service;
 
     @Autowired
-    RoleMapStruct mapper;
+    RoleMapper mapper;
 
     static Long one = 1L;
 

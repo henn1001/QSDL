@@ -29,7 +29,7 @@ class {{model.name}}ServiceTest {
     {{model.name}}Service service;
 
     @Autowired
-    {{model.name}}MapStruct mapper;
+    {{model.name}}Mapper mapper;
 {% if    model.parents %}
 
     static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};

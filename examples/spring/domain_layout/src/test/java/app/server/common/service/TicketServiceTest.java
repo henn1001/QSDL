@@ -17,7 +17,7 @@ import app.server.common.db.TicketRepository;
 import app.server.common.dto.TicketRequest;
 import app.server.common.dto.TicketResponse;
 import app.server.common.exception.AppException;
-import app.server.common.mapper.TicketMapStruct;
+import app.server.common.mapper.TicketMapper;
 import app.server.common.model.AppError;
 import app.server.common.model.Context;
 import app.server.common.model.CursorPage;
@@ -47,7 +47,7 @@ class TicketServiceTest {
     TicketService service;
 
     @Autowired
-    TicketMapStruct mapper;
+    TicketMapper mapper;
 
     @BeforeEach
     void setUp() {

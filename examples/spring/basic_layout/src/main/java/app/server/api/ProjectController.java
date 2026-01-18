@@ -7,7 +7,7 @@ import app.server.api.BaseController;
 import app.server.api.ProjectApi;
 import app.server.constant.*;
 import app.server.domain.*;
-import app.server.domain.mapper.ProjectMapStruct;
+import app.server.domain.mapper.ProjectMapper;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.service.ProjectService;
@@ -34,7 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class ProjectController extends BaseController implements ProjectApi {
 
     final ProjectService projectService;
-    final ProjectMapStruct projectMapper;
+    final ProjectMapper projectMapper;
 
     /**
      * {@inheritDoc}.

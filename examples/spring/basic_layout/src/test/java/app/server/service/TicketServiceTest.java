@@ -15,7 +15,7 @@ import app.server.constant.ErrorCode;
 import app.server.domain.TicketRequest;
 import app.server.domain.TicketResponse;
 import app.server.domain.entity.TicketEntity;
-import app.server.domain.mapper.TicketMapStruct;
+import app.server.domain.mapper.TicketMapper;
 import app.server.exception.AppException;
 import app.server.model.AppError;
 import app.server.model.Context;
@@ -47,7 +47,7 @@ class TicketServiceTest {
     TicketService service;
 
     @Autowired
-    TicketMapStruct mapper;
+    TicketMapper mapper;
 
     @BeforeEach
     void setUp() {

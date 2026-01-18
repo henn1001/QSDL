@@ -11,7 +11,7 @@ import app.server.common.util.JsonMergePatchUtil;
 import app.server.common.util.Validator;
 import app.server.project.api.ProjectApi;
 import app.server.project.dto.*;
-import app.server.project.mapper.ProjectMapStruct;
+import app.server.project.mapper.ProjectMapper;
 import app.server.project.service.ProjectService;
 import jakarta.json.JsonMergePatch;
 import java.util.List;
@@ -34,7 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class ProjectController extends BaseController implements ProjectApi {
 
     final ProjectService projectService;
-    final ProjectMapStruct projectMapper;
+    final ProjectMapper projectMapper;
 
     /**
      * {@inheritDoc}.

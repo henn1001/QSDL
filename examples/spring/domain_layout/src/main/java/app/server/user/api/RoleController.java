@@ -11,7 +11,7 @@ import app.server.common.util.JsonMergePatchUtil;
 import app.server.common.util.Validator;
 import app.server.user.api.RoleApi;
 import app.server.user.dto.*;
-import app.server.user.mapper.RoleMapStruct;
+import app.server.user.mapper.RoleMapper;
 import app.server.user.service.RoleService;
 import jakarta.json.JsonMergePatch;
 import java.util.List;
@@ -34,7 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class RoleController extends BaseController implements RoleApi {
 
     final RoleService roleService;
-    final RoleMapStruct roleMapper;
+    final RoleMapper roleMapper;
 
     /**
      * {@inheritDoc}.

@@ -11,7 +11,7 @@ import app.server.common.util.JsonMergePatchUtil;
 import app.server.common.util.Validator;
 import app.server.user.api.UserApi;
 import app.server.user.dto.*;
-import app.server.user.mapper.UserMapStruct;
+import app.server.user.mapper.UserMapper;
 import app.server.user.service.UserService;
 import jakarta.json.JsonMergePatch;
 import java.util.List;
@@ -34,7 +34,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class UserController extends BaseController implements UserApi {
 
     final UserService userService;
-    final UserMapStruct userMapper;
+    final UserMapper userMapper;
 
     /**
      * {@inheritDoc}.

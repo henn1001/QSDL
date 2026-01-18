@@ -15,7 +15,7 @@ import app.server.constant.ErrorCode;
 import app.server.domain.ProjectRequest;
 import app.server.domain.ProjectResponse;
 import app.server.domain.entity.ProjectEntity;
-import app.server.domain.mapper.ProjectMapStruct;
+import app.server.domain.mapper.ProjectMapper;
 import app.server.exception.AppException;
 import app.server.model.AppError;
 import app.server.model.Context;
@@ -47,7 +47,7 @@ class ProjectServiceTest {
     ProjectService service;
 
     @Autowired
-    ProjectMapStruct mapper;
+    ProjectMapper mapper;
 
     @BeforeEach
     void setUp() {

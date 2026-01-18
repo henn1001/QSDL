@@ -32,7 +32,7 @@ public class RoleService {
 
     final RoleRepository roleRepository;
 
-    final RoleMapStruct roleMapStruct;
+    final RoleMapper roleMapper;
 
     RoleEntity fetchRoleFromDb(String id) throws AppException {
         return roleRepository.findByUid(id)
@@ -62,7 +62,7 @@ public class RoleService {
         var cursorPage = roleRepository.findAll(predicate, pageable);
 
         var roleEntities = cursorPage.items();
-        var roleDtos = roleEntities.stream().map(roleMapStruct::toResponse).toList();
+        var roleDtos = roleEntities.stream().map(roleMapper::toResponse).toList();
 
         return new CursorPage<>(roleDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -73,14 +73,14 @@ public class RoleService {
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
 
-        var roleEntity = roleMapStruct.toEntity(body);
+        var roleEntity = roleMapper.toEntity(body);
 
         // add parent relation
         roleEntity.setProject(projectEntity);
 
         roleEntity = roleRepository.save(roleEntity);
 
-        return roleMapStruct.toResponse(roleEntity);
+        return roleMapper.toResponse(roleEntity);
     }
 
     public RoleResponse getRole(String projectId, String id, Context context) throws AppException {
@@ -90,7 +90,7 @@ public class RoleService {
 
         var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
 
-        return roleMapStruct.toResponse(roleEntity);
+        return roleMapper.toResponse(roleEntity);
     }
 
     @Transactional
@@ -102,11 +102,11 @@ public class RoleService {
         var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
 
         // update dbEntity with all writeable fields - nulls included
-        roleMapStruct.update(body, roleEntity);
+        roleMapper.update(body, roleEntity);
 
         roleEntity = roleRepository.save(roleEntity);
 
-        return roleMapStruct.toResponse(roleEntity);
+        return roleMapper.toResponse(roleEntity);
     }
 
     @Transactional

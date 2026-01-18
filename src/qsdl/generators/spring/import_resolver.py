@@ -74,7 +74,7 @@ def generate_imports_for_template(
             f"import {api_class.package.domain}.*;" if api_class else None,
             *(
                 [
-                    f"import {api_class.package.mapper}.{api_class.name}MapStruct;",
+                    f"import {api_class.package.mapper}.{api_class.name}Mapper;",
                     f"import {api_class.package.service}.{api_class.name}Service;",
                 ]
                 if api_class and api_class.has_generated
@@ -300,7 +300,7 @@ def generate_imports_for_template(
             "import java.time.OffsetDateTime;",
             "import java.util.List;",
         ],
-        "MapStruct.j2": [
+        "Mapper.j2": [
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
             f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class and is_db else None,
@@ -428,7 +428,7 @@ def generate_imports_for_template(
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
             f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
-            f"import {model_class.package.mapper}.{model_class.name}MapStruct;" if model_class else None,
+            f"import {model_class.package.mapper}.{model_class.name}Mapper;" if model_class else None,
             f"import {model_class.package.repository}.{model_class.name}Repository;" if model_class else None,
             *(
                 [

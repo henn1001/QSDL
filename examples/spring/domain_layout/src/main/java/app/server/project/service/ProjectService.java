@@ -27,7 +27,7 @@ public class ProjectService {
 
     final ProjectRepository projectRepository;
 
-    final ProjectMapStruct projectMapStruct;
+    final ProjectMapper projectMapper;
 
     ProjectEntity fetchProjectFromDb(String id) throws AppException {
         return projectRepository.findByUid(id)
@@ -42,7 +42,7 @@ public class ProjectService {
         var cursorPage = projectRepository.findAll(predicate, pageable);
 
         var projectEntities = cursorPage.items();
-        var projectDtos = projectEntities.stream().map(projectMapStruct::toResponse).toList();
+        var projectDtos = projectEntities.stream().map(projectMapper::toResponse).toList();
 
         return new CursorPage<>(projectDtos, cursorPage.nextCursor(), cursorPage.totalCount());
     }
@@ -50,18 +50,18 @@ public class ProjectService {
     @Transactional
     public ProjectResponse createProject(ProjectRequest body, Context context) throws AppException {
 
-        var projectEntity = projectMapStruct.toEntity(body);
+        var projectEntity = projectMapper.toEntity(body);
 
         projectEntity = projectRepository.save(projectEntity);
 
-        return projectMapStruct.toResponse(projectEntity);
+        return projectMapper.toResponse(projectEntity);
     }
 
     public ProjectResponse getProject(String id, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
-        return projectMapStruct.toResponse(projectEntity);
+        return projectMapper.toResponse(projectEntity);
     }
 
     @Transactional
@@ -70,11 +70,11 @@ public class ProjectService {
         var projectEntity = fetchProjectFromDb(id);
 
         // update dbEntity with all writeable fields - nulls included
-        projectMapStruct.update(body, projectEntity);
+        projectMapper.update(body, projectEntity);
 
         projectEntity = projectRepository.save(projectEntity);
 
-        return projectMapStruct.toResponse(projectEntity);
+        return projectMapper.toResponse(projectEntity);
     }
 
     @Transactional

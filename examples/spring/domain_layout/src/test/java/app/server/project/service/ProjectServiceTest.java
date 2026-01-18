@@ -22,7 +22,7 @@ import app.server.project.db.ProjectEntity;
 import app.server.project.db.ProjectRepository;
 import app.server.project.dto.ProjectRequest;
 import app.server.project.dto.ProjectResponse;
-import app.server.project.mapper.ProjectMapStruct;
+import app.server.project.mapper.ProjectMapper;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +47,7 @@ class ProjectServiceTest {
     ProjectService service;
 
     @Autowired
-    ProjectMapStruct mapper;
+    ProjectMapper mapper;
 
     @BeforeEach
     void setUp() {
