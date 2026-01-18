@@ -14,6 +14,7 @@
 
 """Spring Generator Java import resolver"""
 
+from qsdl import dsl
 from qsdl.generators.spring.config import Database
 
 from . import models as spring
@@ -303,13 +304,30 @@ def generate_imports_for_template(
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
             f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class and is_db else None,
-            "import org.mapstruct.BeanMapping;",
+            # Opaque base type Request imports for mapper conversion methods
+            *(
+                [
+                    f"import {model_class.package.domain}.{mapper.name}Request;"
+                    for mapper in model_class.mappers
+                    if isinstance(mapper, dsl.Base)
+                ]
+                if model_class
+                else []
+            ),
+            # Opaque base type Response imports for mapper conversion methods
+            *(
+                [
+                    f"import {model_class.package.domain}.{mapper.name}Response;"
+                    for mapper in model_class.mappers
+                    if isinstance(mapper, dsl.Base)
+                ]
+                if model_class
+                else []
+            ),
             "import org.mapstruct.InheritConfiguration;",
             "import org.mapstruct.Mapper;",
             "import org.mapstruct.Mapping;",
             "import org.mapstruct.MappingTarget;",
-            "import org.mapstruct.Named;",
-            "import org.mapstruct.NullValuePropertyMappingStrategy;",
             "import org.mapstruct.ReportingPolicy;",
         ],
         "Repository.j2": [
@@ -411,7 +429,6 @@ def generate_imports_for_template(
             f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
             f"import {model_class.package.mapper}.{model_class.name}MapStruct;" if model_class else None,
-            f"import {model_class.package.mapper}.{model_class.name}MapStructImpl;" if model_class else None,
             f"import {model_class.package.repository}.{model_class.name}Repository;" if model_class else None,
             *(
                 [
@@ -438,11 +455,12 @@ def generate_imports_for_template(
             "import org.json.JSONArray;",
             "import org.json.JSONObject;",
             "import org.junit.jupiter.api.BeforeEach;",
-            "import org.junit.jupiter.api.Test;",
             "import org.junit.jupiter.api.extension.ExtendWith;",
-            "import org.springframework.test.context.bean.override.mockito.MockitoBean;",
+            "import org.junit.jupiter.api.Test;",
             "import org.skyscreamer.jsonassert.JSONAssert;",
+            "import org.springframework.beans.factory.annotation.Autowired;",
             "import org.springframework.context.annotation.Import;",
+            "import org.springframework.test.context.bean.override.mockito.MockitoBean;",
             "import org.springframework.test.context.junit.jupiter.SpringExtension;",
         ],
         "BaseController.j2": [

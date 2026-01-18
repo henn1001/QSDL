@@ -176,6 +176,7 @@ class ModelClass:
     hibernate: spring.HibernateModelInfo = None
 
     parents: list[spring.Parent] = field(default_factory=list)
+    mappers: list[dsl.Base | dsl.Object] = field(default_factory=list)
 
     def build(self, _ref: dsl.Base | dsl.Object) -> Self:
         """Init our dataclass by reading information from _ref"""
@@ -203,6 +204,10 @@ class ModelClass:
 
         if package_directive:
             self.package.set_namespace(package_directive.value)
+
+        # add needed mappers
+        nested_types = util.extract_fields_for_mapper(_ref)
+        self.mappers = [x.value for x in nested_types if not isinstance(x.value, dsl.Enum | dsl.Scalar)]
 
         # add attributes
         self._add_fields(_ref)

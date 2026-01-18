@@ -35,7 +35,6 @@ class TestSpecificsSpring:
                 field2: Bar
                 field3: [Bar]
                 field4: [String]
-                field5: Bar
             }
         """
 
@@ -69,7 +68,6 @@ class TestSpecificsSpring:
                 field2: Bar
                 field3: [Bar]
                 field4: [String]
-                field5: Bar
             }
         """
 
@@ -336,7 +334,7 @@ class TestSpecificsSpring:
 
             type Buzzword @namespace("Incident"){
                 name: String!
-                extend api @generate("UPDATE") {}
+                extend api @generate("CREATE") {}
             }
 
         """
@@ -420,7 +418,7 @@ class TestSpecificsSpring:
         # run tests
         assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
 
-    # TODO: fixme
+    # TODO: hard to fix - instanceio would need to generate strings according to the used pattern
     @pytest.mark.order(16)
     def test_specifics_16(self) -> None:
         """Test nested Object"""

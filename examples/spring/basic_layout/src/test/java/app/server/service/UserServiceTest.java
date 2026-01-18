@@ -17,7 +17,6 @@ import app.server.domain.UserResponse;
 import app.server.domain.entity.TicketEntity;
 import app.server.domain.entity.UserEntity;
 import app.server.domain.mapper.UserMapStruct;
-import app.server.domain.mapper.UserMapStructImpl;
 import app.server.exception.AppException;
 import app.server.model.AppError;
 import app.server.model.Context;
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -47,21 +47,18 @@ class UserServiceTest {
     UserRepository repository;
 
     @MockitoBean
-    UserMapStruct mockedMapper;
-
-    @MockitoBean
     TicketRepository ticketRepository;
 
     UserService service;
 
+    @Autowired
     UserMapStruct mapper;
 
     static Long one = 1L;
 
     @BeforeEach
     void setUp() {
-        mapper = new UserMapStructImpl();
-        service = new UserService(ticketRepository, repository, mockedMapper);
+        service = new UserService(ticketRepository, repository, mapper);
     }
 
     @Test
@@ -77,13 +74,6 @@ class UserServiceTest {
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
-
-        when(mockedMapper.toResponse(any(UserEntity.class)))
-                .thenReturn(userList.get(0))
-                .thenReturn(userList.get(1))
-                .thenReturn(userList.get(2))
-                .thenReturn(userList.get(3))
-                .thenReturn(userList.get(4));
 
         // When
         CursorPage<UserResponse> response = service.getUsersForTicket(one, new CursorPageable(null, 5, true), new Context());
@@ -154,13 +144,6 @@ class UserServiceTest {
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
-        when(mockedMapper.toResponse(any(UserEntity.class)))
-                .thenReturn(userList.get(0))
-                .thenReturn(userList.get(1))
-                .thenReturn(userList.get(2))
-                .thenReturn(userList.get(3))
-                .thenReturn(userList.get(4));
-
         // When
         CursorPage<UserResponse> response = service.getUsers(new CursorPageable(null, 5, true), new Context());
 
@@ -182,14 +165,8 @@ class UserServiceTest {
         UserRequest userRequest = TestUtils.getRandom(UserRequest.class);
         UserResponse userResponse = mapper.toResponse(userEntity);
 
-        when(mockedMapper.toEntity(any(UserRequest.class)))
+        when(repository.save(any(UserEntity.class)))
                 .thenReturn(userEntity);
-
-        when(repository.save(eq(userEntity)))
-                .thenReturn(userEntity);
-
-        when(mockedMapper.toResponse(any(UserEntity.class)))
-                .thenReturn(userResponse);
 
         // When
         UserResponse response = service.createUser(userRequest, new Context());
@@ -210,9 +187,6 @@ class UserServiceTest {
 
         when(repository.findById(eq(userEntity.getId())))
                 .thenReturn(Optional.of(userEntity));
-
-        when(mockedMapper.toResponse(any(UserEntity.class)))
-                .thenReturn(userResponse);
 
         // When
         UserResponse response = service.getUser(userEntity.getId(), new Context());
@@ -252,7 +226,6 @@ class UserServiceTest {
         // Given
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         UserRequest userRequest = TestUtils.getRandom(UserRequest.class);
-        UserResponse userResponse = mapper.toResponse(userEntity);
 
         when(repository.findById(eq(userEntity.getId())))
                 .thenReturn(Optional.of(userEntity));
@@ -260,13 +233,11 @@ class UserServiceTest {
         when(repository.save(eq(userEntity)))
                 .thenReturn(userEntity);
 
-        when(mockedMapper.toResponse(any(UserEntity.class)))
-                .thenReturn(userResponse);
-
         // When
         UserResponse response = service.updateUser(userEntity.getId(), userRequest, new Context());
 
         // Then
+        UserResponse userResponse = mapper.toResponse(userEntity);
         JSONAssert.assertEquals(
                 Json.toString(userResponse),
                 new JSONObject(Json.toString(response)),

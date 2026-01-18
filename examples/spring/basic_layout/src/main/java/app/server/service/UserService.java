@@ -133,8 +133,8 @@ public class UserService {
 
         var userEntity = fetchUserFromDb(id);
 
-        // replace dbEntity with all writeable fields - nulls included
-        userMapStruct.replace(body, userEntity);
+        // update dbEntity with all writeable fields - nulls included
+        userMapStruct.update(body, userEntity);
 
         userEntity = userRepository.save(userEntity);
 

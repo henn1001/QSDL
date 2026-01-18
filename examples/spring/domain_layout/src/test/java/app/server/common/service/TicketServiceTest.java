@@ -18,7 +18,6 @@ import app.server.common.dto.TicketRequest;
 import app.server.common.dto.TicketResponse;
 import app.server.common.exception.AppException;
 import app.server.common.mapper.TicketMapStruct;
-import app.server.common.mapper.TicketMapStructImpl;
 import app.server.common.model.AppError;
 import app.server.common.model.Context;
 import app.server.common.model.CursorPage;
@@ -33,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -44,17 +44,14 @@ class TicketServiceTest {
     @MockitoBean
     TicketRepository repository;
 
-    @MockitoBean
-    TicketMapStruct mockedMapper;
-
     TicketService service;
 
+    @Autowired
     TicketMapStruct mapper;
 
     @BeforeEach
     void setUp() {
-        mapper = new TicketMapStructImpl();
-        service = new TicketService(repository, mockedMapper);
+        service = new TicketService(repository, mapper);
     }
 
     @Test
@@ -66,13 +63,6 @@ class TicketServiceTest {
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<TicketEntity>(ticketEntityList, null, 6L));
-
-        when(mockedMapper.toResponse(any(TicketEntity.class)))
-                .thenReturn(ticketList.get(0))
-                .thenReturn(ticketList.get(1))
-                .thenReturn(ticketList.get(2))
-                .thenReturn(ticketList.get(3))
-                .thenReturn(ticketList.get(4));
 
         // When
         CursorPage<TicketResponse> response = service.getTickets(new CursorPageable(null, 5, true), new Context());
@@ -95,14 +85,8 @@ class TicketServiceTest {
         TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
         TicketResponse ticketResponse = mapper.toResponse(ticketEntity);
 
-        when(mockedMapper.toEntity(any(TicketRequest.class)))
+        when(repository.save(any(TicketEntity.class)))
                 .thenReturn(ticketEntity);
-
-        when(repository.save(eq(ticketEntity)))
-                .thenReturn(ticketEntity);
-
-        when(mockedMapper.toResponse(any(TicketEntity.class)))
-                .thenReturn(ticketResponse);
 
         // When
         TicketResponse response = service.createTicket(ticketRequest, new Context());
@@ -123,9 +107,6 @@ class TicketServiceTest {
 
         when(repository.findByUid(eq(ticketEntity.getUid())))
                 .thenReturn(Optional.of(ticketEntity));
-
-        when(mockedMapper.toResponse(any(TicketEntity.class)))
-                .thenReturn(ticketResponse);
 
         // When
         TicketResponse response = service.getTicket(ticketEntity.getUid(), new Context());
@@ -165,7 +146,6 @@ class TicketServiceTest {
         // Given
         TicketEntity ticketEntity = TestUtils.getRandom(TicketEntity.class);
         TicketRequest ticketRequest = TestUtils.getRandom(TicketRequest.class);
-        TicketResponse ticketResponse = mapper.toResponse(ticketEntity);
 
         when(repository.findByUid(eq(ticketEntity.getUid())))
                 .thenReturn(Optional.of(ticketEntity));
@@ -173,13 +153,11 @@ class TicketServiceTest {
         when(repository.save(eq(ticketEntity)))
                 .thenReturn(ticketEntity);
 
-        when(mockedMapper.toResponse(any(TicketEntity.class)))
-                .thenReturn(ticketResponse);
-
         // When
         TicketResponse response = service.updateTicket(ticketEntity.getUid(), ticketRequest, new Context());
 
         // Then
+        TicketResponse ticketResponse = mapper.toResponse(ticketEntity);
         JSONAssert.assertEquals(
                 Json.toString(ticketResponse),
                 new JSONObject(Json.toString(response)),

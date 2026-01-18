@@ -16,7 +16,6 @@ import app.server.domain.ProjectRequest;
 import app.server.domain.ProjectResponse;
 import app.server.domain.entity.ProjectEntity;
 import app.server.domain.mapper.ProjectMapStruct;
-import app.server.domain.mapper.ProjectMapStructImpl;
 import app.server.exception.AppException;
 import app.server.model.AppError;
 import app.server.model.Context;
@@ -33,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -44,17 +44,14 @@ class ProjectServiceTest {
     @MockitoBean
     ProjectRepository repository;
 
-    @MockitoBean
-    ProjectMapStruct mockedMapper;
-
     ProjectService service;
 
+    @Autowired
     ProjectMapStruct mapper;
 
     @BeforeEach
     void setUp() {
-        mapper = new ProjectMapStructImpl();
-        service = new ProjectService(repository, mockedMapper);
+        service = new ProjectService(repository, mapper);
     }
 
     @Test
@@ -66,13 +63,6 @@ class ProjectServiceTest {
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6L));
-
-        when(mockedMapper.toResponse(any(ProjectEntity.class)))
-                .thenReturn(projectList.get(0))
-                .thenReturn(projectList.get(1))
-                .thenReturn(projectList.get(2))
-                .thenReturn(projectList.get(3))
-                .thenReturn(projectList.get(4));
 
         // When
         CursorPage<ProjectResponse> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
@@ -95,14 +85,8 @@ class ProjectServiceTest {
         ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
         ProjectResponse projectResponse = mapper.toResponse(projectEntity);
 
-        when(mockedMapper.toEntity(any(ProjectRequest.class)))
+        when(repository.save(any(ProjectEntity.class)))
                 .thenReturn(projectEntity);
-
-        when(repository.save(eq(projectEntity)))
-                .thenReturn(projectEntity);
-
-        when(mockedMapper.toResponse(any(ProjectEntity.class)))
-                .thenReturn(projectResponse);
 
         // When
         ProjectResponse response = service.createProject(projectRequest, new Context());
@@ -123,9 +107,6 @@ class ProjectServiceTest {
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
-
-        when(mockedMapper.toResponse(any(ProjectEntity.class)))
-                .thenReturn(projectResponse);
 
         // When
         ProjectResponse response = service.getProject(projectEntity.getId(), new Context());
@@ -165,7 +146,6 @@ class ProjectServiceTest {
         // Given
         ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
         ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
-        ProjectResponse projectResponse = mapper.toResponse(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
@@ -173,13 +153,11 @@ class ProjectServiceTest {
         when(repository.save(eq(projectEntity)))
                 .thenReturn(projectEntity);
 
-        when(mockedMapper.toResponse(any(ProjectEntity.class)))
-                .thenReturn(projectResponse);
-
         // When
         ProjectResponse response = service.updateProject(projectEntity.getId(), projectRequest, new Context());
 
         // Then
+        ProjectResponse projectResponse = mapper.toResponse(projectEntity);
         JSONAssert.assertEquals(
                 Json.toString(projectResponse),
                 new JSONObject(Json.toString(response)),

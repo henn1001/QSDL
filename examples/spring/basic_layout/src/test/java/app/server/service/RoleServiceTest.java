@@ -17,7 +17,6 @@ import app.server.domain.RoleResponse;
 import app.server.domain.entity.ProjectEntity;
 import app.server.domain.entity.RoleEntity;
 import app.server.domain.mapper.RoleMapStruct;
-import app.server.domain.mapper.RoleMapStructImpl;
 import app.server.exception.AppException;
 import app.server.model.AppError;
 import app.server.model.Context;
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -47,21 +47,18 @@ class RoleServiceTest {
     RoleRepository repository;
 
     @MockitoBean
-    RoleMapStruct mockedMapper;
-
-    @MockitoBean
     ProjectRepository projectRepository;
 
     RoleService service;
 
+    @Autowired
     RoleMapStruct mapper;
 
     static Long one = 1L;
 
     @BeforeEach
     void setUp() {
-        mapper = new RoleMapStructImpl();
-        service = new RoleService(projectRepository, repository, mockedMapper);
+        service = new RoleService(projectRepository, repository, mapper);
     }
 
     @Test
@@ -77,13 +74,6 @@ class RoleServiceTest {
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<RoleEntity>(roleEntityList, null, 6L));
-
-        when(mockedMapper.toResponse(any(RoleEntity.class)))
-                .thenReturn(roleList.get(0))
-                .thenReturn(roleList.get(1))
-                .thenReturn(roleList.get(2))
-                .thenReturn(roleList.get(3))
-                .thenReturn(roleList.get(4));
 
         // When
         CursorPage<RoleResponse> response = service.getRoles(one, new CursorPageable(null, 5, true), new Context());
@@ -110,14 +100,8 @@ class RoleServiceTest {
         when(projectRepository.findById(eq(one)))
                 .thenReturn(Optional.of(testParent));
 
-        when(mockedMapper.toEntity(any(RoleRequest.class)))
+        when(repository.save(any(RoleEntity.class)))
                 .thenReturn(roleEntity);
-
-        when(repository.save(eq(roleEntity)))
-                .thenReturn(roleEntity);
-
-        when(mockedMapper.toResponse(any(RoleEntity.class)))
-                .thenReturn(roleResponse);
 
         // When
         RoleResponse response = service.createRole(one, roleRequest, new Context());
@@ -142,9 +126,6 @@ class RoleServiceTest {
 
         when(repository.findByProjectIdAndId(eq(testParent.getId()), eq(roleEntity.getId())))
                 .thenReturn(Optional.of(roleEntity));
-
-        when(mockedMapper.toResponse(any(RoleEntity.class)))
-                .thenReturn(roleResponse);
 
         // When
         RoleResponse response = service.getRole(one, roleEntity.getId(), new Context());
@@ -188,7 +169,6 @@ class RoleServiceTest {
         // Given
         RoleEntity roleEntity = TestUtils.getRandom(RoleEntity.class);
         RoleRequest roleRequest = TestUtils.getRandom(RoleRequest.class);
-        RoleResponse roleResponse = mapper.toResponse(roleEntity);
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -200,13 +180,11 @@ class RoleServiceTest {
         when(repository.save(eq(roleEntity)))
                 .thenReturn(roleEntity);
 
-        when(mockedMapper.toResponse(any(RoleEntity.class)))
-                .thenReturn(roleResponse);
-
         // When
         RoleResponse response = service.updateRole(one, roleEntity.getId(), roleRequest, new Context());
 
         // Then
+        RoleResponse roleResponse = mapper.toResponse(roleEntity);
         JSONAssert.assertEquals(
                 Json.toString(roleResponse),
                 new JSONObject(Json.toString(response)),

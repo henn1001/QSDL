@@ -107,8 +107,8 @@
         var {{model_entity}} = fetch{{model.name}}FromDb(id);
         {% endif %}
 
-        // replace dbEntity with all writeable fields - nulls included
-        {{model_dto}}MapStruct.replace(body, {{model_entity}});
+        // update dbEntity with all writeable fields - nulls included
+        {{model_dto}}MapStruct.update(body, {{model_entity}});
 
         {{model_entity}} = {{model_dto}}Repository.save({{model_entity}});
 

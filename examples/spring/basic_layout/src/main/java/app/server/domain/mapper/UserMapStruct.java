@@ -6,13 +6,10 @@ package app.server.domain.mapper;
 import app.server.domain.UserRequest;
 import app.server.domain.UserResponse;
 import app.server.domain.entity.UserEntity;
-import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
@@ -29,13 +26,6 @@ public interface UserMapStruct {
     @Mapping(target = "tickets", ignore = true)
     UserEntity toEntity(UserRequest dto);
 
-    @Named("replace")
     @InheritConfiguration(name = "toEntity")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void replace(UserRequest source, @MappingTarget UserEntity target);
-
-    @Named("update")
-    @InheritConfiguration(name = "toEntity")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void update(UserRequest source, @MappingTarget UserEntity target);
 }

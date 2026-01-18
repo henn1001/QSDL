@@ -6,13 +6,10 @@ package app.server.common.mapper;
 import app.server.common.db.TicketEntity;
 import app.server.common.dto.TicketRequest;
 import app.server.common.dto.TicketResponse;
-import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
@@ -28,13 +25,6 @@ public interface TicketMapStruct {
     @Mapping(target = "users", ignore = true)
     TicketEntity toEntity(TicketRequest dto);
 
-    @Named("replace")
     @InheritConfiguration(name = "toEntity")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void replace(TicketRequest source, @MappingTarget TicketEntity target);
-
-    @Named("update")
-    @InheritConfiguration(name = "toEntity")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void update(TicketRequest source, @MappingTarget TicketEntity target);
 }

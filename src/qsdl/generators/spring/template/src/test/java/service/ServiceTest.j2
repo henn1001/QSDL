@@ -21,9 +21,6 @@ class {{model.name}}ServiceTest {
     @MockitoBean
     {{model.name}}Repository repository;
 
-    @MockitoBean
-    {{model.name}}MapStruct mockedMapper;
-
 {% for parent in model.parents %}
     @MockitoBean
     {{parent.model.name}}Repository {{parent.model.name|lower}}Repository;
@@ -31,6 +28,7 @@ class {{model.name}}ServiceTest {
 {% endfor %}
     {{model.name}}Service service;
 
+    @Autowired
     {{model.name}}MapStruct mapper;
 {% if    model.parents %}
 
@@ -39,8 +37,7 @@ class {{model.name}}ServiceTest {
 
     @BeforeEach
     void setUp() {
-        mapper = new {{model.name}}MapStructImpl();
-        service = new {{model.name}}Service({% for parent in model.parents %}{{parent.model.name|lower}}Repository, {% endfor %}repository, mockedMapper);
+        service = new {{model.name}}Service({% for parent in model.parents %}{{parent.model.name|lower}}Repository, {% endfor %}repository, mapper);
     }
 {% for operation in api.operations if operation.is_generated %}
 
@@ -72,13 +69,6 @@ class {{model.name}}ServiceTest {
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<{{m_entity_type}}>({{m_entity_var}}List, null, 6L));
-
-        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
-                .thenReturn({{m_var}}List.get(0))
-                .thenReturn({{m_var}}List.get(1))
-                .thenReturn({{m_var}}List.get(2))
-                .thenReturn({{m_var}}List.get(3))
-                .thenReturn({{m_var}}List.get(4));
 
         // When
         {% if operation.parent %}
@@ -145,14 +135,8 @@ class {{model.name}}ServiceTest {
                 .thenReturn(Optional.of(testParent));
         {% endif %}
 
-        when(mockedMapper.toEntity(any({{m_request_type}}.class)))
+        when(repository.save(any({{m_entity_type}}.class)))
                 .thenReturn({{m_entity_var}});
-
-        when(repository.save(eq({{m_entity_var}})))
-                .thenReturn({{m_entity_var}});
-
-        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
-                .thenReturn({{m_var}}Response);
 
         // When
         {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_var}}Request, new Context());
@@ -186,9 +170,6 @@ class {{model.name}}ServiceTest {
         when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
                 .thenReturn(Optional.of({{m_entity_var}}));
         {% endif %}
-
-        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
-                .thenReturn({{m_var}}Response);
 
         // When
         {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
@@ -259,9 +240,6 @@ class {{model.name}}ServiceTest {
         when(repository.save(eq({{m_entity_var}})))
                 .thenReturn({{m_entity_var}});
 
-        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
-                .thenReturn({{m_var}}Response);
-
         // When
         {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request, new Context());
 
@@ -314,7 +292,6 @@ class {{model.name}}ServiceTest {
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
         {{m_request_type}} {{m_var}}Request = TestUtils.getRandom({{m_request_type}}.class);
-        {{m_response_type}} {{m_var}}Response = mapper.toResponse({{m_entity_var}});
         {% if operation.parent %}
         {{p_m_entity_type}} testParent = TestUtils.getRandom({{p_m_entity_type}}.class);
 
@@ -332,13 +309,11 @@ class {{model.name}}ServiceTest {
         when(repository.save(eq({{m_entity_var}})))
                 .thenReturn({{m_entity_var}});
 
-        when(mockedMapper.toResponse(any({{m_entity_type}}.class)))
-                .thenReturn({{m_var}}Response);
-
         // When
         {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request, new Context());
 
         // Then
+        {{m_response_type}} {{m_var}}Response = mapper.toResponse({{m_entity_var}});
         JSONAssert.assertEquals(
                 Json.toString({{m_var}}Response),
                 new JSONObject(Json.toString(response)),

@@ -98,8 +98,8 @@ public class RoleService {
 
         var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
 
-        // replace dbEntity with all writeable fields - nulls included
-        roleMapStruct.replace(body, roleEntity);
+        // update dbEntity with all writeable fields - nulls included
+        roleMapStruct.update(body, roleEntity);
 
         roleEntity = roleRepository.save(roleEntity);
 

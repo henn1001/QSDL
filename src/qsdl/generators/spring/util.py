@@ -397,3 +397,22 @@ def extract_embedded_columns(
             model_fields.append(new_field)
 
     return model_fields
+
+
+def extract_fields_for_mapper(ref: dsl.Base | dsl.Object) -> list[dsl.Field]:
+    """Extracts all fields (including nested ones) that are either a Object or a opaqued Base"""
+    nested_objects = []
+
+    for field in ref.fields:
+        if isinstance(field.value, dsl.Base):
+            if field.is_opaque:
+                # Opaque base types need mappers for Request/Response conversion
+                nested_objects.append(field)
+            else:
+                # Non-opaque base types are flattened, recurse into them
+                extracted = extract_fields_for_mapper(field.value)
+                nested_objects.extend(extracted)
+        if isinstance(field.value, dsl.Object) and not field.is_relation:
+            nested_objects.append(field)
+
+    return nested_objects

@@ -69,8 +69,8 @@ public class TicketService {
 
         var ticketEntity = fetchTicketFromDb(id);
 
-        // replace dbEntity with all writeable fields - nulls included
-        ticketMapStruct.replace(body, ticketEntity);
+        // update dbEntity with all writeable fields - nulls included
+        ticketMapStruct.update(body, ticketEntity);
 
         ticketEntity = ticketRepository.save(ticketEntity);
 

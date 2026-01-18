@@ -69,8 +69,8 @@ public class ProjectService {
 
         var projectEntity = fetchProjectFromDb(id);
 
-        // replace dbEntity with all writeable fields - nulls included
-        projectMapStruct.replace(body, projectEntity);
+        // update dbEntity with all writeable fields - nulls included
+        projectMapStruct.update(body, projectEntity);
 
         projectEntity = projectRepository.save(projectEntity);
 

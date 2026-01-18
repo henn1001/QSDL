@@ -6,13 +6,10 @@ package app.server.project.mapper;
 import app.server.project.db.ProjectEntity;
 import app.server.project.dto.ProjectRequest;
 import app.server.project.dto.ProjectResponse;
-import org.mapstruct.BeanMapping;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
@@ -33,13 +30,6 @@ public interface ProjectMapStruct {
     @Mapping(target = "roles", ignore = true)
     ProjectEntity toEntity(ProjectRequest dto);
 
-    @Named("replace")
     @InheritConfiguration(name = "toEntity")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void replace(ProjectRequest source, @MappingTarget ProjectEntity target);
-
-    @Named("update")
-    @InheritConfiguration(name = "toEntity")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void update(ProjectRequest source, @MappingTarget ProjectEntity target);
 }
