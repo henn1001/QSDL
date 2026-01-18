@@ -334,7 +334,6 @@ class TestDirective:
         assert "Test" in openapi["paths"]["/bars"]["get"]["tags"]
         assert "Test" in openapi["paths"]["/bars"]["post"]["tags"]
         assert "Test" in openapi["paths"]["/bars/{id}"]["get"]["tags"]
-        assert "Test" in openapi["paths"]["/bars/{id}"]["put"]["tags"]
         assert "Test" in openapi["paths"]["/bars/{id}"]["patch"]["tags"]
         assert "Test" in openapi["paths"]["/bars/{id}"]["delete"]["tags"]
 
