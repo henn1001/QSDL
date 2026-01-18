@@ -1,4 +1,5 @@
 {
+  "id_type": "STRING",
   "api_path": "{package}.api",
   "controller_path": "{package}.api",
   "domain_path": "{package}.dto",
