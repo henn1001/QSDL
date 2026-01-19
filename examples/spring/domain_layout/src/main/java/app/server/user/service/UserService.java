@@ -48,6 +48,7 @@ public class UserService {
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
     }
 
+    @Transactional(readOnly = true)
     public CursorPage<User> getUsersForTicket(String ticketId, CursorPageable pageable, Context context) throws AppException {
 
         // confirm existence of parent
@@ -100,6 +101,7 @@ public class UserService {
         return null;
     }
 
+    @Transactional(readOnly = true)
     public CursorPage<User> getUsers(CursorPageable pageable, Context context) throws AppException {
 
         var queryParameters = Arrays.<String>asList();
@@ -123,6 +125,7 @@ public class UserService {
         return userMapper.toResponse(userEntity);
     }
 
+    @Transactional(readOnly = true)
     public User getUser(String id, Context context) throws AppException {
 
         var userEntity = fetchUserFromDb(id);

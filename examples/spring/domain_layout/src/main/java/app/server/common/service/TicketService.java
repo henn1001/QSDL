@@ -33,6 +33,7 @@ public class TicketService {
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
     }
 
+    @Transactional(readOnly = true)
     public CursorPage<Ticket> getTickets(CursorPageable pageable, Context context) throws AppException {
 
         var queryParameters = Arrays.<String>asList();
@@ -56,6 +57,7 @@ public class TicketService {
         return ticketMapper.toResponse(ticketEntity);
     }
 
+    @Transactional(readOnly = true)
     public Ticket getTicket(String id, Context context) throws AppException {
 
         var ticketEntity = fetchTicketFromDb(id);

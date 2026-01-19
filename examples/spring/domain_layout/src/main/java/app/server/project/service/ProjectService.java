@@ -34,6 +34,7 @@ public class ProjectService {
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));
     }
 
+    @Transactional(readOnly = true)
     public CursorPage<Project> getProjects(CursorPageable pageable, Context context) throws AppException {
 
         var queryParameters = Arrays.<String>asList("name");
@@ -57,6 +58,7 @@ public class ProjectService {
         return projectMapper.toResponse(projectEntity);
     }
 
+    @Transactional(readOnly = true)
     public Project getProject(String id, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);

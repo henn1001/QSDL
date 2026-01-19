@@ -46,6 +46,7 @@ public class RoleService {
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));
     }
 
+    @Transactional(readOnly = true)
     public CursorPage<Role> getRoles(Long projectId, CursorPageable pageable, Context context) throws AppException {
 
         // confirm existence of parent
@@ -80,6 +81,7 @@ public class RoleService {
         return roleMapper.toResponse(roleEntity);
     }
 
+    @Transactional(readOnly = true)
     public Role getRole(Long projectId, Long id, Context context) throws AppException {
 
         // confirm existence of parent
