@@ -163,11 +163,6 @@ class Operation:
 
             new_param.type = util.custom_type(_ref.value)
 
-            # Append Response suffix for Base/Object types
-            is_base_or_object = isinstance(_ref.value, dsl.Base | dsl.Object)
-            if is_base_or_object:
-                new_param.type = f"{new_param.type}Response"
-
             if _ref.is_pageable:
                 new_param.name = "CursorPage"
                 new_param.json_key = "CursorPage"

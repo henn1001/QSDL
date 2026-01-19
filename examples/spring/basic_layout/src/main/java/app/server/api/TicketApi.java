@@ -32,7 +32,7 @@ public interface TicketApi {
      * List Tickets
      */
     @GetMapping(value = "/tickets", produces = {"application/json"})
-    default ResponseEntity<CursorPage<TicketResponse>> getTickets(CursorPageable pageable) {
+    default ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -42,7 +42,7 @@ public interface TicketApi {
      * Create a Ticket
      */
     @PostMapping(value = "/tickets", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<TicketResponse> createTicket(@RequestBody TicketRequest body) {
+    default ResponseEntity<Ticket> createTicket(@RequestBody TicketRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -52,7 +52,7 @@ public interface TicketApi {
      * Read the specified Ticket
      */
     @GetMapping(value = "/tickets/{id}", produces = {"application/json"})
-    default ResponseEntity<TicketResponse> getTicket(@PathVariable("id") Long id) {
+    default ResponseEntity<Ticket> getTicket(@PathVariable("id") Long id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -62,7 +62,7 @@ public interface TicketApi {
      * Update the specified Ticket
      */
     @PatchMapping(value = "/tickets/{id}", produces = {"application/json"}, consumes = {"application/merge-patch+json"})
-    default ResponseEntity<TicketResponse> updateTicket(@PathVariable("id") Long id, @RequestBody JsonMergePatch patch) {
+    default ResponseEntity<Ticket> updateTicket(@PathVariable("id") Long id, @RequestBody JsonMergePatch patch) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

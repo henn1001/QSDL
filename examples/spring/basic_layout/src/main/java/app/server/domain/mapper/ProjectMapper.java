@@ -3,8 +3,8 @@
  */
 package app.server.domain.mapper;
 
+import app.server.domain.Project;
 import app.server.domain.ProjectRequest;
-import app.server.domain.ProjectResponse;
 import app.server.domain.entity.ProjectEntity;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
@@ -16,9 +16,9 @@ import org.mapstruct.ReportingPolicy;
 public interface ProjectMapper {
 
     @Mapping(target = "archive", ignore = true)
-    ProjectRequest toRequest(ProjectResponse dto);
+    ProjectRequest toRequest(Project dto);
 
-    ProjectResponse toResponse(ProjectEntity entity);
+    Project toResponse(ProjectEntity entity);
 
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "id", ignore = true)

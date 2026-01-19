@@ -17,8 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
+import app.server.domain.Ticket;
 import app.server.domain.TicketRequest;
-import app.server.domain.TicketResponse;
 import app.server.model.AppError;
 import app.server.model.CursorPage;
 import app.server.service.TicketService;
@@ -55,9 +55,9 @@ class TicketControllerTest {
     public void whenGetTickets_thenOk() throws Exception {
 
         // Given
-        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
+        Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
-        CursorPage<TicketResponse> ret = new CursorPage<TicketResponse>(Arrays.asList(responseDto), null, null);
+        CursorPage<Ticket> ret = new CursorPage<Ticket>(Arrays.asList(responseDto), null, null);
 
         when(service.getTickets(any(), any()))
                 .thenReturn(ret);
@@ -81,7 +81,7 @@ class TicketControllerTest {
 
         // Given
         TicketRequest requestDto = TestUtils.getRandom(TicketRequest.class);
-        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
+        Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
         when(service.createTicket(any(), any()))
                 .thenReturn(responseDto);
@@ -106,7 +106,7 @@ class TicketControllerTest {
     public void whenCreateTicketWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
+        Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
         when(service.createTicket(any(), any()))
                 .thenReturn(responseDto);
@@ -131,7 +131,7 @@ class TicketControllerTest {
     public void whenGetTicket_thenOk() throws Exception {
 
         // Given
-        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
+        Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
         when(service.getTicket(eq(one), any()))
                 .thenReturn(responseDto);
@@ -155,7 +155,7 @@ class TicketControllerTest {
 
         // Given
         TicketRequest requestDto = TestUtils.getRandom(TicketRequest.class);
-        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
+        Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
         when(service.getTicket(eq(one), any()))
                 .thenReturn(responseDto);
@@ -183,7 +183,7 @@ class TicketControllerTest {
     public void whenUpdateTicketWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        TicketResponse responseDto = TestUtils.getRandom(TicketResponse.class);
+        Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
         when(service.updateTicket(eq(one), any(), any()))
                 .thenReturn(responseDto);

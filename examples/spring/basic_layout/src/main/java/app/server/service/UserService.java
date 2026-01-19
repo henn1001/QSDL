@@ -33,20 +33,20 @@ public class UserService {
 
     UserEntity fetchUserFromDb(Long id) throws AppException {
         return userRepository.findById(id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound(UserResponse.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(User.class, id));
     }
 
     UserEntity fetchUserFromTicketFromDb(Long ticketId, Long id) throws AppException {
         return userRepository.findByTicketsIdAndId(ticketId, id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound(UserResponse.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(User.class, id));
     }
 
     TicketEntity fetchTicketFromDb(Long id) throws AppException {
         return ticketRepository.findById(id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound(TicketResponse.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
     }
 
-    public CursorPage<UserResponse> getUsersForTicket(Long ticketId, CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<User> getUsersForTicket(Long ticketId, CursorPageable pageable, Context context) throws AppException {
 
         // confirm existence of parent
         // should be optimized with something like getReferenceById
@@ -73,7 +73,7 @@ public class UserService {
         var userEntity = fetchUserFromDb(id);
 
         if (userEntity.tickets.contains(ticketEntity)) {
-            throw AppExceptionUtil.entityAlreadyAdded(UserResponse.class, id);
+            throw AppExceptionUtil.entityAlreadyAdded(User.class, id);
         }
 
         userEntity.addToTickets(ticketEntity);
@@ -98,7 +98,7 @@ public class UserService {
         return null;
     }
 
-    public CursorPage<UserResponse> getUsers(CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<User> getUsers(CursorPageable pageable, Context context) throws AppException {
 
         var queryParameters = Arrays.<String>asList();
         var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), UserEntity.class);
@@ -112,7 +112,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse createUser(UserRequest body, Context context) throws AppException {
+    public User createUser(UserRequest body, Context context) throws AppException {
 
         var userEntity = userMapper.toEntity(body);
 
@@ -121,7 +121,7 @@ public class UserService {
         return userMapper.toResponse(userEntity);
     }
 
-    public UserResponse getUser(Long id, Context context) throws AppException {
+    public User getUser(Long id, Context context) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 
@@ -129,7 +129,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUser(Long id, UserRequest body, Context context) throws AppException {
+    public User updateUser(Long id, UserRequest body, Context context) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 

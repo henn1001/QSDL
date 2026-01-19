@@ -12,8 +12,8 @@ import static org.mockito.Mockito.when;
 import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
+import app.server.domain.Project;
 import app.server.domain.ProjectRequest;
-import app.server.domain.ProjectResponse;
 import app.server.domain.entity.ProjectEntity;
 import app.server.domain.mapper.ProjectMapper;
 import app.server.exception.AppException;
@@ -59,13 +59,13 @@ class ProjectServiceTest {
 
         // Given
         List<ProjectEntity> projectEntityList = TestUtils.getRandom(ProjectEntity.class, 5);
-        List<ProjectResponse> projectList = projectEntityList.stream().map(mapper::toResponse).toList();
+        List<Project> projectList = projectEntityList.stream().map(mapper::toResponse).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6L));
 
         // When
-        CursorPage<ProjectResponse> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
+        CursorPage<Project> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
 
         // Then
         assertEquals(5L, response.count());
@@ -83,13 +83,13 @@ class ProjectServiceTest {
         // Given
         ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
         ProjectRequest projectRequest = TestUtils.getRandom(ProjectRequest.class);
-        ProjectResponse projectResponse = mapper.toResponse(projectEntity);
+        Project projectResponse = mapper.toResponse(projectEntity);
 
         when(repository.save(any(ProjectEntity.class)))
                 .thenReturn(projectEntity);
 
         // When
-        ProjectResponse response = service.createProject(projectRequest, new Context());
+        Project response = service.createProject(projectRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
@@ -103,13 +103,13 @@ class ProjectServiceTest {
 
         // Given
         ProjectEntity projectEntity = TestUtils.getRandom(ProjectEntity.class);
-        ProjectResponse projectResponse = mapper.toResponse(projectEntity);
+        Project projectResponse = mapper.toResponse(projectEntity);
 
         when(repository.findById(eq(projectEntity.getId())))
                 .thenReturn(Optional.of(projectEntity));
 
         // When
-        ProjectResponse response = service.getProject(projectEntity.getId(), new Context());
+        Project response = service.getProject(projectEntity.getId(), new Context());
 
         // Then
         JSONAssert.assertEquals(
@@ -154,10 +154,10 @@ class ProjectServiceTest {
                 .thenReturn(projectEntity);
 
         // When
-        ProjectResponse response = service.updateProject(projectEntity.getId(), projectRequest, new Context());
+        Project response = service.updateProject(projectEntity.getId(), projectRequest, new Context());
 
         // Then
-        ProjectResponse projectResponse = mapper.toResponse(projectEntity);
+        Project projectResponse = mapper.toResponse(projectEntity);
         JSONAssert.assertEquals(
                 Json.toString(projectResponse),
                 new JSONObject(Json.toString(response)),

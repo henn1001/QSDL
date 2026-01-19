@@ -195,7 +195,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         model.package.slashed = True
         # fmt: off
         model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
-        model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{model.package.domain}/{model.name}Response.java", model))
+        model_files.append(("src/main/java/domain/Base.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
 
         if model.is_object:
             model_files.append(("src/main/java/domain/Mapper.j2", f"src/main/java/{model.package.mapper}/{model.name}Mapper.java", model))

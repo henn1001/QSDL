@@ -4,8 +4,8 @@
 package app.server.common.mapper;
 
 import app.server.common.db.TicketEntity;
+import app.server.common.dto.Ticket;
 import app.server.common.dto.TicketRequest;
-import app.server.common.dto.TicketResponse;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,10 +15,10 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface TicketMapper {
 
-    TicketRequest toRequest(TicketResponse dto);
+    TicketRequest toRequest(Ticket dto);
 
     @Mapping(target = "id", source = "uid")
-    TicketResponse toResponse(TicketEntity entity);
+    Ticket toResponse(TicketEntity entity);
 
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "id", ignore = true)

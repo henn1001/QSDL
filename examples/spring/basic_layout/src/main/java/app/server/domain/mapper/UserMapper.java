@@ -3,8 +3,8 @@
  */
 package app.server.domain.mapper;
 
+import app.server.domain.User;
 import app.server.domain.UserRequest;
-import app.server.domain.UserResponse;
 import app.server.domain.entity.UserEntity;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
@@ -15,10 +15,10 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface UserMapper {
 
-    UserRequest toRequest(UserResponse dto);
+    UserRequest toRequest(User dto);
 
     @Mapping(target = "tmp", ignore = true)
-    UserResponse toResponse(UserEntity entity);
+    User toResponse(UserEntity entity);
 
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "id", ignore = true)

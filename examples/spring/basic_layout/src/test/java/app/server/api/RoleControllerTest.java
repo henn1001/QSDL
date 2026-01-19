@@ -17,8 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
+import app.server.domain.Role;
 import app.server.domain.RoleRequest;
-import app.server.domain.RoleResponse;
 import app.server.model.AppError;
 import app.server.model.CursorPage;
 import app.server.service.RoleService;
@@ -55,9 +55,9 @@ class RoleControllerTest {
     public void whenGetRoles_thenOk() throws Exception {
 
         // Given
-        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
+        Role responseDto = TestUtils.getRandom(Role.class);
 
-        CursorPage<RoleResponse> ret = new CursorPage<RoleResponse>(Arrays.asList(responseDto), null, null);
+        CursorPage<Role> ret = new CursorPage<Role>(Arrays.asList(responseDto), null, null);
 
         when(service.getRoles(any(), any(), any()))
                 .thenReturn(ret);
@@ -81,7 +81,7 @@ class RoleControllerTest {
 
         // Given
         RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
-        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
+        Role responseDto = TestUtils.getRandom(Role.class);
 
         when(service.createRole(eq(one), any(), any()))
                 .thenReturn(responseDto);
@@ -106,7 +106,7 @@ class RoleControllerTest {
     public void whenCreateRoleWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
+        Role responseDto = TestUtils.getRandom(Role.class);
 
         when(service.createRole(eq(one), any(), any()))
                 .thenReturn(responseDto);
@@ -131,7 +131,7 @@ class RoleControllerTest {
     public void whenGetRole_thenOk() throws Exception {
 
         // Given
-        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
+        Role responseDto = TestUtils.getRandom(Role.class);
 
         when(service.getRole(eq(one), eq(one), any()))
                 .thenReturn(responseDto);
@@ -155,7 +155,7 @@ class RoleControllerTest {
 
         // Given
         RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
-        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
+        Role responseDto = TestUtils.getRandom(Role.class);
 
         when(service.getRole(eq(one), eq(one), any()))
                 .thenReturn(responseDto);
@@ -183,7 +183,7 @@ class RoleControllerTest {
     public void whenUpdateRoleWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        RoleResponse responseDto = TestUtils.getRandom(RoleResponse.class);
+        Role responseDto = TestUtils.getRandom(Role.class);
 
         when(service.updateRole(eq(one), eq(one), any(), any()))
                 .thenReturn(responseDto);

@@ -31,10 +31,10 @@ public class ProjectService {
 
     ProjectEntity fetchProjectFromDb(String id) throws AppException {
         return projectRepository.findByUid(id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound(ProjectResponse.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));
     }
 
-    public CursorPage<ProjectResponse> getProjects(CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<Project> getProjects(CursorPageable pageable, Context context) throws AppException {
 
         var queryParameters = Arrays.<String>asList("name");
         var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), ProjectEntity.class);
@@ -48,7 +48,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectResponse createProject(ProjectRequest body, Context context) throws AppException {
+    public Project createProject(ProjectRequest body, Context context) throws AppException {
 
         var projectEntity = projectMapper.toEntity(body);
 
@@ -57,7 +57,7 @@ public class ProjectService {
         return projectMapper.toResponse(projectEntity);
     }
 
-    public ProjectResponse getProject(String id, Context context) throws AppException {
+    public Project getProject(String id, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
@@ -65,7 +65,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectResponse updateProject(String id, ProjectRequest body, Context context) throws AppException {
+    public Project updateProject(String id, ProjectRequest body, Context context) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 

@@ -162,7 +162,7 @@ def generate_imports_for_template(
             # import if base is not in same package as entity
             *(
                 [
-                    f"import {util.get_model_for(field.type).package.domain}.{field.type}Response;"
+                    f"import {util.get_model_for(field.type).package.domain}.{field.type};"
                     for field in model_class.entity_fields
                     if field.is_base and util.get_model_for(field.type).package.domain != model_class.package.entity
                 ]
@@ -268,17 +268,17 @@ def generate_imports_for_template(
             "import java.time.OffsetDateTime;",
             "import java.util.List;",
         ],
-        "Response.j2": [
+        "Base.j2": [
             # Enum imports
             *(
                 [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
                 if model_class
                 else []
             ),
-            # Nested entity imports for Response (non-relation, non-write-only)
+            # Nested entity imports for Base (non-relation, non-write-only)
             *(
                 [
-                    f"import {util.get_model_for(field.type).package.domain}.{util.get_model_for(field.type).name}Response;"
+                    f"import {util.get_model_for(field.type).package.domain}.{util.get_model_for(field.type).name};"
                     for field in model_class.fields
                     if (field.is_object or field.is_base)
                     and not field.is_relation
@@ -302,7 +302,7 @@ def generate_imports_for_template(
         ],
         "Mapper.j2": [
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
-            f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class and is_db else None,
             # Opaque base type Request imports for mapper conversion methods
             *(
@@ -314,10 +314,10 @@ def generate_imports_for_template(
                 if model_class
                 else []
             ),
-            # Opaque base type Response imports for mapper conversion methods
+            # Opaque base type imports for mapper conversion methods
             *(
                 [
-                    f"import {model_class.package.domain}.{mapper.name}Response;"
+                    f"import {model_class.package.domain}.{mapper.name};"
                     for mapper in model_class.mappers
                     if isinstance(mapper, dsl.Base)
                 ]
@@ -348,7 +348,7 @@ def generate_imports_for_template(
             f"import {util.Store.package.model}.AppError;",
             f"import {util.Store.package.model}.CursorPage;",
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
-            f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
             f"import {model_class.package.service}.{model_class.name}Service;" if model_class else None,
             "import static org.junit.jupiter.api.Assertions.assertEquals;",
             "import static org.mockito.ArgumentMatchers.any;",
@@ -426,7 +426,7 @@ def generate_imports_for_template(
             f"import {util.Store.package.model}.CursorPageable;",
             f"import {util.Store.package.util}.Json;",
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
-            f"import {model_class.package.domain}.{model_class.name}Response;" if model_class else None,
+            f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
             f"import {model_class.package.mapper}.{model_class.name}Mapper;" if model_class else None,
             f"import {model_class.package.repository}.{model_class.name}Repository;" if model_class else None,

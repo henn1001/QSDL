@@ -12,8 +12,8 @@ import static org.mockito.Mockito.when;
 import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
+import app.server.domain.Role;
 import app.server.domain.RoleRequest;
-import app.server.domain.RoleResponse;
 import app.server.domain.entity.ProjectEntity;
 import app.server.domain.entity.RoleEntity;
 import app.server.domain.mapper.RoleMapper;
@@ -66,7 +66,7 @@ class RoleServiceTest {
 
         // Given
         List<RoleEntity> roleEntityList = TestUtils.getRandom(RoleEntity.class, 5);
-        List<RoleResponse> roleList = roleEntityList.stream().map(mapper::toResponse).toList();
+        List<Role> roleList = roleEntityList.stream().map(mapper::toResponse).toList();
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -76,7 +76,7 @@ class RoleServiceTest {
                 .thenReturn(new CursorPage<RoleEntity>(roleEntityList, null, 6L));
 
         // When
-        CursorPage<RoleResponse> response = service.getRoles(one, new CursorPageable(null, 5, true), new Context());
+        CursorPage<Role> response = service.getRoles(one, new CursorPageable(null, 5, true), new Context());
 
         // Then
         assertEquals(5L, response.count());
@@ -94,7 +94,7 @@ class RoleServiceTest {
         // Given
         RoleEntity roleEntity = TestUtils.getRandom(RoleEntity.class);
         RoleRequest roleRequest = TestUtils.getRandom(RoleRequest.class);
-        RoleResponse roleResponse = mapper.toResponse(roleEntity);
+        Role roleResponse = mapper.toResponse(roleEntity);
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -104,7 +104,7 @@ class RoleServiceTest {
                 .thenReturn(roleEntity);
 
         // When
-        RoleResponse response = service.createRole(one, roleRequest, new Context());
+        Role response = service.createRole(one, roleRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
@@ -118,7 +118,7 @@ class RoleServiceTest {
 
         // Given
         RoleEntity roleEntity = TestUtils.getRandom(RoleEntity.class);
-        RoleResponse roleResponse = mapper.toResponse(roleEntity);
+        Role roleResponse = mapper.toResponse(roleEntity);
         ProjectEntity testParent = TestUtils.getRandom(ProjectEntity.class);
 
         when(projectRepository.findById(eq(one)))
@@ -128,7 +128,7 @@ class RoleServiceTest {
                 .thenReturn(Optional.of(roleEntity));
 
         // When
-        RoleResponse response = service.getRole(one, roleEntity.getId(), new Context());
+        Role response = service.getRole(one, roleEntity.getId(), new Context());
 
         // Then
         JSONAssert.assertEquals(
@@ -181,10 +181,10 @@ class RoleServiceTest {
                 .thenReturn(roleEntity);
 
         // When
-        RoleResponse response = service.updateRole(one, roleEntity.getId(), roleRequest, new Context());
+        Role response = service.updateRole(one, roleEntity.getId(), roleRequest, new Context());
 
         // Then
-        RoleResponse roleResponse = mapper.toResponse(roleEntity);
+        Role roleResponse = mapper.toResponse(roleEntity);
         JSONAssert.assertEquals(
                 Json.toString(roleResponse),
                 new JSONObject(Json.toString(response)),

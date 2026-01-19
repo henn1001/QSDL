@@ -40,8 +40,8 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<UserResponse>> getUsersForTicket(String ticketId, CursorPageable pageable) {
-        CursorPage<UserResponse> response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
+    public ResponseEntity<CursorPage<User>> getUsersForTicket(String ticketId, CursorPageable pageable) {
+        CursorPage<User> response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -67,8 +67,8 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<UserResponse>> getUsers(CursorPageable pageable) {
-        CursorPage<UserResponse> response = userService.getUsers(pageable, super.getContext());
+    public ResponseEntity<CursorPage<User>> getUsers(CursorPageable pageable) {
+        CursorPage<User> response = userService.getUsers(pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -76,9 +76,9 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<UserResponse> createUser(UserRequest body) {
+    public ResponseEntity<User> createUser(UserRequest body) {
         Validator.validate(body);
-        UserResponse response = userService.createUser(body, super.getContext());
+        User response = userService.createUser(body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -86,8 +86,8 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<UserResponse> getUser(String id) {
-        UserResponse response = userService.getUser(id, super.getContext());
+    public ResponseEntity<User> getUser(String id) {
+        User response = userService.getUser(id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -95,13 +95,13 @@ public class UserController extends BaseController implements UserApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<UserResponse> updateUser(String id, JsonMergePatch patch) {
-        UserResponse current = userService.getUser(id, super.getContext());
+    public ResponseEntity<User> updateUser(String id, JsonMergePatch patch) {
+        User current = userService.getUser(id, super.getContext());
         UserRequest target = userMapper.toRequest(current);
         UserRequest request = JsonMergePatchUtil.apply(patch, target);
 
         Validator.validate(request);
-        UserResponse response = userService.updateUser(id, request, super.getContext());
+        User response = userService.updateUser(id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

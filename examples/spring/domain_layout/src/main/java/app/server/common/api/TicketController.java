@@ -40,8 +40,8 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<TicketResponse>> getTickets(CursorPageable pageable) {
-        CursorPage<TicketResponse> response = ticketService.getTickets(pageable, super.getContext());
+    public ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
+        CursorPage<Ticket> response = ticketService.getTickets(pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -49,9 +49,9 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<TicketResponse> createTicket(TicketRequest body) {
+    public ResponseEntity<Ticket> createTicket(TicketRequest body) {
         Validator.validate(body);
-        TicketResponse response = ticketService.createTicket(body, super.getContext());
+        Ticket response = ticketService.createTicket(body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -59,8 +59,8 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<TicketResponse> getTicket(String id) {
-        TicketResponse response = ticketService.getTicket(id, super.getContext());
+    public ResponseEntity<Ticket> getTicket(String id) {
+        Ticket response = ticketService.getTicket(id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -68,13 +68,13 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<TicketResponse> updateTicket(String id, JsonMergePatch patch) {
-        TicketResponse current = ticketService.getTicket(id, super.getContext());
+    public ResponseEntity<Ticket> updateTicket(String id, JsonMergePatch patch) {
+        Ticket current = ticketService.getTicket(id, super.getContext());
         TicketRequest target = ticketMapper.toRequest(current);
         TicketRequest request = JsonMergePatchUtil.apply(patch, target);
 
         Validator.validate(request);
-        TicketResponse response = ticketService.updateTicket(id, request, super.getContext());
+        Ticket response = ticketService.updateTicket(id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

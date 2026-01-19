@@ -40,8 +40,8 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<RoleResponse>> getRoles(String projectId, CursorPageable pageable) {
-        CursorPage<RoleResponse> response = roleService.getRoles(projectId, pageable, super.getContext());
+    public ResponseEntity<CursorPage<Role>> getRoles(String projectId, CursorPageable pageable) {
+        CursorPage<Role> response = roleService.getRoles(projectId, pageable, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -49,9 +49,9 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<RoleResponse> createRole(String projectId, RoleRequest body) {
+    public ResponseEntity<Role> createRole(String projectId, RoleRequest body) {
         Validator.validate(body);
-        RoleResponse response = roleService.createRole(projectId, body, super.getContext());
+        Role response = roleService.createRole(projectId, body, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -59,8 +59,8 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<RoleResponse> getRole(String projectId, String id) {
-        RoleResponse response = roleService.getRole(projectId, id, super.getContext());
+    public ResponseEntity<Role> getRole(String projectId, String id) {
+        Role response = roleService.getRole(projectId, id, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -68,13 +68,13 @@ public class RoleController extends BaseController implements RoleApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<RoleResponse> updateRole(String projectId, String id, JsonMergePatch patch) {
-        RoleResponse current = roleService.getRole(projectId, id, super.getContext());
+    public ResponseEntity<Role> updateRole(String projectId, String id, JsonMergePatch patch) {
+        Role current = roleService.getRole(projectId, id, super.getContext());
         RoleRequest target = roleMapper.toRequest(current);
         RoleRequest request = JsonMergePatchUtil.apply(patch, target);
 
         Validator.validate(request);
-        RoleResponse response = roleService.updateRole(projectId, id, request, super.getContext());
+        Role response = roleService.updateRole(projectId, id, request, super.getContext());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

@@ -36,7 +36,7 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
     {# 
         Set the Field definition
     #}
-    {% set typeName = field.type + "Entity" if field.is_object else (field.type + "Response" if field.is_base else field.entity_type) %}
+    {% set typeName = field.type + "Entity" if field.is_object else (field.type if field.is_base else field.entity_type) %}
     {% if field.is_array and field.is_relation %}
     public final Set<{{typeName}}> {{field.name}} = new LinkedHashSet<>();
     {% elif field.is_array %}

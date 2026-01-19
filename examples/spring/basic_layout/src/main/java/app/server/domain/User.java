@@ -16,7 +16,7 @@ import java.util.List;
 import tools.jackson.databind.node.ObjectNode;
 
 @RecordBuilder
-public record ProjectResponse(
+public record User(
 // @formatter:off
 
     @Min(0)
@@ -29,24 +29,11 @@ public record ProjectResponse(
     String name,
 
     @Size(min = 0, max = 255)
-    @JsonProperty(value = "description")
-    String description,
+    @JsonProperty(value = "mail")
+    String mail,
 
     @Size(min = 0, max = 255)
-    @JsonProperty(value = "creation_by")
-    String creationBy,
-
-    @JsonProperty(value = "creation_date")
-    LocalDate creationDate,
-
-    @Size(min = 0, max = 255)
-    @JsonProperty(value = "last_update_by")
-    String lastUpdateBy,
-
-    @JsonProperty(value = "last_update_date")
-    OffsetDateTime lastUpdateDate,
-
-    @JsonProperty(value = "meta_inf")
-    ObjectNode metaInf
+    @JsonProperty(value = "tmp")
+    String tmp
 ) {
 }

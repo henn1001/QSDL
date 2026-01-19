@@ -4,8 +4,8 @@
 package app.server.user.mapper;
 
 import app.server.user.db.RoleEntity;
+import app.server.user.dto.Role;
 import app.server.user.dto.RoleRequest;
-import app.server.user.dto.RoleResponse;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,10 +15,10 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface RoleMapper {
 
-    RoleRequest toRequest(RoleResponse dto);
+    RoleRequest toRequest(Role dto);
 
     @Mapping(target = "id", source = "uid")
-    RoleResponse toResponse(RoleEntity entity);
+    Role toResponse(RoleEntity entity);
 
     @Mapping(target = "uid", ignore = true)
     @Mapping(target = "id", ignore = true)

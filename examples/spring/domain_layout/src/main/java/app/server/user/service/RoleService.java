@@ -36,20 +36,20 @@ public class RoleService {
 
     RoleEntity fetchRoleFromDb(String id) throws AppException {
         return roleRepository.findByUid(id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound(RoleResponse.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(Role.class, id));
     }
 
     RoleEntity fetchRoleFromProjectFromDb(Long projectId, String id) throws AppException {
         return roleRepository.findByProjectIdAndUid(projectId, id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound(RoleResponse.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(Role.class, id));
     }
 
     ProjectEntity fetchProjectFromDb(String id) throws AppException {
         return projectRepository.findByUid(id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound(ProjectResponse.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(Project.class, id));
     }
 
-    public CursorPage<RoleResponse> getRoles(String projectId, CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<Role> getRoles(String projectId, CursorPageable pageable, Context context) throws AppException {
 
         // confirm existence of parent
         // should be optimized with something like getReferenceById
@@ -68,7 +68,7 @@ public class RoleService {
     }
 
     @Transactional
-    public RoleResponse createRole(String projectId, RoleRequest body, Context context) throws AppException {
+    public Role createRole(String projectId, RoleRequest body, Context context) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
@@ -83,7 +83,7 @@ public class RoleService {
         return roleMapper.toResponse(roleEntity);
     }
 
-    public RoleResponse getRole(String projectId, String id, Context context) throws AppException {
+    public Role getRole(String projectId, String id, Context context) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
@@ -94,7 +94,7 @@ public class RoleService {
     }
 
     @Transactional
-    public RoleResponse updateRole(String projectId, String id, RoleRequest body, Context context) throws AppException {
+    public Role updateRole(String projectId, String id, RoleRequest body, Context context) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);

@@ -12,8 +12,8 @@ import static org.mockito.Mockito.when;
 import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
+import app.server.domain.User;
 import app.server.domain.UserRequest;
-import app.server.domain.UserResponse;
 import app.server.domain.entity.TicketEntity;
 import app.server.domain.entity.UserEntity;
 import app.server.domain.mapper.UserMapper;
@@ -66,7 +66,7 @@ class UserServiceTest {
 
         // Given
         List<UserEntity> userEntityList = TestUtils.getRandom(UserEntity.class, 5);
-        List<UserResponse> userList = userEntityList.stream().map(mapper::toResponse).toList();
+        List<User> userList = userEntityList.stream().map(mapper::toResponse).toList();
         TicketEntity testParent = TestUtils.getRandom(TicketEntity.class);
 
         when(ticketRepository.findById(eq(one)))
@@ -76,7 +76,7 @@ class UserServiceTest {
                 .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
         // When
-        CursorPage<UserResponse> response = service.getUsersForTicket(one, new CursorPageable(null, 5, true), new Context());
+        CursorPage<User> response = service.getUsersForTicket(one, new CursorPageable(null, 5, true), new Context());
 
         // Then
         assertEquals(5L, response.count());
@@ -139,13 +139,13 @@ class UserServiceTest {
 
         // Given
         List<UserEntity> userEntityList = TestUtils.getRandom(UserEntity.class, 5);
-        List<UserResponse> userList = userEntityList.stream().map(mapper::toResponse).toList();
+        List<User> userList = userEntityList.stream().map(mapper::toResponse).toList();
 
         when(repository.findAll(any(Predicate.class), any(CursorPageable.class)))
                 .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
         // When
-        CursorPage<UserResponse> response = service.getUsers(new CursorPageable(null, 5, true), new Context());
+        CursorPage<User> response = service.getUsers(new CursorPageable(null, 5, true), new Context());
 
         // Then
         assertEquals(5L, response.count());
@@ -163,13 +163,13 @@ class UserServiceTest {
         // Given
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
         UserRequest userRequest = TestUtils.getRandom(UserRequest.class);
-        UserResponse userResponse = mapper.toResponse(userEntity);
+        User userResponse = mapper.toResponse(userEntity);
 
         when(repository.save(any(UserEntity.class)))
                 .thenReturn(userEntity);
 
         // When
-        UserResponse response = service.createUser(userRequest, new Context());
+        User response = service.createUser(userRequest, new Context());
 
         // Then
         JSONAssert.assertEquals(
@@ -183,13 +183,13 @@ class UserServiceTest {
 
         // Given
         UserEntity userEntity = TestUtils.getRandom(UserEntity.class);
-        UserResponse userResponse = mapper.toResponse(userEntity);
+        User userResponse = mapper.toResponse(userEntity);
 
         when(repository.findById(eq(userEntity.getId())))
                 .thenReturn(Optional.of(userEntity));
 
         // When
-        UserResponse response = service.getUser(userEntity.getId(), new Context());
+        User response = service.getUser(userEntity.getId(), new Context());
 
         // Then
         JSONAssert.assertEquals(
@@ -234,10 +234,10 @@ class UserServiceTest {
                 .thenReturn(userEntity);
 
         // When
-        UserResponse response = service.updateUser(userEntity.getId(), userRequest, new Context());
+        User response = service.updateUser(userEntity.getId(), userRequest, new Context());
 
         // Then
-        UserResponse userResponse = mapper.toResponse(userEntity);
+        User userResponse = mapper.toResponse(userEntity);
         JSONAssert.assertEquals(
                 Json.toString(userResponse),
                 new JSONObject(Json.toString(response)),

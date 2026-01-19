@@ -30,10 +30,10 @@ public class TicketService {
 
     TicketEntity fetchTicketFromDb(String id) throws AppException {
         return ticketRepository.findByUid(id)
-                .orElseThrow(() -> AppExceptionUtil.entityNotFound(TicketResponse.class, id));
+                .orElseThrow(() -> AppExceptionUtil.entityNotFound(Ticket.class, id));
     }
 
-    public CursorPage<TicketResponse> getTickets(CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<Ticket> getTickets(CursorPageable pageable, Context context) throws AppException {
 
         var queryParameters = Arrays.<String>asList();
         var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), TicketEntity.class);
@@ -47,7 +47,7 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketResponse createTicket(TicketRequest body, Context context) throws AppException {
+    public Ticket createTicket(TicketRequest body, Context context) throws AppException {
 
         var ticketEntity = ticketMapper.toEntity(body);
 
@@ -56,7 +56,7 @@ public class TicketService {
         return ticketMapper.toResponse(ticketEntity);
     }
 
-    public TicketResponse getTicket(String id, Context context) throws AppException {
+    public Ticket getTicket(String id, Context context) throws AppException {
 
         var ticketEntity = fetchTicketFromDb(id);
 
@@ -64,7 +64,7 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketResponse updateTicket(String id, TicketRequest body, Context context) throws AppException {
+    public Ticket updateTicket(String id, TicketRequest body, Context context) throws AppException {
 
         var ticketEntity = fetchTicketFromDb(id);
 

@@ -2,7 +2,7 @@
 {% import '_macro/Util.j2' as util with context %}
 {% set getId = "getId()" if id_type == "Long" else "getUid()" %}
 {% set m_request_type = model.name + "Request" %}
-{% set m_response_type = model.name + "Response" %}
+{% set m_response_type = model.name %}
 {% set m_var = model.name | lower %}
 {% set m_entity_type = model.name + "Entity" %}
 {% set m_entity_var = model.name | lower + "Entity" %}

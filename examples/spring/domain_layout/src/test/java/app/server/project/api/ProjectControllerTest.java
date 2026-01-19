@@ -21,8 +21,8 @@ import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
 import app.server.common.util.Json;
 import app.server.common.util.JsonMergePatchConverter.MediaTypeExtension;
+import app.server.project.dto.Project;
 import app.server.project.dto.ProjectRequest;
-import app.server.project.dto.ProjectResponse;
 import app.server.project.service.ProjectService;
 import java.util.Arrays;
 import org.json.JSONObject;
@@ -55,9 +55,9 @@ class ProjectControllerTest {
     public void whenGetProjects_thenOk() throws Exception {
 
         // Given
-        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
+        Project responseDto = TestUtils.getRandom(Project.class);
 
-        CursorPage<ProjectResponse> ret = new CursorPage<ProjectResponse>(Arrays.asList(responseDto), null, null);
+        CursorPage<Project> ret = new CursorPage<Project>(Arrays.asList(responseDto), null, null);
 
         when(service.getProjects(any(), any()))
                 .thenReturn(ret);
@@ -81,7 +81,7 @@ class ProjectControllerTest {
 
         // Given
         ProjectRequest requestDto = TestUtils.getRandom(ProjectRequest.class);
-        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
+        Project responseDto = TestUtils.getRandom(Project.class);
 
         when(service.createProject(any(), any()))
                 .thenReturn(responseDto);
@@ -106,7 +106,7 @@ class ProjectControllerTest {
     public void whenCreateProjectWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
+        Project responseDto = TestUtils.getRandom(Project.class);
 
         when(service.createProject(any(), any()))
                 .thenReturn(responseDto);
@@ -131,7 +131,7 @@ class ProjectControllerTest {
     public void whenGetProject_thenOk() throws Exception {
 
         // Given
-        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
+        Project responseDto = TestUtils.getRandom(Project.class);
 
         when(service.getProject(eq(one), any()))
                 .thenReturn(responseDto);
@@ -155,7 +155,7 @@ class ProjectControllerTest {
 
         // Given
         ProjectRequest requestDto = TestUtils.getRandom(ProjectRequest.class);
-        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
+        Project responseDto = TestUtils.getRandom(Project.class);
 
         when(service.getProject(eq(one), any()))
                 .thenReturn(responseDto);
@@ -183,7 +183,7 @@ class ProjectControllerTest {
     public void whenUpdateProjectWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        ProjectResponse responseDto = TestUtils.getRandom(ProjectResponse.class);
+        Project responseDto = TestUtils.getRandom(Project.class);
 
         when(service.updateProject(eq(one), any(), any()))
                 .thenReturn(responseDto);

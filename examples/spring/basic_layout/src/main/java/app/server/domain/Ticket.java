@@ -3,6 +3,7 @@
  */
 package app.server.domain;
 
+import app.server.constant.Status;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.Valid;
@@ -16,32 +17,28 @@ import java.util.List;
 import tools.jackson.databind.node.ObjectNode;
 
 @RecordBuilder
-public record BaseTypeResponse(
+public record Ticket(
 // @formatter:off
 
-    @Size(min = 0, max = 255)
-    @JsonProperty(value = "name")
-    String name,
+    @Min(0)
+    @Max(Long.MAX_VALUE)
+    @JsonProperty(value = "id")
+    Long id,
+
+    @Min(0)
+    @Max(Integer.MAX_VALUE)
+    @JsonProperty(value = "number")
+    Integer number,
 
     @Size(min = 0, max = 255)
-    @JsonProperty(value = "description")
-    String description,
+    @JsonProperty(value = "title")
+    String title,
 
     @Size(min = 0, max = 255)
-    @JsonProperty(value = "creation_by")
-    String creationBy,
+    @JsonProperty(value = "body")
+    String body,
 
-    @JsonProperty(value = "creation_date")
-    LocalDate creationDate,
-
-    @Size(min = 0, max = 255)
-    @JsonProperty(value = "last_update_by")
-    String lastUpdateBy,
-
-    @JsonProperty(value = "last_update_date")
-    OffsetDateTime lastUpdateDate,
-
-    @JsonProperty(value = "meta_inf")
-    ObjectNode metaInf
+    @JsonProperty(value = "status")
+    Status status
 ) {
 }

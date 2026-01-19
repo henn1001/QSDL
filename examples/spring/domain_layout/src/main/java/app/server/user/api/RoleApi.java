@@ -32,7 +32,7 @@ public interface RoleApi {
      * List Roles
      */
     @GetMapping(value = "/projects/{project_id}/roles", produces = {"application/json"})
-    default ResponseEntity<CursorPage<RoleResponse>> getRoles(@PathVariable("project_id") String projectId, CursorPageable pageable) {
+    default ResponseEntity<CursorPage<Role>> getRoles(@PathVariable("project_id") String projectId, CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -42,7 +42,7 @@ public interface RoleApi {
      * Create a Role
      */
     @PostMapping(value = "/projects/{project_id}/roles", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<RoleResponse> createRole(@PathVariable("project_id") String projectId, @RequestBody RoleRequest body) {
+    default ResponseEntity<Role> createRole(@PathVariable("project_id") String projectId, @RequestBody RoleRequest body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -52,7 +52,7 @@ public interface RoleApi {
      * Read the specified Role
      */
     @GetMapping(value = "/projects/{project_id}/roles/{id}", produces = {"application/json"})
-    default ResponseEntity<RoleResponse> getRole(@PathVariable("project_id") String projectId, @PathVariable("id") String id) {
+    default ResponseEntity<Role> getRole(@PathVariable("project_id") String projectId, @PathVariable("id") String id) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -62,7 +62,7 @@ public interface RoleApi {
      * Update the specified Role
      */
     @PatchMapping(value = "/projects/{project_id}/roles/{id}", produces = {"application/json"}, consumes = {"application/merge-patch+json"})
-    default ResponseEntity<RoleResponse> updateRole(@PathVariable("project_id") String projectId, @PathVariable("id") String id, @RequestBody JsonMergePatch patch) {
+    default ResponseEntity<Role> updateRole(@PathVariable("project_id") String projectId, @PathVariable("id") String id, @RequestBody JsonMergePatch patch) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

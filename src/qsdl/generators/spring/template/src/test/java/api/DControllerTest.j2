@@ -31,9 +31,9 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
+        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        CursorPage<{{model.name}}Response> ret = new CursorPage<{{model.name}}Response>(Arrays.asList(responseDto), null, null);
+        CursorPage<{{model.name}}> ret = new CursorPage<{{model.name}}>(Arrays.asList(responseDto), null, null);
 
         when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
                 .thenReturn(ret);
@@ -76,7 +76,7 @@ class {{model.name}}ControllerTest {
 
         // Given
         {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
-        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
+        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
         when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
                 .thenReturn(responseDto);
@@ -101,7 +101,7 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
         // Given
-        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
+        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
         when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
                 .thenReturn(responseDto);
@@ -129,7 +129,7 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}_thenOk() throws Exception {
 
         // Given
-        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
+        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
         when(service.{{operation.name}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}, any()))
                 .thenReturn(responseDto);
@@ -156,7 +156,7 @@ class {{model.name}}ControllerTest {
 
         // Given
         {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
-        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
+        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
         when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
                 .thenReturn(responseDto);
@@ -181,7 +181,7 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
         // Given
-        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
+        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
         when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
                 .thenReturn(responseDto);
@@ -210,7 +210,7 @@ class {{model.name}}ControllerTest {
 
         // Given
         {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
-        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
+        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
         when(service.{{operation.name | replace("update", "get")}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}, any()))
                 .thenReturn(responseDto);
@@ -238,7 +238,7 @@ class {{model.name}}ControllerTest {
     public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
         // Given
-        {{model.name}}Response responseDto = TestUtils.getRandom({{model.name}}Response.class);
+        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
         when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
                 .thenReturn(responseDto);

@@ -9,7 +9,7 @@ package {{model.package.domain}};
 {{ util.macro_imports(self._TemplateReference__context.name, model) }}
 
 @RecordBuilder
-public record {{model.name}}Response(
+public record {{model.name}}(
 // @formatter:off
 {% for field in model.fields if not field.is_relation and not field.is_hidden and not field.is_write_only %}
 
@@ -43,9 +43,9 @@ public record {{model.name}}Response(
         Set the Field definition
     #}
     {% if field.is_array %}
-    List<{{ "@Pattern(regexp = \"" + field.pattern + "\") " if field.pattern}}{{field.type}}{{ "Response" if field.is_base or field.is_object else "" }}> {{field.name}}{{ "," if not loop.last else "" }}
+    List<{{ "@Pattern(regexp = \"" + field.pattern + "\") " if field.pattern}}{{field.type}}> {{field.name}}{{ "," if not loop.last else "" }}
     {% else %}
-    {{field.type}}{{ "Response" if field.is_base or field.is_object else "" }} {{field.name}}{{ "," if not loop.last else "" }}
+    {{field.type}} {{field.name}}{{ "," if not loop.last else "" }}
     {% endif %}
 {% endfor %}
 ) {

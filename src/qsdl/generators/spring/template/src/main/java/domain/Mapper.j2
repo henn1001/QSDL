@@ -16,7 +16,7 @@ public interface {{model.name}}Mapper {
     {% for field in model.fields if field.is_write_only %}
     @Mapping(target = "{{field.name}}", ignore = true)
     {% endfor %}
-    {{model.name}}Request toRequest({{model.name}}Response dto);
+    {{model.name}}Request toRequest({{model.name}} dto);
 
 {% if database == "HIBERNATE" %}
     {% if id_type == "String" %}
@@ -30,7 +30,7 @@ public interface {{model.name}}Mapper {
     @Mapping(target = "{{field.dto_nested_path}}", source = "{{field.name}}")
         {% endif %}
     {% endfor %}
-    {{model.name}}Response toResponse({{model.name}}Entity entity);
+    {{model.name}} toResponse({{model.name}}Entity entity);
 
     @Mapping(target = "uid", ignore = true)
     {% for field in model.entity_fields %}
@@ -48,7 +48,7 @@ public interface {{model.name}}Mapper {
 {% endif %}
 {% for mapper in model.mappers if mapper._tx_fqn == "entity.Base" %}
 
-    {{mapper.name}}Response to{{mapper.name}}Response({{mapper.name}}Request request);
+    {{mapper.name}} to{{mapper.name}}({{mapper.name}}Request request);
 {% endfor %}
 }
 {{""}}

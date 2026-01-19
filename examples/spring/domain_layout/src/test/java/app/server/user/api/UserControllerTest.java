@@ -21,8 +21,8 @@ import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
 import app.server.common.util.Json;
 import app.server.common.util.JsonMergePatchConverter.MediaTypeExtension;
+import app.server.user.dto.User;
 import app.server.user.dto.UserRequest;
-import app.server.user.dto.UserResponse;
 import app.server.user.service.UserService;
 import java.util.Arrays;
 import org.json.JSONObject;
@@ -55,9 +55,9 @@ class UserControllerTest {
     public void whenGetUsersForTicket_thenOk() throws Exception {
 
         // Given
-        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
+        User responseDto = TestUtils.getRandom(User.class);
 
-        CursorPage<UserResponse> ret = new CursorPage<UserResponse>(Arrays.asList(responseDto), null, null);
+        CursorPage<User> ret = new CursorPage<User>(Arrays.asList(responseDto), null, null);
 
         when(service.getUsersForTicket(any(), any(), any()))
                 .thenReturn(ret);
@@ -106,9 +106,9 @@ class UserControllerTest {
     public void whenGetUsers_thenOk() throws Exception {
 
         // Given
-        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
+        User responseDto = TestUtils.getRandom(User.class);
 
-        CursorPage<UserResponse> ret = new CursorPage<UserResponse>(Arrays.asList(responseDto), null, null);
+        CursorPage<User> ret = new CursorPage<User>(Arrays.asList(responseDto), null, null);
 
         when(service.getUsers(any(), any()))
                 .thenReturn(ret);
@@ -132,7 +132,7 @@ class UserControllerTest {
 
         // Given
         UserRequest requestDto = TestUtils.getRandom(UserRequest.class);
-        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
+        User responseDto = TestUtils.getRandom(User.class);
 
         when(service.createUser(any(), any()))
                 .thenReturn(responseDto);
@@ -157,7 +157,7 @@ class UserControllerTest {
     public void whenCreateUserWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
+        User responseDto = TestUtils.getRandom(User.class);
 
         when(service.createUser(any(), any()))
                 .thenReturn(responseDto);
@@ -182,7 +182,7 @@ class UserControllerTest {
     public void whenGetUser_thenOk() throws Exception {
 
         // Given
-        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
+        User responseDto = TestUtils.getRandom(User.class);
 
         when(service.getUser(eq(one), any()))
                 .thenReturn(responseDto);
@@ -206,7 +206,7 @@ class UserControllerTest {
 
         // Given
         UserRequest requestDto = TestUtils.getRandom(UserRequest.class);
-        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
+        User responseDto = TestUtils.getRandom(User.class);
 
         when(service.getUser(eq(one), any()))
                 .thenReturn(responseDto);
@@ -234,7 +234,7 @@ class UserControllerTest {
     public void whenUpdateUserWithInvalidPayload_thenError() throws Exception {
 
         // Given
-        UserResponse responseDto = TestUtils.getRandom(UserResponse.class);
+        User responseDto = TestUtils.getRandom(User.class);
 
         when(service.updateUser(eq(one), any(), any()))
                 .thenReturn(responseDto);
