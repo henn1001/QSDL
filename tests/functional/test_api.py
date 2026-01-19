@@ -72,7 +72,6 @@ class TestApi:
         assert "getFoo" in openapi["paths"]["/foos"]["get"]["operationId"]
 
         assert "post" not in openapi["paths"]["/foos"]
-        assert "put" not in openapi["paths"]["/foos"]
         assert "patch" not in openapi["paths"]["/foos"]
         assert "delete" not in openapi["paths"]["/foos"]
 

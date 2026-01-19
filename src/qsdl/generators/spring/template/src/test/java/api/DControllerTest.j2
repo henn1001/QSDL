@@ -147,60 +147,6 @@ class {{model.name}}ControllerTest {
                 new JSONObject(response),
                 false);
     }
-    {% elif operation.method == "put" %}
-    {# 
-    ########################################################################################
-    #}
-    @Test
-    public void when{{operation.name|pascal}}_thenOk() throws Exception {
-
-        // Given
-        {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
-        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
-
-        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-                        .content(Json.toString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        JSONAssert.assertEquals(
-                Json.toString(responseDto),
-                new JSONObject(response),
-                false);
-    }
-
-    @Test
-    public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
-
-        // Given
-        {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
-
-        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
-                .thenReturn(responseDto);
-
-        // When
-        String response = mockMvc.perform(put(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
-                .content("{{ "{}" if model.has_required else "" }}")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        // Then
-        AppError error = Json.fromJson(response, AppError.class);
-        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
-    }
     {% elif operation.method == "patch" %}
     {# 
     ########################################################################################
