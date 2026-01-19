@@ -7,9 +7,7 @@ import java.util.UUID;
 
 public final class IdGenerator {
 
-    private IdGenerator() {
-        // not called
-    }
+    private IdGenerator() {}
 
     public static String createId() {
         UUID uuid = UUID.randomUUID();

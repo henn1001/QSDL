@@ -18,13 +18,11 @@ import tools.jackson.databind.json.JsonMapper;
  * This allows PATCH endpoints to handle partial updates where null values
  * explicitly delete fields.
  */
-public class JsonMergePatchUtil {
+public final class JsonMergePatchUtil {
 
     private static final JsonMapper mapper;
 
-    private JsonMergePatchUtil() {
-        throw new AssertionError();
-    }
+    private JsonMergePatchUtil() {}
 
     static {
         mapper = JsonMapper.builder()

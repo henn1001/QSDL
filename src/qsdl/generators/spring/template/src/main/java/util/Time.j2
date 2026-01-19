@@ -3,45 +3,22 @@
  */
 package {{package.util}};
 
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 
 public final class Time {
 
-    private Time() {
-        // not called
+    private static Clock clock = Clock.systemDefaultZone();
+
+    private Time() {}
+
+    public static void setClock(Clock customClock) {
+        clock = customClock != null ? customClock : Clock.systemDefaultZone();
     }
 
-    public static final OffsetDateTime now() {
-        return OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-    }
-
-    public static final String getStr() {
-        return Time.now().toString();
-    }
-
-    public static final OffsetDateTime getFromStr(String datetime) {
-        OffsetDateTime time = null;
-        if (datetime != null) {
-            time = OffsetDateTime.parse(datetime).truncatedTo(ChronoUnit.SECONDS);
-        }
-        return time;
-    }
-
-    public static final OffsetDateTime getPlusMin(int minutes) {
-        return Time.now().plusMinutes(minutes);
-    }
-
-    public static final String getPlusMinStr(int minutes) {
-        return Time.now().plusMinutes(minutes).toString();
-    }
-
-    public static final OffsetDateTime getMinusMin(int minutes) {
-        return Time.now().minusMinutes(minutes);
-    }
-
-    public static final String getMinusMinStr(int minutes) {
-        return Time.now().minusMinutes(minutes).toString();
+    public static OffsetDateTime now() {
+        return OffsetDateTime.now(clock).truncatedTo(ChronoUnit.MILLIS);
     }
 }
 {{""}}

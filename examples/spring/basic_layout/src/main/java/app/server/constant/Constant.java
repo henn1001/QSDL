@@ -5,9 +5,7 @@ package app.server.constant;
 
 public final class Constant {
 
-    private Constant() {
-        // not called
-    }
+    private Constant() {}
 
     public static final int CURSOR_DEFAULT = 100;
     public static final int CURSOR_MIN = 1;

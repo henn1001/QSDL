@@ -31,9 +31,7 @@ import tools.jackson.databind.node.ObjectNode;
 
 public class TestUtils {
 
-    private TestUtils() {
-        // not called
-    }
+    private TestUtils() {}
 
     private static final JsonMapper json;
     private static final Settings instanceIoSettings;

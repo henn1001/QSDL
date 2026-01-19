@@ -14,14 +14,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Validator {
+public final class Validator {
 
     private static final jakarta.validation.Validator validator =
             Validation.buildDefaultValidatorFactory().getValidator();
 
     private static final String NOT_NULL_MSG = "{jakarta.validation.constraints.NotNull.message}";
 
-    public static final <T> void validate(T object) throws AppException {
+    public static <T> void validate(T object) throws AppException {
 
         Set<ConstraintViolation<T>> violations = validator.validate(object);
 
@@ -37,7 +37,7 @@ public class Validator {
         }
     }
 
-    public static final <T> void validateExRequired(T object) throws AppException {
+    public static <T> void validateExRequired(T object) throws AppException {
 
         Set<ConstraintViolation<T>> violations = validator.validate(object);
 
@@ -57,7 +57,7 @@ public class Validator {
         }
     }
 
-    public static final <E extends Enum<E>> void validateEnum(String key, String value, Class<E> enumClass)
+    public static <E extends Enum<E>> void validateEnum(String key, String value, Class<E> enumClass)
             throws AppException {
         E[] enumConstants = enumClass.getEnumConstants();
 

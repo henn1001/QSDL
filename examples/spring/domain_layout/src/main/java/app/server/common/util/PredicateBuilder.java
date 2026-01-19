@@ -16,9 +16,7 @@ import org.springframework.util.MultiValueMap;
 
 public final class PredicateBuilder {
 
-    private PredicateBuilder() {
-        // not called
-    }
+    private PredicateBuilder() {}
 
     private static final ConversionService conversionService;
 

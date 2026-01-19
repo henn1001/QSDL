@@ -16,7 +16,7 @@ import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
 @Component
-public class Json {
+public final class Json {
 
     private static JsonMapper mapper;
     private static ObjectWriter writer;
