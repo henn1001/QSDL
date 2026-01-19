@@ -1,6 +1,6 @@
 [project]
 name = "QSDL"
-version = "5.0.0"
+version = "6.0.0"
 description = "A Schema-Definition-Language Generator inspired by GraphQl."
 readme = "README.md"
 authors = [{ name = "henn1001", email = "henn1001@outlook.com" }]

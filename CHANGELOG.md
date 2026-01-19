@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://gitlab.com/henn1001/qsdl/compare/v5.0.0...v6.0.0) (2026-01-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **spring:** introduce JSON Merge Patch behavior for patch endpoints
+* **core:** removal of PUT from CRUD generation - replaced by JSON Merge Patch support (RFC 7396)
+* **spring:** bump generator to spring-boot 4
+* **spring:** deprecate use_builder and use_encapsulation
+* **spring:** convert DTOs from classes to Java records
+
+### Features
+
+* **core:** removal of PUT from CRUD generation - replaced by JSON Merge Patch support (RFC 7396) ([f18da33](https://gitlab.com/henn1001/qsdl/commit/f18da333ec441a5caecc062554cbff687f7e5c0b))
+* split DTO records into separate Request and Response models ([512d945](https://gitlab.com/henn1001/qsdl/commit/512d945b84fdf9f0829f98fc2b03309641f8b32b))
+* **spring:** bump generator to spring-boot 4 ([16e7c7d](https://gitlab.com/henn1001/qsdl/commit/16e7c7d628f893c5849a8340a38f1004fe19cc56))
+* **spring:** deprecate use_builder and use_encapsulation ([2f08f8a](https://gitlab.com/henn1001/qsdl/commit/2f08f8a24a84e74a2db4bb455a42be56a99c0752))
+* **spring:** integrate record-builder for DTO builders ([f5f8ff2](https://gitlab.com/henn1001/qsdl/commit/f5f8ff237eef04b8ba792ca4a2e2dee0108a88a9))
+* **spring:** introduce JSON Merge Patch behavior for patch endpoints ([2f2dd86](https://gitlab.com/henn1001/qsdl/commit/2f2dd86c3fe14b032d1aa17bd16600b204cc1c48))
+* **spring:** mark reading service methods with readOnly transactional ([36e13b6](https://gitlab.com/henn1001/qsdl/commit/36e13b625dd1d4361029f57497884d8ea16ea35f))
+* **spring:** replace deprecated Testcontainers postgres interface with newer variant ([cc8a470](https://gitlab.com/henn1001/qsdl/commit/cc8a4707c8756ebef94169ffbdb30c302a7f267c))
+* **spring:** replace unmaintained easyrandom library with instanceio ([14eafbc](https://gitlab.com/henn1001/qsdl/commit/14eafbcd122f7e4a8f0533b323b6b961f3d36b91))
+
+
+### Bug Fixes
+
+* **core:** resolve broken usage of scalar definitions ([e1da044](https://gitlab.com/henn1001/qsdl/commit/e1da044bc85e6d6a95d24487f5fe77651bd63b02))
+* **spring:** resolve mapper issues occuring with more complex scenarios by simplifying the mapstruct interfaces ([789680a](https://gitlab.com/henn1001/qsdl/commit/789680af013831e300a64c82c51ecd768f4c2d86))
+
+
+* **spring:** convert DTOs from classes to Java records ([9452e70](https://gitlab.com/henn1001/qsdl/commit/9452e70a958c424a480a0fee5e6598b1edecb562))
+
 ## [5.0.0](https://gitlab.com/henn1001/qsdl/compare/v4.5.0...v5.0.0) (2026-01-12)
 
 
