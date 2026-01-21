@@ -20,6 +20,7 @@ import textx.metamodel
 from textx.exceptions import TextXSemanticError
 
 import qsdl.dsl.textx as xtx
+import qsdl.dsl.util as qutil
 from qsdl import dsl
 
 from . import CrudGeneratorEnum as CrudEnum
@@ -37,6 +38,7 @@ def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> N
     """
     validate_server_url(schema, metamodel)
     validate_type_names(schema, metamodel)
+    validate_reserved_words(schema)
     validate_arguments(schema, metamodel)
     validate_custom_operations_path(schema, metamodel)
     validate_crud_generator_directive(schema, metamodel)
@@ -83,13 +85,13 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
     """
     _ = metamodel
 
-    entities = []
     names = []
-
-    entities.extend(xtx.get_children_of_scalar(schema))
-    entities.extend(xtx.get_children_of_enum(schema))
-    entities.extend(xtx.get_children_of_base(schema))
-    entities.extend(xtx.get_children_of_object(schema))
+    entities = [
+        *xtx.get_children_of_scalar(schema),
+        *xtx.get_children_of_enum(schema),
+        *xtx.get_children_of_base(schema),
+        *xtx.get_children_of_object(schema),
+    ]
 
     for entity in entities:
         names.append(entity.name)
@@ -108,24 +110,25 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
                     msg = f"The value of {entity._tx_fqn} {entity.name} does not conform to the naming convention. [A-Z_0-9]"
                     raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-        if entity.name.upper() == "ID":
-            msg = f"The {entity._tx_fqn} {entity.name} uses the reserved name ID."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
-
     # verify that we have unique names between all objects
     if len(names) != len(set(names)):
         msg = "Names for scalars, enums, bases and objects must be unique."
         raise TextXSemanticError(msg, filename=schema._tx_filename)
 
-    entities = []
 
-    entities.extend(xtx.get_children_of_field(schema))
-    entities.extend(xtx.get_children_of_argument(schema))
+def validate_reserved_words(schema: dsl.Schema) -> None:
+    errors = []
 
-    for entity in entities:
-        if entity.name.lower() == "id":
-            msg = f"The {entity._tx_fqn} {entity.name} uses the reserved name ID."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+    for entity in xtx.get_children_of_object(schema):
+        fields = qutil.get_all_fields_as_list(entity)
+        match = [x for x in fields if x.name.lower() in ["id", "uid", "iv"]]
+
+        if match:
+            msg = f"The Object {entity.name} uses a reserved word {', '.join([f'"{x.name}"' for x in match])}."
+            errors.append(msg)
+
+    if errors:
+        raise TextXSemanticError("\n".join(errors), filename=schema._tx_filename)
 
 
 def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:

@@ -15,7 +15,9 @@
 """QSDL Utility functions"""
 
 import qsdl.dsl.textx as xtx
-from qsdl import dsl
+from qsdl import dsl, logger
+
+log = logger.getLogger(__name__)
 
 ValueType = dsl.Scalar | dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation
 
@@ -146,6 +148,87 @@ def get_type_override(
     return ret
 
 
+def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
+    """Return all Fields who are using this dsl.Object as composition."""
+    fields = get_parents(schema, obj)
+    return [x for x in fields if x.is_composition and isinstance(x.value, dsl.Object)]
+
+
+def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
+    """Return all Fields who are using this dsl.Object as aggregation."""
+    fields = get_parents(schema, obj)
+    return [x for x in fields if x.is_aggregation and isinstance(x.value, dsl.Object)]
+
+
+def get_parents(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
+    """Returns all Fields whose value is this dsl.Object."""
+    fields = xtx.get_children_of_field(schema)
+    return [x for x in fields if x.value == obj]
+
+
+def get_query_fields(obj: dsl.Object) -> list[dsl.Field]:
+    """Returns a list of all query parameters.
+
+    For the default CRUD operations this will return the fields flagged with
+    a query-directive.
+    """
+    return [x for x in obj.fields if x.is_query]
+
+
+def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
+    """Returns all fields ob a object including its supertype as list.
+
+    Fields that are redefined in a child, overwrite the parent definition.
+
+    Args:
+        entity (object): entity.dsl.Object
+
+    Returns:
+        list: [entity.dsl.Field]
+    """
+    fields: list[dsl.Field] = []
+
+    # skip already flattened entities
+    if entity.flattened:
+        return entity.fields
+
+    # Support multiple supertypes
+    if entity.supertypes:
+        for supertype in entity.supertypes:
+            tmp = get_all_fields_as_list(supertype)
+            fields.extend(tmp)
+
+    for field in entity.fields:
+        # check if attribute was already defined within a supertype
+        duplicate = [x for x in fields if x.name == field.name]
+        duplicate = duplicate[0] if duplicate else None
+
+        if not duplicate:
+            fields.append(field)
+        elif not field.is_override:
+            log.error(
+                "The inherited field '%s' of '%s' was redefined and replaced by '%s'.",
+                duplicate.name,
+                duplicate.parent.name,
+                entity.name,
+            )
+            raise Exception("Field redefinition without @override is not allowed.")
+        else:
+            index = fields.index(duplicate)
+            fields[index] = field
+
+            # log warning if type changed
+            if duplicate.value != field.value:
+                log.warning(
+                    "The inherited field '%s' of '%s' was redefined with a different type by '%s'.",
+                    duplicate.name,
+                    duplicate.parent.name,
+                    entity.name,
+                )
+
+    return fields
+
+
 def get_composition_fields(schema: dsl.Schema, obj_name: str) -> list[dsl.Field]:
     """Returns all Fields whose value is this Object.
 
@@ -156,14 +239,9 @@ def get_composition_fields(schema: dsl.Schema, obj_name: str) -> list[dsl.Field]
     Returns:
         list[dsl.Field]: The list of Fields.
     """
-    fields = []
-
     fields = xtx.get_children_of_field(schema)
-
-    fields = [
+    return [
         x
         for x in fields
         if isinstance(x.parent, dsl.Object) and x.value.name == obj_name and x.is_array and not x.is_aggregation
     ]
-
-    return fields

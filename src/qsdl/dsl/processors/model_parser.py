@@ -26,141 +26,6 @@ from . import CrudGeneratorEnum as CrudEnum
 log = logger.getLogger(__name__)
 
 
-def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
-    """Return all Fields who are using this dsl.Object as composition.
-
-    Args:
-        schema (dsl.Schema): The QSDL schema model.
-        obj (dsl.Object): entity.dsl.Object
-
-    Returns:
-        list[dsl.Field]
-    """
-    comp_fields = []
-
-    fields = get_parents(schema, obj)
-
-    fltr = filter(lambda x: x.is_composition and isinstance(x.value, dsl.Object), fields)
-    comp_fields = list(fltr)
-
-    return comp_fields
-
-
-def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
-    """Return all Fields who are using this dsl.Object as aggregation.
-
-    Args:
-        schema (dsl.Schema): The QSDL schema model.
-        obj (dsl.Object): entity.dsl.Object
-
-    Returns:
-        list[dsl.Field]
-    """
-    agg_fields = []
-
-    fields = get_parents(schema, obj)
-
-    fltr = filter(lambda x: x.is_aggregation and isinstance(x.value, dsl.Object), fields)
-    agg_fields = list(fltr)
-
-    return agg_fields
-
-
-def get_parents(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
-    """Returns all Fields whose value is this dsl.Object.
-
-    Args:
-        schema (dsl.Schema): The QSDL schema model.
-        obj (dsl.Object): entity.dsl.Object
-
-    Returns:
-        list[dsl.Field]
-    """
-    parents = []
-
-    fields = xtx.get_children_of_field(schema)
-
-    fltr = filter(lambda x: x.value == obj, fields)
-    parents = list(fltr)
-
-    return parents
-
-
-def get_query_fields(obj: dsl.Object) -> list[dsl.Field]:
-    """Returns a list of all query parameters.
-
-    For the default CRUD operations this will return the fields flagged with
-    a query-directive.
-
-    Args:
-        obj (dsl.Object): entity.dsl.Object
-
-    Returns:
-        list[dsl.Field]
-    """
-    fields = []
-
-    for field in obj.fields:
-        if field.is_query:
-            fields.append(field)
-
-    return fields
-
-
-def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
-    """Returns all fields ob a object including its supertype as list.
-
-    Fields that are redefined in a child, overwrite the parent definition.
-
-    Args:
-        entity (object): entity.dsl.Object
-
-    Returns:
-        list: [entity.dsl.Field]
-    """
-    fields: list[dsl.Field] = []
-
-    # skip already flattened entities
-    if entity.flattened:
-        return entity.fields
-
-    # Support multiple supertypes
-    if entity.supertypes:
-        for supertype in entity.supertypes:
-            tmp = get_all_fields_as_list(supertype)
-            fields.extend(tmp)
-
-    for field in entity.fields:
-        # check if attribute was already defined within a supertype
-        duplicate = [x for x in fields if x.name == field.name]
-        duplicate = duplicate[0] if duplicate else None
-
-        if not duplicate:
-            fields.append(field)
-        elif not field.is_override:
-            log.error(
-                "The inherited field '%s' of '%s' was redefined and replaced by '%s'.",
-                duplicate.name,
-                duplicate.parent.name,
-                entity.name,
-            )
-            raise Exception("Field redefinition without @override is not allowed.")
-        else:
-            index = fields.index(duplicate)
-            fields[index] = field
-
-            # log warning if type changed
-            if duplicate.value != field.value:
-                log.warning(
-                    "The inherited field '%s' of '%s' was redefined with a different type by '%s'.",
-                    duplicate.name,
-                    duplicate.parent.name,
-                    entity.name,
-                )
-
-    return fields
-
-
 def id_builder(obj: dsl.Object) -> dsl.Field:
     """Creates and returns a ID field.
 
@@ -286,7 +151,7 @@ def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[ds
     """
     arguments = []
 
-    query_fields = get_query_fields(obj)
+    query_fields = qutil.get_query_fields(obj)
 
     for field in query_fields:
         argument = dsl.Argument(operation, field.name, field.value)
@@ -652,7 +517,7 @@ def parse_objects(schema: dsl.Schema) -> None:
 
     # inherit all fields of parent objects
     for entity in bases + objects:
-        entity.fields = get_all_fields_as_list(entity)
+        entity.fields = qutil.get_all_fields_as_list(entity)
         entity.flattened = True
 
     # add id fields for all objects
@@ -665,7 +530,7 @@ def parse_objects(schema: dsl.Schema) -> None:
     objects = list(filter(lambda x: not x.api or x.api.generate, objects))
     for obj in objects:
         # aggregations
-        agg_fields = get_aggregation(schema, obj)
+        agg_fields = qutil.get_aggregation(schema, obj)
         duplicate = len(agg_fields) > 1
 
         # build aggregations
@@ -673,11 +538,11 @@ def parse_objects(schema: dsl.Schema) -> None:
             obj = api_builder(obj, field.parent, True, True)
 
         # compositions
-        comp_fields = get_compositions(schema, obj)
+        comp_fields = qutil.get_compositions(schema, obj)
         duplicate = len(comp_fields) > 1
 
         # build compositions
-        for field in get_compositions(schema, obj):
+        for field in qutil.get_compositions(schema, obj):
             obj = api_builder(obj, field.parent, False, duplicate)
 
         # build root objects
