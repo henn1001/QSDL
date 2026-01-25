@@ -14,13 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -31,14 +29,6 @@ import tools.jackson.databind.exc.MismatchedInputException;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-    /**
-     * Required for nested object validation.
-     */
-    @InitBinder
-    private void initDirectFieldAccess(DataBinder dataBinder) {
-        dataBinder.initDirectFieldAccess();
-    }
 
     private ResponseEntity<Object> buildResponseEntity(AppError appError, HttpServletRequest httpRequest) {
 
