@@ -65,7 +65,7 @@ class TicketServiceTest {
                 .thenReturn(new CursorPage<TicketEntity>(ticketEntityList, null, 6L));
 
         // When
-        CursorPage<Ticket> response = service.getTickets(new CursorPageable(null, 5, true), new Context());
+        CursorPage<Ticket> response = service.getTickets(new CursorPageable(null, 5, true));
 
         // Then
         assertEquals(5L, response.count());
@@ -89,7 +89,7 @@ class TicketServiceTest {
                 .thenReturn(ticketEntity);
 
         // When
-        Ticket response = service.createTicket(ticketRequest, new Context());
+        Ticket response = service.createTicket(ticketRequest);
 
         // Then
         JSONAssert.assertEquals(
@@ -109,7 +109,7 @@ class TicketServiceTest {
                 .thenReturn(Optional.of(ticketEntity));
 
         // When
-        Ticket response = service.getTicket(ticketEntity.getUid(), new Context());
+        Ticket response = service.getTicket(ticketEntity.getUid());
 
         // Then
         JSONAssert.assertEquals(
@@ -130,7 +130,7 @@ class TicketServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.getTicket(ticketEntity.getUid(), new Context());
+                    service.getTicket(ticketEntity.getUid());
                 });
 
         // Then
@@ -154,7 +154,7 @@ class TicketServiceTest {
                 .thenReturn(ticketEntity);
 
         // When
-        Ticket response = service.updateTicket(ticketEntity.getUid(), ticketRequest, new Context());
+        Ticket response = service.updateTicket(ticketEntity.getUid(), ticketRequest);
 
         // Then
         Ticket ticketResponse = mapper.toResponse(ticketEntity);
@@ -177,7 +177,7 @@ class TicketServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.updateTicket(ticketEntity.getUid(), ticketRequest, new Context());
+                    service.updateTicket(ticketEntity.getUid(), ticketRequest);
                 });
 
         // Then
@@ -197,7 +197,7 @@ class TicketServiceTest {
                 .thenReturn(Optional.of(ticketEntity));
 
         // When & Then
-        service.deleteTicket(ticketEntity.getUid(), new Context());
+        service.deleteTicket(ticketEntity.getUid());
     }
 
     @Test
@@ -212,7 +212,7 @@ class TicketServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.deleteTicket(ticketEntity.getUid(), new Context());
+                    service.deleteTicket(ticketEntity.getUid());
                 });
 
         // Then

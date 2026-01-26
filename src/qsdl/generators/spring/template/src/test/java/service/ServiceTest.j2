@@ -72,9 +72,9 @@ class {{model.name}}ServiceTest {
 
         // When
         {% if operation.parent %}
-        CursorPage<{{m_response_type}}> response = service.{{operation.name}}(one, new CursorPageable(null, 5, true), new Context());
+        CursorPage<{{m_response_type}}> response = service.{{operation.name}}(one, {% if operation.uses_filter %}null, {% endif %}new CursorPageable(null, 5, true));
         {% else %}
-        CursorPage<{{m_response_type}}> response = service.{{operation.name}}(new CursorPageable(null, 5, true), new Context());
+        CursorPage<{{m_response_type}}> response = service.{{operation.name}}({% if operation.uses_filter %}null, {% endif %}new CursorPageable(null, 5, true));
         {% endif %}
 
         // Then
@@ -112,7 +112,7 @@ class {{model.name}}ServiceTest {
                 .thenReturn(null);
 
         // When
-        service.{{operation.name}}(testParent.{{getId}}, {{m_entity_var}}.{{getId}}, new Context());
+        service.{{operation.name}}(testParent.{{getId}}, {{m_entity_var}}.{{getId}});
 
         // Then
 
@@ -139,7 +139,7 @@ class {{model.name}}ServiceTest {
                 .thenReturn({{m_entity_var}});
 
         // When
-        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_var}}Request, new Context());
+        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_var}}Request);
 
         // Then
         JSONAssert.assertEquals(
@@ -172,7 +172,7 @@ class {{model.name}}ServiceTest {
         {% endif %}
 
         // When
-        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
+        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
 
         // Then
         JSONAssert.assertEquals(
@@ -203,7 +203,7 @@ class {{model.name}}ServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
+                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
                 });
 
         // Then
@@ -240,7 +240,7 @@ class {{model.name}}ServiceTest {
                 .thenReturn({{m_entity_var}});
 
         // When
-        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request, new Context());
+        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request);
 
         // Then
         {{m_response_type}} {{m_var}}Response = mapper.toResponse({{m_entity_var}});
@@ -273,7 +273,7 @@ class {{model.name}}ServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request, new Context());
+                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request);
                 });
 
         // Then
@@ -306,7 +306,7 @@ class {{model.name}}ServiceTest {
         {% endif %}
 
         // When & Then
-        service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
+        service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
     }
 
     @Test
@@ -331,7 +331,7 @@ class {{model.name}}ServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, new Context());
+                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
                 });
 
         // Then

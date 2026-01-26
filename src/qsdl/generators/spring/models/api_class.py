@@ -103,6 +103,9 @@ class Operation:
     consumes: str = None
     produces: str = None
 
+    uses_filter: bool = False
+    filter_name: str | None = None
+
     def build(self, _ref: dsl.Operation) -> Self:
         """Builds self from dsl.Operation"""
 
@@ -127,6 +130,10 @@ class Operation:
         self._add_parameters(_ref)
         self._add_response(_ref)
         self._add_response_headers(_ref)
+
+        # Use filter if operation has query parameters
+        self.uses_filter = len(self.query_parameters) > 0
+        self.filter_name = stringcase.capitalcase(self.name) + "Filter"
 
         return self
 

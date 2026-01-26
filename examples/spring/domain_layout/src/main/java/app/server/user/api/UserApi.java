@@ -3,7 +3,6 @@
  */
 package app.server.user.api;
 
-import app.server.common.constants.*;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.user.dto.*;

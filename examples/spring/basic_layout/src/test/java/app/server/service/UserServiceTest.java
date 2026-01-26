@@ -76,7 +76,7 @@ class UserServiceTest {
                 .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
         // When
-        CursorPage<User> response = service.getUsersForTicket(one, new CursorPageable(null, 5, true), new Context());
+        CursorPage<User> response = service.getUsersForTicket(one, new CursorPageable(null, 5, true));
 
         // Then
         assertEquals(5L, response.count());
@@ -105,7 +105,7 @@ class UserServiceTest {
                 .thenReturn(null);
 
         // When
-        service.addUserToTicket(testParent.getId(), userEntity.getId(), new Context());
+        service.addUserToTicket(testParent.getId(), userEntity.getId());
 
         // Then
 
@@ -128,7 +128,7 @@ class UserServiceTest {
                 .thenReturn(null);
 
         // When
-        service.removeUserFromTicket(testParent.getId(), userEntity.getId(), new Context());
+        service.removeUserFromTicket(testParent.getId(), userEntity.getId());
 
         // Then
 
@@ -145,7 +145,7 @@ class UserServiceTest {
                 .thenReturn(new CursorPage<UserEntity>(userEntityList, null, 6L));
 
         // When
-        CursorPage<User> response = service.getUsers(new CursorPageable(null, 5, true), new Context());
+        CursorPage<User> response = service.getUsers(new CursorPageable(null, 5, true));
 
         // Then
         assertEquals(5L, response.count());
@@ -169,7 +169,7 @@ class UserServiceTest {
                 .thenReturn(userEntity);
 
         // When
-        User response = service.createUser(userRequest, new Context());
+        User response = service.createUser(userRequest);
 
         // Then
         JSONAssert.assertEquals(
@@ -189,7 +189,7 @@ class UserServiceTest {
                 .thenReturn(Optional.of(userEntity));
 
         // When
-        User response = service.getUser(userEntity.getId(), new Context());
+        User response = service.getUser(userEntity.getId());
 
         // Then
         JSONAssert.assertEquals(
@@ -210,7 +210,7 @@ class UserServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.getUser(userEntity.getId(), new Context());
+                    service.getUser(userEntity.getId());
                 });
 
         // Then
@@ -234,7 +234,7 @@ class UserServiceTest {
                 .thenReturn(userEntity);
 
         // When
-        User response = service.updateUser(userEntity.getId(), userRequest, new Context());
+        User response = service.updateUser(userEntity.getId(), userRequest);
 
         // Then
         User userResponse = mapper.toResponse(userEntity);
@@ -257,7 +257,7 @@ class UserServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.updateUser(userEntity.getId(), userRequest, new Context());
+                    service.updateUser(userEntity.getId(), userRequest);
                 });
 
         // Then
@@ -277,7 +277,7 @@ class UserServiceTest {
                 .thenReturn(Optional.of(userEntity));
 
         // When & Then
-        service.deleteUser(userEntity.getId(), new Context());
+        service.deleteUser(userEntity.getId());
     }
 
     @Test
@@ -292,7 +292,7 @@ class UserServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.deleteUser(userEntity.getId(), new Context());
+                    service.deleteUser(userEntity.getId());
                 });
 
         // Then

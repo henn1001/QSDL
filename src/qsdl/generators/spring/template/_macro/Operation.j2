@@ -17,12 +17,18 @@
         // should be optimized with something like getReferenceById
         var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-        var queryParameters = Arrays.<String>asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
-        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}Entity.class);
+        {% if operation.uses_filter %}
+        var predicate = PredicateBuilder.build(filter, {{model.name}}Entity.class);
+        {% else %}
+        var predicate = PredicateBuilder.build({{model.name}}Entity.class);
+        {% endif %}
         predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{operation.parent.predicate}}.id.eq({{p_model_entity}}.getId()));
         {% else %}
-        var queryParameters = Arrays.<String>asList({% for parameter in operation.query_parameters %}"{{parameter.name}}"{{ ", " if not loop.last}}{% endfor %});
-        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), {{model.name}}Entity.class);
+        {% if operation.uses_filter %}
+        var predicate = PredicateBuilder.build(filter, {{model.name}}Entity.class);
+        {% else %}
+        var predicate = PredicateBuilder.build({{model.name}}Entity.class);
+        {% endif %}
         {% endif %}
 
         var cursorPage = {{model_dto}}Repository.findAll(predicate, pageable);

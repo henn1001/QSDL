@@ -158,6 +158,16 @@ def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaM
             if isinstance(argument.value, dsl.Object | dsl.Base):
                 is_ref = True
 
+            # validate that Base types used as query parameters only contain scalar fields
+            if (argument.is_query or not operation.method) and isinstance(argument.value, dsl.Base):
+                for field in qutil.get_all_fields_as_list(argument.value):
+                    if isinstance(field.value, dsl.Object | dsl.Base):
+                        msg = (
+                            f"The Base type {argument.value.name} used as query parameter in operation {operation.name} "
+                            f"contains a nested type field '{field.name}'. Query parameters with Base types must only contain scalar/enum fields."
+                        )
+                        raise TextXSemanticError(msg, filename=schema._tx_filename)
+
         if is_ref and count > 1:
             msg = (
                 f"The Operation {operation.name} references more than one Object "

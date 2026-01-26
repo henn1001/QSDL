@@ -75,6 +75,10 @@ def parse_models(schema: Schema) -> list[ModelClass]:
     # add hibernate related info to model and fields
     util.add_hibernate_info(models)
 
+    # build models from operations query parameters
+    filter_models = util.build_filter_models()
+    models.extend(filter_models)
+
     return models
 
 
@@ -194,7 +198,8 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
     for model in util.Store.models:
         model.package.slashed = True
         # fmt: off
-        model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
+        if model.has_request:
+            model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
         model_files.append(("src/main/java/domain/Base.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
 
         if model.is_object:

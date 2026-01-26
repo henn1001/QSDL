@@ -82,7 +82,7 @@ class ProjectControllerTest {
         ProjectRequest requestDto = TestUtils.getRandom(ProjectRequest.class);
         Project responseDto = TestUtils.getRandom(Project.class);
 
-        when(service.createProject(any(), any()))
+        when(service.createProject(any()))
                 .thenReturn(responseDto);
 
         // When
@@ -107,7 +107,7 @@ class ProjectControllerTest {
         // Given
         Project responseDto = TestUtils.getRandom(Project.class);
 
-        when(service.createProject(any(), any()))
+        when(service.createProject(any()))
                 .thenReturn(responseDto);
 
         // When
@@ -132,7 +132,7 @@ class ProjectControllerTest {
         // Given
         Project responseDto = TestUtils.getRandom(Project.class);
 
-        when(service.getProject(eq(one), any()))
+        when(service.getProject(eq(one)))
                 .thenReturn(responseDto);
 
         // When
@@ -156,10 +156,10 @@ class ProjectControllerTest {
         ProjectRequest requestDto = TestUtils.getRandom(ProjectRequest.class);
         Project responseDto = TestUtils.getRandom(Project.class);
 
-        when(service.getProject(eq(one), any()))
+        when(service.getProject(eq(one)))
                 .thenReturn(responseDto);
 
-        when(service.updateProject(eq(one), any(), any()))
+        when(service.updateProject(eq(one), any()))
                 .thenReturn(responseDto);
 
         // When
@@ -184,7 +184,7 @@ class ProjectControllerTest {
         // Given
         Project responseDto = TestUtils.getRandom(Project.class);
 
-        when(service.updateProject(eq(one), any(), any()))
+        when(service.updateProject(eq(one), any()))
                 .thenReturn(responseDto);
 
         // When

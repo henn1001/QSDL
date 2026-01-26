@@ -4,7 +4,7 @@
 package app.server.custom.api;
 
 import app.server.common.api.BaseController;
-import app.server.common.constants.*;
+import app.server.common.dto.ActionFilter;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.common.util.JsonMergePatchUtil;
@@ -43,7 +43,7 @@ public class DefaultController extends BaseController implements DefaultApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<ObjectNode> action(BaseTypeRequest arg1) {
+    public ResponseEntity<ObjectNode> action(ActionFilter filter, BaseTypeRequest arg1) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

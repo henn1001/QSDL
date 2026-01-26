@@ -3,8 +3,8 @@
  */
 package app.server.api;
 
-import app.server.constant.*;
 import app.server.domain.*;
+import app.server.domain.GetProjectsFilter;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import jakarta.json.JsonMergePatch;
@@ -32,7 +32,7 @@ public interface ProjectApi {
      * List Projects
      */
     @GetMapping(value = "/projects", produces = {"application/json"})
-    default ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
+    default ResponseEntity<CursorPage<Project>> getProjects(GetProjectsFilter filter, CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

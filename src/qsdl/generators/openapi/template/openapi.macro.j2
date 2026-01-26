@@ -1,5 +1,5 @@
 {% macro get_parameters(operation) %}
-{% set parameters = operation.parameters  %}
+{% set parameters = operation.path_parameters if operation.is_generated and operation.is_pageable  else operation.parameters  %}
 {% for parameter in parameters %}
   - name: {{ parameter.name }}
   {% if parameter.description %}
@@ -13,6 +13,24 @@
     schema:
       {{ get_ref_type_format(parameter) | indent(4) | trim }}
 {% endfor %}
+{% if operation.is_generated and operation.is_pageable and operation.query_parameters %}
+  - name: filter
+    in: query
+    required: false
+    schema:
+      title: {{ operation.name |capitalize }}Filter
+      type: object
+  {% if operation.query_parameters %}
+      examples:
+      {% for parameter in operation.query_parameters %}
+        {% if loop.first %}
+        - {{ parameter.name }}: {{ parameter.type }}
+        {% else %}
+          {{ parameter.name }}: {{ parameter.type }}
+        {% endif %}
+      {% endfor %}
+  {% endif %}
+{% endif %}
 {% if operation.is_pageable %}
   - $ref: '#/components/parameters/cursor'
   - $ref: '#/components/parameters/limit'

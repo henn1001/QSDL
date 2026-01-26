@@ -58,7 +58,7 @@ class TicketControllerTest {
 
         CursorPage<Ticket> ret = new CursorPage<Ticket>(Arrays.asList(responseDto), null, null);
 
-        when(service.getTickets(any(), any()))
+        when(service.getTickets(any()))
                 .thenReturn(ret);
 
         // When
@@ -82,7 +82,7 @@ class TicketControllerTest {
         TicketRequest requestDto = TestUtils.getRandom(TicketRequest.class);
         Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
-        when(service.createTicket(any(), any()))
+        when(service.createTicket(any()))
                 .thenReturn(responseDto);
 
         // When
@@ -107,7 +107,7 @@ class TicketControllerTest {
         // Given
         Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
-        when(service.createTicket(any(), any()))
+        when(service.createTicket(any()))
                 .thenReturn(responseDto);
 
         // When
@@ -132,7 +132,7 @@ class TicketControllerTest {
         // Given
         Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
-        when(service.getTicket(eq(one), any()))
+        when(service.getTicket(eq(one)))
                 .thenReturn(responseDto);
 
         // When
@@ -156,10 +156,10 @@ class TicketControllerTest {
         TicketRequest requestDto = TestUtils.getRandom(TicketRequest.class);
         Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
-        when(service.getTicket(eq(one), any()))
+        when(service.getTicket(eq(one)))
                 .thenReturn(responseDto);
 
-        when(service.updateTicket(eq(one), any(), any()))
+        when(service.updateTicket(eq(one), any()))
                 .thenReturn(responseDto);
 
         // When
@@ -184,7 +184,7 @@ class TicketControllerTest {
         // Given
         Ticket responseDto = TestUtils.getRandom(Ticket.class);
 
-        when(service.updateTicket(eq(one), any(), any()))
+        when(service.updateTicket(eq(one), any()))
                 .thenReturn(responseDto);
 
         // When

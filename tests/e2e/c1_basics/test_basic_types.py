@@ -53,7 +53,33 @@ class TestE2EBasicTypes(BaseE2ETest):
     def test_openapi(self, openapi_schema: dict) -> None:
         """asserts generated OpenAPI spec is correct"""
 
-        pass
+        schemas = openapi_schema["components"]["schemas"]
+
+        foo = schemas["Foo"]
+        foo_props = foo["properties"]
+
+        assert foo_props["int"]["type"] == "integer"
+        assert foo_props["int"]["format"] == "int32"
+
+        assert foo_props["long"]["type"] == "integer"
+        assert foo_props["long"]["format"] == "int64"
+
+        assert foo_props["float"]["type"] == "number"
+        assert foo_props["float"]["format"] == "float"
+
+        assert foo_props["double"]["type"] == "number"
+        assert foo_props["double"]["format"] == "double"
+
+        assert foo_props["string"]["type"] == "string"
+        assert foo_props["boolean"]["type"] == "boolean"
+
+        assert foo_props["date"]["type"] == "string"
+        assert foo_props["date"]["format"] == "date"
+
+        assert foo_props["datetime"]["type"] == "string"
+        assert foo_props["datetime"]["format"] == "date-time"
+
+        assert foo_props["object"]["type"] == "object"
 
     def test_spring(self, srcgen: Path) -> None:
         """asserts generated Spring Boot code is correct"""

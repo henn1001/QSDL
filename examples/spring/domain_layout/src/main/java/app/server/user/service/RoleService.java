@@ -50,14 +50,13 @@ public class RoleService {
     }
 
     @Transactional(readOnly = true)
-    public CursorPage<Role> getRoles(String projectId, CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<Role> getRoles(String projectId, CursorPageable pageable) throws AppException {
 
         // confirm existence of parent
         // should be optimized with something like getReferenceById
         var projectEntity = fetchProjectFromDb(projectId);
 
-        var queryParameters = Arrays.<String>asList();
-        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), RoleEntity.class);
+        var predicate = PredicateBuilder.build(RoleEntity.class);
         predicate.and(QRoleEntity.roleEntity.project.id.eq(projectEntity.getId()));
 
         var cursorPage = roleRepository.findAll(predicate, pageable);
@@ -69,7 +68,7 @@ public class RoleService {
     }
 
     @Transactional
-    public Role createRole(String projectId, RoleRequest body, Context context) throws AppException {
+    public Role createRole(String projectId, RoleRequest body) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
@@ -85,7 +84,7 @@ public class RoleService {
     }
 
     @Transactional(readOnly = true)
-    public Role getRole(String projectId, String id, Context context) throws AppException {
+    public Role getRole(String projectId, String id) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
@@ -96,7 +95,7 @@ public class RoleService {
     }
 
     @Transactional
-    public Role updateRole(String projectId, String id, RoleRequest body, Context context) throws AppException {
+    public Role updateRole(String projectId, String id, RoleRequest body) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
@@ -112,7 +111,7 @@ public class RoleService {
     }
 
     @Transactional
-    public Void deleteRole(String projectId, String id, Context context) throws AppException {
+    public Void deleteRole(String projectId, String id) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);

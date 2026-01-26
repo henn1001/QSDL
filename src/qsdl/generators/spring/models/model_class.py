@@ -144,7 +144,7 @@ class ModelField:
         elif self.type == "Double":
             self.default = f"{_ref.default}d" if _ref.default else None
         elif self.type == "Boolean":
-            self.default = "true" if _ref.default.lower() == "true" else "false" if _ref.default else None
+            self.default = "true" if str(_ref.default).lower() == "true" else "false" if _ref.default else None
         else:
             self.default = f"{_ref.default}" if _ref.default else None
 
@@ -170,6 +170,7 @@ class ModelClass:
     has_relation: bool = False
     has_required: bool = False
     has_query: bool = False
+    has_request: bool = True
 
     package: spring.Package = None
 

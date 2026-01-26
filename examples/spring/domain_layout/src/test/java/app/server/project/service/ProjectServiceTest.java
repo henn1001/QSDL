@@ -65,7 +65,7 @@ class ProjectServiceTest {
                 .thenReturn(new CursorPage<ProjectEntity>(projectEntityList, null, 6L));
 
         // When
-        CursorPage<Project> response = service.getProjects(new CursorPageable(null, 5, true), new Context());
+        CursorPage<Project> response = service.getProjects(null, new CursorPageable(null, 5, true));
 
         // Then
         assertEquals(5L, response.count());
@@ -89,7 +89,7 @@ class ProjectServiceTest {
                 .thenReturn(projectEntity);
 
         // When
-        Project response = service.createProject(projectRequest, new Context());
+        Project response = service.createProject(projectRequest);
 
         // Then
         JSONAssert.assertEquals(
@@ -109,7 +109,7 @@ class ProjectServiceTest {
                 .thenReturn(Optional.of(projectEntity));
 
         // When
-        Project response = service.getProject(projectEntity.getUid(), new Context());
+        Project response = service.getProject(projectEntity.getUid());
 
         // Then
         JSONAssert.assertEquals(
@@ -130,7 +130,7 @@ class ProjectServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.getProject(projectEntity.getUid(), new Context());
+                    service.getProject(projectEntity.getUid());
                 });
 
         // Then
@@ -154,7 +154,7 @@ class ProjectServiceTest {
                 .thenReturn(projectEntity);
 
         // When
-        Project response = service.updateProject(projectEntity.getUid(), projectRequest, new Context());
+        Project response = service.updateProject(projectEntity.getUid(), projectRequest);
 
         // Then
         Project projectResponse = mapper.toResponse(projectEntity);
@@ -177,7 +177,7 @@ class ProjectServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.updateProject(projectEntity.getUid(), projectRequest, new Context());
+                    service.updateProject(projectEntity.getUid(), projectRequest);
                 });
 
         // Then
@@ -197,7 +197,7 @@ class ProjectServiceTest {
                 .thenReturn(Optional.of(projectEntity));
 
         // When & Then
-        service.deleteProject(projectEntity.getUid(), new Context());
+        service.deleteProject(projectEntity.getUid());
     }
 
     @Test
@@ -212,7 +212,7 @@ class ProjectServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.deleteProject(projectEntity.getUid(), new Context());
+                    service.deleteProject(projectEntity.getUid());
                 });
 
         // Then

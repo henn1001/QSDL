@@ -58,7 +58,7 @@ class UserControllerTest {
 
         CursorPage<User> ret = new CursorPage<User>(Arrays.asList(responseDto), null, null);
 
-        when(service.getUsersForTicket(any(), any(), any()))
+        when(service.getUsersForTicket(any(), any()))
                 .thenReturn(ret);
 
         // When
@@ -109,7 +109,7 @@ class UserControllerTest {
 
         CursorPage<User> ret = new CursorPage<User>(Arrays.asList(responseDto), null, null);
 
-        when(service.getUsers(any(), any()))
+        when(service.getUsers(any()))
                 .thenReturn(ret);
 
         // When
@@ -133,7 +133,7 @@ class UserControllerTest {
         UserRequest requestDto = TestUtils.getRandom(UserRequest.class);
         User responseDto = TestUtils.getRandom(User.class);
 
-        when(service.createUser(any(), any()))
+        when(service.createUser(any()))
                 .thenReturn(responseDto);
 
         // When
@@ -158,7 +158,7 @@ class UserControllerTest {
         // Given
         User responseDto = TestUtils.getRandom(User.class);
 
-        when(service.createUser(any(), any()))
+        when(service.createUser(any()))
                 .thenReturn(responseDto);
 
         // When
@@ -183,7 +183,7 @@ class UserControllerTest {
         // Given
         User responseDto = TestUtils.getRandom(User.class);
 
-        when(service.getUser(eq(one), any()))
+        when(service.getUser(eq(one)))
                 .thenReturn(responseDto);
 
         // When
@@ -207,10 +207,10 @@ class UserControllerTest {
         UserRequest requestDto = TestUtils.getRandom(UserRequest.class);
         User responseDto = TestUtils.getRandom(User.class);
 
-        when(service.getUser(eq(one), any()))
+        when(service.getUser(eq(one)))
                 .thenReturn(responseDto);
 
-        when(service.updateUser(eq(one), any(), any()))
+        when(service.updateUser(eq(one), any()))
                 .thenReturn(responseDto);
 
         // When
@@ -235,7 +235,7 @@ class UserControllerTest {
         // Given
         User responseDto = TestUtils.getRandom(User.class);
 
-        when(service.updateUser(eq(one), any(), any()))
+        when(service.updateUser(eq(one), any()))
                 .thenReturn(responseDto);
 
         // When

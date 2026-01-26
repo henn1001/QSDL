@@ -51,10 +51,19 @@ def generate_imports_for_template(
     import_sets = {
         "Api.j2": [
             f"import {api_class.package.domain}.*;" if api_class else None,
-            f"import {util.Store.package.enum}.*;",
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
+            *(
+                [
+                    f"import {util.get_model_for(op.filter_name).package.domain}.{op.filter_name};"
+                    for op in api_class.operations
+                    if op.uses_filter
+                ]
+                if api_class
+                else []
+            ),
             "import jakarta.json.JsonMergePatch;",
+            "import java.util.List;",
             "import org.springframework.http.HttpStatus;",
             "import org.springframework.http.ResponseEntity;",
             "import org.springframework.stereotype.Controller;",
@@ -83,9 +92,17 @@ def generate_imports_for_template(
             f"import {util.Store.package.controller}.BaseController;",
             f"import {util.Store.package.util}.JsonMergePatchUtil;",
             f"import {util.Store.package.util}.Validator;",
-            f"import {util.Store.package.enum}.*;",
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
+            *(
+                [
+                    f"import {util.get_model_for(op.filter_name).package.domain}.{op.filter_name};"
+                    for op in api_class.operations
+                    if op.uses_filter
+                ]
+                if api_class
+                else []
+            ),
             "import jakarta.json.JsonMergePatch;",
             "import org.springframework.http.HttpStatus;",
             "import org.springframework.http.ResponseEntity;",
@@ -113,6 +130,15 @@ def generate_imports_for_template(
                     f"import {util.Store.package.util}.PredicateBuilder;",
                 ]
                 if api_class and is_db
+                else []
+            ),
+            *(
+                [
+                    f"import {util.get_model_for(op.filter_name).package.domain}.{op.filter_name};"
+                    for op in api_class.operations
+                    if op.uses_filter and util.get_model_for(op.filter_name).package.domain != api_class.package.domain
+                ]
+                if api_class
                 else []
             ),
             *(

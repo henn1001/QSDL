@@ -19,12 +19,14 @@ def wrapper_generate(test_input: str) -> bool:
     return generate(Path(), generator_name="void", raw_schema=test_input) is None
 
 
-def wrapper_generate_failure(test_input: str) -> None:
+def wrapper_generate_failure(test_input: str) -> pytest.ExceptionInfo[Exception]:
     """Expect the generation to fail.
 
     Args:
         test_input (str): The QSDL definition.
     """
     test_input = textwrap.dedent(test_input)
-    with pytest.raises(Exception):  # noqa: B017
+    with pytest.raises(Exception) as excinfo:  # noqa: B017
         generate(Path(), generator_name="openapi", raw_schema=test_input)
+
+    return excinfo

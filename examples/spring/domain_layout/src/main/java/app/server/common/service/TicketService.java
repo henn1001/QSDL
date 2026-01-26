@@ -34,10 +34,9 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public CursorPage<Ticket> getTickets(CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<Ticket> getTickets(CursorPageable pageable) throws AppException {
 
-        var queryParameters = Arrays.<String>asList();
-        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), TicketEntity.class);
+        var predicate = PredicateBuilder.build(TicketEntity.class);
 
         var cursorPage = ticketRepository.findAll(predicate, pageable);
 
@@ -48,7 +47,7 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket createTicket(TicketRequest body, Context context) throws AppException {
+    public Ticket createTicket(TicketRequest body) throws AppException {
 
         var ticketEntity = ticketMapper.toEntity(body);
 
@@ -58,7 +57,7 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public Ticket getTicket(String id, Context context) throws AppException {
+    public Ticket getTicket(String id) throws AppException {
 
         var ticketEntity = fetchTicketFromDb(id);
 
@@ -66,7 +65,7 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket updateTicket(String id, TicketRequest body, Context context) throws AppException {
+    public Ticket updateTicket(String id, TicketRequest body) throws AppException {
 
         var ticketEntity = fetchTicketFromDb(id);
 
@@ -79,7 +78,7 @@ public class TicketService {
     }
 
     @Transactional
-    public Void deleteTicket(String id, Context context) throws AppException {
+    public Void deleteTicket(String id) throws AppException {
 
         var ticketEntity = fetchTicketFromDb(id);
 

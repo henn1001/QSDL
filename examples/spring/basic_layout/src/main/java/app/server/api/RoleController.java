@@ -5,7 +5,6 @@ package app.server.api;
 
 import app.server.api.BaseController;
 import app.server.api.RoleApi;
-import app.server.constant.*;
 import app.server.domain.*;
 import app.server.domain.mapper.RoleMapper;
 import app.server.model.CursorPage;
@@ -41,7 +40,7 @@ public class RoleController extends BaseController implements RoleApi {
      */
     @Override
     public ResponseEntity<CursorPage<Role>> getRoles(Long projectId, CursorPageable pageable) {
-        CursorPage<Role> response = roleService.getRoles(projectId, pageable, super.getContext());
+        CursorPage<Role> response = roleService.getRoles(projectId, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -51,7 +50,7 @@ public class RoleController extends BaseController implements RoleApi {
     @Override
     public ResponseEntity<Role> createRole(Long projectId, RoleRequest body) {
         Validator.validate(body);
-        Role response = roleService.createRole(projectId, body, super.getContext());
+        Role response = roleService.createRole(projectId, body);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -60,7 +59,7 @@ public class RoleController extends BaseController implements RoleApi {
      */
     @Override
     public ResponseEntity<Role> getRole(Long projectId, Long id) {
-        Role response = roleService.getRole(projectId, id, super.getContext());
+        Role response = roleService.getRole(projectId, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -69,12 +68,12 @@ public class RoleController extends BaseController implements RoleApi {
      */
     @Override
     public ResponseEntity<Role> updateRole(Long projectId, Long id, JsonMergePatch patch) {
-        Role current = roleService.getRole(projectId, id, super.getContext());
+        Role current = roleService.getRole(projectId, id);
         RoleRequest target = roleMapper.toRequest(current);
         RoleRequest request = JsonMergePatchUtil.apply(patch, target);
 
         Validator.validate(request);
-        Role response = roleService.updateRole(projectId, id, request, super.getContext());
+        Role response = roleService.updateRole(projectId, id, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -83,7 +82,7 @@ public class RoleController extends BaseController implements RoleApi {
      */
     @Override
     public ResponseEntity<Void> deleteRole(Long projectId, Long id) {
-        roleService.deleteRole(projectId, id, super.getContext());
+        roleService.deleteRole(projectId, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

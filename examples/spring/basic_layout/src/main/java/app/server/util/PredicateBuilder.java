@@ -5,6 +5,9 @@ package app.server.util;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.core.TypeInformation;
@@ -12,7 +15,9 @@ import org.springframework.data.querydsl.SimpleEntityPathResolver;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.QuerydslBindingsFactory;
 import org.springframework.data.querydsl.binding.QuerydslPredicateBuilder;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import tools.jackson.databind.json.JsonMapper;
 
 public final class PredicateBuilder {
 
@@ -26,11 +31,14 @@ public final class PredicateBuilder {
 
     private static final QuerydslBindingsFactory bindingsFactory;
 
+    private static final JsonMapper mapper;
+
     static {
         conversionService = DefaultConversionService.getSharedInstance();
         resolver = new SimpleEntityPathResolver("");
         predicateBuilder = new QuerydslPredicateBuilder(conversionService, resolver);
         bindingsFactory = new QuerydslBindingsFactory(resolver);
+        mapper = new JsonMapper();
     }
 
     /**
@@ -44,5 +52,43 @@ public final class PredicateBuilder {
         Predicate predicate = predicateBuilder.getPredicate(domainType, queryParameters, bindings);
 
         return new BooleanBuilder(predicate);
+    }
+
+    /**
+     * Builds a predicate from a filter object by converting it to a MultiValueMap.
+     */
+    public static <T> BooleanBuilder build(Object filter, Class<T> domainClass) {
+        if (filter == null) {
+            return build(domainClass);
+        }
+
+        MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<>();
+
+        // Convert filter object to map
+        Map<String, Object> filterMap = mapper.convertValue(filter, Map.class);
+
+        // Convert to MultiValueMap
+        for (Map.Entry<String, Object> entry : filterMap.entrySet()) {
+            if (entry.getValue() != null) {
+                List<String> values = new ArrayList<>();
+                if (entry.getValue() instanceof List) {
+                    for (Object item : (List<?>) entry.getValue()) {
+                        values.add(String.valueOf(item));
+                    }
+                } else {
+                    values.add(String.valueOf(entry.getValue()));
+                }
+                queryParameters.put(entry.getKey(), values);
+            }
+        }
+
+        return build(queryParameters, domainClass);
+    }
+
+    /**
+     * Creates an empty predicate builder.
+     */
+    public static <T> BooleanBuilder build(Class<T> domainClass) {
+        return new BooleanBuilder();
     }
 }

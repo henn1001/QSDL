@@ -58,7 +58,7 @@ class RoleControllerTest {
 
         CursorPage<Role> ret = new CursorPage<Role>(Arrays.asList(responseDto), null, null);
 
-        when(service.getRoles(any(), any(), any()))
+        when(service.getRoles(any(), any()))
                 .thenReturn(ret);
 
         // When
@@ -82,7 +82,7 @@ class RoleControllerTest {
         RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
         Role responseDto = TestUtils.getRandom(Role.class);
 
-        when(service.createRole(eq(one), any(), any()))
+        when(service.createRole(any(), any()))
                 .thenReturn(responseDto);
 
         // When
@@ -107,7 +107,7 @@ class RoleControllerTest {
         // Given
         Role responseDto = TestUtils.getRandom(Role.class);
 
-        when(service.createRole(eq(one), any(), any()))
+        when(service.createRole(any(), any()))
                 .thenReturn(responseDto);
 
         // When
@@ -132,7 +132,7 @@ class RoleControllerTest {
         // Given
         Role responseDto = TestUtils.getRandom(Role.class);
 
-        when(service.getRole(eq(one), eq(one), any()))
+        when(service.getRole(eq(one), eq(one)))
                 .thenReturn(responseDto);
 
         // When
@@ -156,10 +156,10 @@ class RoleControllerTest {
         RoleRequest requestDto = TestUtils.getRandom(RoleRequest.class);
         Role responseDto = TestUtils.getRandom(Role.class);
 
-        when(service.getRole(eq(one), eq(one), any()))
+        when(service.getRole(eq(one), eq(one)))
                 .thenReturn(responseDto);
 
-        when(service.updateRole(eq(one), eq(one), any(), any()))
+        when(service.updateRole(eq(one), eq(one), any()))
                 .thenReturn(responseDto);
 
         // When
@@ -184,7 +184,7 @@ class RoleControllerTest {
         // Given
         Role responseDto = TestUtils.getRandom(Role.class);
 
-        when(service.updateRole(eq(one), eq(one), any(), any()))
+        when(service.updateRole(eq(one), eq(one), any()))
                 .thenReturn(responseDto);
 
         // When

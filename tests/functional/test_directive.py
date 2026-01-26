@@ -68,10 +68,10 @@ class TestDirective:
         parameter = openapi["paths"]["/bars"]["get"]["parameters"]
 
         assert parameter[0]["in"] == "query"
-        assert parameter[0]["name"] == "name"
+        assert parameter[0]["name"] == "filter"
 
-        assert parameter[1]["in"] == "query"
-        assert parameter[1]["name"] == "world"
+        assert "name" in parameter[0]["schema"]["examples"][0]
+        assert "world" in parameter[0]["schema"]["examples"][0]
 
     def test_directive_03_positive(self) -> None:
         """Verify usage of @hidden"""

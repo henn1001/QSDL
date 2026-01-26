@@ -5,7 +5,6 @@ package app.server.api;
 
 import app.server.api.BaseController;
 import app.server.api.UserApi;
-import app.server.constant.*;
 import app.server.domain.*;
 import app.server.domain.mapper.UserMapper;
 import app.server.model.CursorPage;
@@ -41,7 +40,7 @@ public class UserController extends BaseController implements UserApi {
      */
     @Override
     public ResponseEntity<CursorPage<User>> getUsersForTicket(Long ticketId, CursorPageable pageable) {
-        CursorPage<User> response = userService.getUsersForTicket(ticketId, pageable, super.getContext());
+        CursorPage<User> response = userService.getUsersForTicket(ticketId, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -50,7 +49,7 @@ public class UserController extends BaseController implements UserApi {
      */
     @Override
     public ResponseEntity<Void> addUserToTicket(Long ticketId, Long id) {
-        userService.addUserToTicket(ticketId, id, super.getContext());
+        userService.addUserToTicket(ticketId, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -59,7 +58,7 @@ public class UserController extends BaseController implements UserApi {
      */
     @Override
     public ResponseEntity<Void> removeUserFromTicket(Long ticketId, Long id) {
-        userService.removeUserFromTicket(ticketId, id, super.getContext());
+        userService.removeUserFromTicket(ticketId, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -68,7 +67,7 @@ public class UserController extends BaseController implements UserApi {
      */
     @Override
     public ResponseEntity<CursorPage<User>> getUsers(CursorPageable pageable) {
-        CursorPage<User> response = userService.getUsers(pageable, super.getContext());
+        CursorPage<User> response = userService.getUsers(pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -78,7 +77,7 @@ public class UserController extends BaseController implements UserApi {
     @Override
     public ResponseEntity<User> createUser(UserRequest body) {
         Validator.validate(body);
-        User response = userService.createUser(body, super.getContext());
+        User response = userService.createUser(body);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -87,7 +86,7 @@ public class UserController extends BaseController implements UserApi {
      */
     @Override
     public ResponseEntity<User> getUser(Long id) {
-        User response = userService.getUser(id, super.getContext());
+        User response = userService.getUser(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -96,12 +95,12 @@ public class UserController extends BaseController implements UserApi {
      */
     @Override
     public ResponseEntity<User> updateUser(Long id, JsonMergePatch patch) {
-        User current = userService.getUser(id, super.getContext());
+        User current = userService.getUser(id);
         UserRequest target = userMapper.toRequest(current);
         UserRequest request = JsonMergePatchUtil.apply(patch, target);
 
         Validator.validate(request);
-        User response = userService.updateUser(id, request, super.getContext());
+        User response = userService.updateUser(id, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -110,7 +109,7 @@ public class UserController extends BaseController implements UserApi {
      */
     @Override
     public ResponseEntity<Void> deleteUser(Long id) {
-        userService.deleteUser(id, super.getContext());
+        userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

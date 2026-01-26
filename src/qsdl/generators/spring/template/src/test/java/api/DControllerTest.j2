@@ -78,7 +78,7 @@ class {{model.name}}ControllerTest {
         {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
+        when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
                 .thenReturn(responseDto);
 
         // When
@@ -103,7 +103,7 @@ class {{model.name}}ControllerTest {
         // Given
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name}}({{ "eq(one), any()" if operation.parent else "any()" }}, any()))
+        when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
                 .thenReturn(responseDto);
 
         // When
@@ -131,7 +131,7 @@ class {{model.name}}ControllerTest {
         // Given
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}, any()))
+        when(service.{{operation.name}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}))
                 .thenReturn(responseDto);
 
         // When
@@ -158,10 +158,10 @@ class {{model.name}}ControllerTest {
         {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name | replace("update", "get")}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}, any()))
+        when(service.{{operation.name | replace("update", "get")}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}))
                 .thenReturn(responseDto);
 
-        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
+        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}))
                 .thenReturn(responseDto);
 
         // When
@@ -186,7 +186,7 @@ class {{model.name}}ControllerTest {
         // Given
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}, any()))
+        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}))
                 .thenReturn(responseDto);
 
         // When

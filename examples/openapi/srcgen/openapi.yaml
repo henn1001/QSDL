@@ -22,11 +22,14 @@ paths:
         List Projects
       operationId: getProjects
       parameters:
-        - name: name
+        - name: filter
           in: query
           required: false
           schema:
-            type: string
+            title: GetprojectsFilter
+            type: object
+            examples:
+              - name: string
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -85,35 +88,6 @@ paths:
                 $ref: '#/components/schemas/Project'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceProject
-      description: |
-        Replace the specified Project
-      operationId: replaceProject
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Project'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Management
@@ -131,7 +105,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Project'
       responses:
@@ -248,41 +222,6 @@ paths:
                 $ref: '#/components/schemas/Role'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceRoleForProject
-      description: |
-        Replace the specified Role
-      operationId: replaceRoleForProject
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Role'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Management
@@ -306,7 +245,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Role'
       responses:
@@ -429,41 +368,6 @@ paths:
                 $ref: '#/components/schemas/Role'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceRoleForSprint
-      description: |
-        Replace the specified Role
-      operationId: replaceRoleForSprint
-      parameters:
-        - name: sprint_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Role'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Management
@@ -487,7 +391,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Role'
       responses:
@@ -539,12 +443,14 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: name
+        - name: filter
           in: query
           required: false
           schema:
-            type: integer
-            format: int32
+            title: GetusersforroleFilter
+            type: object
+            examples:
+              - name: integer
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -618,12 +524,14 @@ paths:
         List Users
       operationId: getUsers
       parameters:
-        - name: name
+        - name: filter
           in: query
           required: false
           schema:
-            type: integer
-            format: int32
+            title: GetusersFilter
+            type: object
+            examples:
+              - name: integer
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -682,35 +590,6 @@ paths:
                 $ref: '#/components/schemas/User'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Management
-      summary: replaceUser
-      description: |
-        Replace the specified User
-      operationId: replaceUser
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Management
@@ -728,7 +607,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/User'
       responses:
@@ -845,41 +724,6 @@ paths:
                 $ref: '#/components/schemas/Ticket'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Incident
-      summary: replaceTicket
-      description: |
-        Replace the specified Ticket
-      operationId: replaceTicket
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Ticket'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Ticket'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Incident
@@ -903,7 +747,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Ticket'
       responses:
@@ -955,12 +799,14 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: name
+        - name: filter
           in: query
           required: false
           schema:
-            type: integer
-            format: int32
+            title: GetmilestonesFilter
+            type: object
+            examples:
+              - name: integer
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -1032,41 +878,6 @@ paths:
                 $ref: '#/components/schemas/Milestone'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Incident
-      summary: replaceMilestone
-      description: |
-        Replace the specified Milestone
-      operationId: replaceMilestone
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Milestone'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Milestone'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Incident
@@ -1090,7 +901,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Milestone'
       responses:
@@ -1142,12 +953,14 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: name
+        - name: filter
           in: query
           required: false
           schema:
-            type: integer
-            format: int32
+            title: GetmilestonesforticketFilter
+            type: object
+            examples:
+              - name: integer
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -1298,41 +1111,6 @@ paths:
                 $ref: '#/components/schemas/Sprint'
         default:
           $ref: '#/components/responses/DefaultError'
-    put:
-      tags:
-        - Incident
-      summary: replaceSprint
-      description: |
-        Replace the specified Sprint
-      operationId: replaceSprint
-      parameters:
-        - name: milestone_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Sprint'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Sprint'
-        default:
-          $ref: '#/components/responses/DefaultError'
     patch:
       tags:
         - Incident
@@ -1356,7 +1134,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/merge-patch+json:
             schema:
               $ref: '#/components/schemas/Sprint'
       responses:

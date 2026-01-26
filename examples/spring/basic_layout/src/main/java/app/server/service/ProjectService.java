@@ -35,10 +35,9 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public CursorPage<Project> getProjects(CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<Project> getProjects(GetProjectsFilter filter, CursorPageable pageable) throws AppException {
 
-        var queryParameters = Arrays.<String>asList("name");
-        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), ProjectEntity.class);
+        var predicate = PredicateBuilder.build(filter, ProjectEntity.class);
 
         var cursorPage = projectRepository.findAll(predicate, pageable);
 
@@ -49,7 +48,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project createProject(ProjectRequest body, Context context) throws AppException {
+    public Project createProject(ProjectRequest body) throws AppException {
 
         var projectEntity = projectMapper.toEntity(body);
 
@@ -59,7 +58,7 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public Project getProject(Long id, Context context) throws AppException {
+    public Project getProject(Long id) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
@@ -67,7 +66,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project updateProject(Long id, ProjectRequest body, Context context) throws AppException {
+    public Project updateProject(Long id, ProjectRequest body) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
@@ -80,7 +79,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Void deleteProject(Long id, Context context) throws AppException {
+    public Void deleteProject(Long id) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 

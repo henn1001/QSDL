@@ -5,7 +5,6 @@ package app.server.common.api;
 
 import app.server.common.api.BaseController;
 import app.server.common.api.TicketApi;
-import app.server.common.constants.*;
 import app.server.common.dto.*;
 import app.server.common.mapper.TicketMapper;
 import app.server.common.model.CursorPage;
@@ -41,7 +40,7 @@ public class TicketController extends BaseController implements TicketApi {
      */
     @Override
     public ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
-        CursorPage<Ticket> response = ticketService.getTickets(pageable, super.getContext());
+        CursorPage<Ticket> response = ticketService.getTickets(pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -51,7 +50,7 @@ public class TicketController extends BaseController implements TicketApi {
     @Override
     public ResponseEntity<Ticket> createTicket(TicketRequest body) {
         Validator.validate(body);
-        Ticket response = ticketService.createTicket(body, super.getContext());
+        Ticket response = ticketService.createTicket(body);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -60,7 +59,7 @@ public class TicketController extends BaseController implements TicketApi {
      */
     @Override
     public ResponseEntity<Ticket> getTicket(String id) {
-        Ticket response = ticketService.getTicket(id, super.getContext());
+        Ticket response = ticketService.getTicket(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -69,12 +68,12 @@ public class TicketController extends BaseController implements TicketApi {
      */
     @Override
     public ResponseEntity<Ticket> updateTicket(String id, JsonMergePatch patch) {
-        Ticket current = ticketService.getTicket(id, super.getContext());
+        Ticket current = ticketService.getTicket(id);
         TicketRequest target = ticketMapper.toRequest(current);
         TicketRequest request = JsonMergePatchUtil.apply(patch, target);
 
         Validator.validate(request);
-        Ticket response = ticketService.updateTicket(id, request, super.getContext());
+        Ticket response = ticketService.updateTicket(id, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -83,7 +82,7 @@ public class TicketController extends BaseController implements TicketApi {
      */
     @Override
     public ResponseEntity<Void> deleteTicket(String id) {
-        ticketService.deleteTicket(id, super.getContext());
+        ticketService.deleteTicket(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

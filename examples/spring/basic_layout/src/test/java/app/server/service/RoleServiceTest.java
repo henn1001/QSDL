@@ -76,7 +76,7 @@ class RoleServiceTest {
                 .thenReturn(new CursorPage<RoleEntity>(roleEntityList, null, 6L));
 
         // When
-        CursorPage<Role> response = service.getRoles(one, new CursorPageable(null, 5, true), new Context());
+        CursorPage<Role> response = service.getRoles(one, new CursorPageable(null, 5, true));
 
         // Then
         assertEquals(5L, response.count());
@@ -104,7 +104,7 @@ class RoleServiceTest {
                 .thenReturn(roleEntity);
 
         // When
-        Role response = service.createRole(one, roleRequest, new Context());
+        Role response = service.createRole(one, roleRequest);
 
         // Then
         JSONAssert.assertEquals(
@@ -128,7 +128,7 @@ class RoleServiceTest {
                 .thenReturn(Optional.of(roleEntity));
 
         // When
-        Role response = service.getRole(one, roleEntity.getId(), new Context());
+        Role response = service.getRole(one, roleEntity.getId());
 
         // Then
         JSONAssert.assertEquals(
@@ -153,7 +153,7 @@ class RoleServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.getRole(one, roleEntity.getId(), new Context());
+                    service.getRole(one, roleEntity.getId());
                 });
 
         // Then
@@ -181,7 +181,7 @@ class RoleServiceTest {
                 .thenReturn(roleEntity);
 
         // When
-        Role response = service.updateRole(one, roleEntity.getId(), roleRequest, new Context());
+        Role response = service.updateRole(one, roleEntity.getId(), roleRequest);
 
         // Then
         Role roleResponse = mapper.toResponse(roleEntity);
@@ -208,7 +208,7 @@ class RoleServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.updateRole(one, roleEntity.getId(), roleRequest, new Context());
+                    service.updateRole(one, roleEntity.getId(), roleRequest);
                 });
 
         // Then
@@ -232,7 +232,7 @@ class RoleServiceTest {
                 .thenReturn(Optional.of(roleEntity));
 
         // When & Then
-        service.deleteRole(one, roleEntity.getId(), new Context());
+        service.deleteRole(one, roleEntity.getId());
     }
 
     @Test
@@ -251,7 +251,7 @@ class RoleServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.deleteRole(one, roleEntity.getId(), new Context());
+                    service.deleteRole(one, roleEntity.getId());
                 });
 
         // Then

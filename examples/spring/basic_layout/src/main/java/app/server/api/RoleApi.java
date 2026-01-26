@@ -3,7 +3,6 @@
  */
 package app.server.api;
 
-import app.server.constant.*;
 import app.server.domain.*;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;

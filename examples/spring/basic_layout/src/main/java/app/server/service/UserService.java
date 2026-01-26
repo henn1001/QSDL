@@ -47,14 +47,13 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public CursorPage<User> getUsersForTicket(Long ticketId, CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<User> getUsersForTicket(Long ticketId, CursorPageable pageable) throws AppException {
 
         // confirm existence of parent
         // should be optimized with something like getReferenceById
         var ticketEntity = fetchTicketFromDb(ticketId);
 
-        var queryParameters = Arrays.<String>asList();
-        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), UserEntity.class);
+        var predicate = PredicateBuilder.build(UserEntity.class);
         predicate.and(QUserEntity.userEntity.tickets.any().id.eq(ticketEntity.getId()));
 
         var cursorPage = userRepository.findAll(predicate, pageable);
@@ -66,7 +65,7 @@ public class UserService {
     }
 
     @Transactional
-    public Void addUserToTicket(Long ticketId, Long id, Context context) throws AppException {
+    public Void addUserToTicket(Long ticketId, Long id) throws AppException {
 
         // get and confirm existence
         var ticketEntity = fetchTicketFromDb(ticketId);
@@ -85,7 +84,7 @@ public class UserService {
     }
 
     @Transactional
-    public Void removeUserFromTicket(Long ticketId, Long id, Context context) throws AppException {
+    public Void removeUserFromTicket(Long ticketId, Long id) throws AppException {
 
         // get and confirm existence
         var ticketEntity = fetchTicketFromDb(ticketId);
@@ -100,10 +99,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public CursorPage<User> getUsers(CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<User> getUsers(CursorPageable pageable) throws AppException {
 
-        var queryParameters = Arrays.<String>asList();
-        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), UserEntity.class);
+        var predicate = PredicateBuilder.build(UserEntity.class);
 
         var cursorPage = userRepository.findAll(predicate, pageable);
 
@@ -114,7 +112,7 @@ public class UserService {
     }
 
     @Transactional
-    public User createUser(UserRequest body, Context context) throws AppException {
+    public User createUser(UserRequest body) throws AppException {
 
         var userEntity = userMapper.toEntity(body);
 
@@ -124,7 +122,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User getUser(Long id, Context context) throws AppException {
+    public User getUser(Long id) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 
@@ -132,7 +130,7 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(Long id, UserRequest body, Context context) throws AppException {
+    public User updateUser(Long id, UserRequest body) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 
@@ -145,7 +143,7 @@ public class UserService {
     }
 
     @Transactional
-    public Void deleteUser(Long id, Context context) throws AppException {
+    public Void deleteUser(Long id) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 

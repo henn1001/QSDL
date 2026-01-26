@@ -3,8 +3,8 @@
  */
 package app.server.api;
 
-import app.server.constant.*;
 import app.server.domain.*;
+import app.server.domain.ActionFilter;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import jakarta.json.JsonMergePatch;
@@ -38,7 +38,7 @@ public interface DefaultApi {
      * POST /action : action
      */
     @PostMapping(value = "/action", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ObjectNode> action(@RequestBody BaseTypeRequest arg1) {
+    default ResponseEntity<ObjectNode> action(ActionFilter filter, @RequestBody BaseTypeRequest arg1) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

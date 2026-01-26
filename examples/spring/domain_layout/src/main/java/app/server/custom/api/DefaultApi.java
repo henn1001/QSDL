@@ -3,7 +3,7 @@
  */
 package app.server.custom.api;
 
-import app.server.common.constants.*;
+import app.server.common.dto.ActionFilter;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.custom.dto.*;
@@ -38,7 +38,7 @@ public interface DefaultApi {
      * POST /action : action
      */
     @PostMapping(value = "/action", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ObjectNode> action(@RequestBody BaseTypeRequest arg1) {
+    default ResponseEntity<ObjectNode> action(ActionFilter filter, @RequestBody BaseTypeRequest arg1) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

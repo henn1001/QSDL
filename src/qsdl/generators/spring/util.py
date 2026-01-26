@@ -416,3 +416,50 @@ def extract_fields_for_mapper(ref: dsl.Base | dsl.Object) -> list[dsl.Field]:
             nested_objects.append(field)
 
     return nested_objects
+
+
+def build_filter_models() -> list[spring.ModelClass]:
+    """Build filter models from operations with query parameters.
+
+    Creates a dsl.Base for each operation that has query arguments,
+    then converts it to a ModelClass.
+
+    Returns:
+        list[spring.ModelClass]: The parsed filter models.
+    """
+    filter_models = []
+
+    operations = xtx.get_children_of_operation(Store.schema)
+
+    for operation in operations:
+        # Skip operations without query parameters
+        if not operation.query_parameters:
+            continue
+
+        new_name = stringcase.capitalcase(operation.name) + "Filter"
+
+        # Create a dsl.Base for this filter
+        filter_base = dsl.Base(
+            parent=Store.schema,
+            name=new_name,
+            namespace=operation.parent.namespace if hasattr(operation.parent, "namespace") else None,
+        )
+
+        # Convert query arguments to fields
+        for argument in operation.query_parameters:
+            field = dsl.Field(
+                parent=filter_base,
+                name=argument.name,
+                value=argument.value,
+                is_array=argument.is_array,
+                is_required=argument.is_required,
+                is_query=True,
+            )
+            filter_base.fields.append(field)
+
+        # Build ModelClass from the filter base
+        filter_model = spring.ModelClass().build(filter_base)
+        filter_model.has_request = False  # we do not want a request class
+        filter_models.append(filter_model)
+
+    return filter_models

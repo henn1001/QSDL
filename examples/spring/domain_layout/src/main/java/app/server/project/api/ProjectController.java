@@ -4,7 +4,7 @@
 package app.server.project.api;
 
 import app.server.common.api.BaseController;
-import app.server.common.constants.*;
+import app.server.common.dto.GetProjectsFilter;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.common.util.JsonMergePatchUtil;
@@ -40,8 +40,8 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<CursorPage<Project>> getProjects(CursorPageable pageable) {
-        CursorPage<Project> response = projectService.getProjects(pageable, super.getContext());
+    public ResponseEntity<CursorPage<Project>> getProjects(GetProjectsFilter filter, CursorPageable pageable) {
+        CursorPage<Project> response = projectService.getProjects(filter, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -51,7 +51,7 @@ public class ProjectController extends BaseController implements ProjectApi {
     @Override
     public ResponseEntity<Project> createProject(ProjectRequest body) {
         Validator.validate(body);
-        Project response = projectService.createProject(body, super.getContext());
+        Project response = projectService.createProject(body);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -60,7 +60,7 @@ public class ProjectController extends BaseController implements ProjectApi {
      */
     @Override
     public ResponseEntity<Project> getProject(String id) {
-        Project response = projectService.getProject(id, super.getContext());
+        Project response = projectService.getProject(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -69,12 +69,12 @@ public class ProjectController extends BaseController implements ProjectApi {
      */
     @Override
     public ResponseEntity<Project> updateProject(String id, JsonMergePatch patch) {
-        Project current = projectService.getProject(id, super.getContext());
+        Project current = projectService.getProject(id);
         ProjectRequest target = projectMapper.toRequest(current);
         ProjectRequest request = JsonMergePatchUtil.apply(patch, target);
 
         Validator.validate(request);
-        Project response = projectService.updateProject(id, request, super.getContext());
+        Project response = projectService.updateProject(id, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -83,7 +83,7 @@ public class ProjectController extends BaseController implements ProjectApi {
      */
     @Override
     public ResponseEntity<Void> deleteProject(String id) {
-        projectService.deleteProject(id, super.getContext());
+        projectService.deleteProject(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

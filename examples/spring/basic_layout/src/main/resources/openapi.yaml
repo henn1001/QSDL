@@ -29,11 +29,14 @@ paths:
         List Projects
       operationId: getProjects
       parameters:
-        - name: name
+        - name: filter
           in: query
           required: false
           schema:
-            type: string
+            title: GetprojectsFilter
+            type: object
+            examples:
+              - name: string
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'

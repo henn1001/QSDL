@@ -5,6 +5,7 @@ package app.server.project.service;
 
 import app.server.common.constants.*;
 import app.server.common.db.*;
+import app.server.common.dto.GetProjectsFilter;
 import app.server.common.exception.AppException;
 import app.server.common.exception.AppExceptionUtil;
 import app.server.common.model.Context;
@@ -35,10 +36,9 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public CursorPage<Project> getProjects(CursorPageable pageable, Context context) throws AppException {
+    public CursorPage<Project> getProjects(GetProjectsFilter filter, CursorPageable pageable) throws AppException {
 
-        var queryParameters = Arrays.<String>asList("name");
-        var predicate = PredicateBuilder.build(context.getParameterMap(queryParameters), ProjectEntity.class);
+        var predicate = PredicateBuilder.build(filter, ProjectEntity.class);
 
         var cursorPage = projectRepository.findAll(predicate, pageable);
 
@@ -49,7 +49,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project createProject(ProjectRequest body, Context context) throws AppException {
+    public Project createProject(ProjectRequest body) throws AppException {
 
         var projectEntity = projectMapper.toEntity(body);
 
@@ -59,7 +59,7 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public Project getProject(String id, Context context) throws AppException {
+    public Project getProject(String id) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
@@ -67,7 +67,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project updateProject(String id, ProjectRequest body, Context context) throws AppException {
+    public Project updateProject(String id, ProjectRequest body) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
@@ -80,7 +80,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public Void deleteProject(String id, Context context) throws AppException {
+    public Void deleteProject(String id) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
