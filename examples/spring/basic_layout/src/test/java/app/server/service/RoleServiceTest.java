@@ -19,7 +19,6 @@ import app.server.domain.entity.RoleEntity;
 import app.server.domain.mapper.RoleMapper;
 import app.server.exception.AppException;
 import app.server.model.AppError;
-import app.server.model.Context;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.repository.ProjectRepository;

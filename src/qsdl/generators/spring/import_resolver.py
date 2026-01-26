@@ -152,7 +152,6 @@ def generate_imports_for_template(
                 else []
             ),
             f"import {util.Store.package.enum}.*;",
-            f"import {util.Store.package.model}.Context;",
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
             f"import {util.Store.package.exception}.AppException;",
@@ -446,7 +445,6 @@ def generate_imports_for_template(
             f"import {util.Store.package.enum}.ErrorCode;",
             f"import {util.Store.package.exception}.AppException;",
             f"import {util.Store.package.model}.AppError;",
-            f"import {util.Store.package.model}.Context;",
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
             f"import {util.Store.package.util}.Json;",

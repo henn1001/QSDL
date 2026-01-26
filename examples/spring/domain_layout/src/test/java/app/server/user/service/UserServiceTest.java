@@ -16,7 +16,6 @@ import app.server.common.db.TicketEntity;
 import app.server.common.db.TicketRepository;
 import app.server.common.exception.AppException;
 import app.server.common.model.AppError;
-import app.server.common.model.Context;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.common.util.Json;

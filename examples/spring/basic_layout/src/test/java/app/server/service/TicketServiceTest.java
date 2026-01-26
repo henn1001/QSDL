@@ -18,7 +18,6 @@ import app.server.domain.entity.TicketEntity;
 import app.server.domain.mapper.TicketMapper;
 import app.server.exception.AppException;
 import app.server.model.AppError;
-import app.server.model.Context;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.repository.TicketRepository;
