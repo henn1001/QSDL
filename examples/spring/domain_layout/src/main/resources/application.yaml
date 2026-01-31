@@ -3,6 +3,7 @@ server.port: 8080
 server.base-path: /api/v1
 spring.mvc.pathmatch.matching-strategy: ant_path_matcher
 spring.threads.virtual.enabled: true
+spring.jpa.open-in-view: false
 
 ### Monitoring service
 management.server.port: 8081
