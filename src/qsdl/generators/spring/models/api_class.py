@@ -67,7 +67,7 @@ class Parameter:
         self.is_object = isinstance(_ref.value, dsl.Object)
 
         # Append Request suffix for body parameters (Base/Object types)
-        if self.is_body and (self.is_base or self.is_object):
+        if self.is_body and (self.is_base or self.is_object) and util.needs_separate_request_response(_ref.value):
             self.type = f"{self.type}Request"
 
         return self

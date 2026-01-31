@@ -167,6 +167,9 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
     util.Store.enums = parse_enums(schema)
     util.Store.apis = parse_apis(schema)
 
+    # post-process models to determine which actually need Request DTOs based on API usage
+    util.resolve_request_dto_usage()
+
     # resolve all dynamic imports
     resolver.resolve_dynamic_imports()
 
@@ -200,7 +203,8 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         # fmt: off
         if model.has_request:
             model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
-        model_files.append(("src/main/java/domain/Base.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
+        if model.has_response:
+            model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
 
         if model.is_object:
             model_files.append(("src/main/java/domain/Mapper.j2", f"src/main/java/{model.package.mapper}/{model.name}Mapper.java", model))

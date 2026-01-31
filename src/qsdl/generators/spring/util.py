@@ -258,6 +258,16 @@ def add_hibernate_info(models: list[spring.ModelClass]) -> None:
             parent.hibernate = parent_info
 
 
+def add_request_info(models: list[spring.ModelClass]) -> None:
+    """Post-processing step to set  has_request and nested_type_has_request flag"""
+    for model in models:
+        for model_field in model.fields:
+            if model_field.is_base or model_field.is_object:
+                nested_model = get_model_for(model_field.type)
+                if nested_model:
+                    model_field.nested_type_has_request = nested_model.has_request
+
+
 def sort_api_controller(api_list: list[spring.ApiClass]) -> list[spring.ApiClass]:
     """Reorganize api controllers and merge operations if needed"""
     api_store: dict[str, spring.ApiClass] = {}
@@ -458,8 +468,141 @@ def build_filter_models() -> list[spring.ModelClass]:
             filter_base.fields.append(field)
 
         # Build ModelClass from the filter base
-        filter_model = spring.ModelClass().build(filter_base)
+        filter_model = spring.ModelClass().build(filter_base)  # TODO: add this to the package of the operations parent
         filter_model.has_request = False  # we do not want a request class
         filter_models.append(filter_model)
 
     return filter_models
+
+
+def needs_separate_request_response(ref: dsl.Base | dsl.Object) -> bool:
+    """
+    Determine if Request and Response DTOs would differ.
+    Returns True if:
+    1. Any non-relation, non-hidden field has @readOnly or @writeOnly
+    2. Any nested Base/Object field requires a split (transitive requirement)
+    """
+    return qutil.traverse_fields(
+        ref,
+        predicate=lambda f: f.is_read_only or f.is_write_only or isinstance(f.value, dsl.Object),
+        include_nested=True,
+        skip_relations=True,
+        skip_hidden=True,
+    )
+
+
+def resolve_request_dto_usage() -> None:
+    """
+    Post-processing step to determine which models actually need Request/Response DTOs.
+
+    A model needs a Request DTO if:
+    1. It has its OWN @readOnly/@writeOnly fields (always generate), OR
+    2. It has transitive split (nested types with @readOnly/@writeOnly) AND
+       is actually used in request parameters
+
+    A model needs a Response DTO if:
+    1. It has its OWN @readOnly/@writeOnly fields (always generate), OR
+    2. It has transitive split (nested types with @readOnly/@writeOnly) AND
+       is actually used in response types
+
+    This prevents generating unnecessary DTOs for types that:
+    - Only have transitive splits (no own @readOnly/@writeOnly)
+    - Are only used in one direction (request or response)
+
+    Must be called after APIs are parsed.
+    """
+    dsl_types = {
+        type_def.name: type_def for type_def in Store.schema.types if isinstance(type_def, (dsl.Base, dsl.Object))
+    }
+    needs_split = {name: needs_separate_request_response(ref) for name, ref in dsl_types.items()}
+
+    # Collect all types used in request parameters and response types
+    types_used_in_requests: set[str] = set()
+    types_used_in_responses: set[str] = set()
+
+    for operation in xtx.get_children_of_operation(Store.schema):
+        # Collect request usage
+        if operation.arguments:
+            parameters = operation.arguments
+        else:
+            parameters = (
+                operation.path_parameters
+                + operation.query_parameters
+                + operation.header_parameters
+                + operation.body_parameters
+            )
+
+        for param in parameters:
+            if not (param.is_body or param.is_path or param.is_query or param.is_header):
+                continue
+            if isinstance(param.value, (dsl.Base, dsl.Object)):
+                types_used_in_requests.add(param.value.name)
+                collect_nested_request_types(param.value, types_used_in_requests, needs_split)
+
+        # Collect response usage
+        if operation.value and isinstance(operation.value, (dsl.Base, dsl.Object)):
+            types_used_in_responses.add(operation.value.name)
+            collect_nested_response_types(operation.value, types_used_in_responses, needs_split)
+
+    # Update has_request and has_response flags for models
+    for model in Store.models:
+        # Object types always generate both Request and Response DTOs
+        # (they have auto-generated @readOnly ID fields)
+        if model.is_object:
+            model.has_request = True
+            model.has_response = True
+            continue
+
+        # Base types: conditional generation based on usage
+        if model.name not in needs_split:
+            continue
+
+        if not needs_split[model.name]:
+            # No split needed - always use response DTO, never request
+            model.has_request = False
+            model.has_response = True
+            continue
+
+        # For Base types that need split (own or transitive), check actual schema-wide usage
+        # Even if a type has its own @readOnly/@writeOnly, we only generate the DTOs
+        # that are actually used across the entire schema
+        model.has_request = model.name in types_used_in_requests
+        model.has_response = model.name in types_used_in_responses
+
+    add_request_info(Store.models)
+
+
+def collect_nested_request_types(
+    entity: dsl.Base | dsl.Object,
+    type_set: set[str],
+    needs_split: dict[str, bool],
+) -> None:
+    """
+    Recursively collect nested Base/Object types that would need Request DTOs.
+    Only adds types that have fields requiring the type to be used in requests.
+    """
+    for field in entity.fields:
+        if field.is_relation or field.is_hidden or field.is_read_only:
+            continue
+
+        if isinstance(field.value, (dsl.Base, dsl.Object)) and needs_split.get(field.value.name, False):
+            type_set.add(field.value.name)
+            collect_nested_request_types(field.value, type_set, needs_split)
+
+
+def collect_nested_response_types(
+    entity: dsl.Base | dsl.Object,
+    type_set: set[str],
+    needs_split: dict[str, bool],
+) -> None:
+    """
+    Recursively collect nested Base/Object types that would need Response DTOs.
+    Only adds types that have fields requiring the type to be used in responses.
+    """
+    for field in entity.fields:
+        if field.is_relation or field.is_hidden or field.is_write_only:
+            continue
+
+        if isinstance(field.value, (dsl.Base, dsl.Object)) and needs_split.get(field.value.name, False):
+            type_set.add(field.value.name)
+            collect_nested_response_types(field.value, type_set, needs_split)

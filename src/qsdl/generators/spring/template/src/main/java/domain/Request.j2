@@ -14,16 +14,16 @@ public record {{model.name}}Request(
 {% for field in model.fields if not field.is_relation and not field.is_hidden and not field.is_read_only %}
 
     {# 
-        Set @Valid for any container
-    #}
-    {% if (field.is_array or field.is_base or field.is_object) %}
-    @Valid
-    {% endif %}
-    {# 
         Required fields
     #}
     {% if field.is_required %}
     @NotNull
+    {% endif %}
+    {# 
+        Set @Valid for any container
+    #}
+    {% if (field.is_array or field.is_base or field.is_object) %}
+    @Valid
     {% endif %}
     {# 
         Size limits
@@ -38,7 +38,7 @@ public record {{model.name}}Request(
     {# 
         Pattern
     #}
-    {% if field.pattern and not field.is_array    %}
+    {% if field.pattern and not field.is_array %}
     @Pattern(regexp = "{{field.pattern}}")
     {% endif %}
     {# 
@@ -49,15 +49,16 @@ public record {{model.name}}Request(
         Set the Field definition
     #}
     {% if field.is_array %}
-    List<{{ "@Pattern(regexp = \"" + field.pattern + "\") " if field.pattern}}{{field.type}}{{ "Request" if field.is_base or field.is_object else "" }}> {{field.name}}{{ "," if not loop.last else "" }}
+    List<{{ "@Pattern(regexp = \"" + field.pattern + "\") " if field.pattern}}{{field.type}}{{ "Request" if field.nested_type_has_request else "" }}> {{field.name}}{{ "," if not loop.last else "" }}
     {% else %}
-    {{field.type}}{{ "Request" if field.is_base or field.is_object else "" }} {{field.name}}{{ "," if not loop.last else "" }}
+    {{field.type}}{{ "Request" if field.nested_type_has_request else "" }} {{field.name}}{{ "," if not loop.last else "" }}
     {% endif %}
 {% endfor %}
+
+{# Compact constructor for default value initialization if needed #}
+{% set fields_with_defaults = model.fields|selectattr('default')|rejectattr('is_relation')|rejectattr('is_hidden')|rejectattr('is_read_only')|list %}
+{% if fields_with_defaults %}
 ) {
-    {# Compact constructor for default value initialization if needed #}
-    {% set fields_with_defaults = model.fields|selectattr('default')|rejectattr('is_relation')|rejectattr('is_hidden')|rejectattr('is_read_only')|list %}
-    {% if fields_with_defaults %}
     public {{model.name}}Request {
         {% for field in fields_with_defaults %}
         if ({{field.name}} == null) {
@@ -65,7 +66,9 @@ public record {{model.name}}Request(
         }
         {% endfor %}
     }
-    {% endif %}
 }
+{% else %}
+) {}
+{% endif %}
 // @formatter:on
 {{""}}

@@ -226,40 +226,6 @@ def generate_imports_for_template(
             "import java.util.Set;",
             "import java.util.List;",
         ],
-        "Pojo.j2": [
-            # Enum imports
-            *(
-                [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
-                if model_class
-                else []
-            ),
-            # AbstractClass import
-            f"import {util.Store.package.model}.AbstractClass;" if model_class else None,
-            # Nested entity imports (non-relation)
-            *(
-                [
-                    f"import {util.get_model_for(field.type).package.domain}.{util.get_model_for(field.type).name};"
-                    for field in model_class.fields
-                    if (field.is_object or field.is_base)
-                    and not field.is_relation
-                    and util.get_model_for(field.type).package.domain != model_class.package.domain
-                ]
-                if model_class
-                else []
-            ),
-            "import com.fasterxml.jackson.annotation.JsonProperty;",
-            "import tools.jackson.databind.node.ObjectNode;",
-            "import io.soabase.recordbuilder.core.RecordBuilder;",
-            "import jakarta.validation.Valid;",
-            "import jakarta.validation.constraints.Max;",
-            "import jakarta.validation.constraints.Min;",
-            "import jakarta.validation.constraints.Pattern;",
-            "import jakarta.validation.constraints.NotNull;",
-            "import jakarta.validation.constraints.Size;",
-            "import java.time.LocalDate;",
-            "import java.time.OffsetDateTime;",
-            "import java.util.List;",
-        ],
         "Request.j2": [
             # Enum imports
             *(
@@ -293,14 +259,14 @@ def generate_imports_for_template(
             "import java.time.OffsetDateTime;",
             "import java.util.List;",
         ],
-        "Base.j2": [
+        "Response.j2": [
             # Enum imports
             *(
                 [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
                 if model_class
                 else []
             ),
-            # Nested entity imports for Base (non-relation, non-write-only)
+            # Nested entity imports for Response (non-relation, non-write-only)
             *(
                 [
                     f"import {util.get_model_for(field.type).package.domain}.{util.get_model_for(field.type).name};"
@@ -316,6 +282,7 @@ def generate_imports_for_template(
             "import com.fasterxml.jackson.annotation.JsonProperty;",
             "import tools.jackson.databind.node.ObjectNode;",
             "import io.soabase.recordbuilder.core.RecordBuilder;",
+            "import jakarta.validation.constraints.NotNull;",
             "import jakarta.validation.Valid;",
             "import jakarta.validation.constraints.Max;",
             "import jakarta.validation.constraints.Min;",

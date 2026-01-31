@@ -57,6 +57,8 @@ class ModelField:
     is_id: bool = False
     is_date: bool = False
 
+    nested_type_has_request: bool = False
+
     is_composition: bool = False
     is_aggregation: bool = False
     is_relation: bool = False
@@ -171,6 +173,7 @@ class ModelClass:
     has_required: bool = False
     has_query: bool = False
     has_request: bool = True
+    has_response: bool = True
 
     package: spring.Package = None
 

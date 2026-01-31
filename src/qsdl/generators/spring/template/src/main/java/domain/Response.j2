@@ -11,12 +11,12 @@ package {{model.package.domain}};
 @RecordBuilder
 // @formatter:off
 public record {{model.name}}(
-{% for field in model.fields if not field.is_relation and not field.is_hidden %}
+{% for field in model.fields if not field.is_relation and not field.is_hidden and not field.is_write_only %}
 
-    {#
+    {# 
         Required fields
     #}
-    {% if field.is_required and not field.is_read_only%}
+    {% if field.is_required %}
     @NotNull
     {% endif %}
     {# 
@@ -38,13 +38,13 @@ public record {{model.name}}(
     {# 
         Pattern
     #}
-    {% if field.pattern and not field.is_array    %}
+    {% if field.pattern and not field.is_array %}
     @Pattern(regexp = "{{field.pattern}}")
     {% endif %}
     {# 
-        Set JsonProperty annotation - don't mark read-only fields as required for deserialization
+        Set JsonProperty annotation - no required flag needed for responses
     #}
-    @JsonProperty(value = "{{field.json_key}}"{% if field.is_required and not field.is_read_only %}, required = true{% endif %}{% if field.is_read_only %}, access = JsonProperty.Access.READ_ONLY{% endif %}{% if field.is_write_only %}, access = JsonProperty.Access.WRITE_ONLY{% endif %})
+    @JsonProperty(value = "{{field.json_key}}")
     {# 
         Set the Field definition
     #}
@@ -54,10 +54,11 @@ public record {{model.name}}(
     {{field.type}} {{field.name}}{{ "," if not loop.last else "" }}
     {% endif %}
 {% endfor %}
+
+{# Compact constructor for default value initialization if needed #}
+{% set fields_with_defaults = model.fields|selectattr('default')|rejectattr('is_relation')|rejectattr('is_hidden')|rejectattr('is_write_only')|list %}
+{% if fields_with_defaults %}
 ) {
-    {# Compact constructor for default value initialization if needed #}
-    {% set fields_with_defaults = model.fields|selectattr('default')|rejectattr('is_relation')|rejectattr('is_hidden')|list %}
-    {% if fields_with_defaults %}
     public {{model.name}} {
         {% for field in fields_with_defaults %}
         if ({{field.name}} == null) {
@@ -65,7 +66,9 @@ public record {{model.name}}(
         }
         {% endfor %}
     }
-    {% endif %}
 }
+{% else %}
+) {}
+{% endif %}
 // @formatter:on
 {{""}}

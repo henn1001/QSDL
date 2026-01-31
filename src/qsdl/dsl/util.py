@@ -14,6 +14,8 @@
 
 """QSDL Utility functions"""
 
+from collections.abc import Callable
+
 import qsdl.dsl.textx as xtx
 from qsdl import dsl, logger
 
@@ -245,3 +247,69 @@ def get_composition_fields(schema: dsl.Schema, obj_name: str) -> list[dsl.Field]
         for x in fields
         if isinstance(x.parent, dsl.Object) and x.value.name == obj_name and x.is_array and not x.is_aggregation
     ]
+
+
+def traverse_fields(
+    entity: dsl.Object | dsl.Base,
+    predicate: Callable[[dsl.Field], bool],
+    include_nested: bool = True,
+    skip_relations: bool = True,
+    skip_hidden: bool = True,
+    skip_transient: bool = True,
+    skip_ignored: bool = True,
+) -> bool:
+    """Recursively traverse fields of an Object or Base and check if any field matches a predicate.
+
+    This utility function provides a generic way to traverse all fields (including nested Base/Object fields)
+    and evaluate a condition on each field.
+
+    Args:
+        entity: The Object or Base to traverse
+        predicate: A callable that takes a dsl.Field and returns True/False
+        include_nested: Whether to recursively check nested Base/Object fields (default: True)
+        skip_relations: Whether to skip relation fields (default: True)
+        skip_hidden: Whether to skip fields that are excluded from api layer (default: True)
+        skip_transient: Whether to skip fields that are excluded from database layer (default: True)
+        skip_ignored: Whether to skip fields that are excluded from both layers (default: True)
+
+    Returns:
+        bool: True if any field (including nested) matches the predicate, False otherwise
+
+    Example:
+        # Check if any field has @readOnly
+        has_readonly = traverse_fields(
+            entity,
+            lambda f: f.is_read_only,
+            include_nested=True
+        )
+
+        # Check if any non-relation field has @writeOnly
+        has_writeonly = traverse_fields(
+            entity,
+            lambda f: f.is_write_only,
+            skip_relations=True
+        )
+    """
+    for dsl_field in entity.fields:
+        if skip_relations and dsl_field.is_relation:
+            continue
+        if skip_hidden and dsl_field.is_hidden:
+            continue
+        if skip_transient and dsl_field.is_transient:
+            continue
+        if skip_ignored and dsl_field.is_ignored:
+            continue
+
+        if predicate(dsl_field):
+            return True
+
+        # TODO: consider inheritance
+
+        if (
+            include_nested
+            and isinstance(dsl_field.value, dsl.Base)
+            and traverse_fields(dsl_field.value, predicate, include_nested, skip_relations, skip_hidden)
+        ):
+            return True
+
+    return False
