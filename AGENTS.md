@@ -1,259 +1,224 @@
-# QSDL - Schema Definition Language Generator
+# AGENTS.md
 
-## Project Overview
+Agent-focused notes for working in this repository. Keep changes small, run the relevant checks, and follow existing conventions.
 
-**QSDL** (Query Schema Definition Language) is a domain-driven code generation framework inspired by GraphQL. It provides a minimalistic approach to API definition for generating CRUD operations, boilerplate code, and specifications from a schema definition.
+## Agent Workflow Rule
 
-### Key Characteristics
+When tasked with a new implementation:
+- Do not add new tests on your own.
+- Do not run tests on your own.
+- For larger/complex changes, finish the implementation first, then ask once whether the user wants to add tests and/or run tests.
 
-- **Domain-Driven Design**: Focuses on domain models with parent-child relationships
-- **GraphQL-inspired**: Uses a GraphQL-like syntax with extensions for OpenAPI and QoL features
-- **Multi-Generator**: Supports multiple output formats (OpenAPI, Spring Boot, PlantUML, etc.)
-- **Extensible Architecture**: Modular design with pluggable generators and directives
+## Project Scope & Layout
 
-## Core Architecture
+QSDL is a Schema Definition Language (GraphQL-inspired) and code/spec generator.
+Primary responsibilities of this repo:
+- Parse `.qsdl` schema files into a Python object graph (TextX-based DSL).
+- Validate/post-process the model (processors).
+- Generate outputs via generators (OpenAPI, Spring Boot, PlantUML, etc.) using Jinja2 templates.
 
-### Language Components
+High-level layout:
+- `src/qsdl/`: library + CLI entrypoint.
+- `src/qsdl/dsl/`: grammar, AST models, parsing, processors.
+- `src/qsdl/generators/`: generator implementations + templates.
+- `examples/`: sample schemas/configs + generated example outputs.
+- `tests/`: unit/functional/e2e coverage.
 
-QSDL defines a meta-language with these main constructs:
+Generator quick map:
+- `src/qsdl/generators/openapi/`: OpenAPI YAML generation.
+- `src/qsdl/generators/spring/`: Spring Boot generation (largest surface area; DTO/entity/service/etc.).
+- `src/qsdl/generators/plantuml/`: PlantUML diagrams.
 
-1. **Schema**: Root definition with title, version, description, and servers
-2. **Types**: Scalar, Enum, Base, Object, and Api types
-3. **Directives**: Special annotations that modify generation behavior
-4. **Operations**: API endpoints with methods, paths, and parameters
+When changing behavior, think in this order:
+1) DSL model rules (processors/util) should be correct and generator-agnostic.
+2) Generator-specific mapping/rendering belongs in `generators/*`.
+3) Keep templates deterministic (avoid embedding business logic in Jinja2 where a helper would do).
 
-### Built-in Types
+Where to implement changes (examples):
+- Schema invariants/validation (e.g. forbid ambiguous relations, enforce @override rules): `src/qsdl/dsl/processors/*` or `src/qsdl/dsl/util.py`.
+- Generator-only mapping (e.g. how a Scalar maps to OpenAPI schema vs Spring type): `src/qsdl/generators/<gen>/`.
+- Output layout/boilerplate changes (e.g. package structure, annotations, filenames): generator templates under `src/qsdl/generators/<gen>/template/`.
 
-- **Scalar**: Primitive types (Int, Long, Float, Double, String, Boolean, Date, Object, Void)
-- **Enum**: Fixed set of string values
-- **Base**: Abstract types with fields (similar to interfaces)
-- **Object**: Concrete domain entities that generate CRUD operations
-- **Api**: Custom API endpoints and operations
+## Common Entrypoints
 
-### Directives System
+- CLI app: `src/qsdl/__main__.py` (Typer entrypoint; exposed as `qsdl`).
+- Generation workflow: `src/qsdl/core.py`.
+- Parsing/building the DSL model: `src/qsdl/dsl/textx.py:parse_schema`.
 
-QSDL uses directives to control code generation behavior:
+## DSL Glossary (Core Model Terms)
 
-- **Field Directives**: `@query`, `@unique`, `@hidden`, `@readOnly`, `@writeOnly`, `@composition`, `@aggregation`
-- **Operation Directives**: `@path`, `@method`, `@namespace`, `@pagination`, `@produce`, `@consumes`, `@generate`
-- **Validation Directives**: `@minSize`, `@maxSize`, `@default`
-- **Generation Control**: `@ignore`, `@transient`, `@override`, `@force-generate`
+This is the vocabulary used across processors and generators.
 
-## Generator Architecture
+- `Schema`: root of a parsed `.qsdl` file set; contains metadata (title/version/servers/description) and all defined types.
+- `Type`: umbrella concept for all definable elements in a schema (Scalar/Enum/Base/Object/Api).
+- `Scalar`: primitive-ish leaf type. Builtins include `Int`, `Long`, `Float`, `Double`, `String`, `Boolean`, `Date`, `Datetime`, `Object`, `Void`.
+  - Generators often map scalars to target types; scalars can be overridden via generator directives (see `get_type_override`).
+- `Enum`: closed set of string values. Intended for constrained domain/state fields.
+- `Base`: reusable structural type that holds `Field`s; used for shared shapes and inheritance (e.g. common audit fields).
+- `Object`: primary domain entity type; typically drives CRUD generation and relationship modeling.
+- `Field`: named attribute on a `Base` or `Object` with a value type (Scalar/Enum/Base/Object), plus modifiers/directives.
+  - Common flags seen in code: required (`!`), array (`[...]`), relation markers (composition/aggregation), visibility (`hidden`), layer control (`transient`/`ignored`), io (`readOnly`/`writeOnly`), query param (`query`).
+- `Api`: container for custom endpoints/operations; can also appear under an `Object` to override default CRUD behavior.
+- `Operation`: a single API endpoint definition (method/path/params/return type), usually with directives like `@path`, `@method`, `@produce`, `@consumes`, `@pagination`, `@generate`.
+- `Argument`: operation parameter definition (name + type). In generators this becomes body/path/query/header parameters depending on directives and/or naming rules.
+- `Directive`: annotation attached to many entities (Schema/Type/Field/Operation/etc.) used to steer generation.
+  - Some directives are generic DSL semantics (`@override`, `@ignore`), others are generator-specific (`@openapi(...)`, `@spring(...)`).
 
-### Core Components
+Practical guidance:
+- Prefer implementing DSL invariants in processors/utilities; keep generator mapping rules inside the generator.
+- When you need “all X in the schema”, use `xtx.get_children_of_*` instead of local traversal.
 
-```mermaid
-graph TD
-    A[QSDL Core] --> B[DSL Parser]
-    A --> C[Generator Interface]
-    C --> D[OpenAPI Generator]
-    C --> E[Spring Boot Generator]
-    C --> F[PlantUML Generator]
-    C --> G[PostgreSQL Generator]
-    C --> H[Void Generator]
-```
+## Quick Commands (uv/pytest/ruff)
 
-### Key Modules
-
-1. **DSL Module** (`src/qsdl/dsl/`)
-   - TextX-based parser for QSDL language
-   - Model definitions and validation
-   - Directive processing
-
-2. **Generators Module** (`src/qsdl/generators/`)
-   - Base configuration system
-   - Pluggable generator architecture
-   - Jinja2 template rendering
-
-3. **Core Module** (`src/qsdl/core.py`)
-   - Main generation workflow
-   - Configuration management
-   - Interactive CLI prompts
-
-### Spring Boot Generator
-
-The Spring Boot generator is the most comprehensive implementation:
-
-- **Configuration Options**: Database (Hibernate/No), ID types, package structure, auditing, builders
-- **Custom Directives**: `@spring`, `@spring-package`, `@spring-controller`, `@spring-void-input`
-- **Package Customization**: Flexible package layout with placeholders
-- **Domain Patterns**: Support for DTOs, entities, mappers, repositories, services
-
-## Technical Stack
-
-- **Language**: Python 3.13+
-- **Parser**: TextX (meta-language definition)
-- **Templates**: Jinja2 (code generation)
-- **Configuration**: Dataclasses with Dacite for JSON parsing
-- **CLI**: Interactive prompts with Inquirer
-- **Build**: UV for dependency management
-
-## Testing
-
-The project uses UV for dependency management and test execution:
+This repo targets Python 3.13+ and uses `uv` for dependency management.
 
 ```bash
-# Run all tests
+# Install/sync dependencies
+uv sync
+
+# Run all tests (default: excludes "integration" marker)
 uv run pytest
 
-# Run specific test file
+# Run a single test file
 uv run pytest tests/functional/test_specifics_spring.py
 
-# Run specific test
+# Run a single test (node id)
 uv run pytest tests/functional/test_specifics_spring.py::TestSpecificsSpring::test_specifics_14 -v
+
+# Run tests matching a substring
+uv run pytest -k type_overrides
+
+# Include integration tests (overrides addopts marker selection)
+uv run pytest -m integration
+
+# Lint (ruff)
+uv run ruff check .
+
+# Auto-fix what ruff can
+uv run ruff check . --fix
+
+# Format (if formatter is enabled for your ruff version)
+uv run ruff format .
 ```
 
-## Testing Code Generation
+Notes:
+- Pytest config lives in `pyproject.toml` (`[tool.pytest.ini_options]`) and writes reports to `dist/tests/`.
+- Ruff config lives in `pyproject.toml` (`line-length = 120`, lint selects include `I` import sorting and `ANN` typing rules).
 
-To test code generation with the Spring Boot generator:
+## Local Generation Smoke Tests
+
+The CLI entrypoint is `qsdl` (see `[project.scripts]` in `pyproject.toml`).
 
 ```bash
-# Generate with basic layout (no config)
-qsdl examples/spring/relation.qsdl -g spring -o examples/spring/basic_layout
+# Generate OpenAPI
+uv run qsdl examples/openapi/input.qsdl -g openapi -o srcgen/
 
-# Generate with domain layout (with custom config)
-qsdl examples/spring/relation.qsdl -g spring -c util/domain_config.json -o examples/spring/domain_layout
-
-# VSCode tasks are available - see .vscode/tasks.json
-# Run "generate spring" task to generate both layouts
+# Spring generator example outputs
+uv run qsdl examples/spring/relation.qsdl -g spring -o examples/spring/basic_layout
+uv run qsdl examples/spring/relation.qsdl -g spring -c util/domain_config.json -o examples/spring/domain_layout
 ```
 
-## Project Structure
+Useful:
+- The schema language reference is described in `README.md`.
+- The TextX grammar lives at `src/qsdl/dsl/definition/entity.tx`.
 
-```
-qsdl/
-├── src/
-│   ├── qsdl/
-│   │   ├── core.py              # Main generation logic
-│   │   ├── generators/          # Generator implementations
-│   │   │   ├── spring/          # Spring Boot generator
-│   │   │   ├── openapi/         # OpenAPI generator
-│   │   │   ├── plantuml/        # PlantUML generator
-│   │   │   └── ...
-│   │   ├── dsl/                 # Domain Specific Language
-│   │   │   ├── definition/      # Language grammar
-│   │   │   ├── models/          # AST models
-│   │   │   └── processors/      # Model processing
-│   │   └── ...
-├── examples/                   # Example schemas
-├── tests/                      # Test suite
-└── docs/                       # Documentation
-```
+## Repo Rules (Cursor/Copilot)
 
-## Key Features
+No Cursor rules found (`.cursor/rules/` or `.cursorrules`).
+No Copilot instructions found (`.github/copilot-instructions.md`).
 
-### Automatic CRUD Generation
+## Code Style Guidelines
 
-A simple Object definition generates:
-- GET ALL (collection endpoint)
-- POST (create endpoint)
-- GET (single item endpoint)
-- PATCH (update endpoint)
-- DELETE (delete endpoint)
+### Formatting
 
-### Domain Relationships
+- Target 120 char lines (ruff configured; `E501` ignored, but keep readability).
+- Use f-strings for logging/strings where appropriate, but prefer logger formatting (`log.info("%s", value)`) to avoid eager formatting.
+- Prefer small, pure helper functions when transforming the DSL model.
 
-- **Composition**: Parent-child relationships with cascade operations
-- **Aggregation**: Independent relationships between entities
-- **Inheritance**: Base types for common field definitions
+### Imports
 
-### Customization Points
+- Follow ruff/isort (`I`) ordering: stdlib, third-party, local.
+- Prefer `from collections.abc import ...` over `typing` for runtime types.
+- In-module aliases:
+  - `import qsdl.dsl.textx as xtx` is the canonical alias for textX helper/proxy access.
 
-1. **Directives**: Fine-grained control over generation
-2. **Configuration**: Generator-specific options via JSON
-3. **Templates**: Jinja2 templates for code structure
-4. **Package Layout**: Customizable package organization
+### Typing
 
-## Example Use Cases
+- Use Python 3.13 type syntax (`X | Y`, `list[str]`, `dict[str, T]`).
+- Keep return types accurate; many utilities intentionally return `None` when absent.
+- Prefer narrow unions (see `ValueType` in `src/qsdl/dsl/util.py`) over `Any`.
 
-### Basic Domain Object
+### Naming
 
-```qsdl
-base BaseType {
-    name: String! @query
-    description: String
-    creation_date: Date @readOnly
-}
+- Python: `snake_case` functions/vars, `PascalCase` classes.
+- QSDL schema constraints (from project docs):
+  - Type names (`Object`, `Base`, `Enum`) should be `PascalCase`.
+  - Enum values should be `ALL_CAPS`.
 
-type Project extends BaseType {
-    archive: Boolean @writeOnly
-    archived: Boolean @readOnly
-}
-```
+### Error Handling & Logging
 
-### Custom API Endpoint
+- Use `log = logger.getLogger(__name__)` and `log.info/warning/error`.
+- Raise specific exceptions where feasible; this codebase currently uses `Exception` in a few places for DSL validation.
+- When validating schema invariants:
+  - Log an error message that includes the conflicting entities.
+  - Then raise to abort generation (don’t continue with an inconsistent model).
 
-```qsdl
-extend api {
-    uploadFile(file: MultipartFile!, docType: String, entityId: UUID!): Void 
-        @path("upload") 
-        @method(POST) 
-        @consumes("multipart/form-data") 
-        @spring-void-input
-}
-```
+### File/Path Handling
 
-### Complex Relationships
+- Use `pathlib.Path` for paths.
+- Use explicit encoding (`utf-8`) when reading/writing text files.
 
-```qsdl
-type Foo {
-    bar_id: Int @writeOnly
-    bar: Bar @readOnly
-}
+## DSL Parsing & Model Traversal
 
-type Bar {
-    field: String
-}
-```
+### `src/qsdl/dsl/textx.py` get_children_* proxies
 
-## Development Workflow
+Intent: provide typed wrappers around `textx.model.get_children_of_type(...)`.
 
-1. **Schema Definition**: Create `.qsdl` files with domain models
-2. **Configuration**: Set generator options via JSON or CLI
-3. **Generation**: Run `qsdl` command to generate code
-4. **Customization**: Modify templates or add directives as needed
+Why it exists:
+- TextX returns untyped lists (and the type name is passed as a string).
+- These proxy helpers centralize the string type names (e.g. `"Field"`, `"Object"`) and give static typing to callers.
 
-## Integration Points
+How to use:
+- Prefer these wrappers over calling `textx.model.get_children_of_type` directly.
+- They operate on the fully parsed (and post-processed) `dsl.Schema` object graph.
 
-- **CLI**: `qsdl input.qsdl -g spring -c config.json -o output/`
-- **Python API**: Import and use `qsdl.core.generate()` directly
-- **Configuration**: JSON files or Python dataclasses
-- **Extensions**: Add new generators by implementing the generator interface
+Common patterns:
+- Walk the full schema for a given DSL node kind:
+  - `xtx.get_children_of_field(schema)` to find all fields globally.
+  - `xtx.get_children_of_operation(schema)` to find custom API ops.
 
-## Best Practices
+### `src/qsdl/dsl/util.py` helpers
 
-1. **Domain-First**: Design domain models before API endpoints
-2. **Directive Usage**: Use directives for fine-grained control
-3. **Base Types**: Create common base types for shared fields
-4. **Package Organization**: Use `@namespace` for logical grouping
-5. **Validation**: Leverage `@minSize`, `@maxSize` for input validation
+This module contains higher-level, domain-aware helpers built on top of the parsed DSL model.
 
-## Future Directions
+Key helpers and their intent:
+- `get_directive_of_name(name, entity)`:
+  - Fetches the first directive match by name; use for optional directives.
+- `get_type_override(entity, directive, keys)`:
+  - Parses generator-specific scalar overrides from directives.
+  - Important: override parsing splits by `", "` (comma+space). Do not change delimiter lightly.
+- `map_custom_type(entity, mapping, default, directive, args, arg_picker="type")`:
+  - Generic mapping for generator type conversions; scalar directives can override mapping.
+- Relationship helpers (require a schema because they search globally):
+  - `get_parents(schema, obj)` uses `xtx.get_children_of_field(schema)` to find fields whose value is `obj`.
+  - `get_compositions(schema, obj)`/`get_aggregation(schema, obj)` filter those parents by relation kind.
+  - `get_composition_fields(schema, obj_name)` finds array relationship fields pointing to an object name.
+- Inheritance/flattening helper:
+  - `get_all_fields_as_list(entity)` recursively merges fields from supertypes and enforces `@override`.
+  - If a child redefines an inherited field without `@override`, it logs an error and raises.
+- Traversal helper:
+  - `traverse_fields(entity, predicate, ...)` is a generic recursive scanner over fields (optionally nested).
+  - Use it to answer questions like “does this object contain any readOnly fields?” without duplicating loops.
 
-- Additional generators (GraphQL, TypeScript, etc.)
-- Enhanced relationship handling
-- Performance optimizations
-- Improved error reporting
-- Extended directive system
+Guidance:
+- Prefer `util.py` helpers when implementing generators/processors; they encode project rules.
+- When adding new helpers, keep them side-effect free unless they are explicitly validators.
 
-## Getting Started
+## Testing Guidance
 
-```bash
-# Install
-echo "type Project { name: String }" > project.qsdl
-qsdl project.qsdl -g openapi
-
-# Explore examples
-cd examples/openapi
-qsdl input.qsdl -g openapi
-```
-
-## Resources
-
-- **Documentation**: `docs/` directory
-- **Examples**: `examples/` directory
-- **Language Spec**: `qsdl/dsl/definition/entity.qsdl`
-- **Tests**: `tests/` directory
-
-This project provides a powerful foundation for domain-driven API development with flexible code generation capabilities.
+- Tests live under `tests/` with unit, functional, and e2e coverage.
+- Default pytest run excludes integration tests (`-m 'not integration'` in `pyproject.toml`).
+- When fixing a bug, add/adjust the narrowest test:
+  1) unit (`tests/unit`) for pure functions,
+  2) functional (`tests/functional`) for schema/model behavior,
+  3) e2e (`tests/e2e`) for generation outputs.
