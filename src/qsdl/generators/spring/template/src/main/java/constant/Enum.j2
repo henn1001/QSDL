@@ -12,7 +12,10 @@ public enum {{enum.name}} {
     {% endfor %}
 
     public static boolean hasValue(String value) {
-        return EnumSet.allOf({{enum.name}}.class).stream().anyMatch(e -> e.toString().equals(value));
+        for ({{enum.name}} e : {{enum.name}}.values()) {
+            if (e.name().equals(value)) return true;
+        }
+        return false;
     }
 }
 {{""}}

@@ -11,6 +11,9 @@ public enum Status {
     CLOSED;
 
     public static boolean hasValue(String value) {
-        return EnumSet.allOf(Status.class).stream().anyMatch(e -> e.toString().equals(value));
+        for (Status e : Status.values()) {
+            if (e.name().equals(value)) return true;
+        }
+        return false;
     }
 }
