@@ -9,6 +9,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import tools.jackson.databind.node.ObjectNode;
 // @formatter:off
 public record Ticket(
 
+    @NotNull
     @Size(min = 0, max = 255)
     @JsonProperty(value = "id")
     String id,
@@ -39,5 +41,18 @@ public record Ticket(
 
     @JsonProperty(value = "status")
     Status status
-) {}
+
+) {
+    public Ticket {
+        if (number == null) {
+            number = 42;
+        }
+        if (title == null) {
+            title = "Witty Title";
+        }
+        if (status == null) {
+            status = Status.OPEN;
+        }
+    }
+}
 // @formatter:on

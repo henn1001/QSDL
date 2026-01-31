@@ -8,6 +8,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -22,5 +23,6 @@ public record GetProjectsFilter(
     @Size(min = 0, max = 255)
     @JsonProperty(value = "name")
     String name
+
 ) {}
 // @formatter:on

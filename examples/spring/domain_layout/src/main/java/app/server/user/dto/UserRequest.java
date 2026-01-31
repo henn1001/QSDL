@@ -32,6 +32,6 @@ public record UserRequest(
     @Size(min = 0, max = 255)
     @JsonProperty(value = "tmp")
     String tmp
-) {
-}
+
+) {}
 // @formatter:on

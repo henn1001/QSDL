@@ -24,6 +24,6 @@ public record RoleRequest(
     @Size(min = 0, max = 255)
     @JsonProperty(value = "name")
     String name
-) {
-}
+
+) {}
 // @formatter:on

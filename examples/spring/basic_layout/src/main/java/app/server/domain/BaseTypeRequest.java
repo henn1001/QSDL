@@ -31,6 +31,6 @@ public record BaseTypeRequest(
 
     @JsonProperty(value = "meta_inf")
     ObjectNode metaInf
-) {
-}
+
+) {}
 // @formatter:on

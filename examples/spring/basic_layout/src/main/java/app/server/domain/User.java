@@ -8,6 +8,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -19,11 +20,13 @@ import tools.jackson.databind.node.ObjectNode;
 // @formatter:off
 public record User(
 
+    @NotNull
     @Min(0)
     @Max(Long.MAX_VALUE)
     @JsonProperty(value = "id")
     Long id,
 
+    @NotNull
     @Size(min = 0, max = 255)
     @JsonProperty(value = "name")
     String name,
@@ -35,5 +38,6 @@ public record User(
     @Size(min = 0, max = 255)
     @JsonProperty(value = "tmp")
     String tmp
+
 ) {}
 // @formatter:on

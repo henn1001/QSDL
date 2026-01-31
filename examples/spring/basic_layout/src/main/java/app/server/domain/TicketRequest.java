@@ -36,6 +36,7 @@ public record TicketRequest(
 
     @JsonProperty(value = "status")
     Status status
+
 ) {
     public TicketRequest {
         if (number == null) {

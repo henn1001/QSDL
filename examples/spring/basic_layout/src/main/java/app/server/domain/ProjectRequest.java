@@ -34,6 +34,6 @@ public record ProjectRequest(
 
     @JsonProperty(value = "archive")
     Boolean archive
-) {
-}
+
+) {}
 // @formatter:on
