@@ -48,9 +48,9 @@ public class TicketController extends BaseController implements TicketApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Ticket> createTicket(TicketRequest body) {
-        Validator.validate(body);
-        Ticket response = ticketService.createTicket(body);
+    public ResponseEntity<Ticket> createTicket(TicketRequest request) {
+        Validator.validate(request);
+        Ticket response = ticketService.createTicket(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

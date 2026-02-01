@@ -47,9 +47,9 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project createProject(ProjectRequest body) throws AppException {
+    public Project createProject(ProjectRequest request) throws AppException {
 
-        var projectEntity = projectMapper.toEntity(body);
+        var projectEntity = projectMapper.toEntity(request);
 
         projectEntity = projectRepository.save(projectEntity);
 
@@ -65,12 +65,12 @@ public class ProjectService {
     }
 
     @Transactional
-    public Project updateProject(Long id, ProjectRequest body) throws AppException {
+    public Project updateProject(Long id, ProjectRequest request) throws AppException {
 
         var projectEntity = fetchProjectFromDb(id);
 
         // update dbEntity with all writeable fields - nulls included
-        projectMapper.update(body, projectEntity);
+        projectMapper.update(request, projectEntity);
 
         projectEntity = projectRepository.save(projectEntity);
 

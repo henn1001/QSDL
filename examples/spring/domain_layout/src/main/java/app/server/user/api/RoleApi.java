@@ -41,7 +41,7 @@ public interface RoleApi {
      * Create a Role
      */
     @PostMapping(value = "/projects/{project_id}/roles", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Role> createRole(@PathVariable("project_id") String projectId, @RequestBody RoleRequest body) {
+    default ResponseEntity<Role> createRole(@PathVariable("project_id") String projectId, @RequestBody RoleRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

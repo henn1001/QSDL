@@ -41,7 +41,7 @@ public interface TicketApi {
      * Create a Ticket
      */
     @PostMapping(value = "/tickets", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Ticket> createTicket(@RequestBody TicketRequest body) {
+    default ResponseEntity<Ticket> createTicket(@RequestBody TicketRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

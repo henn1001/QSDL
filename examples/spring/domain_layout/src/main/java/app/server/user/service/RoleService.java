@@ -67,12 +67,12 @@ public class RoleService {
     }
 
     @Transactional
-    public Role createRole(String projectId, RoleRequest body) throws AppException {
+    public Role createRole(String projectId, RoleRequest request) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
 
-        var roleEntity = roleMapper.toEntity(body);
+        var roleEntity = roleMapper.toEntity(request);
 
         // add parent relation
         roleEntity.setProject(projectEntity);
@@ -94,7 +94,7 @@ public class RoleService {
     }
 
     @Transactional
-    public Role updateRole(String projectId, String id, RoleRequest body) throws AppException {
+    public Role updateRole(String projectId, String id, RoleRequest request) throws AppException {
 
         // confirm existence of parent
         var projectEntity = fetchProjectFromDb(projectId);
@@ -102,7 +102,7 @@ public class RoleService {
         var roleEntity = fetchRoleFromProjectFromDb(projectEntity.getId(), id);
 
         // update dbEntity with all writeable fields - nulls included
-        roleMapper.update(body, roleEntity);
+        roleMapper.update(request, roleEntity);
 
         roleEntity = roleRepository.save(roleEntity);
 

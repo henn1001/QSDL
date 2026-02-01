@@ -176,7 +176,7 @@ def body_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[dsl
     """
     arguments = []
 
-    argument = dsl.Argument(operation, "body", obj)
+    argument = dsl.Argument(operation, "request", obj)
     argument.is_body = True
 
     arguments.append(argument)

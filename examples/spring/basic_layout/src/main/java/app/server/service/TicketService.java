@@ -47,9 +47,9 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket createTicket(TicketRequest body) throws AppException {
+    public Ticket createTicket(TicketRequest request) throws AppException {
 
-        var ticketEntity = ticketMapper.toEntity(body);
+        var ticketEntity = ticketMapper.toEntity(request);
 
         ticketEntity = ticketRepository.save(ticketEntity);
 
@@ -65,12 +65,12 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket updateTicket(Long id, TicketRequest body) throws AppException {
+    public Ticket updateTicket(Long id, TicketRequest request) throws AppException {
 
         var ticketEntity = fetchTicketFromDb(id);
 
         // update dbEntity with all writeable fields - nulls included
-        ticketMapper.update(body, ticketEntity);
+        ticketMapper.update(request, ticketEntity);
 
         ticketEntity = ticketRepository.save(ticketEntity);
 

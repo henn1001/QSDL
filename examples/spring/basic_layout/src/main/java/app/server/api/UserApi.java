@@ -71,7 +71,7 @@ public interface UserApi {
      * Create a User
      */
     @PostMapping(value = "/users", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<User> createUser(@RequestBody UserRequest body) {
+    default ResponseEntity<User> createUser(@RequestBody UserRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

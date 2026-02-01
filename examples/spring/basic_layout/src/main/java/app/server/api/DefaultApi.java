@@ -30,7 +30,7 @@ public interface DefaultApi {
      * POST /query : submitQury
      */
     @PostMapping(value = "/query", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode body) {
+    default ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

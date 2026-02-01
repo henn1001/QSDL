@@ -35,7 +35,7 @@ public class DefaultController extends BaseController implements DefaultApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<ObjectNode> submitQury(ObjectNode body) {
+    public ResponseEntity<ObjectNode> submitQury(ObjectNode request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

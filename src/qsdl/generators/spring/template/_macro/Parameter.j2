@@ -31,7 +31,7 @@
 
     {% set requiresNode = operation.body_parameters | rejectattr("is_base") | rejectattr("is_object") | list %}
     {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
-            @RequestBody ObjectNode body
+            @RequestBody ObjectNode request
     {%- elif operation.body_parameters and operation.method == "patch" -%}
             @RequestBody JsonMergePatch patch
     {%- elif operation.body_parameters -%}
@@ -59,7 +59,7 @@
 
     {% set requiresNode = operation.body_parameters | rejectattr("is_base") | rejectattr("is_object") | list %}
     {%- if operation.body_parameters and (operation.body_parameters|length > 1 or requiresNode) -%}
-            ObjectNode body
+            ObjectNode request
     {%- elif operation.body_parameters and operation.method == "patch" -%}
             JsonMergePatch patch
     {%- elif operation.body_parameters -%}
@@ -84,7 +84,7 @@
     {%- endif -%}
 
     {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-        {%- set _ = params.append("ObjectNode body") -%}
+        {%- set _ = params.append("ObjectNode request") -%}
     {%- elif operation.body_parameters -%}
         {%- set _ = params.append(param_helper(operation.body_parameters[0])) -%}
     {%- endif -%}
@@ -108,7 +108,7 @@
     {%- endif -%}
 
     {%- if operation.body_parameters and operation.body_parameters|length > 1 -%}
-        {%- set _ = params.append("body") -%}
+        {%- set _ = params.append("request") -%}
     {%- elif operation.body_parameters and operation.method == "patch" -%}
         {%- set _ = params.append("request") -%}
     {%- elif operation.body_parameters -%}

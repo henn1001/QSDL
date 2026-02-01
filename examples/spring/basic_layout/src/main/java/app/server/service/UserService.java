@@ -111,9 +111,9 @@ public class UserService {
     }
 
     @Transactional
-    public User createUser(UserRequest body) throws AppException {
+    public User createUser(UserRequest request) throws AppException {
 
-        var userEntity = userMapper.toEntity(body);
+        var userEntity = userMapper.toEntity(request);
 
         userEntity = userRepository.save(userEntity);
 
@@ -129,12 +129,12 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(Long id, UserRequest body) throws AppException {
+    public User updateUser(Long id, UserRequest request) throws AppException {
 
         var userEntity = fetchUserFromDb(id);
 
         // update dbEntity with all writeable fields - nulls included
-        userMapper.update(body, userEntity);
+        userMapper.update(request, userEntity);
 
         userEntity = userRepository.save(userEntity);
 

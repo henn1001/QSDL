@@ -49,9 +49,9 @@ public class ProjectController extends BaseController implements ProjectApi {
      * {@inheritDoc}.
      */
     @Override
-    public ResponseEntity<Project> createProject(ProjectRequest body) {
-        Validator.validate(body);
-        Project response = projectService.createProject(body);
+    public ResponseEntity<Project> createProject(ProjectRequest request) {
+        Validator.validate(request);
+        Project response = projectService.createProject(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

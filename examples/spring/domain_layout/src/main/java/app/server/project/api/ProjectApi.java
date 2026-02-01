@@ -42,7 +42,7 @@ public interface ProjectApi {
      * Create a Project
      */
     @PostMapping(value = "/projects", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Project> createProject(@RequestBody ProjectRequest body) {
+    default ResponseEntity<Project> createProject(@RequestBody ProjectRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
