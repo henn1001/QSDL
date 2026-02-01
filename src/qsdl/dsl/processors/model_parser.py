@@ -156,6 +156,7 @@ def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[ds
     for field in query_fields:
         argument = dsl.Argument(operation, field.name, field.value)
         argument.is_query = True
+        argument.is_array = field.is_query_list
 
         arguments.append(argument)
 

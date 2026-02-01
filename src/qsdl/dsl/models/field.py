@@ -40,6 +40,7 @@ class Field:
     is_required: bool = False
     # Special directives
     is_query: bool = False
+    is_query_list: bool = False
     is_read_only: bool = False
     is_write_only: bool = False
     is_composition: bool = False

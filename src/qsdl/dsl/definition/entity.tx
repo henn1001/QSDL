@@ -105,6 +105,7 @@ Field:
 
     // Special directives in any order
     ( 
+        is_query_list?='@queryList'
         is_query?='@query'
         is_read_only?='@readOnly'
         is_write_only?='@writeOnly'

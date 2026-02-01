@@ -88,8 +88,14 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
         List<{{model.name}}Entity> testData = prepareData(5);
 
         BooleanBuilder predicate = new BooleanBuilder();
-        {% for field in model.fields if field.is_query %}
+        {% for field in model.fields if field.is_query or field.is_query_list %}
+        {% if field.is_query_list %}
+        if (!testData.get(0).{{ "get" + field.name|pascal + "()" }}.isEmpty()) {
+            predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.contains(testData.get(0).{{ "get" + field.name|pascal + "()" }}));
+        }
+        {% else %}
         predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" }}));
+        {% endif %}
         {% endfor %}
 
         // When
@@ -139,8 +145,14 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
         BooleanExpression expression = Q{{model.name}}Entity.{{model.name|camel}}Entity.{{parent.predicate}}.id.eq(parent.getId());
         BooleanBuilder predicate = new BooleanBuilder(expression);
-        {% for field in model.fields if field.is_query %}
+        {% for field in model.fields if field.is_query or field.is_query_list %}
+        {% if field.is_query_list %}
+        if (!testData.{{ "get" + field.name|pascal + "()" }}.isEmpty()) {
+            predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.contains(testData.{{ "get" + field.name|pascal + "()" }}));
+        }
+        {% else %}
         predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.{{ "get" + field.name|pascal + "()" }}));
+        {% endif %}
         {% endfor %}
 
         // When

@@ -24,9 +24,9 @@
       examples:
       {% for parameter in operation.query_parameters %}
         {% if loop.first %}
-        - {{ parameter.name }}: {{ parameter.type }}
+        - {{ parameter.name }}: {{ "[" if parameter.is_array }}{{ parameter.type }}{{ "]" if parameter.is_array }}
         {% else %}
-          {{ parameter.name }}: {{ parameter.type }}
+          {{ parameter.name }}: {{ "[" if parameter.is_array }}{{ parameter.type }}{{ "]" if parameter.is_array }}
         {% endif %}
       {% endfor %}
   {% endif %}

@@ -50,6 +50,7 @@ class ModelField:
     is_hidden: bool = False
     is_transient: bool = False
     is_query: bool = False
+    is_query_list: bool = False
 
     is_enum: bool = False
     is_base: bool = False
@@ -98,6 +99,7 @@ class ModelField:
         self.is_hidden = _ref.is_hidden
         self.is_transient = _ref.is_transient
         self.is_query = _ref.is_query
+        self.is_query_list = _ref.is_query_list
 
         self.is_enum = isinstance(_ref.value, dsl.Enum)
         self.is_base = isinstance(_ref.value, dsl.Base)

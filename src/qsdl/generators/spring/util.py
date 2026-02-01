@@ -178,7 +178,7 @@ def has(
                 break
 
             # checks if there is a query attribute
-            if has_query and field.is_query:
+            if has_query and (field.is_query or field.is_query_list):
                 ret = True
                 break
 

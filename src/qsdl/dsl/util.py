@@ -169,12 +169,8 @@ def get_parents(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
 
 
 def get_query_fields(obj: dsl.Object) -> list[dsl.Field]:
-    """Returns a list of all query parameters.
-
-    For the default CRUD operations this will return the fields flagged with
-    a query-directive.
-    """
-    return [x for x in obj.fields if x.is_query]
+    """Returns a list of all fields with either is_query or is_query_list."""
+    return [x for x in obj.fields if x.is_query or x.is_query_list]
 
 
 def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
