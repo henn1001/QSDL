@@ -137,3 +137,33 @@ class TestSpecificsQuery:
         assert parameters[1]["$ref"] == "#/components/parameters/cursor"
         assert parameters[2]["$ref"] == "#/components/parameters/limit"
         assert parameters[3]["$ref"] == "#/components/parameters/count"
+
+    def test_filter_respects_domain_package(self) -> None:
+        test_input = """\
+        type Project @namespace("ProjectNS") @spring-package("project") {
+          name: String! @query
+        }
+        """
+        import json
+        import textwrap
+        from pathlib import Path
+
+        from qsdl.core import generate
+
+        test_input = textwrap.dedent(test_input)
+        test_output = Path("srcgen/filter_test/")
+        config = {
+            "domain_path": "app.server.{package}.dto",
+            "package_placeholder_fallback": "common",
+        }
+        config_path = test_output / "config.json"
+        config_path.parent.mkdir(parents=True, exist_ok=True)
+        config_path.write_text(json.dumps(config))
+
+        generate(test_output, generator_name="spring", raw_schema=test_input, config_path=config_path)
+
+        filter_in_project = test_output / "src/main/java/app/server/project/dto/GetProjectsFilter.java"
+        filter_in_common = test_output / "src/main/java/app/server/common/dto/GetProjectsFilter.java"
+
+        assert filter_in_project.exists()
+        assert not filter_in_common.exists()

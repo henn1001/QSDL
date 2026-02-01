@@ -203,11 +203,14 @@ class ModelClass:
         self.has_query = util.has(_ref, has_query=True)
 
         # handle package path and imports
+        # Priority: @spring-package directive > namespace attribute
         self.package = spring.Package(util.Store.config)
         package_directive = qutil.get_directive_of_name(Directive.PACKAGE, _ref)
 
         if package_directive:
             self.package.set_namespace(package_directive.value)
+        elif _ref.namespace:
+            self.package.set_namespace(stringcase.lowercase(_ref.namespace))
 
         # add needed mappers
         nested_types = util.extract_fields_for_mapper(_ref)

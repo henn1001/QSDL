@@ -4,13 +4,13 @@
 package app.server.project.api;
 
 import app.server.common.api.BaseController;
-import app.server.common.dto.GetProjectsFilter;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.common.util.JsonMergePatchUtil;
 import app.server.common.util.Validator;
 import app.server.project.api.ProjectApi;
 import app.server.project.dto.*;
+import app.server.project.dto.GetProjectsFilter;
 import app.server.project.mapper.ProjectMapper;
 import app.server.project.service.ProjectService;
 import jakarta.json.JsonMergePatch;

@@ -448,12 +448,21 @@ def build_filter_models() -> list[spring.ModelClass]:
 
         new_name = stringcase.capitalcase(operation.name) + "Filter"
 
+        # For CRUD operations, use domain_object's namespace/package; for custom ops, use parent API's
+        namespace_source = operation.domain_object if operation.domain_object else operation.parent
+        filter_namespace = getattr(namespace_source, "namespace", None)
+
         # Create a dsl.Base for this filter
         filter_base = dsl.Base(
             parent=Store.schema,
             name=new_name,
-            namespace=operation.parent.namespace if hasattr(operation.parent, "namespace") else None,
+            namespace=filter_namespace,
         )
+
+        # Copy @spring-package directive from source if present (takes priority over namespace)
+        spring_package_directive = qutil.get_directive_of_name(Directive.PACKAGE, namespace_source)
+        if spring_package_directive:
+            filter_base.directives = [spring_package_directive]
 
         # Convert query arguments to fields
         for argument in operation.query_parameters:
@@ -468,8 +477,9 @@ def build_filter_models() -> list[spring.ModelClass]:
             filter_base.fields.append(field)
 
         # Build ModelClass from the filter base
-        filter_model = spring.ModelClass().build(filter_base)  # TODO: add this to the package of the operations parent
-        filter_model.has_request = False  # we do not want a request class
+        # The namespace was already set on filter_base and will be picked up by build()
+        filter_model = spring.ModelClass().build(filter_base)
+        filter_model.has_request = False
         filter_models.append(filter_model)
 
     return filter_models

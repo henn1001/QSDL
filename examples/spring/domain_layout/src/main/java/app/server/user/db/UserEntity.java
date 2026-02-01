@@ -3,9 +3,9 @@
  */
 package app.server.user.db;
 
-import app.server.common.db.TicketEntity;
 import app.server.common.model.AbstractPersistentBase;
 import app.server.common.model.AbstractPersistentObject;
+import app.server.incident.db.TicketEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;

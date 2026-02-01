@@ -3,8 +3,6 @@
  */
 package app.server.common.constants;
 
-import java.util.EnumSet;
-
 public enum Status {
     OPEN,
     TO_DO,

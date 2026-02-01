@@ -3,10 +3,10 @@
  */
 package app.server.project.api;
 
-import app.server.common.dto.GetProjectsFilter;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.project.dto.*;
+import app.server.project.dto.GetProjectsFilter;
 import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;

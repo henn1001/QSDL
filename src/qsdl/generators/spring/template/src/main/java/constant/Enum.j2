@@ -3,8 +3,6 @@
  */
 package {{enum.package.enum}};
 
-import java.util.EnumSet;
-
 public enum {{enum.name}} {
     {% for value in enum.constants %}
     {{value}}{% if not loop.last %},{% else %};{% endif %}

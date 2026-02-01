@@ -13,5 +13,5 @@ import org.springframework.context.annotation.Import;
 @TestConfiguration
 @Import(AppJacksonConfiguration.class)
 @ImportAutoConfiguration(JacksonAutoConfiguration.class)
-@ComponentScan({"app.server.custom.mapper", "app.server.project.mapper", "app.server.user.mapper", "app.server.common.mapper", "app.server.common.util"})
+@ComponentScan({"app.server.custom.mapper", "app.server.project.mapper", "app.server.user.mapper", "app.server.incident.mapper", "app.server.common.util"})
 public class TestConfig {}
