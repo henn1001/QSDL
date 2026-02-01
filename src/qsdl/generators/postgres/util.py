@@ -45,7 +45,7 @@ custom_types = {
 
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converts builtin types to generator specific types."""
-    return qutil.map_custom_type(entity, custom_types, entity.name, Directive.TYPE, ["format", "pattern"], "type")
+    return qutil.map_custom_type(entity, custom_types, entity.name, Directive.TYPE, [], "type")
 
 
 def T_PREFIX() -> str:
