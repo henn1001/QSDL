@@ -214,9 +214,9 @@ class UserServiceTest {
 
         // Then
         AppError error = thrown.getAppError();
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code());
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message());
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status());
     }
 
     @Test
@@ -261,9 +261,9 @@ class UserServiceTest {
 
         // Then
         AppError error = thrown.getAppError();
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code());
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message());
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status());
     }
 
     @Test
@@ -296,8 +296,8 @@ class UserServiceTest {
 
         // Then
         AppError error = thrown.getAppError();
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code());
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message());
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status());
     }
 }

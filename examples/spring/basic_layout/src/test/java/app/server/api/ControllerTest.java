@@ -57,9 +57,9 @@ class ControllerTest {
 
         // Then
         AppError error = Json.fromJson(response, AppError.class);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message);
-        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status);
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.code(), error.code());
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.message(), error.message());
+        assertEquals(ErrorCode.ENTITY_NOT_FOUND.status(), error.status());
     }
 
     @Test
@@ -76,8 +76,8 @@ class ControllerTest {
 
         // Then
         AppError error = Json.fromJson(response, AppError.class);
-        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code());
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message());
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status());
     }
 }

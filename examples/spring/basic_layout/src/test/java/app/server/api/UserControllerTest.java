@@ -172,9 +172,9 @@ class UserControllerTest {
 
         // Then
         AppError error = Json.fromJson(response, AppError.class);
-        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code());
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message());
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status());
     }
 
     @Test
@@ -249,9 +249,9 @@ class UserControllerTest {
 
         // Then
         AppError error = Json.fromJson(response, AppError.class);
-        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code);
-        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message);
-        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status);
+        assertEquals(ErrorCode.BAD_REQUEST.code(), error.code());
+        assertEquals(ErrorCode.BAD_REQUEST.message(), error.message());
+        assertEquals(ErrorCode.BAD_REQUEST.status(), error.status());
     }
 
     @Test

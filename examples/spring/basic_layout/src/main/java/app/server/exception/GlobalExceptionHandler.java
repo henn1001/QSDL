@@ -5,6 +5,7 @@ package app.server.exception;
 
 import app.server.constant.ErrorCode;
 import app.server.model.AppError;
+import app.server.model.AppErrorBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +33,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> buildResponseEntity(AppError appError, HttpServletRequest httpRequest) {
 
-        appError.path = httpRequest.getRequestURI();
+        AppError enrichedError = AppErrorBuilder.builder(appError)
+            .path(httpRequest.getRequestURI())
+            .build();
 
-        log.warn(appError.toString());
+        log.warn(enrichedError.toString());
 
-        return new ResponseEntity<>(appError, HttpStatus.valueOf(appError.status));
+        return new ResponseEntity<>(enrichedError, HttpStatus.valueOf(enrichedError.status()));
     }
 
     /**

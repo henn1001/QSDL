@@ -4,76 +4,36 @@
 package app.server.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.soabase.recordbuilder.core.RecordBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CursorPage<T> {
+@RecordBuilder
+// @formatter:off
+public record CursorPage<T>(
 
     @JsonProperty(value = "items")
-    private final List<T> items;
+    List<T> items,
 
     @JsonProperty(value = "next_cursor")
-    private final String nextCursor;
+    String nextCursor,
 
     @JsonProperty(value = "total_count")
-    private final Long totalCount;
+    Long totalCount
 
-    /**
-     * Constructor of {@code CursorPage}.
-     *
-     * @param items the content of this page.
-     * @param nextCursor the cursor for the next page.
-     * @param totalCount the total amount of items available.
-     */
-    public CursorPage(List<T> items, String nextCursor, Long totalCount) {
-        this.items = Objects.requireNonNullElse(items, new ArrayList<T>());
-        this.nextCursor = nextCursor;
-        this.totalCount = totalCount;
+)
+{
+    public CursorPage {
+        items = Objects.requireNonNullElse(items, new ArrayList<T>());
     }
 
-    /**
-     * Returns the CursorPage content as List.
-     *
-     * @return the CursorPage content as List.
-     */
-    public List<T> items() {
-        return items;
-    }
-
-    /**
-     * Returns the cursor for the next CursorPage.
-     *
-     * @return the cursor for the next CursorPage.
-     */
-    public String nextCursor() {
-        return nextCursor;
-    }
-
-    /**
-     * Returns the total amount of items available.
-     *
-     * @return the total amount of items available.
-     */
-    public Long totalCount() {
-        return totalCount;
-    }
-
-    /**
-     * Returns the size of this CursorPage.
-     *
-     * @return the size of this CursorPage.
-     */
     public int count() {
         return items.size();
     }
 
-    /**
-     * Returns if there is a next CursorPage.
-     *
-     * @return if there is a next CursorPage.
-     */
     public boolean hasNext() {
         return Objects.nonNull(nextCursor);
     }
 }
+// @formatter:on

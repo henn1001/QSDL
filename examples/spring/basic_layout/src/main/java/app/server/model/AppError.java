@@ -5,49 +5,49 @@ package app.server.model;
 
 import app.server.util.Time;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.soabase.recordbuilder.core.RecordBuilder;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AppError extends AbstractClass {
+@RecordBuilder
+// @formatter:off
+public record AppError(
 
     @JsonProperty(value = "code")
-    public String code;
+    String code,
 
     @JsonProperty(value = "message")
-    public String message;
+    String message,
 
     @JsonProperty(value = "status")
-    public Integer status;
+    Integer status,
 
     @JsonProperty(value = "path")
-    public String path;
+    String path,
 
     @JsonProperty(value = "timestamp")
-    private OffsetDateTime timestamp = Time.now();
+    OffsetDateTime timestamp,
 
     @JsonProperty(value = "details")
-    public List<String> details = new ArrayList<>();
+    List<String> details
 
-    public AppError() {}
+)
+{
+    public AppError() {
+        this(null, null, null, null, Time.now(), new ArrayList<>());
+    }
 
     public AppError(String code, String message, Integer status) {
-        this.code = code;
-        this.message = message;
-        this.status = status;
+        this(code, message, status, null, Time.now(), new ArrayList<>());
     }
 
     public AppError(String code, String message, Integer status, String detail) {
-        this.code = code;
-        this.message = message;
-        this.status = status;
-        this.details.add(detail);
+        this(code, message, status, null, Time.now(), List.of(detail));
     }
 
     public AppError(String code, String message, Integer status, List<String> details) {
-        this.code = code;
-        this.message = message;
-        this.status = status;
-        this.details = details;
+        this(code, message, status, null, Time.now(), details);
     }
 }
+// @formatter:on

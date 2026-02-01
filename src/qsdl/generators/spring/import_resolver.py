@@ -489,6 +489,7 @@ def generate_imports_for_template(
         "GlobalExceptionHandler.j2": [
             f"import {util.Store.package.enum}.ErrorCode;",
             f"import {util.Store.package.model}.AppError;",
+            f"import {util.Store.package.model}.AppErrorBuilder;",
             "import lombok.extern.slf4j.Slf4j;",
             "import org.springframework.http.HttpHeaders;",
             "import org.springframework.http.HttpStatus;",
@@ -544,6 +545,7 @@ def generate_imports_for_template(
         "AppError.j2": [
             f"import {util.Store.package.util}.Time;",
             "import com.fasterxml.jackson.annotation.JsonProperty;",
+            "import io.soabase.recordbuilder.core.RecordBuilder;",
             "import java.time.OffsetDateTime;",
             "import java.util.ArrayList;",
             "import java.util.List;",
