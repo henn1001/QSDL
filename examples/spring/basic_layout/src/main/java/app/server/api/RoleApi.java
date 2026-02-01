@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tools.jackson.databind.node.ObjectNode;
 
-@RequestMapping("${server.base-path:/api/v1}")
+@RequestMapping("/api/v1")
 @Controller
 public interface RoleApi {
 

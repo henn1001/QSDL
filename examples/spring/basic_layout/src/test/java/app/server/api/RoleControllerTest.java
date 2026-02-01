@@ -42,7 +42,7 @@ class RoleControllerTest {
     @MockitoBean
     RoleService service;
 
-    @Value("${server.base-path:/}")
+    @Value("/api/v1")
     String basePath;
 
     @Autowired

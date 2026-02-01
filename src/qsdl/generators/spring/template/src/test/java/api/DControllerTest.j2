@@ -14,7 +14,7 @@ class {{model.name}}ControllerTest {
     @MockitoBean
     {{model.name}}Service service;
 
-    @Value("${server.base-path:/}")
+    @Value("{{basePath}}")
     String basePath;
 
     @Autowired

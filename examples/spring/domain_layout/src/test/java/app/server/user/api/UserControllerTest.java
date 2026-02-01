@@ -42,7 +42,7 @@ class UserControllerTest {
     @MockitoBean
     UserService service;
 
-    @Value("${server.base-path:/}")
+    @Value("/api/v1")
     String basePath;
 
     @Autowired

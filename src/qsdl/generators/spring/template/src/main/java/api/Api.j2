@@ -7,7 +7,7 @@ package {{api.package.api}};
 
 {{ util.macro_imports(self._TemplateReference__context.name, api) }}
 
-@RequestMapping("${server.base-path:{{basePath}}}")
+@RequestMapping("{{basePath}}")
 @Controller
 public interface {{api.name}}Api {
 {% for operation in api.operations %}

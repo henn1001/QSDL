@@ -42,7 +42,7 @@ class TicketControllerTest {
     @MockitoBean
     TicketService service;
 
-    @Value("${server.base-path:/}")
+    @Value("/api/v1")
     String basePath;
 
     @Autowired
