@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://gitlab.com/henn1001/qsdl/compare/v6.0.0...v6.1.0) (2026-02-01)
+
+
+### Features
+
+* **core:** allow usage of 'id' for base type field names but include 'uid' and 'iv' reservation for object type field names ([76917a5](https://gitlab.com/henn1001/qsdl/commit/76917a507cd2faac72168bc080d79ac8f29105dc))
+* re-introduce type generation for query parameters ([b0dcd51](https://gitlab.com/henn1001/qsdl/commit/b0dcd515a9aa61bed6a147d617dd7b4f679751ee))
+* **spring:** consolidate JsonUtils with jackson3 ([daee2bf](https://gitlab.com/henn1001/qsdl/commit/daee2bf3429ca68b3398e588c8caff4e740c1d6c))
+* **spring:** convert CursorPage and AppError into records ([7f6d64f](https://gitlab.com/henn1001/qsdl/commit/7f6d64fc6aa2c1186be820bb628ee905574d6caa))
+* **spring:** minor refactor in Enum.hasValue method ([2d500bc](https://gitlab.com/henn1001/qsdl/commit/2d500bc9f9d268c1c5c5d96fed48cd6dbdad0d40))
+* **spring:** only split base types into request/response when required ([87cc27f](https://gitlab.com/henn1001/qsdl/commit/87cc27fbab4ef1e7934f2a4a9086e250d2bfeaeb))
+* **spring:** remove startup warning about open-in-view ([111194e](https://gitlab.com/henn1001/qsdl/commit/111194eab3f930bb793ab5c495eed9f7c9908a61))
+
+
+### Bug Fixes
+
+* Filter models now respect [@spring-package](https://gitlab.com/spring-package) and namespace for domain layouts ([094218e](https://gitlab.com/henn1001/qsdl/commit/094218e74bd7df05c863edd7b9b5a6f3736b91d7))
+
 ## [6.0.0](https://gitlab.com/henn1001/qsdl/compare/v5.0.0...v6.0.0) (2026-01-19)
 
 
