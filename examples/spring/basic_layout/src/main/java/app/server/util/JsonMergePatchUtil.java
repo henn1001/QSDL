@@ -20,15 +20,19 @@ import tools.jackson.databind.json.JsonMapper;
  */
 public final class JsonMergePatchUtil {
 
-    private static final JsonMapper mapper;
+    private static JsonMapper mapper;
 
     private JsonMergePatchUtil() {}
 
-    static {
-        mapper = JsonMapper.builder()
-                .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(Include.ALWAYS))
-                .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
-                .build();
+    private static JsonMapper getMapper() {
+        if (mapper == null) {
+            mapper = JsonUtil.mapper()
+                    .rebuild()
+                    .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(Include.ALWAYS))
+                    .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
+                    .build();
+        }
+        return mapper;
     }
 
     /**
@@ -43,6 +47,7 @@ public final class JsonMergePatchUtil {
     @SuppressWarnings("unchecked")
     public static <T> T apply(JsonMergePatch patch, T target) {
         try {
+            JsonMapper mapper = getMapper();
             byte[] currentBytes = mapper.writeValueAsBytes(target);
 
             JsonValue currentJson;

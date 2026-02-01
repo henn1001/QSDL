@@ -11,7 +11,7 @@ import app.server.domain.entity.*;
 import app.server.domain.entity.RoleEntity;
 import app.server.model.*;
 import app.server.repository.*;
-import app.server.util.Json;
+import app.server.util.JsonUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import java.util.List;
@@ -60,8 +60,8 @@ class ProjectRepositoryTest extends AbstractDataJpaTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(testData),
-                new JSONObject(Json.toString(findData)),
+                JsonUtil.toString(testData),
+                new JSONObject(JsonUtil.toString(findData)),
                 false);
     }
 

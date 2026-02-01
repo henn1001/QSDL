@@ -18,8 +18,8 @@ import app.server.TestUtils;
 import app.server.common.constants.ErrorCode;
 import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
-import app.server.common.util.Json;
 import app.server.common.util.JsonMergePatchConverter.MediaTypeExtension;
+import app.server.common.util.JsonUtil;
 import app.server.user.dto.Role;
 import app.server.user.dto.RoleRequest;
 import app.server.user.service.RoleService;
@@ -70,7 +70,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(ret),
+                JsonUtil.toString(ret),
                 new JSONObject(response),
                 false);
     }
@@ -87,7 +87,7 @@ class RoleControllerTest {
 
         // When
         String response = mockMvc.perform(post(basePath + "/projects/1/roles")
-                        .content(Json.toString(requestDto))
+                        .content(JsonUtil.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -96,7 +96,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(responseDto),
+                JsonUtil.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -120,7 +120,7 @@ class RoleControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.fromJson(response, AppError.class);
+        AppError error = JsonUtil.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code());
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message());
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status());
@@ -144,7 +144,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(responseDto),
+                JsonUtil.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -164,7 +164,7 @@ class RoleControllerTest {
 
         // When
         String response = mockMvc.perform(patch(basePath + "/projects/1/roles/1")
-                        .content(Json.toString(requestDto))
+                        .content(JsonUtil.toString(requestDto))
                         .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -173,7 +173,7 @@ class RoleControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(responseDto),
+                JsonUtil.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -197,7 +197,7 @@ class RoleControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.fromJson(response, AppError.class);
+        AppError error = JsonUtil.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code());
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message());
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status());

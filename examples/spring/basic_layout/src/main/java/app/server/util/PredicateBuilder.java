@@ -8,7 +8,6 @@ import com.querydsl.core.types.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.core.TypeInformation;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
@@ -17,28 +16,20 @@ import org.springframework.data.querydsl.binding.QuerydslBindingsFactory;
 import org.springframework.data.querydsl.binding.QuerydslPredicateBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import tools.jackson.databind.json.JsonMapper;
 
 public final class PredicateBuilder {
 
     private PredicateBuilder() {}
 
-    private static final ConversionService conversionService;
-
-    private static final SimpleEntityPathResolver resolver;
-
     private static final QuerydslPredicateBuilder predicateBuilder;
 
     private static final QuerydslBindingsFactory bindingsFactory;
 
-    private static final JsonMapper mapper;
-
     static {
-        conversionService = DefaultConversionService.getSharedInstance();
-        resolver = new SimpleEntityPathResolver("");
+        var conversionService = DefaultConversionService.getSharedInstance();
+        var resolver = SimpleEntityPathResolver.INSTANCE;
         predicateBuilder = new QuerydslPredicateBuilder(conversionService, resolver);
         bindingsFactory = new QuerydslBindingsFactory(resolver);
-        mapper = new JsonMapper();
     }
 
     /**
@@ -57,6 +48,7 @@ public final class PredicateBuilder {
     /**
      * Builds a predicate from a filter object by converting it to a MultiValueMap.
      */
+    @SuppressWarnings("unchecked")
     public static <T> BooleanBuilder build(Object filter, Class<T> domainClass) {
         if (filter == null) {
             return build(domainClass);
@@ -65,7 +57,7 @@ public final class PredicateBuilder {
         MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<>();
 
         // Convert filter object to map
-        Map<String, Object> filterMap = mapper.convertValue(filter, Map.class);
+        Map<String, Object> filterMap = JsonUtil.mapper().convertValue(filter, Map.class);
 
         // Convert to MultiValueMap
         for (Map.Entry<String, Object> entry : filterMap.entrySet()) {

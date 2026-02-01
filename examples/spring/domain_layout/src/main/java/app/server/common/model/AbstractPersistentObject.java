@@ -28,7 +28,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
  */
 @Slf4j
 @MappedSuperclass
-public abstract class AbstractPersistentObject extends AbstractClass {
+public abstract class AbstractPersistentObject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +42,6 @@ public abstract class AbstractPersistentObject extends AbstractClass {
     @Version
     @JsonIgnore
     private Integer iv;
-
-    private static final String UNHANDLED_EXCEPTION = "Caught unhandled exception:";
 
     /**
      * The internal numeric identifier.

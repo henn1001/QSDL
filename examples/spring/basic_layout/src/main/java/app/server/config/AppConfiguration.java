@@ -5,19 +5,41 @@ package app.server.config;
 
 import app.server.repository.BaseRepositoryImpl;
 import app.server.util.JsonMergePatchConverter;
+import app.server.util.JsonUtil;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.util.List;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
 @EnableScheduling
 @EnableJpaRepositories(basePackages = "app.server.repository", repositoryBaseClass = BaseRepositoryImpl.class)
 public class AppConfiguration {
+
+    @Bean
+    JsonMapperBuilderCustomizer jacksonCustomizer() {
+        return builder -> JsonUtil.apply(builder);
+    }
+
+    @Component
+    public class JsonUtilInitializer {
+        public JsonUtilInitializer(JsonMapper mapper) {
+            JsonUtil.initialize(mapper);
+        }
+    }
+
+    @Bean
+    YAMLMapper yamlMapper() {
+        return new YAMLMapper();
+    }
 
     @Bean
     WebMvcConfigurer webConfigurer(JsonMergePatchConverter jsonMergePatchConverter) {

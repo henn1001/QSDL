@@ -16,7 +16,7 @@ import app.server.common.exception.AppException;
 import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
-import app.server.common.util.Json;
+import app.server.common.util.JsonUtil;
 import app.server.project.db.ProjectEntity;
 import app.server.project.db.ProjectRepository;
 import app.server.user.db.RoleEntity;
@@ -82,8 +82,8 @@ class RoleServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.toString(roleList),
-                new JSONArray(Json.toString(response.items())),
+                JsonUtil.toString(roleList),
+                new JSONArray(JsonUtil.toString(response.items())),
                 false);
     }
 
@@ -107,8 +107,8 @@ class RoleServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(roleResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(roleResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -131,8 +131,8 @@ class RoleServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(roleResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(roleResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -185,8 +185,8 @@ class RoleServiceTest {
         // Then
         Role roleResponse = mapper.toResponse(roleEntity);
         JSONAssert.assertEquals(
-                Json.toString(roleResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(roleResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 

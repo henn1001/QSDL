@@ -16,7 +16,7 @@ import app.server.common.exception.AppException;
 import app.server.common.model.AppError;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
-import app.server.common.util.Json;
+import app.server.common.util.JsonUtil;
 import app.server.incident.db.TicketEntity;
 import app.server.incident.db.TicketRepository;
 import app.server.incident.dto.Ticket;
@@ -71,8 +71,8 @@ class TicketServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.toString(ticketList),
-                new JSONArray(Json.toString(response.items())),
+                JsonUtil.toString(ticketList),
+                new JSONArray(JsonUtil.toString(response.items())),
                 false);
     }
 
@@ -92,8 +92,8 @@ class TicketServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(ticketResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(ticketResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -112,8 +112,8 @@ class TicketServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(ticketResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(ticketResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -158,8 +158,8 @@ class TicketServiceTest {
         // Then
         Ticket ticketResponse = mapper.toResponse(ticketEntity);
         JSONAssert.assertEquals(
-                Json.toString(ticketResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(ticketResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 

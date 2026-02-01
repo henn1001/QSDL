@@ -9,7 +9,7 @@ import app.server.AbstractDataJpaTest;
 import app.server.TestUtils;
 import app.server.common.db.*;
 import app.server.common.model.*;
-import app.server.common.util.Json;
+import app.server.common.util.JsonUtil;
 import app.server.incident.db.TicketEntity;
 import app.server.incident.db.TicketRepository;
 import app.server.user.db.*;
@@ -66,8 +66,8 @@ class UserRepositoryTest extends AbstractDataJpaTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(testData),
-                new JSONObject(Json.toString(findData)),
+                JsonUtil.toString(testData),
+                new JSONObject(JsonUtil.toString(findData)),
                 false);
     }
 

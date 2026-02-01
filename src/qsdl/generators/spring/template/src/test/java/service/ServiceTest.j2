@@ -82,8 +82,8 @@ class {{model.name}}ServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.toString({{m_var}}List),
-                new JSONArray(Json.toString(response.items())),
+                JsonUtil.toString({{m_var}}List),
+                new JSONArray(JsonUtil.toString(response.items())),
                 false);
     }
     {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
@@ -143,8 +143,8 @@ class {{model.name}}ServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString({{m_var}}Response),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString({{m_var}}Response),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
     {% elif operation.method == "get" %}
@@ -176,8 +176,8 @@ class {{model.name}}ServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString({{m_var}}Response),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString({{m_var}}Response),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -245,8 +245,8 @@ class {{model.name}}ServiceTest {
         // Then
         {{m_response_type}} {{m_var}}Response = mapper.toResponse({{m_entity_var}});
         JSONAssert.assertEquals(
-                Json.toString({{m_var}}Response),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString({{m_var}}Response),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 

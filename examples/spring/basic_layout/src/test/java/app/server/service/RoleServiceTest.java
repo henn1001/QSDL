@@ -23,7 +23,7 @@ import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.repository.ProjectRepository;
 import app.server.repository.RoleRepository;
-import app.server.util.Json;
+import app.server.util.JsonUtil;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -82,8 +82,8 @@ class RoleServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.toString(roleList),
-                new JSONArray(Json.toString(response.items())),
+                JsonUtil.toString(roleList),
+                new JSONArray(JsonUtil.toString(response.items())),
                 false);
     }
 
@@ -107,8 +107,8 @@ class RoleServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(roleResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(roleResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -131,8 +131,8 @@ class RoleServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(roleResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(roleResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -185,8 +185,8 @@ class RoleServiceTest {
         // Then
         Role roleResponse = mapper.toResponse(roleEntity);
         JSONAssert.assertEquals(
-                Json.toString(roleResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(roleResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 

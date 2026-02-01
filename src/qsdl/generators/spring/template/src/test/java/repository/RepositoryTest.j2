@@ -62,8 +62,8 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(testData),
-                new JSONObject(Json.toString(findData)),
+                JsonUtil.toString(testData),
+                new JSONObject(JsonUtil.toString(findData)),
                 false);
     }
 

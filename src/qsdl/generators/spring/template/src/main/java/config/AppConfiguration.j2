@@ -14,6 +14,23 @@ package {{package.config}};
 public class AppConfiguration {
 
     @Bean
+    JsonMapperBuilderCustomizer jacksonCustomizer() {
+        return builder -> JsonUtil.apply(builder);
+    }
+
+    @Component
+    public class JsonUtilInitializer {
+        public JsonUtilInitializer(JsonMapper mapper) {
+            JsonUtil.initialize(mapper);
+        }
+    }
+
+    @Bean
+    YAMLMapper yamlMapper() {
+        return new YAMLMapper();
+    }
+
+    @Bean
     WebMvcConfigurer webConfigurer(JsonMergePatchConverter jsonMergePatchConverter) {
         return new WebMvcConfigurer() {
 

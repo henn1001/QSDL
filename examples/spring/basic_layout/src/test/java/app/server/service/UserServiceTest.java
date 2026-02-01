@@ -23,7 +23,7 @@ import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.repository.TicketRepository;
 import app.server.repository.UserRepository;
-import app.server.util.Json;
+import app.server.util.JsonUtil;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -82,8 +82,8 @@ class UserServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.toString(userList),
-                new JSONArray(Json.toString(response.items())),
+                JsonUtil.toString(userList),
+                new JSONArray(JsonUtil.toString(response.items())),
                 false);
     }
 
@@ -151,8 +151,8 @@ class UserServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.toString(userList),
-                new JSONArray(Json.toString(response.items())),
+                JsonUtil.toString(userList),
+                new JSONArray(JsonUtil.toString(response.items())),
                 false);
     }
 
@@ -172,8 +172,8 @@ class UserServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(userResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(userResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -192,8 +192,8 @@ class UserServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(userResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(userResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -238,8 +238,8 @@ class UserServiceTest {
         // Then
         User userResponse = mapper.toResponse(userEntity);
         JSONAssert.assertEquals(
-                Json.toString(userResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(userResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 

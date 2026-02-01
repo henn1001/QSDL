@@ -21,8 +21,8 @@ import app.server.domain.UserRequest;
 import app.server.model.AppError;
 import app.server.model.CursorPage;
 import app.server.service.UserService;
-import app.server.util.Json;
 import app.server.util.JsonMergePatchConverter.MediaTypeExtension;
+import app.server.util.JsonUtil;
 import java.util.Arrays;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -70,7 +70,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(ret),
+                JsonUtil.toString(ret),
                 new JSONObject(response),
                 false);
     }
@@ -121,7 +121,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(ret),
+                JsonUtil.toString(ret),
                 new JSONObject(response),
                 false);
     }
@@ -138,7 +138,7 @@ class UserControllerTest {
 
         // When
         String response = mockMvc.perform(post(basePath + "/users")
-                        .content(Json.toString(requestDto))
+                        .content(JsonUtil.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -147,7 +147,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(responseDto),
+                JsonUtil.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -171,7 +171,7 @@ class UserControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.fromJson(response, AppError.class);
+        AppError error = JsonUtil.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code());
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message());
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status());
@@ -195,7 +195,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(responseDto),
+                JsonUtil.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -215,7 +215,7 @@ class UserControllerTest {
 
         // When
         String response = mockMvc.perform(patch(basePath + "/users/1")
-                        .content(Json.toString(requestDto))
+                        .content(JsonUtil.toString(requestDto))
                         .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -224,7 +224,7 @@ class UserControllerTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(responseDto),
+                JsonUtil.toString(responseDto),
                 new JSONObject(response),
                 false);
     }
@@ -248,7 +248,7 @@ class UserControllerTest {
                 .getContentAsString();
 
         // Then
-        AppError error = Json.fromJson(response, AppError.class);
+        AppError error = JsonUtil.fromJson(response, AppError.class);
         assertEquals(ErrorCode.BAD_REQUEST.code(), error.code());
         assertEquals(ErrorCode.BAD_REQUEST.message(), error.message());
         assertEquals(ErrorCode.BAD_REQUEST.status(), error.status());

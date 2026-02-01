@@ -21,7 +21,7 @@ import app.server.model.AppError;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.repository.ProjectRepository;
-import app.server.util.Json;
+import app.server.util.JsonUtil;
 import com.querydsl.core.types.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -71,8 +71,8 @@ class ProjectServiceTest {
         assertEquals(6L, response.totalCount());
 
         JSONAssert.assertEquals(
-                Json.toString(projectList),
-                new JSONArray(Json.toString(response.items())),
+                JsonUtil.toString(projectList),
+                new JSONArray(JsonUtil.toString(response.items())),
                 false);
     }
 
@@ -92,8 +92,8 @@ class ProjectServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(projectResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(projectResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -112,8 +112,8 @@ class ProjectServiceTest {
 
         // Then
         JSONAssert.assertEquals(
-                Json.toString(projectResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(projectResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 
@@ -158,8 +158,8 @@ class ProjectServiceTest {
         // Then
         Project projectResponse = mapper.toResponse(projectEntity);
         JSONAssert.assertEquals(
-                Json.toString(projectResponse),
-                new JSONObject(Json.toString(response)),
+                JsonUtil.toString(projectResponse),
+                new JSONObject(JsonUtil.toString(response)),
                 false);
     }
 

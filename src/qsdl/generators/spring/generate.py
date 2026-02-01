@@ -250,7 +250,6 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         ("src/test/java/TestUtils.j2", f"src/test/java/{package.base}/TestUtils.java"),
         # config
         ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
-        ("src/main/java/config/AppJacksonConfiguration.j2", f"src/main/java/{package.config}/AppJacksonConfiguration.java"),
         ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),
         # constants
         ("src/main/java/constant/ErrorCode.j2", f"src/main/java/{package.enum}/ErrorCode.java"),
@@ -259,7 +258,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         ("src/main/java/api/BaseController.j2", f"src/main/java/{package.controller}/BaseController.java"),
         ("src/main/java/api/HomeController.j2", f"src/main/java/{package.controller}/HomeController.java"),
         # util
-        ("src/main/java/util/Json.j2", f"src/main/java/{package.util}/Json.java"),
+        ("src/main/java/util/JsonUtil.j2", f"src/main/java/{package.util}/JsonUtil.java"),
         ("src/main/java/util/JsonMergePatchConverter.j2", f"src/main/java/{package.util}/JsonMergePatchConverter.java"),
         ("src/main/java/util/JsonMergePatchUtil.j2", f"src/main/java/{package.util}/JsonMergePatchUtil.java"),
         ("src/main/java/util/ObjectNodeConverter.j2", f"src/main/java/{package.util}/ObjectNodeConverter.java"),
@@ -273,7 +272,6 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         ("src/main/java/exception/AppExceptionUtil.j2", f"src/main/java/{package.exception}/AppExceptionUtil.java"),
         ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{package.exception}/GlobalExceptionHandler.java"),
         # model
-        ("src/main/java/model/AbstractClass.j2", f"src/main/java/{package.model}/AbstractClass.java"),
         ("src/main/java/model/AppError.j2", f"src/main/java/{package.model}/AppError.java"),
         ("src/main/java/model/CursorPageable.j2", f"src/main/java/{package.model}/CursorPageable.java"),
         ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),

@@ -16,14 +16,13 @@ import tools.jackson.databind.node.ObjectNode;
  * {@code org.springframework.dao.InvalidDataAccessApiUsageException: Could not deserialize string to java type: class tools.jackson.databind.node.ObjectNode}
  */
 @Converter(autoApply = true)
-@AllArgsConstructor
 public class ObjectNodeConverter implements AttributeConverter<ObjectNode, String> {
 
     @Override
     public String convertToDatabaseColumn(ObjectNode attribute) {
         if (attribute == null) return null;
         try {
-            return Json.toString(attribute);
+            return JsonUtil.toString(attribute);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to convert ObjectNode to String", e);
         }
@@ -33,7 +32,7 @@ public class ObjectNodeConverter implements AttributeConverter<ObjectNode, Strin
     public ObjectNode convertToEntityAttribute(String dbData) {
         if (dbData == null) return null;
         try {
-            return Json.nodeFromJson(dbData);
+            return JsonUtil.nodeFromJson(dbData);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to convert String to ObjectNode", e);
         }

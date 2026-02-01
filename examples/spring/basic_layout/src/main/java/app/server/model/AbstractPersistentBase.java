@@ -19,7 +19,7 @@ import jakarta.persistence.Version;
  * e.g. you can not use relations within a embedded collection. This should be optimized post-generation.
  */
 @MappedSuperclass
-public abstract class AbstractPersistentBase extends AbstractClass {
+public abstract class AbstractPersistentBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

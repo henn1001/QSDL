@@ -9,6 +9,7 @@ import static org.instancio.Select.fields;
 
 import app.server.model.AbstractPersistentBase;
 import app.server.model.AbstractPersistentObject;
+import app.server.util.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -26,19 +27,15 @@ import org.instancio.settings.Keys;
 import org.instancio.settings.Mode;
 import org.instancio.settings.Settings;
 import org.springframework.boot.context.properties.bind.DefaultValue;
-import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
 
 public class TestUtils {
 
     private TestUtils() {}
 
-    private static final JsonMapper json;
     private static final Settings instanceIoSettings;
 
     static {
-        json = JsonMapper.builder().build();
-
         instanceIoSettings = Settings.create()
                 .set(Keys.MODE, Mode.LENIENT)
                 .set(Keys.COLLECTION_MIN_SIZE, 1)
@@ -50,7 +47,7 @@ public class TestUtils {
     private static <T> InstancioApi<T> instanceIo(Class<T> cls) {
         return Instancio.of(cls)
                 .withSettings(instanceIoSettings)
-                .set(all(ObjectNode.class), ((ObjectNode) json.readTree("{}")).put("test", "data"));
+                .set(all(ObjectNode.class), ((ObjectNode) JsonUtil.mapper().readTree("{}")).put("test", "data"));
     }
 
     public static <T> T getRandom(Class<T> cls) {
@@ -217,10 +214,10 @@ public class TestUtils {
                     return List.of();
                 }
                 // For complex types like List, use Jackson to parse JSON
-                return json.readValue(value, targetType);
+                return JsonUtil.mapper().readValue(value, targetType);
             } else {
                 // For complex types, use Jackson to parse JSON
-                return json.readValue(value, targetType);
+                return JsonUtil.mapper().readValue(value, targetType);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse default value '" + value + "' for type " + targetType, e);
