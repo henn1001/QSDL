@@ -17,9 +17,6 @@ public class {{api.name}}Controller extends BaseController implements {{api.name
 {% endif %}
 {% for operation in api.operations %}
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) {
     {% if operation.is_generated and operation.response %}

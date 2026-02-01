@@ -36,18 +36,12 @@ public class ProjectController extends BaseController implements ProjectApi {
     final ProjectService projectService;
     final ProjectMapper projectMapper;
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<CursorPage<Project>> getProjects(GetProjectsFilter filter, CursorPageable pageable) {
         CursorPage<Project> response = projectService.getProjects(filter, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Project> createProject(ProjectRequest request) {
         Validator.validate(request);
@@ -55,18 +49,12 @@ public class ProjectController extends BaseController implements ProjectApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Project> getProject(String id) {
         Project response = projectService.getProject(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Project> updateProject(String id, JsonMergePatch patch) {
         Project current = projectService.getProject(id);
@@ -78,9 +66,6 @@ public class ProjectController extends BaseController implements ProjectApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Void> deleteProject(String id) {
         projectService.deleteProject(id);

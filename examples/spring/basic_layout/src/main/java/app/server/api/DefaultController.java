@@ -31,17 +31,11 @@ import tools.jackson.databind.node.ObjectNode;
 @AllArgsConstructor
 public class DefaultController extends BaseController implements DefaultApi {
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<ObjectNode> submitQury(ObjectNode request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<ObjectNode> action(ActionFilter filter, BaseTypeRequest arg1) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

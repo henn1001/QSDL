@@ -35,18 +35,12 @@ public class TicketController extends BaseController implements TicketApi {
     final TicketService ticketService;
     final TicketMapper ticketMapper;
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<CursorPage<Ticket>> getTickets(CursorPageable pageable) {
         CursorPage<Ticket> response = ticketService.getTickets(pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Ticket> createTicket(TicketRequest request) {
         Validator.validate(request);
@@ -54,18 +48,12 @@ public class TicketController extends BaseController implements TicketApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Ticket> getTicket(String id) {
         Ticket response = ticketService.getTicket(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Ticket> updateTicket(String id, JsonMergePatch patch) {
         Ticket current = ticketService.getTicket(id);
@@ -77,9 +65,6 @@ public class TicketController extends BaseController implements TicketApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Void> deleteTicket(String id) {
         ticketService.deleteTicket(id);

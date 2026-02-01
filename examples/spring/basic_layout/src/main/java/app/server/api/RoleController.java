@@ -35,18 +35,12 @@ public class RoleController extends BaseController implements RoleApi {
     final RoleService roleService;
     final RoleMapper roleMapper;
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<CursorPage<Role>> getRoles(Long projectId, CursorPageable pageable) {
         CursorPage<Role> response = roleService.getRoles(projectId, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Role> createRole(Long projectId, RoleRequest request) {
         Validator.validate(request);
@@ -54,18 +48,12 @@ public class RoleController extends BaseController implements RoleApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Role> getRole(Long projectId, Long id) {
         Role response = roleService.getRole(projectId, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Role> updateRole(Long projectId, Long id, JsonMergePatch patch) {
         Role current = roleService.getRole(projectId, id);
@@ -77,9 +65,6 @@ public class RoleController extends BaseController implements RoleApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Void> deleteRole(Long projectId, Long id) {
         roleService.deleteRole(projectId, id);

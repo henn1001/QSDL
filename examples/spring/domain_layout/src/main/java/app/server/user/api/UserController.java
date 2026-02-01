@@ -35,45 +35,30 @@ public class UserController extends BaseController implements UserApi {
     final UserService userService;
     final UserMapper userMapper;
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<CursorPage<User>> getUsersForTicket(String ticketId, CursorPageable pageable) {
         CursorPage<User> response = userService.getUsersForTicket(ticketId, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Void> addUserToTicket(String ticketId, String id) {
         userService.addUserToTicket(ticketId, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Void> removeUserFromTicket(String ticketId, String id) {
         userService.removeUserFromTicket(ticketId, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<CursorPage<User>> getUsers(CursorPageable pageable) {
         CursorPage<User> response = userService.getUsers(pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<User> createUser(UserRequest request) {
         Validator.validate(request);
@@ -81,18 +66,12 @@ public class UserController extends BaseController implements UserApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<User> getUser(String id) {
         User response = userService.getUser(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<User> updateUser(String id, JsonMergePatch patch) {
         User current = userService.getUser(id);
@@ -104,9 +83,6 @@ public class UserController extends BaseController implements UserApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public ResponseEntity<Void> deleteUser(String id) {
         userService.deleteUser(id);
