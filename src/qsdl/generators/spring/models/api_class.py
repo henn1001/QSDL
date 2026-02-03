@@ -48,6 +48,8 @@ class Parameter:
     is_base: bool = False
     is_object: bool = False
 
+    has_modified_type: bool = False
+
     def build(self, _ref: dsl.Argument) -> Self:
         """Builds self from dsl.Argument"""
 
@@ -67,8 +69,9 @@ class Parameter:
         self.is_object = isinstance(_ref.value, dsl.Object)
 
         # Append Request suffix for body parameters (Base/Object types)
-        if self.is_body and (self.is_base or self.is_object) and util.needs_separate_request_response(_ref.value):
-            self.type = f"{self.type}Request"
+        if self.is_body and (self.is_base or self.is_object):
+            self.has_modified_type = util.needs_separate_request_response(_ref.value)
+            self.type = f"{self.type}Request" if self.has_modified_type else self.type
 
         return self
 

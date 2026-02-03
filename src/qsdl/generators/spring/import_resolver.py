@@ -41,14 +41,15 @@ def _get_operation_type_imports(api_class: spring.ApiClass | None) -> list[str]:
     imports = set()
 
     for op in api_class.operations:
-        if op.response and op.response.is_object:
+        if op.response and (op.response.is_object or op.response.is_base):
             model = util.get_model_for(op.response.type)
             if model:
                 imports.add(f"import {model.package.domain}.{op.response.type};")
 
         for param in op.parameters:
             if (param.is_object or param.is_base) and param.is_body:
-                model = util.get_model_for(param.type.removesuffix("Request"))
+                name = param.type.removesuffix("Request") if param.has_modified_type else param.type
+                model = util.get_model_for(name)
                 if model:
                     imports.add(f"import {model.package.domain}.{param.type};")
 

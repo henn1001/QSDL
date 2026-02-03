@@ -298,3 +298,31 @@ class TestSpringDomainLayout:
             "import app.server.project.db.QProjectEntity;",  # QueryDSL import
         )
         assert_not_contains(project_service_content, ".*;")  # No wildcard imports
+
+    def test_cross_namespace_operation_imports_base_response(self) -> None:
+        """Operations returning a base type from another namespace should have correct imports."""
+        test_input = """\
+            base ProjectBase @namespace("Project") {
+                name: String!
+            }
+
+            extend api @namespace("User") {
+                getProjectBase(): ProjectBase @path("user/project-base")
+            }
+        """
+
+        output_path = wrapper_generate_with_config(test_input, "util/domain_config.json")
+
+        controller_content = read_java_file(output_path, "src/main/java/app/server/common/api/DefaultController.java")
+        assert_contains(
+            controller_content,
+            "import app.server.project.dto.ProjectBase;",
+            "public ResponseEntity<ProjectBase> getProjectBase",
+        )
+
+        api_content = read_java_file(output_path, "src/main/java/app/server/common/api/DefaultApi.java")
+        assert_contains(
+            api_content,
+            "import app.server.project.dto.ProjectBase;",
+            "ResponseEntity<ProjectBase> getProjectBase",
+        )
