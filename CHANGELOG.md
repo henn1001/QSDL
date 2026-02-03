@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.2.0](https://gitlab.com/henn1001/qsdl/compare/v6.1.0...v6.2.0) (2026-02-03)
+
+
+### Features
+
+* all new directive queryList - allows for filtering for multiple values ([add1135](https://gitlab.com/henn1001/qsdl/commit/add11351cb8208a5cd4a9c17404b8565183390f7))
+* **spring:** dynamicaly resolve used imports and replace star imports ([c7022ad](https://gitlab.com/henn1001/qsdl/commit/c7022adc46b22a286a69f02e232781ce2cb8bb3f))
+
 ## [6.1.0](https://gitlab.com/henn1001/qsdl/compare/v6.0.0...v6.1.0) (2026-02-01)
 
 
