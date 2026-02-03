@@ -5,7 +5,8 @@ package app.server.api;
 
 import app.server.api.BaseController;
 import app.server.api.UserApi;
-import app.server.domain.*;
+import app.server.domain.User;
+import app.server.domain.UserRequest;
 import app.server.domain.mapper.UserMapper;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;

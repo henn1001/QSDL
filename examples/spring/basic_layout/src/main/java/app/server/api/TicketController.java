@@ -5,7 +5,8 @@ package app.server.api;
 
 import app.server.api.BaseController;
 import app.server.api.TicketApi;
-import app.server.domain.*;
+import app.server.domain.Ticket;
+import app.server.domain.TicketRequest;
 import app.server.domain.mapper.TicketMapper;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;

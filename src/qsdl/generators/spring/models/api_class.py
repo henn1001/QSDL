@@ -170,6 +170,9 @@ class Operation:
 
             new_param.type = util.custom_type(_ref.value)
 
+            new_param.is_base = isinstance(_ref.value, dsl.Base)
+            new_param.is_object = isinstance(_ref.value, dsl.Object)
+
             if _ref.is_pageable:
                 new_param.name = "CursorPage"
                 new_param.json_key = "CursorPage"

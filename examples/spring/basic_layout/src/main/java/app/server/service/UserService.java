@@ -3,15 +3,20 @@
  */
 package app.server.service;
 
-import app.server.constant.*;
-import app.server.domain.*;
-import app.server.domain.entity.*;
-import app.server.domain.mapper.*;
+import app.server.domain.Ticket;
+import app.server.domain.User;
+import app.server.domain.UserRequest;
+import app.server.domain.entity.QUserEntity;
+import app.server.domain.entity.TicketEntity;
+import app.server.domain.entity.UserEntity;
+import app.server.domain.mapper.TicketMapper;
+import app.server.domain.mapper.UserMapper;
 import app.server.exception.AppException;
 import app.server.exception.AppExceptionUtil;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
-import app.server.repository.*;
+import app.server.repository.TicketRepository;
+import app.server.repository.UserRepository;
 import app.server.util.PredicateBuilder;
 import java.util.Arrays;
 import lombok.AllArgsConstructor;

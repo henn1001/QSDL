@@ -5,8 +5,8 @@ package app.server.api;
 
 import app.server.api.BaseController;
 import app.server.api.DefaultApi;
-import app.server.domain.*;
 import app.server.domain.ActionFilter;
+import app.server.domain.BaseTypeRequest;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.util.JsonMergePatchUtil;

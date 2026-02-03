@@ -3,7 +3,8 @@
  */
 package app.server.api;
 
-import app.server.domain.*;
+import app.server.domain.Ticket;
+import app.server.domain.TicketRequest;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import jakarta.json.JsonMergePatch;

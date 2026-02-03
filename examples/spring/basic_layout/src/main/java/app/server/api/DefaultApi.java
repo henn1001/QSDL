@@ -3,8 +3,8 @@
  */
 package app.server.api;
 
-import app.server.domain.*;
 import app.server.domain.ActionFilter;
+import app.server.domain.BaseTypeRequest;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import jakarta.json.JsonMergePatch;

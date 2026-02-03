@@ -5,7 +5,8 @@ package app.server.api;
 
 import app.server.api.BaseController;
 import app.server.api.RoleApi;
-import app.server.domain.*;
+import app.server.domain.Role;
+import app.server.domain.RoleRequest;
 import app.server.domain.mapper.RoleMapper;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;

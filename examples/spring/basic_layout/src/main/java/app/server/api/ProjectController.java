@@ -5,8 +5,9 @@ package app.server.api;
 
 import app.server.api.BaseController;
 import app.server.api.ProjectApi;
-import app.server.domain.*;
 import app.server.domain.GetProjectsFilter;
+import app.server.domain.Project;
+import app.server.domain.ProjectRequest;
 import app.server.domain.mapper.ProjectMapper;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;

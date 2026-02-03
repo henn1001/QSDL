@@ -3,7 +3,8 @@
  */
 package app.server.incident.db;
 
-import app.server.common.db.*;
+import app.server.common.db.AbstractRepository;
+import app.server.common.db.BaseRepository;
 import app.server.incident.db.TicketEntity;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;

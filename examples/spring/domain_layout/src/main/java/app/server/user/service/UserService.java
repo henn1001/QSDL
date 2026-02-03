@@ -3,19 +3,21 @@
  */
 package app.server.user.service;
 
-import app.server.common.constants.*;
-import app.server.common.db.*;
 import app.server.common.exception.AppException;
 import app.server.common.exception.AppExceptionUtil;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.common.util.PredicateBuilder;
-import app.server.incident.db.*;
-import app.server.incident.dto.*;
-import app.server.incident.mapper.*;
-import app.server.user.db.*;
-import app.server.user.dto.*;
-import app.server.user.mapper.*;
+import app.server.incident.db.TicketEntity;
+import app.server.incident.db.TicketRepository;
+import app.server.incident.dto.Ticket;
+import app.server.incident.mapper.TicketMapper;
+import app.server.user.db.QUserEntity;
+import app.server.user.db.UserEntity;
+import app.server.user.db.UserRepository;
+import app.server.user.dto.User;
+import app.server.user.dto.UserRequest;
+import app.server.user.mapper.UserMapper;
 import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

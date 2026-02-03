@@ -33,6 +33,149 @@ def resolve_dynamic_imports() -> None:
     util.Store.packages = list(namespaced_packages.values())
 
 
+def _get_operation_type_imports(api_class: spring.ApiClass | None) -> list[str]:
+    """Collect imports for types used in operation responses and body parameters."""
+    if not api_class:
+        return []
+
+    imports = set()
+
+    for op in api_class.operations:
+        if op.response and op.response.is_object:
+            model = util.get_model_for(op.response.type)
+            if model:
+                imports.add(f"import {model.package.domain}.{op.response.type};")
+
+        for param in op.parameters:
+            if (param.is_object or param.is_base) and param.is_body:
+                model = util.get_model_for(param.type.removesuffix("Request"))
+                if model:
+                    imports.add(f"import {model.package.domain}.{param.type};")
+
+    return list(imports)
+
+
+def _get_filter_imports(api_class: spring.ApiClass | None) -> list[str]:
+    if not api_class:
+        return []
+
+    imports = set()
+    for op in api_class.operations:
+        if not op.uses_filter:
+            continue
+        model = util.get_model_for(op.filter_name)
+        if model:
+            imports.add(f"import {model.package.domain}.{op.filter_name};")
+
+    return list(imports)
+
+
+def _get_service_imports(api_class: spring.ApiClass | None, is_db: bool) -> list[str]:
+    """Collect explicit imports for Service layer (replaces wildcards)."""
+    if not api_class or not is_db:
+        return []
+
+    imports = set()
+
+    if api_class.model:
+        imports.add(f"import {api_class.package.domain}.{api_class.model.name};")
+        imports.add(f"import {api_class.package.domain}.{api_class.model.name}Request;")
+        imports.add(f"import {api_class.package.entity}.{api_class.model.name}Entity;")
+        imports.add(f"import {api_class.package.entity}.Q{api_class.model.name}Entity;")
+        imports.add(f"import {api_class.package.mapper}.{api_class.model.name}Mapper;")
+        imports.add(f"import {api_class.package.repository}.{api_class.model.name}Repository;")
+
+        for parent in api_class.model.parents:
+            imports.add(f"import {parent.model.package.domain}.{parent.model.name};")
+            imports.add(f"import {parent.model.package.entity}.{parent.model.name}Entity;")
+            imports.add(f"import {parent.model.package.mapper}.{parent.model.name}Mapper;")
+            imports.add(f"import {parent.model.package.repository}.{parent.model.name}Repository;")
+
+    return list(imports)
+
+
+def _get_entity_imports(model_class: spring.ModelClass | None) -> list[str]:
+    if not model_class:
+        return []
+
+    imports = set()
+
+    for field in model_class.entity_fields:
+        if field.is_enum:
+            imports.add(f"import {util.Store.package.enum}.{field.type};")
+        elif field.is_object:
+            nested = util.get_model_for(field.type)
+            if nested and nested.package.entity != model_class.package.entity:
+                imports.add(f"import {nested.package.entity}.{nested.name}Entity;")
+        elif field.is_base:
+            nested = util.get_model_for(field.type)
+            if nested and nested.package.domain != model_class.package.entity:
+                imports.add(f"import {nested.package.domain}.{field.type};")
+
+    return list(imports)
+
+
+def _get_request_imports(model_class: spring.ModelClass | None) -> list[str]:
+    if not model_class:
+        return []
+
+    imports = set()
+
+    for field in model_class.fields:
+        if field.is_enum:
+            imports.add(f"import {util.Store.package.enum}.{field.type};")
+        elif (field.is_object or field.is_base) and not field.is_relation and not field.is_read_only:
+            nested = util.get_model_for(field.type)
+            if nested and nested.package.domain != model_class.package.domain:
+                imports.add(f"import {nested.package.domain}.{nested.name}Request;")
+
+    return list(imports)
+
+
+def _get_response_imports(model_class: spring.ModelClass | None) -> list[str]:
+    if not model_class:
+        return []
+
+    imports = set()
+
+    for field in model_class.fields:
+        if field.is_enum:
+            imports.add(f"import {util.Store.package.enum}.{field.type};")
+        elif (field.is_object or field.is_base) and not field.is_relation and not field.is_write_only:
+            nested = util.get_model_for(field.type)
+            if nested and nested.package.domain != model_class.package.domain:
+                imports.add(f"import {nested.package.domain}.{nested.name};")
+
+    return list(imports)
+
+
+def _get_repo_test_imports(model_class: spring.ModelClass | None) -> list[str]:
+    """Collect explicit imports for repository tests (replaces wildcards)."""
+    if not model_class:
+        return []
+
+    imports: set[str] = set()
+
+    imports.add(f"import {model_class.package.entity}.{model_class.name}Entity;")
+    imports.add(f"import {model_class.package.repository}.{model_class.name}Repository;")
+    imports.add(f"import {util.Store.package.model}.CursorPage;")
+    imports.add(f"import {util.Store.package.model}.CursorPageable;")
+    imports.add(f"import {model_class.package.entity}.Q{model_class.name}Entity;")
+
+    for parent in model_class.parents:
+        imports.add(f"import {parent.model.package.entity}.{parent.model.name}Entity;")
+        imports.add(f"import {parent.model.package.repository}.{parent.model.name}Repository;")
+
+    for field in model_class.fields:
+        if not field.is_relation:
+            continue
+        rel_model = util.get_model_for(field.type)
+        if rel_model:
+            imports.add(f"import {rel_model.package.entity}.{rel_model.name}Entity;")
+
+    return list(imports)
+
+
 def generate_imports_for_template(
     template_name: str, api_or_model: spring.ApiClass | spring.ModelClass | None
 ) -> list[str]:
@@ -50,18 +193,10 @@ def generate_imports_for_template(
     # import definitions
     import_sets = {
         "Api.j2": [
-            f"import {api_class.package.domain}.*;" if api_class else None,
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
-            *(
-                [
-                    f"import {util.get_model_for(op.filter_name).package.domain}.{op.filter_name};"
-                    for op in api_class.operations
-                    if op.uses_filter
-                ]
-                if api_class
-                else []
-            ),
+            *_get_filter_imports(api_class),
+            *_get_operation_type_imports(api_class),
             "import jakarta.json.JsonMergePatch;",
             "import java.util.List;",
             "import org.springframework.http.HttpStatus;",
@@ -76,11 +211,9 @@ def generate_imports_for_template(
             "import org.springframework.web.bind.annotation.RequestBody;",
             "import org.springframework.web.bind.annotation.RequestMapping;",
             "import tools.jackson.databind.node.ObjectNode;",
-            "import java.util.List;",
         ],
         "Controller.j2": [
             f"import {api_class.package.api}.{api_class.name}Api;" if api_class else None,
-            f"import {api_class.package.domain}.*;" if api_class else None,
             *(
                 [
                     f"import {api_class.package.mapper}.{api_class.name}Mapper;",
@@ -94,15 +227,8 @@ def generate_imports_for_template(
             f"import {util.Store.package.util}.Validator;",
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
-            *(
-                [
-                    f"import {util.get_model_for(op.filter_name).package.domain}.{op.filter_name};"
-                    for op in api_class.operations
-                    if op.uses_filter
-                ]
-                if api_class
-                else []
-            ),
+            *_get_filter_imports(api_class),
+            *_get_operation_type_imports(api_class),
             "import jakarta.json.JsonMergePatch;",
             "import org.springframework.http.HttpStatus;",
             "import org.springframework.http.ResponseEntity;",
@@ -120,38 +246,9 @@ def generate_imports_for_template(
             "import lombok.AllArgsConstructor;",
         ],
         "Service.j2": [
-            f"import {api_class.package.domain}.*;" if api_class else None,
-            *(
-                [
-                    f"import {api_class.package.entity}.*;",
-                    f"import {api_class.package.mapper}.*;",
-                    f"import {api_class.package.repository}.*;",
-                    f"import {util.Store.package.repository}.*;",
-                    f"import {util.Store.package.util}.PredicateBuilder;",
-                ]
-                if api_class and is_db
-                else []
-            ),
-            *(
-                [
-                    f"import {util.get_model_for(op.filter_name).package.domain}.{op.filter_name};"
-                    for op in api_class.operations
-                    if op.uses_filter and util.get_model_for(op.filter_name).package.domain != api_class.package.domain
-                ]
-                if api_class
-                else []
-            ),
-            *(
-                [
-                    *[f"import {parent.model.package.domain}.*;" for parent in api_class.model.parents],
-                    *[f"import {parent.model.package.entity}.*;" for parent in api_class.model.parents],
-                    *[f"import {parent.model.package.mapper}.*;" for parent in api_class.model.parents],
-                    *[f"import {parent.model.package.repository}.*;" for parent in api_class.model.parents],
-                ]
-                if api_class and is_db and api_class.model
-                else []
-            ),
-            f"import {util.Store.package.enum}.*;",
+            *_get_service_imports(api_class, is_db),
+            *_get_filter_imports(api_class),
+            f"import {util.Store.package.util}.PredicateBuilder;" if api_class and is_db else None,
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
             f"import {util.Store.package.exception}.AppException;",
@@ -163,37 +260,7 @@ def generate_imports_for_template(
             "import java.util.Arrays;",
         ],
         "Entity.j2": [
-            # Enum imports
-            *(
-                [
-                    f"import {util.Store.package.enum}.{field.type};"
-                    for field in model_class.entity_fields
-                    if field.is_enum
-                ]
-                if model_class
-                else []
-            ),
-            # Nested entity imports (including relations)
-            *(
-                [
-                    f"import {util.get_model_for(field.type).package.entity}.{util.get_model_for(field.type).name}Entity;"
-                    for field in model_class.entity_fields
-                    if field.is_object and util.get_model_for(field.type).package.entity != model_class.package.entity
-                ]
-                if model_class
-                else []
-            ),
-            # Nested base imports
-            # import if base is not in same package as entity
-            *(
-                [
-                    f"import {util.get_model_for(field.type).package.domain}.{field.type};"
-                    for field in model_class.entity_fields
-                    if field.is_base and util.get_model_for(field.type).package.domain != model_class.package.entity
-                ]
-                if model_class
-                else []
-            ),
+            *_get_entity_imports(model_class),
             f"import {util.Store.package.model}.AbstractPersistentBase;",
             f"import {util.Store.package.model}.AbstractPersistentObject;",
             "import com.fasterxml.jackson.annotation.JsonIgnore;",
@@ -227,25 +294,7 @@ def generate_imports_for_template(
             "import java.util.List;",
         ],
         "Request.j2": [
-            # Enum imports
-            *(
-                [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
-                if model_class
-                else []
-            ),
-            # Nested entity imports for Request (non-relation, non-read-only)
-            *(
-                [
-                    f"import {util.get_model_for(field.type).package.domain}.{util.get_model_for(field.type).name}Request;"
-                    for field in model_class.fields
-                    if (field.is_object or field.is_base)
-                    and not field.is_relation
-                    and not field.is_read_only
-                    and util.get_model_for(field.type).package.domain != model_class.package.domain
-                ]
-                if model_class
-                else []
-            ),
+            *_get_request_imports(model_class),
             "import com.fasterxml.jackson.annotation.JsonProperty;",
             "import tools.jackson.databind.node.ObjectNode;",
             "import io.soabase.recordbuilder.core.RecordBuilder;",
@@ -260,25 +309,7 @@ def generate_imports_for_template(
             "import java.util.List;",
         ],
         "Response.j2": [
-            # Enum imports
-            *(
-                [f"import {util.Store.package.enum}.{field.type};" for field in model_class.fields if field.is_enum]
-                if model_class
-                else []
-            ),
-            # Nested entity imports for Response (non-relation, non-write-only)
-            *(
-                [
-                    f"import {util.get_model_for(field.type).package.domain}.{util.get_model_for(field.type).name};"
-                    for field in model_class.fields
-                    if (field.is_object or field.is_base)
-                    and not field.is_relation
-                    and not field.is_write_only
-                    and util.get_model_for(field.type).package.domain != model_class.package.domain
-                ]
-                if model_class
-                else []
-            ),
+            *_get_response_imports(model_class),
             "import com.fasterxml.jackson.annotation.JsonProperty;",
             "import tools.jackson.databind.node.ObjectNode;",
             "import io.soabase.recordbuilder.core.RecordBuilder;",
@@ -324,9 +355,14 @@ def generate_imports_for_template(
         ],
         "Repository.j2": [
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
-            f"import {util.Store.package.repository}.*;"
-            if model_class and model_class.package.repository != util.Store.package.repository
-            else None,
+            *(
+                [
+                    f"import {util.Store.package.repository}.AbstractRepository;",
+                    f"import {util.Store.package.repository}.BaseRepository;",
+                ]
+                if model_class and model_class.package.repository != util.Store.package.repository
+                else []
+            ),
             "import org.springframework.stereotype.Repository;",
             "import java.util.Optional;",
         ],
@@ -364,34 +400,7 @@ def generate_imports_for_template(
             "import org.springframework.test.web.servlet.MockMvc;",
         ],
         "RepositoryTest.j2": [
-            # Package wildcards
-            f"import {model_class.package.entity}.*;" if model_class else None,
-            f"import {util.Store.package.repository}.*;" if model_class else None,
-            f"import {util.Store.package.model}.*;" if model_class else None,
-            # Parent entity and repository imports
-            *(
-                [f"import {parent.model.package.entity}.{parent.model.name}Entity;" for parent in model_class.parents]
-                if model_class
-                else []
-            ),
-            *(
-                [
-                    f"import {parent.model.package.repository}.{parent.model.name}Repository;"
-                    for parent in model_class.parents
-                ]
-                if model_class
-                else []
-            ),
-            # Relation entity imports
-            *(
-                [
-                    f"import {util.get_model_for(field.type).package.entity}.{util.get_model_for(field.type).name}Entity;"
-                    for field in model_class.fields
-                    if field.is_relation
-                ]
-                if model_class
-                else []
-            ),
+            *_get_repo_test_imports(model_class),
             f"import {util.Store.package.util}.JsonUtil;",
             f"import {util.Store.config.base_package}.AbstractDataJpaTest;",
             f"import {util.Store.config.base_package}.TestUtils;",

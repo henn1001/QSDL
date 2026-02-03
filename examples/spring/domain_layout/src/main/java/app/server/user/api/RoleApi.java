@@ -5,7 +5,8 @@ package app.server.user.api;
 
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
-import app.server.user.dto.*;
+import app.server.user.dto.Role;
+import app.server.user.dto.RoleRequest;
 import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;

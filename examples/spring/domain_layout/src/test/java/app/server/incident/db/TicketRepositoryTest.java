@@ -7,10 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import app.server.AbstractDataJpaTest;
 import app.server.TestUtils;
-import app.server.common.db.*;
-import app.server.common.model.*;
+import app.server.common.model.CursorPage;
+import app.server.common.model.CursorPageable;
 import app.server.common.util.JsonUtil;
-import app.server.incident.db.*;
+import app.server.incident.db.QTicketEntity;
+import app.server.incident.db.TicketEntity;
+import app.server.incident.db.TicketRepository;
 import app.server.user.db.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
