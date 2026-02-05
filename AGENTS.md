@@ -8,6 +8,7 @@ When tasked with a new implementation:
 - Do not add new tests on your own.
 - Do not run tests on your own.
 - For larger/complex changes, finish the implementation first, then ask once whether the user wants to add tests and/or run tests.
+- IMPORTANT: if changing DSL behavior, generators, or documentation claims about constraints, first check and respect `docs/rules/`.
 
 ## Project Scope & Layout
 
@@ -23,11 +24,30 @@ High-level layout:
 - `src/qsdl/generators/`: generator implementations + templates.
 - `examples/`: sample schemas/configs + generated example outputs.
 - `tests/`: unit/functional/e2e coverage.
+- `docs/`: documentation (wiki-style Markdown; intended to be publishable as a doc site later).
+
+## Documentation (docs/)
+
+The documentation is maintained under `docs/` and is intended to be:
+
+- **Wiki-like**: many small pages with stable links, not one large README.
+- **Future site-ready**: structure should map cleanly to static-site tools (e.g., a sidebar/tree based on folders).
+
+Guidelines for doc changes:
+
+- Keep the entrypoint at `docs/README.md` as the index.
+- Prefer task-oriented pages (Overview → Prerequisites → Configuration → Usage → Examples → Troubleshooting).
+- Put DSL semantics and invariants under `docs/core/` and `docs/rules/`.
+- Put generator-specific behavior under `docs/generators/<name>/`.
+- When moving/renaming pages, keep old links working where practical (add a small stub page pointing to the new location).
 
 Generator quick map:
 - `src/qsdl/generators/openapi/`: OpenAPI YAML generation.
 - `src/qsdl/generators/spring/`: Spring Boot generation (largest surface area; DTO/entity/service/etc.).
 - `src/qsdl/generators/plantuml/`: PlantUML diagrams.
+- `src/qsdl/generators/postgres/`: PostgreSQL schema (SQL migration) generation.
+- `src/qsdl/generators/void/`: No-op generator (useful for parsing/validation only).
+- `src/qsdl/generators/i18n/`: i18n resource generation.
 
 When changing behavior, think in this order:
 1) DSL model rules (processors/util) should be correct and generator-agnostic.
@@ -121,11 +141,6 @@ uv run qsdl examples/spring/relation.qsdl -g spring -c util/domain_config.json -
 Useful:
 - The schema language reference is described in `README.md`.
 - The TextX grammar lives at `src/qsdl/dsl/definition/entity.tx`.
-
-## Repo Rules (Cursor/Copilot)
-
-No Cursor rules found (`.cursor/rules/` or `.cursorrules`).
-No Copilot instructions found (`.github/copilot-instructions.md`).
 
 ## Code Style Guidelines
 
