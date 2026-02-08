@@ -1,30 +1,30 @@
 # QSDL
 
-A Schema-Definition-Language Generator inspired by GraphQL.
+**A Schema-Definition Language and code/spec generator inspired by GraphQL.**
 
-## Overview
+QSDL is a minimal, expressive language for defining domain models and APIs. Write a clean schema once, generate OpenAPI specs, Spring Boot code, database migrations, and UML diagrams—all from a single source of truth.
 
-The QSDL Generator allows a domain model based approach to generate various specifications and boiler-code. The Language is inspired by GraphQL with minor modifications to accommodate OpenAPI and sensible QoL features.
+## What is QSDL?
 
-The idea is offer a minimal approach to a API definition in order to define CRUD access to a domain model graph where domain objects have parent-child like dependencies. A simple Object definition in QSDL will generate the GET ALL / POST / GET / PUT / PATCH / DELETE Operations.
+QSDL (Schema-Definition Language) lets you define your domain model and API contracts in a concise, GraphQL-inspired syntax. It handles the repetitive scaffolding and keeps your API definitions consistent across tools and frameworks.
 
-Internally QSDL leverages [textX](https://github.com/textX/textX) for describing the meta-language and [Jinja2](https://github.com/pallets/jinja) as template generator.
+**Key features:**
 
-Currently the following generators are available:
+- 📋 **Domain-centric**: Define types, relationships, and constraints in one place
+- 🔄 **Multi-target generation**: Generate OpenAPI, Spring Boot, PostgreSQL, PlantUML, and more
+- 🚀 **Auto CRUD**: A simple type definition automatically generates GET/POST/PUT/PATCH/DELETE operations
+- 🎯 **Type-safe**: Built-in scalars, enums, composition, and validation rules
+- 🔗 **Relationship modeling**: Express parent-child dependencies and composition patterns naturally
 
-- OpenAPI
-- SpringBoot
-- PlantUML
+## Quick Start
 
 ### Requirements
 
-The QSDL package currently supports the Python version:
-
-- 3.13
+- **Python 3.13+**
 
 ### Installation
 
-### Using uv (Recommended)
+**Using uv (recommended):**
 
 ```bash
 # Install latest unreleased version directly from the repository
@@ -33,80 +33,71 @@ uv tool install git+https://gitlab.com/henn1001/qsdl
 # If you want to update a previously installed version
 uv tool install git+https://gitlab.com/henn1001/qsdl
 uv tool upgrade qsdl
-
-# Or install in development mode for local development
-git clone https://gitlab.com/henn1001/qsdl
-cd qsdl
-uv sync
 ```
 
-### Using pip(x)
+**For development:**
 
 ```bash
-# install the latest released version via pip
-pip install qsdl --extra-index-url https://@gitlab.com/api/v4/projects/20759213/packages/pypi/simple
-
-# or pipx
-pipx install qsdl --extra-index-url https://@gitlab.com/api/v4/projects/20759213/packages/pypi/simple
+git clone https://gitlab.com/henn1001/qsdl && cd qsdl && bash dev.sh init
 ```
 
-### Usage
+## Usage
 
-The QSDL CLI command has the following structure:
+### Basic Example
 
-    $ qsdl [OPTIONS] INPUT_PATH
+```bash
+echo "type Project { name: String }" > project.qsdl
+qsdl project.qsdl -g openapi -o srcgen/
+```
 
-For example, to run the generator on a minimal schema definition file:
-
-    $ echo "type Project { name: String }" > project.qsdl
-    $ qsdl project.qsdl -g openapi
-    $ tree srcgen/
-      srcgen/
-      └── openapi.yaml
-
-      0 directories, 6 files
-
-To view help documentation, use the following:
-
-    $ qsdl --help
+### CLI Options
 
 ```
-Usage: qsdl [OPTIONS] INPUT_PATH
+qsdl [OPTIONS] INPUT_PATH
 
-Runs the QSDL generator with the provided schema definition file.
-
-Args:
-    input_path (str):   The path to the schema definition file.
-
-Returns:
-    int:                0 on success, 1 on failure
+Arguments:
+  INPUT_PATH                  The path to the schema definition file. [required]
 
 Options:
--g, --generator [openapi|graphql|plantuml|spring|void]
-                                The requested generator.
--c, --config_path PATH          Path to a config json file.
--o, --output_path PATH          Path to a output folder. Default: 'srcgren/'
--pv, --print_version            Prints a .qversion file to the output
-                                folder.
---version                       Show the version and exit.
---help                          Show this message and exit.
+  -g, --generator TEXT        The requested generator.
+  -c, --config_path PATH      Path to a config json file.
+  -o, --output_path PATH      Path to a output folder. Default: 'srcgen/'
+  -pv, --print_version        Prints a .qversion file to the output folder.
+  --version                   Show the version and exit.
+  --help                      Show this message and exit.
 ```
+
+For detailed usage and examples, see [CLI documentation](./docs/cli.md).
+
+## Generator Overview
+
+| Generator       | Purpose                  | Output                                        |
+| --------------- | ------------------------ | --------------------------------------------- |
+| **OpenAPI**     | REST API specification   | YAML/JSON OpenAPI 3.0+ document               |
+| **Spring Boot** | Java backend scaffolding | Spring entities, DTOs, services, repositories |
+| **PostgreSQL**  | Database schema          | SQL schema scripts                            |
+| **PlantUML**    | Architecture diagrams    | PlantUML class/ER diagrams                    |
+| **i18n**        | Internationalization     | Language resource files                       |
+| **Void**        | Parse & validate only    | No output (useful for validation)             |
+
+## Documentation
+
+Complete documentation is available in the [`docs/`](./docs/) folder. Start with:
+
+- **[Overview](./docs/overview.md)** — Comprehensive guide to QSDL concepts and workflows (start here!)
+- **[Full Documentation Index](./docs/README.md)** — Complete navigation for all topics
+
+**Quick links to key topics:**
+
+- [Language overview](./docs/core/language.md) — Syntax and type definitions
+- [CLI usage](./docs/cli.md) — Command-line reference
+- [Basic data modeling](./docs/guides/basic-data-modeling.md) — Design best practices
 
 ## Examples
 
-Examples can be found in `examples/`.
+Find example schemas in [`examples/`](examples/). Each generator has working samples demonstrating features.
 
-- [Example API](examples/openapi/input.qsdl)
+## Formal Specification
 
-# Language Documentation
-
-For comprehensive documentation on the QSDL language, see the [Documentation](./docs/) folder:
-
-- **[Language overview](./docs/core/language.md)** — Type definitions, syntax, and examples
-- **[Rules & requirements](./docs/core/rules.md)** — All DSL constraints and validation rules (with unique identifiers)
-- **[Directives](./docs/core/directives.md)** — Complete reference for all 22 directives with examples
-- **[Basic data modeling](./docs/guides/basic-data-modeling.md)** — Practical guide to designing schemas
-- **[Relationships](./docs/guides/relationships.md)** — Composition, aggregation, and entity relationships
-
-The language definition is formally specified in the TextX grammar file:
+The complete QSDL grammar is specified in the TextX definition file:
 [`src/qsdl/dsl/definition/entity.tx`](src/qsdl/dsl/definition/entity.tx)

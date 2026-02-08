@@ -1,38 +1,57 @@
-# QSDL Documentation
+# QSDL Documentation Index
 
-This folder is intended to grow into a wiki-style documentation set that can later be published as a documentation website.
+Welcome! This is the comprehensive documentation for QSDL.
 
-## Index
+## Getting Started
 
-### Getting started
-- [Overview](./overview.md)
-- [CLI](./cli.md)
+**Start here if you're new to QSDL:**
 
-### Core (QSDL language)
-- [Language overview](./core/language.md)
-- [Directives](./core/directives.md)
-- [Rules & requirements](./core/rules.md)
+- **[Overview](./overview.md)** — What QSDL is, why you'd use it, and common workflows
+- **[CLI](./cli.md)** — Command-line usage and options
 
-### Guides
-- [Basic data modeling](./guides/basic-data-modeling.md)
-- [Relationships](./guides/relationships.md)
+## Core Language & Semantics
 
-### Generators
-- [Generators overview](./generators/README.md)
-- [OpenAPI](./generators/openapi/README.md)
-- [Spring Boot](./generators/spring/README.md)
-- [PostgreSQL](./generators/postgres/README.md)
-- [PlantUML](./generators/plantuml/README.md)
-- [Void (no-op)](./generators/void/README.md)
-- [i18n](./generators/i18n/README.md)
+Learn the QSDL language and how to write schemas:
 
-### Reference
-- [Glossary](./reference/glossary.md)
-- [FAQ](./reference/faq.md)
-- [Troubleshooting](./reference/troubleshooting.md)
+- **[Language overview](./core/language.md)** — Complete syntax reference with examples (types, fields, scalars, enums)
+- **[Rules & requirements](./core/rules.md)** — All semantic and validation rules (with rule IDs for reference)
+- **[Directives](./core/directives.md)** — Complete directive reference with all 22+ annotations
 
-## Conventions (for future docs)
+## Practical Guides
 
-- Prefer task-oriented pages (Overview  Prerequisites  Configuration  Usage  Examples  Troubleshooting).
-- Keep generator-specific behavior under `docs/generators/<name>/`.
-- Keep cross-generator and DSL invariants under `docs/core/` and `docs/rules/`.
+Step-by-step guides for common tasks:
+
+- **[Basic data modeling](./guides/basic-data-modeling.md)** — How to design effective domain models
+- **[Relationships](./guides/relationships.md)** — Composition, aggregation, and entity patterns
+
+## Generators
+
+Code and spec generation for different targets:
+
+- **[Generators overview](./generators/README.md)** — How generators work and common patterns
+- **[OpenAPI](./generators/openapi/README.md)** — REST API specification generation
+- **[Spring Boot](./generators/spring/README.md)** — Java backend scaffolding
+- **[PostgreSQL](./generators/postgres/README.md)** — Database schema generation
+- **[PlantUML](./generators/plantuml/README.md)** — Architecture and ER diagrams
+- **[i18n](./generators/i18n/README.md)** — Internationalization resources
+- **[Void](./generators/void/README.md)** — Validation-only generator
+
+## Reference
+
+Quick lookup and troubleshooting:
+
+- **[Glossary](./reference/glossary.md)** — Key terms and concepts
+- **[FAQ](./reference/faq.md)** — Frequently asked questions
+- **[Troubleshooting](./reference/troubleshooting.md)** — Common issues and solutions
+
+## Documentation Conventions
+
+These guidelines help keep the docs consistent and maintainable:
+
+- **Structure:** Prefer task-oriented pages with sections like Overview → Prerequisites → Configuration → Usage → Examples → Troubleshooting
+- **Location:** 
+  - Core language rules and semantics go in `docs/core/`
+  - Practical how-to guides go in `docs/guides/`
+  - Generator-specific behavior goes in `docs/generators/<generator_name>/`
+  - Reference material (glossary, FAQ, troubleshooting) goes in `docs/reference/`
+- **Linking:** Use relative paths; future doc site generation tools will handle the conversion
