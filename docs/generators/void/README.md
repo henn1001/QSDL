@@ -7,5 +7,3 @@ Use it when you want to:
 - parse `.qsdl` schemas,
 - run processors/validation,
 - and exercise the core pipeline without generating artifacts.
-
-<!-- TODO: document any config options (if applicable). -->
