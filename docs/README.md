@@ -10,8 +10,6 @@ This folder is intended to grow into a wiki-style documentation set that can lat
 
 ### Core (QSDL language)
 - [Language overview](./core/language.md)
-- [Types](./core/types.md)
-- [Fields & modifiers](./core/fields.md)
 - [Directives](./core/directives.md)
 - [Rules & requirements](./rules/README.md)
   - [Naming & conventions](./rules/naming.md)
