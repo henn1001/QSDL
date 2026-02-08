@@ -11,9 +11,7 @@ This folder is intended to grow into a wiki-style documentation set that can lat
 ### Core (QSDL language)
 - [Language overview](./core/language.md)
 - [Directives](./core/directives.md)
-- [Rules & requirements](./rules/README.md)
-  - [Naming & conventions](./rules/naming.md)
-  - [Validation rules](./rules/validation.md)
+- [Rules & requirements](./core/rules.md)
 
 ### Guides
 - [Basic data modeling](./guides/basic-data-modeling.md)

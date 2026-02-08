@@ -8,7 +8,7 @@ When tasked with a new implementation:
 - Do not add new tests on your own.
 - Do not run tests on your own.
 - For larger/complex changes, finish the implementation first, then ask once whether the user wants to add tests and/or run tests.
-- IMPORTANT: if changing DSL behavior, generators, or documentation claims about constraints, first check and respect `docs/rules/`.
+- IMPORTANT: if changing DSL behavior, generators, or documentation claims about constraints, first check and respect `docs/core/rules.md`.
 
 ## Project Scope & Layout
 
@@ -37,7 +37,7 @@ Guidelines for doc changes:
 
 - Keep the entrypoint at `docs/README.md` as the index.
 - Prefer task-oriented pages (Overview → Prerequisites → Configuration → Usage → Examples → Troubleshooting).
-- Put DSL semantics and invariants under `docs/core/` and `docs/rules/`.
+- Put DSL semantics and invariants under `docs/core/` (rules, language, directives).
 - Put generator-specific behavior under `docs/generators/<name>/`.
 - When moving/renaming pages, keep old links working where practical (add a small stub page pointing to the new location).
 
