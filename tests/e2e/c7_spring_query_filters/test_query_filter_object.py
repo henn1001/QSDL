@@ -47,15 +47,15 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         projects_get = openapi_schema["paths"]["/projects"]["get"]
         project_parameters = projects_get["parameters"]
         assert project_parameters[0]["name"] == "filter"
-        filter_example = project_parameters[0]["schema"]["examples"][0]
-        assert "name" in filter_example
-        assert "archived" in filter_example
-        assert "tags" in filter_example
-        # Verify @queryList fields are rendered as arrays (list type) in examples
-        assert isinstance(filter_example["name"], list)
-        assert isinstance(filter_example["tags"], list)
-        # Verify @query fields remain scalar
-        assert isinstance(filter_example["archived"], str)
+        filter_properties = project_parameters[0]["schema"]["properties"]
+
+        assert filter_properties["name"]["type"] == "array"
+        assert filter_properties["name"]["items"]["type"] == "string"
+
+        assert filter_properties["archived"]["type"] == "boolean"
+
+        assert filter_properties["tags"]["type"] == "array"
+        assert filter_properties["tags"]["items"]["type"] == "string"
 
     def test_spring(self, srcgen: Path) -> None:
         """asserts Spring filter DTOs are generated with @queryList as List<T>"""

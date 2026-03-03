@@ -130,10 +130,12 @@ class TestSpecificsQuery:
         parameters = openapi["paths"]["/projects"]["get"]["parameters"]
         assert len(parameters) == 4
         assert parameters[0]["name"] == "filter"
-        assert "name" in parameters[0]["schema"]["examples"][0]
-        assert "creation_by" in parameters[0]["schema"]["examples"][0]
-        assert "creation_date" in parameters[0]["schema"]["examples"][0]
-        assert "last_update_by" in parameters[0]["schema"]["examples"][0]
+
+        assert parameters[0]["schema"]["properties"]["name"]["type"] == "string"
+        assert parameters[0]["schema"]["properties"]["creation_by"]["type"] == "string"
+        assert parameters[0]["schema"]["properties"]["creation_date"]["type"] == "string"
+        assert parameters[0]["schema"]["properties"]["last_update_by"]["type"] == "string"
+
         assert parameters[1]["$ref"] == "#/components/parameters/cursor"
         assert parameters[2]["$ref"] == "#/components/parameters/limit"
         assert parameters[3]["$ref"] == "#/components/parameters/count"

@@ -44,6 +44,11 @@ def snakecase(word: str) -> str:
     return stringcase.snakecase(word)
 
 
+def capitalcase(word: str) -> str:
+    """Returns the CapitalCase form of a word using stringcase"""
+    return stringcase.capitalcase(word)
+
+
 def regex_replace(txt: str, find: str, replace: str) -> str:
     """Applies re.sub to a given string"""
     return re.sub(find, replace, txt)

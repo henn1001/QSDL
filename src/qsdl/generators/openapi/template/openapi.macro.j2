@@ -1,5 +1,5 @@
 {% macro get_parameters(operation) %}
-{% set parameters = operation.path_parameters if operation.is_generated and operation.is_pageable  else operation.parameters  %}
+{% set parameters = operation.path_parameters if operation.is_generated and operation.is_pageable else operation.parameters  %}
 {% for parameter in parameters %}
   - name: {{ parameter.name }}
   {% if parameter.description %}
@@ -18,17 +18,11 @@
     in: query
     required: false
     schema:
-      title: {{ operation.name |capitalize }}Filter
+      title: {{ operation.name | capital }}Filter
       type: object
   {% if operation.query_parameters %}
-      examples:
-      {% for parameter in operation.query_parameters %}
-        {% if loop.first %}
-        - {{ parameter.name }}: {{ "[" if parameter.is_array }}{{ parameter.type }}{{ "]" if parameter.is_array }}
-        {% else %}
-          {{ parameter.name }}: {{ "[" if parameter.is_array }}{{ parameter.type }}{{ "]" if parameter.is_array }}
-        {% endif %}
-      {% endfor %}
+      properties:
+        {{ get_requestFilter(operation) | indent(6) | trim }}
   {% endif %}
 {% endif %}
 {% if operation.is_pageable %}
@@ -36,6 +30,38 @@
   - $ref: '#/components/parameters/limit'
   - $ref: '#/components/parameters/count'
 {% endif %}
+{% endmacro %}
+
+
+{% macro get_requestFilter(operation) %}
+{% for parameter in operation.query_parameters %}
+  {{ parameter.json_key }}:
+  {% if parameter.description %}
+    description: |
+    {% for line in parameter.description %}
+      {{ line }}
+    {% endfor %}
+  {% endif %}
+  {% if parameter.is_array %}
+    type: array
+    items:
+      {{ get_parameter_type(parameter) | indent(4) | trim }}
+        {% if get_parameter_format(parameter) %}
+      {{ get_parameter_format(parameter) | indent(4) | trim  }}
+        {% endif %}
+        {% if get_parameter_constraint(parameter) %}
+      {{ get_parameter_constraint(parameter) | indent(4) | trim }}
+        {% endif %}
+  {% else %}
+    {{ get_parameter_type(parameter) | indent(2) | trim }}
+        {% if get_parameter_format(parameter) %}
+    {{ get_parameter_format(parameter) | indent(2) | trim }}
+        {% endif %}
+        {% if get_parameter_constraint(parameter) %}
+    {{ get_parameter_constraint(parameter) | indent(2) | trim }}
+        {% endif %}
+  {% endif %}
+{% endfor %}
 {% endmacro %}
 
 
@@ -138,6 +164,8 @@
 {% macro get_parameter_type(field, response=false) %}
 {% if field.is_object or field.is_base or field.is_enum %}
   $ref: '#/components/schemas/{{ field.type }}'
+{% elif field.ref %}
+  $ref: '{{ field.ref }}'
 {% else %}
   type: {{ field.type }}
 {% endif %}

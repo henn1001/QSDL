@@ -70,8 +70,8 @@ class TestDirective:
         assert parameter[0]["in"] == "query"
         assert parameter[0]["name"] == "filter"
 
-        assert "name" in parameter[0]["schema"]["examples"][0]
-        assert "world" in parameter[0]["schema"]["examples"][0]
+        assert parameter[0]["schema"]["properties"]["name"]["type"] == "string"
+        assert parameter[0]["schema"]["properties"]["world"]["type"] == "string"
 
     def test_directive_03_positive(self) -> None:
         """Verify usage of @hidden"""

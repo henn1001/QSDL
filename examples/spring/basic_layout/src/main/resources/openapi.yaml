@@ -33,10 +33,11 @@ paths:
           in: query
           required: false
           schema:
-            title: GetprojectsFilter
+            title: GetProjectsFilter
             type: object
-            examples:
-              - name: string
+            properties:
+              name:
+                type: string
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'

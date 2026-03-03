@@ -26,10 +26,11 @@ paths:
           in: query
           required: false
           schema:
-            title: GetprojectsFilter
+            title: GetProjectsFilter
             type: object
-            examples:
-              - name: string
+            properties:
+              name:
+                type: string
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -447,10 +448,12 @@ paths:
           in: query
           required: false
           schema:
-            title: GetusersforroleFilter
+            title: GetUsersForRoleFilter
             type: object
-            examples:
-              - name: integer
+            properties:
+              name:
+                type: integer
+                format: int32
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -528,10 +531,12 @@ paths:
           in: query
           required: false
           schema:
-            title: GetusersFilter
+            title: GetUsersFilter
             type: object
-            examples:
-              - name: integer
+            properties:
+              name:
+                type: integer
+                format: int32
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -803,10 +808,12 @@ paths:
           in: query
           required: false
           schema:
-            title: GetmilestonesFilter
+            title: GetMilestonesFilter
             type: object
-            examples:
-              - name: integer
+            properties:
+              name:
+                type: integer
+                format: int32
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'
@@ -957,10 +964,12 @@ paths:
           in: query
           required: false
           schema:
-            title: GetmilestonesforticketFilter
+            title: GetMilestonesForTicketFilter
             type: object
-            examples:
-              - name: integer
+            properties:
+              name:
+                type: integer
+                format: int32
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/count'

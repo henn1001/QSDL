@@ -64,6 +64,7 @@ def render(  # pylint: disable=too-many-arguments
     jinja_env.filters["camel"] = qfilter.camelcase
     jinja_env.filters["snake"] = qfilter.snakecase
     jinja_env.filters["spinal"] = qfilter.spinalcase
+    jinja_env.filters["capital"] = qfilter.capitalcase
     jinja_env.filters["regex_replace"] = qfilter.regex_replace
 
     # load the template
