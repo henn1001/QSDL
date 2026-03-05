@@ -25,8 +25,7 @@ public interface {{model.name}}Mapper {
     {% for field in model.entity_fields %}
         {% if field.is_transient %}
     @Mapping(target = "{{field.name}}", ignore = true)
-        {% endif %}
-        {% if field.dto_nested_path  %}
+        {% elif field.dto_nested_path  %}
     @Mapping(target = "{{field.dto_nested_path}}", source = "{{field.name}}")
         {% endif %}
     {% endfor %}
@@ -36,8 +35,7 @@ public interface {{model.name}}Mapper {
     {% for field in model.entity_fields %}
         {% if field.is_read_only or field.is_relation or field.is_hidden %}
     @Mapping(target = "{{field.name}}", ignore = true)
-        {% endif %}
-        {% if field.dto_nested_path %}
+        {% elif field.dto_nested_path %}
     @Mapping(target = "{{field.name}}", source = "{{field.dto_nested_path}}")
         {% endif %}
     {% endfor %}

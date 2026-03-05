@@ -139,6 +139,7 @@ def generate_postgres(output_path: Path) -> None:
         generator_name="postgres",
         input_path=core_config.input_path,
         raw_schema=core_config.raw_schema,
+        config={"table_prefix": util.Store.config.table_prefix},
     )
 
 
