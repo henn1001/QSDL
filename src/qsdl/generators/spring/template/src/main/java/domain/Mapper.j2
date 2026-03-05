@@ -22,10 +22,14 @@ public interface {{model.name}}Mapper {
     {% if id_type == "String" %}
     @Mapping(target = "id", source = "uid")
     {% endif %}
-    {% for field in model.entity_fields %}
-        {% if field.is_transient %}
+    {# Explicitly ignore transient fields on the DTO when mapping from the Entity -> DTO
+       model.fields contains transient fields (these are API-visible but not persisted)
+    #}
+    {% for field in model.fields if field.is_transient %}
     @Mapping(target = "{{field.name}}", ignore = true)
-        {% elif field.dto_nested_path  %}
+    {% endfor %}
+    {% for field in model.entity_fields %}
+        {% if field.dto_nested_path  %}
     @Mapping(target = "{{field.dto_nested_path}}", source = "{{field.name}}")
         {% endif %}
     {% endfor %}

@@ -386,6 +386,10 @@ def extract_embedded_columns(
     dsl_fields = fields if fields is not None else ref.fields
 
     for dsl_field in dsl_fields:
+        # Skip transient fields entirely - they are not part of the DB/entity model
+        if dsl_field.is_transient:
+            continue
+
         if isinstance(dsl_field.value, dsl.Base) and not (dsl_field.is_array or dsl_field.is_opaque):
             # Flatten Base types - recursively process nested Base fields
             embedded_prefix = prefix + qfilter.snakecase(dsl_field.name).lower() + "_"
@@ -414,6 +418,10 @@ def extract_fields_for_mapper(ref: dsl.Base | dsl.Object) -> list[dsl.Field]:
     nested_objects = []
 
     for field in ref.fields:
+        # Skip transient fields entirely - they are not part of the DB/entity model
+        if field.is_transient:
+            continue
+
         if isinstance(field.value, dsl.Base):
             if field.is_opaque:
                 # Opaque base types need mappers for Request/Response conversion

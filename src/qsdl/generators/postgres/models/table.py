@@ -47,6 +47,9 @@ class Table:
         dsl_fields = [x for x in table._ref.fields]
 
         for dsl_field in dsl_fields:
+            # Skip fields that are transient - they should not be persisted to the DB
+            if dsl_field.is_transient:
+                continue
             # Handle arrays of Object types - either composition or aggregation
             if isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array:
                 # handled later

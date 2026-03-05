@@ -146,10 +146,10 @@ entity.Argument -->  entity.ValueType: value
 legend
   Match rules:
   |= Name  |= Rule details |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | Description |  |
-  | Comment | \\/\\/.*$ |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Comment | \\/\\/.*$ |
+  | Description |  |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
 end legend
 

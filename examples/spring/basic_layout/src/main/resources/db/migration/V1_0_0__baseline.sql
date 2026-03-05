@@ -26,8 +26,7 @@ create table if not exists T_USER (
   iv INTEGER,
   name TEXT not null,
   count INTEGER,
-  mail TEXT unique,
-  tmp TEXT
+  mail TEXT unique
 );
 
 create table if not exists T_TICKET (

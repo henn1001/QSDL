@@ -145,6 +145,10 @@ def extract_embedded_columns(ref: dsl.Base, prefix: str = "") -> list[Column]:
     """
     columns = []
     for field in ref.fields:
+        # Skip fields that are transient - these should not be persisted to the DB
+        if field.is_transient:
+            continue
+
         if isinstance(field.value, dsl.Base):
             # Recursively flatten nested Base types (always flatten, ignore @opaque for nested)
             nested_prefix = prefix + qfilter.snakecase(field.name).lower() + "_"
