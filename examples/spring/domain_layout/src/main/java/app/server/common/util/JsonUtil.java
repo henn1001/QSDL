@@ -54,7 +54,7 @@ public final class JsonUtil {
     public static JsonMapper.Builder apply(JsonMapper.Builder builder) {
         return builder
                 // Custom Application settings
-                .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(Include.NON_EMPTY))
+                .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(Include.NON_NULL))
                 .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS);
     }
 
