@@ -134,9 +134,7 @@ class Operation:
         self._add_response(_ref)
         self._add_response_headers(_ref)
 
-        # Use filter if operation has query parameters
-        self.uses_filter = len(self.query_parameters) > 0
-        self.filter_name = stringcase.capitalcase(self.name) + "Filter"
+        self.uses_filter, self.filter_name = util.resolve_query_filter(_ref)
 
         return self
 

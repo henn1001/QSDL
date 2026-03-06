@@ -9,7 +9,9 @@ package {{package.config}};
 @Configuration
 @EnableScheduling
 {% if database == "HIBERNATE" %}
-@EnableJpaRepositories(basePackages = "{{package.repository}}", repositoryBaseClass = BaseRepositoryImpl.class)
+@EnableJpaRepositories(
+        basePackages = {{"{"}}{% for pkg in packages | map(attribute='repository') | unique | list %}"{{pkg}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}},
+        repositoryBaseClass = BaseRepositoryImpl.class)
 {% endif%}
 public class AppConfiguration {
 

@@ -21,7 +21,9 @@ import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
 @EnableScheduling
-@EnableJpaRepositories(basePackages = "app.server.common.db", repositoryBaseClass = BaseRepositoryImpl.class)
+@EnableJpaRepositories(
+        basePackages = {"app.server.custom.db", "app.server.project.db", "app.server.user.db", "app.server.incident.db"},
+        repositoryBaseClass = BaseRepositoryImpl.class)
 public class AppConfiguration {
 
     @Bean

@@ -58,6 +58,28 @@ custom_types = {
 }
 
 
+def is_direct_query_filter(operation: dsl.Operation) -> bool:
+    if len(operation.query_parameters) != 1:
+        return False
+
+    argument = operation.query_parameters[0]
+    if argument.is_array:
+        return False
+
+    return isinstance(argument.value, (dsl.Base, dsl.Object))
+
+
+def resolve_query_filter(operation: dsl.Operation) -> tuple[bool, str | None]:
+    if not operation.query_parameters:
+        return False, None
+
+    if is_direct_query_filter(operation):
+        argument = operation.query_parameters[0]
+        return True, custom_type(argument.value)
+
+    return True, stringcase.capitalcase(operation.name) + "Filter"
+
+
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converts builtin types to generator specific types."""
     return qutil.map_custom_type(entity, custom_types, entity.name, Directive.TYPE, ["entity", "pattern"], "type")
@@ -452,6 +474,9 @@ def build_filter_models() -> list[spring.ModelClass]:
     for operation in operations:
         # Skip operations without query parameters
         if not operation.query_parameters:
+            continue
+
+        if is_direct_query_filter(operation):
             continue
 
         new_name = stringcase.capitalcase(operation.name) + "Filter"

@@ -18,6 +18,7 @@ def wrapper_generate(test_input: str) -> Path:
     """
     test_input = textwrap.dedent(test_input)
     test_output = Path("srcgen/")
+    test_output.mkdir(exist_ok=True)
 
     # generate
     shutil.rmtree(test_output / "src", ignore_errors=True)

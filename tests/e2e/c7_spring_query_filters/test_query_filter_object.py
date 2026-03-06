@@ -10,6 +10,10 @@ class TestE2EQueryFilterObject(BaseE2ETest):
     """Test E2E for query filter object generation."""
 
     TESTCASE = """\
+      base AnotherFilter {
+        name: String! @query
+      }
+
       type Project {
         name: String! @queryList
         archived: Boolean @query
@@ -21,6 +25,10 @@ class TestE2EQueryFilterObject(BaseE2ETest):
           @path("/projects/search")
           @method(GET)
           @pagination
+
+        searchOneProject(filter: AnotherFilter!): Project
+          @path("/projects/searchV2")
+          @method(GET)
       }
     """
 
@@ -57,6 +65,12 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         assert filter_properties["tags"]["type"] == "array"
         assert filter_properties["tags"]["items"]["type"] == "string"
 
+        # custom operation with Base query parameter should use that schema directly
+        search_get = openapi_schema["paths"]["/projects/searchv2"]["get"]
+        search_parameters = search_get["parameters"]
+        assert search_parameters[0]["name"] == "filter"
+        assert search_parameters[0]["schema"]["$ref"] == "#/components/schemas/AnotherFilter"
+
     def test_spring(self, srcgen: Path) -> None:
         """asserts Spring filter DTOs are generated with @queryList as List<T>"""
         src_root = srcgen / "src" / "main" / "java"
@@ -86,6 +100,16 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         assert "String name" in contents  # explicit String parameter
         assert "Boolean archived" in contents  # explicit Boolean parameter
         assert "List<String> tags" in contents  # explicit [String] parameter
+
+        # Operation with single Base query parameter should use base directly
+        search_filter_files = list(src_root.rglob("SearchOneProjectFilter.java"))
+        assert len(search_filter_files) == 0
+
+        controller_files = list(src_root.rglob("DefaultController.java"))
+        assert len(controller_files) == 1
+        controller_contents = controller_files[0].read_text(encoding="utf-8")
+        assert "searchOneProject(AnotherFilter filter" in controller_contents
+        assert "SearchOneProjectFilter" not in controller_contents
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:
