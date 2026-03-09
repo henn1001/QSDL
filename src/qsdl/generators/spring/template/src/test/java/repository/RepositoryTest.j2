@@ -88,21 +88,25 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
         List<{{model.name}}Entity> testData = prepareData(5);
 
         BooleanBuilder predicate = new BooleanBuilder();
-        {% for field in model.fields if field.is_query or field.is_query_list %}
-        {% if field.is_query_list %}
-        if (!testData.get(0).{{ "get" + field.name|pascal + "()" }}.isEmpty()) {
-            predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.contains(testData.get(0).{{ "get" + field.name|pascal + "()" }}));
-        }
-        {% else %}
+        {% for field in model.fields if field.is_query %}
         predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" }}));
-        {% endif %}
         {% endfor %}
 
         // When
         long count = {{model.name|lower}}Repository.count(predicate);
 
         // Then
-        assertEquals({{ "1" if model.has_query else "5" }}, count);
+        {% if model.has_query %}
+        assertEquals(
+                testData.stream()
+                        {% for field in model.fields if field.is_query %}
+                        .filter(d -> d.get{{field.name|pascal}}().equals(testData.get(0).get{{field.name|pascal}}()))
+                        {% endfor %}
+                        .count(),
+                count);
+        {% else %}
+        assertEquals(5, count);
+        {% endif %}
     }
 
     @Test

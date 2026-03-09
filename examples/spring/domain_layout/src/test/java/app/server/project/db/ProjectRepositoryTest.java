@@ -94,7 +94,11 @@ class ProjectRepositoryTest extends AbstractDataJpaTest {
         long count = projectRepository.count(predicate);
 
         // Then
-        assertEquals(1, count);
+        assertEquals(
+                testData.stream()
+                        .filter(d -> d.getName().equals(testData.get(0).getName()))
+                        .count(),
+                count);
     }
 
     @Test
