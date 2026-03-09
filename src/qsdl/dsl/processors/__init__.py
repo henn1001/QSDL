@@ -14,10 +14,10 @@
 
 """QSDL post-processing"""
 
-from enum import Enum
+from enum import StrEnum
 
 
-class CrudGeneratorEnum(str, Enum):
+class CrudGeneratorEnum(StrEnum):
     """Supported crud operations"""
 
     GET_ALL = "GET_ALL"

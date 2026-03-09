@@ -15,26 +15,26 @@
 """Generator Configuration"""
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 from qsdl.generators.base_config import BaseConfig
 
 
-class Database(str, Enum):
+class Database(StrEnum):
     """Available Options for database"""
 
     HIBERNATE = "HIBERNATE"
     NO = "NO"
 
 
-class IDTYPE(str, Enum):
+class IDTYPE(StrEnum):
     """Available Options for id_type"""
 
     LONG = "LONG"
     STRING = "STRING"
 
 
-class Directive(str, Enum):
+class Directive(StrEnum):
     """Available directives"""
 
     TYPE = "spring"

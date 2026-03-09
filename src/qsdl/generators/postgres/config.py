@@ -15,12 +15,12 @@
 """Generator Configuration"""
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 from qsdl.generators.base_config import BaseConfig
 
 
-class Directive(str, Enum):
+class Directive(StrEnum):
     """Available directives"""
 
     TYPE = "postgres"
