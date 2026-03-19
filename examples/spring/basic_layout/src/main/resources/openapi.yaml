@@ -638,10 +638,12 @@ paths:
         content:
           application/json:
             schema:
+              title: SubmitQuryRequest
               type: object
               properties:
                 arg1:
                   type: string
+                  maxLength: 255
                 arg2:
                   type: array
                   items:

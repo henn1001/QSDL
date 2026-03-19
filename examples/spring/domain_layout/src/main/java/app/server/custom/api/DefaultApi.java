@@ -7,6 +7,7 @@ import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import app.server.custom.dto.ActionFilter;
 import app.server.custom.dto.BaseTypeRequest;
+import app.server.custom.dto.SubmitQuryRequest;
 import jakarta.json.JsonMergePatch;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public interface DefaultApi {
      * POST /query : submitQury
      */
     @PostMapping(value = "/query", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode request) {
+    default ResponseEntity<ObjectNode> submitQury(@RequestBody SubmitQuryRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

@@ -7,6 +7,7 @@ import app.server.api.BaseController;
 import app.server.api.DefaultApi;
 import app.server.domain.ActionFilter;
 import app.server.domain.BaseTypeRequest;
+import app.server.domain.SubmitQuryRequest;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import app.server.util.JsonMergePatchUtil;
@@ -32,7 +33,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class DefaultController extends BaseController implements DefaultApi {
 
     @Override
-    public ResponseEntity<ObjectNode> submitQury(ObjectNode request) {
+    public ResponseEntity<ObjectNode> submitQury(SubmitQuryRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

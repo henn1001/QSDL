@@ -71,6 +71,22 @@ def _get_filter_imports(api_class: spring.ApiClass | None) -> list[str]:
     return list(imports)
 
 
+def _get_request_dto_imports(api_class: spring.ApiClass | None) -> list[str]:
+    """Collect imports for request-body DTOs generated from inline write-operation parameters."""
+    if not api_class:
+        return []
+
+    imports = set()
+    for op in api_class.operations:
+        if not op.uses_request_dto:
+            continue
+        model = util.get_model_for(op.request_dto_name)
+        if model:
+            imports.add(f"import {model.package.domain}.{op.request_dto_name};")
+
+    return list(imports)
+
+
 def _get_service_imports(api_class: spring.ApiClass | None, is_db: bool) -> list[str]:
     """Collect explicit imports for Service layer (replaces wildcards)."""
     if not api_class or not is_db:
@@ -197,6 +213,7 @@ def generate_imports_for_template(
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
             *_get_filter_imports(api_class),
+            *_get_request_dto_imports(api_class),
             *_get_operation_type_imports(api_class),
             "import jakarta.json.JsonMergePatch;",
             "import java.util.List;",
@@ -229,6 +246,7 @@ def generate_imports_for_template(
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",
             *_get_filter_imports(api_class),
+            *_get_request_dto_imports(api_class),
             *_get_operation_type_imports(api_class),
             "import jakarta.json.JsonMergePatch;",
             "import org.springframework.http.HttpStatus;",
@@ -249,6 +267,7 @@ def generate_imports_for_template(
         "Service.j2": [
             *_get_service_imports(api_class, is_db),
             *_get_filter_imports(api_class),
+            *_get_request_dto_imports(api_class),
             f"import {util.Store.package.util}.PredicateBuilder;" if api_class and is_db else None,
             f"import {util.Store.package.model}.CursorPage;",
             f"import {util.Store.package.model}.CursorPageable;",

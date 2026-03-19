@@ -19,6 +19,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Self
 
+import stringcase
+
 from qsdl import dsl
 
 from .. import util
@@ -101,6 +103,9 @@ class Operation:
     consumes: str = None
     produces: str = None
 
+    uses_request_dto: bool = False
+    request_dto_name: str | None = None
+
     def build(self, _ref: dsl.Operation) -> Self:
         """Builds self from dsl.Operation"""
 
@@ -120,6 +125,19 @@ class Operation:
 
         self.consumes = _ref.consumes
         self.produces = _ref.produces
+
+        # Detect inline body parameters that require a named request DTO
+        if (
+            _ref.body_parameters
+            and _ref.method
+            and _ref.method.upper() not in ("GET", "DELETE")
+            and not (
+                len(_ref.body_parameters) == 1
+                and isinstance(_ref.body_parameters[0].value, (dsl.Base, dsl.Object))
+            )
+        ):
+            self.uses_request_dto = True
+            self.request_dto_name = stringcase.pascalcase(_ref.name) + "Request"
 
         self._add_parameters(_ref)
         self._add_response(_ref)

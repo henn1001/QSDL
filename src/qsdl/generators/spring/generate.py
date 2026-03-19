@@ -79,6 +79,10 @@ def parse_models(schema: Schema) -> list[ModelClass]:
     filter_models = util.build_filter_models()
     models.extend(filter_models)
 
+    # build request-body DTOs from write operations with inline scalar parameters
+    request_body_models = util.build_request_body_models()
+    models.extend(request_body_models)
+
     return models
 
 

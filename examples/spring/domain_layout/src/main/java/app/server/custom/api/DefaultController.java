@@ -11,6 +11,7 @@ import app.server.common.util.Validator;
 import app.server.custom.api.DefaultApi;
 import app.server.custom.dto.ActionFilter;
 import app.server.custom.dto.BaseTypeRequest;
+import app.server.custom.dto.SubmitQuryRequest;
 import jakarta.json.JsonMergePatch;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,7 @@ import tools.jackson.databind.node.ObjectNode;
 public class DefaultController extends BaseController implements DefaultApi {
 
     @Override
-    public ResponseEntity<ObjectNode> submitQury(ObjectNode request) {
+    public ResponseEntity<ObjectNode> submitQury(SubmitQuryRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

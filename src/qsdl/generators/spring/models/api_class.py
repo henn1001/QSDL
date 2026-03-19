@@ -109,6 +109,9 @@ class Operation:
     uses_filter: bool = False
     filter_name: str | None = None
 
+    uses_request_dto: bool = False
+    request_dto_name: str | None = None
+
     def build(self, _ref: dsl.Operation) -> Self:
         """Builds self from dsl.Operation"""
 
@@ -135,6 +138,7 @@ class Operation:
         self._add_response_headers(_ref)
 
         self.uses_filter, self.filter_name = util.resolve_query_filter(_ref)
+        self.uses_request_dto, self.request_dto_name = util.resolve_request_body_dto(_ref)
 
         return self
 

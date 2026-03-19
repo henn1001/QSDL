@@ -65,11 +65,50 @@
 {% endmacro %}
 
 
+{% macro get_requestBodyProperties(operation) %}
+{% for parameter in operation.body_parameters %}
+  {{ parameter.json_key }}:
+  {% if parameter.is_array %}
+    type: array
+    items:
+      {{ get_parameter_type(parameter) | indent(4) | trim }}
+      {% if get_parameter_format(parameter) %}
+      {{ get_parameter_format(parameter) | indent(4) | trim }}
+      {% endif %}
+  {% else %}
+    {{ get_parameter_type(parameter) | indent(2) | trim }}
+    {% if get_parameter_format(parameter) %}
+    {{ get_parameter_format(parameter) | indent(2) | trim }}
+    {% endif %}
+    {% if parameter.type == "string" and parameter.format not in ["date", "date-time"] %}
+    maxLength: 255
+    {% endif %}
+    {% if parameter.type in ["integer", "number"] %}
+    minimum: 0
+    {% endif %}
+  {% endif %}
+{% endfor %}
+{% endmacro %}
+
+
 {% macro get_requestBody(operation) %}
   required: true
   content:
     {{ operation.consumes }}:
       schema:
+{% if operation.uses_request_dto %}
+        title: {{operation.request_dto_name}}
+  {% set required_body = operation.body_parameters | selectattr("is_required") | list %}
+  {% if required_body %}
+        required:
+    {% for param in required_body %}
+          - {{param.json_key}}
+    {% endfor %}
+  {% endif %}
+        type: object
+        properties:
+          {{ get_requestBodyProperties(operation) | indent(8) | trim }}
+{% else %}
   {% set ns = namespace(var=true) %}
   {% for parameter in operation.body_parameters %}
     {% if parameter.is_ref_body %}
@@ -91,6 +130,7 @@
             {{ get_ref_type_format(parameter) | indent(10) | trim }}
     {% endif %}
   {% endfor %}
+{% endif %}
 {% endmacro %}
 
 

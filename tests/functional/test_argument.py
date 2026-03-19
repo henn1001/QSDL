@@ -114,7 +114,7 @@ class TestArgument:
         wrapper_generate_failure(test_input)
 
     def test_argument_05_positive(self) -> None:
-        """Verify value list"""
+        """Verify value list — write operations with inline scalar array params generate inline {Op}Request schema"""
         test_input = """\
             extend api {
                 field1(arg: [String]): Void @path("path1")
@@ -134,21 +134,25 @@ class TestArgument:
             var = openapi["paths"][path][method]["requestBody"]
             return var["content"]["application/json"]["schema"]
 
+        # GET → query parameter (unchanged)
         schema = get_schema_parameters(openapi, "/path1", "get")
         assert schema["type"] == "array"
         assert schema["items"]["type"] == "string"
 
-        schema = get_schema_request(openapi, "/path2", "post")
-        assert schema["properties"]["arg"]["type"] == "array"
-        assert schema["properties"]["arg"]["items"]["type"] == "string"
+        # POST / PUT / PATCH → inline scalar param → inline schema with title (no $ref, no component schema)
+        schemas = openapi.get("components", {}).get("schemas", {})
 
-        schema = get_schema_request(openapi, "/path3", "put")
-        assert schema["properties"]["arg"]["type"] == "array"
-        assert schema["properties"]["arg"]["items"]["type"] == "string"
-
-        schema = get_schema_request(openapi, "/path4", "patch")
-        assert schema["properties"]["arg"]["type"] == "array"
-        assert schema["properties"]["arg"]["items"]["type"] == "string"
+        for path, method, title in [
+            ("/path2", "post", "Field2Request"),
+            ("/path3", "put", "Field3Request"),
+            ("/path4", "patch", "Field4Request"),
+        ]:
+            schema = get_schema_request(openapi, path, method)
+            assert schema["title"] == title, f"{path}: expected inline title {title}"
+            assert schema["type"] == "object"
+            assert schema["properties"]["arg"]["type"] == "array"
+            assert schema["properties"]["arg"]["items"]["type"] == "string"
+            assert title not in schemas, f"{title} must be inline, not a component schema"
 
     def test_argument_06_positive(self) -> None:
         """Verify required"""
@@ -227,7 +231,11 @@ class TestArgument:
                 assert parameter["schema"]["$ref"]
 
     def test_argument_08_positive(self) -> None:
-        """Verify argument is requestbody for post/put/patch"""
+        """Verify argument is requestbody for post/put/patch.
+
+        Inline scalar args → inline {Op}Request schema with title (no component schema created).
+        Single Base/Object arg → direct $ref to the type (no extra wrapper).
+        """
         test_input = """\
             enum Bar {
                 OPEN
@@ -257,42 +265,52 @@ class TestArgument:
         """
 
         openapi = wrapper_generate(test_input)
+        schemas = openapi.get("components", {}).get("schemas", {})
 
         def get_schema_request(openapi: dict, path: str, method: str) -> dict:
             var = openapi["paths"][path][method]["requestBody"]
             return var["content"]["application/json"]["schema"]
 
-        ops = [
-            ("/path2", "post", "integer", "int32"),
-            ("/path3", "post", "number", "float"),
-            ("/path4", "post", "string", None),
-            ("/path5", "post", "boolean", None),
-            ("/path6", "post", "string", "date"),
-            ("/path7", "post", "string", "date-time"),
-            ("/path8", "post", None, None),
-            ("/path9", "post", None, None),
-            ("/path10", "post", None, None),
-            ("/path11", "post", None, None),
+        # Inline scalar args: each generates an inline schema with title (no component schema)
+        scalar_ops = [
+            ("/path2", "post", "Field2Request", "arg", "integer", "int32"),
+            ("/path3", "post", "Field3Request", "arg", "number", "float"),
+            ("/path4", "post", "Field4Request", "arg", "string", None),
+            ("/path5", "post", "Field5Request", "arg", "boolean", None),
+            ("/path6", "post", "Field6Request", "arg", "string", "date"),
+            ("/path7", "post", "Field7Request", "arg", "string", "date-time"),
         ]
-
-        for _path, _method, _type, _format in ops:
-            schema = get_schema_request(openapi, _path, _method)
-
-            if _type:
-                assert schema["properties"]["arg"]["type"] == _type
-
+        for path, method, title, prop, _type, _format in scalar_ops:
+            schema = get_schema_request(openapi, path, method)
+            assert schema["title"] == title, f"{path}: expected inline title {title}"
+            assert schema["type"] == "object"
+            assert schema["properties"][prop]["type"] == _type
             if _format:
-                assert schema["properties"]["arg"]["format"] == _format
+                assert schema["properties"][prop]["format"] == _format
+            assert title not in schemas, f"{title} must be inline, not a component schema"
 
-            if _path in ["/path8"]:
-                assert schema["type"] == "object"
-                assert "properties" not in schema
+        # Inline Object scalar (dsl.Scalar "Object") → inline schema with title
+        schema = get_schema_request(openapi, "/path8", "post")
+        assert schema["title"] == "Field8Request"
+        assert schema["type"] == "object"
+        assert "Field8Request" not in schemas
 
-            if _path in ["/path9"]:
-                assert schema["properties"]["arg"]["$ref"]
+        # Inline Enum arg → inline schema with title; property uses $ref to Bar
+        schema = get_schema_request(openapi, "/path9", "post")
+        assert schema["title"] == "Field9Request"
+        assert schema["type"] == "object"
+        assert "$ref" in schema["properties"]["arg"]
+        assert "Field9Request" not in schemas
 
-            if _path in ["/path10", "/path11"]:
-                assert schema["$ref"]
+        # Single Base body param → use Foo directly (no wrapper, direct $ref)
+        schema = get_schema_request(openapi, "/path10", "post")
+        assert schema["$ref"] == "#/components/schemas/Foo"
+        assert "Field10Request" not in schemas
+
+        # Single Object body param → use Fruit directly (no wrapper, direct $ref)
+        schema = get_schema_request(openapi, "/path11", "post")
+        assert schema["$ref"] == "#/components/schemas/Fruit"
+        assert "Field11Request" not in schemas
 
     def test_argument_09_negative(self) -> None:
         """Verify argument can not be used for delete"""
@@ -341,7 +359,7 @@ class TestArgument:
         wrapper_generate_failure(test_input)
 
     def test_argument_11_positive(self) -> None:
-        """Verify argument can be market as query"""
+        """Verify argument can be marked as query — inline scalar body arg generates inline {Op}Request schema"""
         test_input = """\
             extend api {
                 field(arg: String, query1: String?, query2: Int!?): Void @path("path") @method(POST)
@@ -367,6 +385,9 @@ class TestArgument:
         assert parameters[1]["required"] is True
         assert parameters[1]["schema"]["type"] == "integer"
 
+        # Inline scalar body param → inline schema with title (no component schema)
         schema = get_schema_request(openapi, "/path", "post")
+        assert schema["title"] == "FieldRequest"
         assert schema["type"] == "object"
         assert schema["properties"]["arg"]["type"] == "string"
+        assert "FieldRequest" not in openapi.get("components", {}).get("schemas", {})

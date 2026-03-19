@@ -5,6 +5,7 @@ package app.server.api;
 
 import app.server.domain.ActionFilter;
 import app.server.domain.BaseTypeRequest;
+import app.server.domain.SubmitQuryRequest;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import jakarta.json.JsonMergePatch;
@@ -30,7 +31,7 @@ public interface DefaultApi {
      * POST /query : submitQury
      */
     @PostMapping(value = "/query", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ObjectNode> submitQury(@RequestBody ObjectNode request) {
+    default ResponseEntity<ObjectNode> submitQury(@RequestBody SubmitQuryRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

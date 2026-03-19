@@ -80,6 +80,33 @@ def resolve_query_filter(operation: dsl.Operation) -> tuple[bool, str | None]:
     return True, stringcase.capitalcase(operation.name) + "Filter"
 
 
+def _is_inline_body_operation(operation: dsl.Operation) -> bool:
+    """Returns True if the operation has inline body parameters that require a request DTO.
+
+    Qualifies when:
+    - body_parameters is not empty
+    - method is not GET or DELETE
+    - NOT a single body param whose value is already a Base or Object reference
+    """
+    if not operation.body_parameters:
+        return False
+    if operation.method and operation.method.upper() in ("GET", "DELETE"):
+        return False
+    if len(operation.body_parameters) == 1 and isinstance(operation.body_parameters[0].value, (dsl.Base, dsl.Object)):
+        return False
+    return True
+
+
+def resolve_request_body_dto(operation: dsl.Operation) -> tuple[bool, str | None]:
+    """Returns (uses_dto, dto_name) for an operation's inline body parameters.
+
+    Mirrors resolve_query_filter for write operations.
+    """
+    if not _is_inline_body_operation(operation):
+        return False, None
+    return True, stringcase.capitalcase(operation.name) + "Request"
+
+
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converts builtin types to generator specific types."""
     return qutil.map_custom_type(entity, custom_types, entity.name, Directive.TYPE, ["entity", "pattern"], "type")
@@ -516,6 +543,60 @@ def build_filter_models() -> list[spring.ModelClass]:
         filter_models.append(filter_model)
 
     return filter_models
+
+
+def build_request_body_models() -> list[spring.ModelClass]:
+    """Build request-body DTOs for write operations with inline scalar parameters.
+
+    For each qualifying operation a synthetic dsl.Base named ``{Op}Request`` is created
+    and converted to a ModelClass (has_request=False, has_response=True so that
+    Response.j2 generates ``{Op}Request.java`` — the suffix is baked into the name).
+
+    Mirrors build_filter_models() for GET query-filter DTOs.
+    """
+    request_models = []
+
+    operations = xtx.get_children_of_operation(Store.schema)
+
+    for operation in operations:
+        if not _is_inline_body_operation(operation):
+            continue
+
+        new_name = stringcase.capitalcase(operation.name) + "Request"
+
+        # Derive namespace and package from the same source as filter models
+        namespace_source = operation.domain_object if operation.domain_object else operation.parent
+        request_namespace = getattr(namespace_source, "namespace", None)
+
+        request_base = dsl.Base(
+            parent=Store.schema,
+            name=new_name,
+            namespace=request_namespace,
+        )
+
+        # Copy @spring-package directive if present (same logic as filter models)
+        spring_package_directive = qutil.get_directive_of_name(Directive.PACKAGE, namespace_source)
+        if spring_package_directive:
+            request_base.directives = [spring_package_directive]
+
+        # Convert body arguments to fields on the synthetic base
+        for argument in operation.body_parameters:
+            request_field = dsl.Field(
+                parent=request_base,
+                name=argument.name,
+                value=argument.value,
+                is_array=argument.is_array,
+                is_required=argument.is_required,
+            )
+            request_base.fields.append(request_field)
+
+        request_model = spring.ModelClass().build(request_base)
+        # has_request=False: avoids generating "{Name}Request.java" via Request.j2
+        # (the "Request" suffix is already in model.name; Response.j2 produces the right file)
+        request_model.has_request = False
+        request_models.append(request_model)
+
+    return request_models
 
 
 def needs_separate_request_response(ref: dsl.Base | dsl.Object) -> bool:
