@@ -29,7 +29,7 @@ build-docker() {
 }
 
 release (){
-  npx standard-version
+  bunx standard-version
 }
 
 clean() {
