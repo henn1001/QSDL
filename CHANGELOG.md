@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.0](https://gitlab.com/henn1001/qsdl/compare/v6.2.0...v6.3.0) (2026-03-22)
+
+
+### Features
+
+* generate named request DTOs for custom write operations ([3c1daef](https://gitlab.com/henn1001/qsdl/commit/3c1daefa0f471aeaaa9f9b3dddba9bfc8e3b29cf))
+* **openapi:** align typing with spring generator for crud paginated filter ([51d8d96](https://gitlab.com/henn1001/qsdl/commit/51d8d96461e816db63ba27ffd7abcfb0bd9c12b9))
+
+
+### Bug Fixes
+
+* resolve issue with transient not beeing correctly handeled when used on nested bases for both postgres and spring generator ([0822d41](https://gitlab.com/henn1001/qsdl/commit/0822d412f063e49c4eca5952bc5b68083ea0e95c))
+* **spring:** correctly handle repository filter tests ([1fbf00d](https://gitlab.com/henn1001/qsdl/commit/1fbf00d71939483e051f008afb12d748d28cd868))
+* **spring:** jackson value inclusion wrongly pruned empty lists ([b76b0e0](https://gitlab.com/henn1001/qsdl/commit/b76b0e0f877a9634f598ceda851f65fabc6bb448))
+* **spring:** remove redundant filter dto wrapping when using base types ([c9eb21a](https://gitlab.com/henn1001/qsdl/commit/c9eb21a19bdd89e7a3cd09b36feee2195d20cd45))
+
 ## [6.2.0](https://gitlab.com/henn1001/qsdl/compare/v6.1.0...v6.2.0) (2026-02-03)
 
 
