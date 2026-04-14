@@ -472,14 +472,13 @@ def remove_ignored(schema: dsl.Schema) -> None:
     objects = xtx.get_children_of_object(schema)
 
     for entity in objects + bases:
-        for field in entity.fields:
-            if field.is_ignored:
-                entity.fields.remove(field)
-                log.info(
-                    "The field '%s' of '%s' was marked with @ignore and removed from generation.",
-                    field.name,
-                    entity.name,
-                )
+        for field in [x for x in entity.fields if x.is_ignored]:
+            entity.fields.remove(field)
+            log.info(
+                "The field '%s' of '%s' was marked with @ignore and removed from generation.",
+                field.name,
+                entity.name,
+            )
 
 
 def inherit_force_generation(schema: dsl.Schema) -> None:
