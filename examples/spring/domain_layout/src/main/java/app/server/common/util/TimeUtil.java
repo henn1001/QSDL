@@ -7,14 +7,14 @@ import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 
-public final class Time {
+public final class TimeUtil {
 
-    private static Clock clock = Clock.systemDefaultZone();
+    private static Clock clock = Clock.systemUTC();
 
-    private Time() {}
+    private TimeUtil() {}
 
     public static void setClock(Clock customClock) {
-        clock = customClock != null ? customClock : Clock.systemDefaultZone();
+        clock = customClock != null ? customClock : Clock.systemUTC();
     }
 
     public static OffsetDateTime now() {

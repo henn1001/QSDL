@@ -267,7 +267,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         ("src/main/java/util/JsonMergePatchConverter.j2", f"src/main/java/{package.util}/JsonMergePatchConverter.java"),
         ("src/main/java/util/JsonMergePatchUtil.j2", f"src/main/java/{package.util}/JsonMergePatchUtil.java"),
         ("src/main/java/util/ObjectNodeConverter.j2", f"src/main/java/{package.util}/ObjectNodeConverter.java"),
-        ("src/main/java/util/Time.j2", f"src/main/java/{package.util}/Time.java"),
+        ("src/main/java/util/TimeUtil.j2", f"src/main/java/{package.util}/TimeUtil.java"),
         ("src/main/java/util/Validator.j2", f"src/main/java/{package.util}/Validator.java"),
         ("src/main/java/util/IdGenerator.j2", f"src/main/java/{package.util}/IdGenerator.java"),
         ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{package.util}/PredicateBuilder.java"),
