@@ -8,5 +8,8 @@
       "filename": "src/qsdl/__init__.py",
       "updater": "util/scripts/standard-version-init.js"
     }
-  ]
+  ],
+  "scripts": {
+    "postbump": "uv lock && git add uv.lock"
+  }
 }
