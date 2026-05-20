@@ -577,7 +577,7 @@ def generate_imports_for_template(
             "import java.util.Set;",
         ],
         "AppError.j2": [
-            f"import {util.Store.package.util}.Time;",
+            f"import {util.Store.package.util}.TimeUtil;",
             "import com.fasterxml.jackson.annotation.JsonProperty;",
             "import io.soabase.recordbuilder.core.RecordBuilder;",
             "import java.time.OffsetDateTime;",

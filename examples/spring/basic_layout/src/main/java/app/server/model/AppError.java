@@ -3,7 +3,7 @@
  */
 package app.server.model;
 
-import app.server.util.Time;
+import app.server.util.TimeUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import java.time.OffsetDateTime;
@@ -35,19 +35,19 @@ public record AppError(
 )
 {
     public AppError() {
-        this(null, null, null, null, Time.now(), new ArrayList<>());
+        this(null, null, null, null, TimeUtil.now(), new ArrayList<>());
     }
 
     public AppError(String code, String message, Integer status) {
-        this(code, message, status, null, Time.now(), new ArrayList<>());
+        this(code, message, status, null, TimeUtil.now(), new ArrayList<>());
     }
 
     public AppError(String code, String message, Integer status, String detail) {
-        this(code, message, status, null, Time.now(), List.of(detail));
+        this(code, message, status, null, TimeUtil.now(), List.of(detail));
     }
 
     public AppError(String code, String message, Integer status, List<String> details) {
-        this(code, message, status, null, Time.now(), details);
+        this(code, message, status, null, TimeUtil.now(), details);
     }
 }
 // @formatter:on
