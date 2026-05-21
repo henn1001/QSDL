@@ -20,18 +20,21 @@ import plantuml
 import textx.model
 
 from qsdl.dsl import Schema
-from qsdl.render import render
+from qsdl.render import is_ignored, render
 
 from . import util
 from .config import Config
 
 
-def generate_png(uml_markdown_file: Path) -> None:
+def generate_png(uml_markdown_file: Path, output_root: Path) -> None:
     """Converts a markdown file containing PlantUml definitions to pngs.
 
     Args:
         uml_markdown_file (Path): The path to a markdown file.
     """
+    if is_ignored(uml_markdown_file, output_root) or not uml_markdown_file.is_file():
+        return
+
     uml = plantuml.PlantUML("http://www.plantuml.com/plantuml/img/")
 
     # loop over markdown file and capture each start/end uml section
@@ -66,6 +69,9 @@ def generate_png(uml_markdown_file: Path) -> None:
 
         png_file_name = files.pop(0)
 
+        if is_ignored(png_file_name, output_root):
+            continue
+
         with open(png_file_name, "wb") as the_file:
             the_file.write(png)
 
@@ -86,6 +92,6 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         "config": config,
     }
 
-    render(output_file, context, template_path)
+    render(output_file, context, template_path, output_path)
 
-    generate_png(output_file)
+    generate_png(output_file, output_path)

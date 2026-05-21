@@ -123,6 +123,7 @@ def generate_openapi(output_path: Path) -> None:
         input_path=core_config.input_path,
         raw_schema=core_config.raw_schema,
         config={"id_type": util.Store.config.id_type},
+        render_root=output_path,
     )
 
 
@@ -144,6 +145,7 @@ def generate_postgres(output_path: Path) -> None:
         input_path=core_config.input_path,
         raw_schema=core_config.raw_schema,
         config={"table_prefix": util.Store.config.table_prefix},
+        render_root=output_path,
     )
 
 
@@ -236,7 +238,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         # root
         ("pom.j2", "pom.xml"),
         ("README.j2", "README.md"),
-        (".qsdl-ignore.j2", ".qsdl-ignore"),
+        (".qignore.j2", ".qignore"),
         (".gitignore.j2", ".gitignore"),
         ("dev.j2", "dev.sh"),
         ("docker-compose.j2", "docker-compose.yml"),
@@ -297,9 +299,6 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         supporting_files.append(("src/test/java/AbstractIntegrationTest.j2", f"src/test/java/{package.base}/AbstractIntegrationTest.java"))
         # fmt: on
 
-    # remove ignored files from generator
-    util.remove_ignored_files(output_path, api_files, model_files, supporting_files)
-
     # enable dotting
     package.slashed = False
 
@@ -325,7 +324,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
         macro_path = Path(__file__).parent / "template" / "_macro"
-        render(output_file, context, template_path, macro_path=macro_path)
+        render(output_file, context, template_path, macro_path=macro_path, output_root=output_path)
 
     # generate models
     for src, dest, model in model_files:
@@ -333,7 +332,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
         macro_path = Path(__file__).parent / "template" / "_macro"
-        render(output_file, context, template_path, macro_path=macro_path)
+        render(output_file, context, template_path, macro_path=macro_path, output_root=output_path)
 
     # generate apis
     for src, dest, api in api_files:
@@ -342,7 +341,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
         macro_path = Path(__file__).parent / "template" / "_macro"
-        render(output_file, context, template_path, macro_path=macro_path)
+        render(output_file, context, template_path, macro_path=macro_path, output_root=output_path)
 
     # generate enums
     for src, dest, enum in enum_files:
@@ -350,7 +349,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         output_file = output_path / dest
         template_path = Path(__file__).parent / "template" / src
         macro_path = Path(__file__).parent / "template" / "_macro"
-        render(output_file, context, template_path, macro_path=macro_path)
+        render(output_file, context, template_path, macro_path=macro_path, output_root=output_path)
 
     # run openapi and postgres generator to create spec file
     generate_openapi(output_path)

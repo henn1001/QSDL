@@ -16,9 +16,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
-import pathspec
 import stringcase
 
 import qsdl.dsl.textx as xtx
@@ -120,42 +117,6 @@ def custom_type_entity(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) ->
 def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
     """Converts builtin types to generator specific types."""
     return qutil.map_custom_type(entity, {}, None, Directive.TYPE, ["entity", "pattern"], "pattern")
-
-
-def remove_ignored_files(output_path: Path, api_files: list, model_files: list, supporting_files: list) -> None:
-    """Removes all generated files mentioned in .qsdl-ignore.
-
-    Utilizes the pathspec python package.
-    https://github.com/cpburnz/python-path-specification
-
-    Args:
-        output_path (Path): [description]
-        domain_files (list): [description]
-        model_files (list): [description]
-        supporting_files (list): [description]
-    """
-    ignorefile_path = output_path / ".qsdl-ignore"
-
-    if ignorefile_path.is_file():
-        supporting_files.remove((".qsdl-ignore.j2", ".qsdl-ignore"))
-
-        # read the spec
-        with open(ignorefile_path, encoding="utf-8") as infile:
-            spec = pathspec.PathSpec.from_lines("gitwildmatch", infile)
-
-        # loop over each all files and remove matches
-        # note the copy() - we dont want to modify the list directly
-        for src, dest, _ in api_files.copy():
-            if spec.match_file(dest):
-                api_files.remove((src, dest, _))
-
-        for src, dest, _ in model_files.copy():
-            if spec.match_file(dest):
-                model_files.remove((src, dest, _))
-
-        for src, dest in supporting_files.copy():
-            if spec.match_file(dest):
-                supporting_files.remove((src, dest))
 
 
 def has(

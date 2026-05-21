@@ -160,4 +160,4 @@ def generate(schema: dsl.Schema, output_path: Path, config: Config) -> None:
         "config": config,
     }
 
-    render(output_file, context, template_path)
+    render(output_file, context, template_path, output_path)
