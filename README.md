@@ -28,17 +28,17 @@ QSDL (Schema-Definition Language) lets you define your domain model and API cont
 
 ```bash
 # Install latest unreleased version directly from the repository
-uv tool install git+https://gitlab.com/henn1001/qsdl
+uv tool install git+https://github.com/henn1001/QSDL
 
 # If you want to update a previously installed version
-uv tool install git+https://gitlab.com/henn1001/qsdl
+uv tool install git+https://github.com/henn1001/QSDL
 uv tool upgrade qsdl
 ```
 
 **For development:**
 
 ```bash
-git clone https://gitlab.com/henn1001/qsdl && cd qsdl && bash dev.sh init
+git clone https://github.com/henn1001/QSDL && cd qsdl && bash dev.sh init
 ```
 
 ## Usage

@@ -21,11 +21,11 @@ The `qsdl` command is installed automatically when you install the QSDL package:
 
 ```bash
 # Via uv
-uv tool install git+https://gitlab.com/henn1001/qsdl
+uv tool install git+https://github.com/henn1001/QSDL
 
 # Via pip/pipx
-pip install qgit+https://gitlab.com/henn1001/qsdll
-pipx install git+https://gitlab.com/henn1001/qsdl
+pip install git+https://github.com/henn1001/QSDLl
+pipx install git+https://github.com/henn1001/QSDL
 ```
 
 After installation, the `qsdl` command is available in your PATH.
