@@ -25,7 +25,7 @@ from .. import util
 
 
 def T_PREFIX() -> str:
-    return util.Store.config.table_prefix.upper()
+    return util.Store.config.table_prefix.lower()
 
 
 class Column:

@@ -49,7 +49,7 @@ def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
 
 
 def T_PREFIX() -> str:
-    return Store.config.table_prefix.upper()
+    return Store.config.table_prefix.lower()
 
 
 def build_jointables(table: Table) -> list[Table]:
@@ -63,14 +63,14 @@ def build_jointables(table: Table) -> list[Table]:
             continue
 
         source_table_name = table.name
-        qfilter.snakecase(dsl_field.name).upper()
-        ref_table_name = T_PREFIX() + qfilter.snakecase(dsl_field.value.name).upper()
+        qfilter.snakecase(dsl_field.name).lower()
+        ref_table_name = T_PREFIX() + qfilter.snakecase(dsl_field.value.name).lower()
 
         name_left = table._ref.name.lower()
         name_right = qfilter.snakecase(dsl_field.value.name).lower()
 
         new_table = Table()
-        new_table.name = f"{source_table_name}_TO_{ref_table_name}"
+        new_table.name = f"{source_table_name}_to_{ref_table_name}"
         new_table.is_jointable = True
 
         # new table has two columns, one for each side of the relation
@@ -88,8 +88,8 @@ def build_jointables(table: Table) -> list[Table]:
         # add the foreign key constraints
         table.constraints.extend(
             [
-                build_fk_constraint(new_table.name, name_left.upper(), column_a.name, table.name),
-                build_fk_constraint(new_table.name, name_right.upper(), column_b.name, ref_table_name),
+                build_fk_constraint(new_table.name, name_left.lower(), column_a.name, table.name),
+                build_fk_constraint(new_table.name, name_right.lower(), column_b.name, ref_table_name),
             ]
         )
 
@@ -114,8 +114,8 @@ def build_composition_fks(table: Table) -> None:
     for dsl_field in dsl_fields:
         # field.parent is the parent Object that has the composition
         parent_obj = dsl_field.parent
-        ref_table_name = T_PREFIX() + qfilter.snakecase(parent_obj.name).upper()
-        field_name = f"{qfilter.snakecase(dsl_field.name)}_{parent_obj.name}".upper()
+        ref_table_name = T_PREFIX() + qfilter.snakecase(parent_obj.name).lower()
+        field_name = f"{qfilter.snakecase(dsl_field.name)}_{parent_obj.name}".lower()
 
         # Add foreign key column to this (child) table pointing to parent
         fk_column = Column()
@@ -130,10 +130,10 @@ def build_composition_fks(table: Table) -> None:
 
 def build_fk_constraint(table_name: str, fk_target: str, column_name: str, ref_table_name: str) -> str:
     """Helper to build a foreign key constraint string."""
-    fk_name = f"FK_{table_name}_{fk_target}"
+    fk_name = f"fk_{table_name}_{fk_target}"
     return (
-        f"alter table if exists {table_name} add constraint {fk_name} "
-        f"foreign key ({column_name}) references {ref_table_name}(id);"
+        f"ALTER TABLE IF EXISTS {table_name} ADD CONSTRAINT {fk_name} "
+        f"FOREIGN KEY ({column_name}) REFERENCES {ref_table_name}(id);"
     )
 
 

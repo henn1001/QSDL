@@ -42,7 +42,7 @@ class Table:
         """Rebuilds the table from a new reference"""
         table = Table()
         table._ref = _ref
-        table.name = util.T_PREFIX() + qfilter.snakecase(_ref.name).upper()
+        table.name = util.T_PREFIX() + qfilter.snakecase(_ref.name).lower()
 
         dsl_fields = [x for x in table._ref.fields]
 
@@ -87,8 +87,8 @@ class Table:
 
             # one to one object relation (only for Objects now)
             if isinstance(dsl_field.value, dsl.Object):
-                ref_table_name = util.T_PREFIX() + qfilter.snakecase(dsl_field.value.name).upper()
-                field_name = qfilter.snakecase(dsl_field.name).upper()
+                ref_table_name = util.T_PREFIX() + qfilter.snakecase(dsl_field.value.name).lower()
+                field_name = qfilter.snakecase(dsl_field.name).lower()
 
                 table.constraints.extend(
                     [

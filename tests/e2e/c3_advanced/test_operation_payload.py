@@ -52,7 +52,7 @@ class TestE2EOperationPayload(BaseE2ETest):
         # createProjectB uses Project directly — no CreateProjectBRequest schema
         assert "CreateProjectBRequest" not in schemas
 
-        # requestBody for createProjectB references the Project schema directly
+        # requestBody for createProjectB REFERENCES the Project schema directly
         post_b = openapi_schema["paths"]["/projects/create-b"]["post"]
         schema_b = post_b["requestBody"]["content"]["application/json"]["schema"]
         assert schema_b["$ref"] == "#/components/schemas/Project"
