@@ -21,7 +21,7 @@ import tools.jackson.databind.node.ObjectNode;
 public record Project(
 
     @NotNull
-    @Min(0)
+    @Min(0L)
     @Max(Long.MAX_VALUE)
     @JsonProperty(value = "id")
     Long id,

@@ -34,8 +34,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<Object> buildResponseEntity(AppError appError, HttpServletRequest httpRequest) {
 
         AppError enrichedError = AppErrorBuilder.builder(appError)
-            .path(httpRequest.getRequestURI())
-            .build();
+                .path(httpRequest.getRequestURI())
+                .build();
 
         log.warn(enrichedError.toString());
 

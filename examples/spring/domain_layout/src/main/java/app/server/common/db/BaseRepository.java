@@ -8,6 +8,7 @@ import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.List;
@@ -19,6 +20,8 @@ public interface BaseRepository<T extends AbstractPersistentObject, S extends Se
         extends JpaRepository<T, S> {
 
     public EntityManager entityManager();
+
+    public JPAQueryFactory queryFactory();
 
     public JPAQuery<T> query();
 

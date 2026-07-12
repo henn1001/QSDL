@@ -20,7 +20,7 @@ public class {{model.name}}Entity{% if model.is_object %} extends AbstractPersis
     {# 
         Required fields
     #}
-    {% if field.is_required and not field.is_read_only%}
+    {% if field.is_required %}
     @NotNull
     {% endif %}
     {# 

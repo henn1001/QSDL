@@ -131,8 +131,8 @@ class ModelField:
             self.max_size = f"{_ref.max_size}" if _ref.max_size else "Integer.MAX_VALUE"
 
         if self.type == "Long":
-            self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
-            self.max_size = f"{_ref.max_size}" if _ref.max_size else "Long.MAX_VALUE"
+            self.min_size = f"{_ref.min_size}L" if _ref.min_size else "0L"
+            self.max_size = f"{_ref.max_size}L" if _ref.max_size else "Long.MAX_VALUE"
 
         # default value is a bit tricky
         if self.is_enum:

@@ -5,7 +5,6 @@ package app.server.util;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import lombok.AllArgsConstructor;
 import tools.jackson.databind.node.ObjectNode;
 
 /**

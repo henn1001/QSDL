@@ -31,6 +31,11 @@ public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Se
     }
 
     @Override
+    public JPAQueryFactory queryFactory() {
+        return queryFactory;
+    }
+
+    @Override
     public JPAQuery<T> query() {
         return queryFactory.selectFrom(entityPath);
     }

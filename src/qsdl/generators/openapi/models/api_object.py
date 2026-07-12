@@ -132,8 +132,7 @@ class Operation:
             and _ref.method
             and _ref.method.upper() not in ("GET", "DELETE")
             and not (
-                len(_ref.body_parameters) == 1
-                and isinstance(_ref.body_parameters[0].value, (dsl.Base, dsl.Object))
+                len(_ref.body_parameters) == 1 and isinstance(_ref.body_parameters[0].value, (dsl.Base, dsl.Object))
             )
         ):
             self.uses_request_dto = True

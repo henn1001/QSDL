@@ -12,6 +12,8 @@ public interface BaseRepository<T extends AbstractPersistentObject, S extends Se
 
     public EntityManager entityManager();
 
+    public JPAQueryFactory queryFactory();
+
     public JPAQuery<T> query();
 
     public long count(Predicate predicate);

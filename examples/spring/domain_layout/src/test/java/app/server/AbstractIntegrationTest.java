@@ -4,21 +4,26 @@
 package app.server;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
-@Testcontainers
 @ActiveProfiles("prod")
+@Import(AbstractIntegrationTest.TestcontainersConfiguration.class)
 public abstract class AbstractIntegrationTest {
 
-    @Container
-    @SuppressWarnings("resource")
-    @ServiceConnection
-    public static PostgreSQLContainer postgres =
-            new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine")).withReuse(true);
+    @TestConfiguration(proxyBeanMethods = false)
+    static class TestcontainersConfiguration {
+
+        @Bean
+        @ServiceConnection
+        PostgreSQLContainer postgresContainer() {
+            return new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"));
+        }
+    }
 }

@@ -22,7 +22,7 @@ import tools.jackson.databind.node.ObjectNode;
 public record Ticket(
 
     @NotNull
-    @Min(0)
+    @Min(0L)
     @Max(Long.MAX_VALUE)
     @JsonProperty(value = "id")
     Long id,

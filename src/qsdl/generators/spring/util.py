@@ -89,9 +89,10 @@ def _is_inline_body_operation(operation: dsl.Operation) -> bool:
         return False
     if operation.method and operation.method.upper() in ("GET", "DELETE"):
         return False
-    if len(operation.body_parameters) == 1 and isinstance(operation.body_parameters[0].value, (dsl.Base, dsl.Object)):
-        return False
-    return True
+
+    return not (
+        len(operation.body_parameters) == 1 and isinstance(operation.body_parameters[0].value, (dsl.Base, dsl.Object))
+    )
 
 
 def resolve_request_body_dto(operation: dsl.Operation) -> tuple[bool, str | None]:
