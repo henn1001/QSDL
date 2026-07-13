@@ -21,7 +21,6 @@ public class {{api.name}}Controller extends BaseController implements {{api.name
     public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) {
     {% if operation.is_generated and operation.response %}
         {% if operation.method in ["post"] %}
-        Validator.validate(request);
         {% elif operation.method == "patch" %}
         {{macro.get_response(operation)}} current = {{api.name|lower}}Service.{{operation.name | replace('update', 'get')}}({{macro.paramsCallServiceGetter(operation)}});
         {{operation.body_parameters[0].type}} target = {{api.name|lower}}Mapper.toRequest(current);

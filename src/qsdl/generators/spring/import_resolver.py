@@ -216,6 +216,7 @@ def generate_imports_for_template(
             *_get_request_dto_imports(api_class),
             *_get_operation_type_imports(api_class),
             "import jakarta.json.JsonMergePatch;",
+            "import jakarta.validation.Valid;",
             "import java.util.List;",
             "import org.springframework.http.HttpStatus;",
             "import org.springframework.http.ResponseEntity;",

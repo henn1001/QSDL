@@ -8,6 +8,7 @@ import app.server.common.model.CursorPageable;
 import app.server.user.dto.User;
 import app.server.user.dto.UserRequest;
 import jakarta.json.JsonMergePatch;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,7 +73,7 @@ public interface UserApi {
      * Create a User
      */
     @PostMapping(value = "/users", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<User> createUser(@RequestBody UserRequest request) {
+    default ResponseEntity<User> createUser(@Valid @RequestBody UserRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

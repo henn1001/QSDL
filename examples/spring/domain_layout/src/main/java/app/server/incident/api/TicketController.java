@@ -44,7 +44,6 @@ public class TicketController extends BaseController implements TicketApi {
 
     @Override
     public ResponseEntity<Ticket> createTicket(TicketRequest request) {
-        Validator.validate(request);
         Ticket response = ticketService.createTicket(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

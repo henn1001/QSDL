@@ -44,7 +44,6 @@ public class RoleController extends BaseController implements RoleApi {
 
     @Override
     public ResponseEntity<Role> createRole(Long projectId, RoleRequest request) {
-        Validator.validate(request);
         Role response = roleService.createRole(projectId, request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

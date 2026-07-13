@@ -62,7 +62,6 @@ public class UserController extends BaseController implements UserApi {
 
     @Override
     public ResponseEntity<User> createUser(UserRequest request) {
-        Validator.validate(request);
         User response = userService.createUser(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

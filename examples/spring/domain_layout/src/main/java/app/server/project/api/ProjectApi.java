@@ -9,6 +9,7 @@ import app.server.project.dto.GetProjectsFilter;
 import app.server.project.dto.Project;
 import app.server.project.dto.ProjectRequest;
 import jakarta.json.JsonMergePatch;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public interface ProjectApi {
      * List Projects
      */
     @GetMapping(value = "/projects", produces = {"application/json"})
-    default ResponseEntity<CursorPage<Project>> getProjects(GetProjectsFilter filter, CursorPageable pageable) {
+    default ResponseEntity<CursorPage<Project>> getProjects(@Valid GetProjectsFilter filter, CursorPageable pageable) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -43,7 +44,7 @@ public interface ProjectApi {
      * Create a Project
      */
     @PostMapping(value = "/projects", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Project> createProject(@RequestBody ProjectRequest request) {
+    default ResponseEntity<Project> createProject(@Valid @RequestBody ProjectRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

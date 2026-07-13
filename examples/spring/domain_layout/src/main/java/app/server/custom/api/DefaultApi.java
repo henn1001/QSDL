@@ -9,6 +9,7 @@ import app.server.custom.dto.ActionFilter;
 import app.server.custom.dto.BaseTypeRequest;
 import app.server.custom.dto.SubmitQuryRequest;
 import jakarta.json.JsonMergePatch;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public interface DefaultApi {
      * POST /query : submitQury
      */
     @PostMapping(value = "/query", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ObjectNode> submitQury(@RequestBody SubmitQuryRequest request) {
+    default ResponseEntity<ObjectNode> submitQury(@Valid @RequestBody SubmitQuryRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -39,7 +40,7 @@ public interface DefaultApi {
      * POST /action : action
      */
     @PostMapping(value = "/action", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<ObjectNode> action(ActionFilter filter, @RequestBody BaseTypeRequest arg1) {
+    default ResponseEntity<ObjectNode> action(@Valid ActionFilter filter, @Valid @RequestBody BaseTypeRequest arg1) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

@@ -20,7 +20,7 @@
     {%- endfor %}
 
     {%- if operation.uses_filter -%}
-            {{operation.filter_name}} filter
+            @Valid {{operation.filter_name}} filter
         {%- if operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endif -%}
 
@@ -30,11 +30,11 @@
     {%- endif -%}
 
     {%- if operation.uses_request_dto -%}
-            @RequestBody {{operation.request_dto_name}} request
+            @Valid @RequestBody {{operation.request_dto_name}} request
     {%- elif operation.body_parameters and operation.method == "patch" -%}
             @RequestBody JsonMergePatch patch
     {%- elif operation.body_parameters -%}
-            @RequestBody {{ param_helper(operation.body_parameters[0]) }}
+            {% if operation.body_parameters[0].is_base or operation.body_parameters[0].is_object %}@Valid {% endif %}@RequestBody {{ param_helper(operation.body_parameters[0]) }}
     {%- endif -%}
 
 {%- endmacro %}

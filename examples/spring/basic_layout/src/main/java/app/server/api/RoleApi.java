@@ -8,6 +8,7 @@ import app.server.domain.RoleRequest;
 import app.server.model.CursorPage;
 import app.server.model.CursorPageable;
 import jakarta.json.JsonMergePatch;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public interface RoleApi {
      * Create a Role
      */
     @PostMapping(value = "/projects/{project_id}/roles", produces = {"application/json"}, consumes = {"application/json"})
-    default ResponseEntity<Role> createRole(@PathVariable("project_id") Long projectId, @RequestBody RoleRequest request) {
+    default ResponseEntity<Role> createRole(@PathVariable("project_id") Long projectId, @Valid @RequestBody RoleRequest request) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 

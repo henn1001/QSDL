@@ -45,7 +45,6 @@ public class ProjectController extends BaseController implements ProjectApi {
 
     @Override
     public ResponseEntity<Project> createProject(ProjectRequest request) {
-        Validator.validate(request);
         Project response = projectService.createProject(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
