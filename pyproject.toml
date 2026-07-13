@@ -8,27 +8,27 @@ license = "Apache-2.0"
 requires-python = ">=3.13"
 
 dependencies = [
-  "dacite",
-  "flatten-json",
-  "inquirer",
-  "jinja2",
-  "pathspec",
-  "plantuml",
-  "pyfiglet",
-  "pyyaml",
-  "stringcase",
-  "textx",
-  "typer",
+  "dacite==1.9.2",
+  "flatten-json==0.1.14",
+  "inquirer==3.4.1",
+  "jinja2==3.1.6",
+  "pathspec==1.1.1",
+  "plantuml==0.3.0",
+  "pyfiglet==1.0.4",
+  "pyyaml==6.0.3",
+  "stringcase==1.2.0",
+  "textx==4.4.0",
+  "typer==0.26.8",
 ]
 
 [dependency-groups]
 dev = [
-  "openapi-spec-validator",
-  "pytest",
-  "pytest-cov",
-  "pytest-html",
-  "pytest-order",
-  "ruff",
+  "openapi-spec-validator==0.9.0",
+  "pytest-cov==7.1.0",
+  "pytest-html==4.2.0",
+  "pytest-order==1.5.0",
+  "pytest==9.1.1",
+  "ruff==0.15.21",
 ]
 
 [project.scripts]
