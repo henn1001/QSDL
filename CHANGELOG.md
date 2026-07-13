@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.4.0](https://github.com/henn1001/QSDL/compare/v6.3.1...v6.4.0) (2026-07-13)
+
+
+### Features
+
+* promote qignore functionality for all generators ([0797917](https://github.com/henn1001/QSDL/commit/079791771c6fe810671132f772c218e34a0f715a))
+* **spring:** bump spring boot to 4.1.0 ([79196e5](https://github.com/henn1001/QSDL/commit/79196e58dfe95a5a094c602a91b1f7f1bd0bbb66))
+* **spring:** input validation now handeled on api interface level ([3ead0fb](https://github.com/henn1001/QSDL/commit/3ead0fb23c3c931f09227156279a023951ac182c))
+
+
+### Bug Fixes
+
+* **spring:** minor spring blibs and blobs ([150f561](https://github.com/henn1001/QSDL/commit/150f561955f22063962ab4f30c06e59df860e157))
+* **spring:** provide a solution for request paramter binding case mismatch issues ([a296293](https://github.com/henn1001/QSDL/commit/a296293b4ad3a654db6a57fcfa510b5916669b7e))
+
 ### [6.3.1](https://github.com/henn1001/QSDL/compare/v6.3.0...v6.3.1) (2026-05-20)
 
 

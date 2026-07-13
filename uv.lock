@@ -669,7 +669,7 @@ wheels = [
 
 [[package]]
 name = "qsdl"
-version = "6.3.1"
+version = "6.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "dacite" },
@@ -697,27 +697,27 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dacite" },
-    { name = "flatten-json" },
-    { name = "inquirer" },
-    { name = "jinja2" },
-    { name = "pathspec" },
-    { name = "plantuml" },
-    { name = "pyfiglet" },
-    { name = "pyyaml" },
-    { name = "stringcase" },
-    { name = "textx" },
-    { name = "typer" },
+    { name = "dacite", specifier = "==1.9.2" },
+    { name = "flatten-json", specifier = "==0.1.14" },
+    { name = "inquirer", specifier = "==3.4.1" },
+    { name = "jinja2", specifier = "==3.1.6" },
+    { name = "pathspec", specifier = "==1.1.1" },
+    { name = "plantuml", specifier = "==0.3.0" },
+    { name = "pyfiglet", specifier = "==1.0.4" },
+    { name = "pyyaml", specifier = "==6.0.3" },
+    { name = "stringcase", specifier = "==1.2.0" },
+    { name = "textx", specifier = "==4.4.0" },
+    { name = "typer", specifier = "==0.26.8" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "openapi-spec-validator" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "pytest-html" },
-    { name = "pytest-order" },
-    { name = "ruff" },
+    { name = "openapi-spec-validator", specifier = "==0.9.0" },
+    { name = "pytest", specifier = "==9.1.1" },
+    { name = "pytest-cov", specifier = "==7.1.0" },
+    { name = "pytest-html", specifier = "==4.2.0" },
+    { name = "pytest-order", specifier = "==1.5.0" },
+    { name = "ruff", specifier = "==0.15.21" },
 ]
 
 [[package]]
