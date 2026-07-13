@@ -10,7 +10,7 @@ package {{model.package.domain}};
 
 @RecordBuilder
 // @formatter:off
-public record {{model.name}}Request(
+public record {{model.name}}{{ "" if model.is_query_filter else "Request" }}(
 {% for field in model.fields if not field.is_relation and not field.is_hidden and not field.is_read_only %}
 
     {# 
@@ -57,7 +57,33 @@ public record {{model.name}}Request(
 
 {# Compact constructor for default value initialization if needed #}
 {% set fields_with_defaults = model.fields|selectattr('default')|rejectattr('is_relation')|rejectattr('is_hidden')|rejectattr('is_read_only')|list %}
+{% if model.is_query_filter %}
+) implements QueryFilter {
 {% if fields_with_defaults %}
+    public {{model.name}} {
+        {% for field in fields_with_defaults %}
+        if ({{field.name}} == null) {
+            {{field.name}} = {{field.default}};
+        }
+        {% endfor %}
+    }
+{% endif %}
+    @Override
+    public Map<String, List<String>> toQueryParameters() {
+        var queryParameters = new LinkedHashMap<String, List<String>>();
+        {% for field in model.fields if not field.is_relation and not field.is_hidden and not field.is_read_only %}
+        if ({{field.name}} != null) {
+            {% if field.is_array %}
+            queryParameters.put("{{field.name}}", {{field.name}}.stream().map(String::valueOf).toList());
+            {% else %}
+            queryParameters.put("{{field.name}}", List.of(String.valueOf({{field.name}})));
+            {% endif %}
+        }
+        {% endfor %}
+        return queryParameters;
+    }
+}
+{% elif fields_with_defaults %}
 ) {
     public {{model.name}}Request {
         {% for field in fields_with_defaults %}

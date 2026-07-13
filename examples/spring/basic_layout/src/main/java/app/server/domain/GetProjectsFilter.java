@@ -3,6 +3,7 @@
  */
 package app.server.domain;
 
+import app.server.util.PredicateBuilder.QueryFilter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import jakarta.validation.Valid;
@@ -13,7 +14,9 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import tools.jackson.databind.node.ObjectNode;
 
 @RecordBuilder
@@ -24,5 +27,14 @@ public record GetProjectsFilter(
     @JsonProperty(value = "name")
     String name
 
-) {}
+) implements QueryFilter {
+    @Override
+    public Map<String, List<String>> toQueryParameters() {
+        var queryParameters = new LinkedHashMap<String, List<String>>();
+        if (name != null) {
+            queryParameters.put("name", List.of(String.valueOf(name)));
+        }
+        return queryParameters;
+    }
+}
 // @formatter:on

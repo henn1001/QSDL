@@ -17,6 +17,7 @@ class TestE2EQueryFilterObject(BaseE2ETest):
       type Project {
         name: String! @queryList
         archived: Boolean @query
+        some_query: Int @query
         tags: [String] @queryList
       }
 
@@ -61,6 +62,7 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         assert filter_properties["name"]["items"]["type"] == "string"
 
         assert filter_properties["archived"]["type"] == "boolean"
+        assert filter_properties["some_query"]["type"] == "integer"
 
         assert filter_properties["tags"]["type"] == "array"
         assert filter_properties["tags"]["items"]["type"] == "string"
@@ -72,7 +74,7 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         assert search_parameters[0]["schema"]["$ref"] == "#/components/schemas/AnotherFilter"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts Spring filter DTOs are generated with @queryList as List<T>"""
+        """Asserts Spring query filters preserve Java property names for Querydsl."""
         src_root = srcgen / "src" / "main" / "java"
         assert src_root.exists()
 
@@ -85,8 +87,26 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         assert "List<String> name" in crud_contents
         # @query fields should remain scalar
         assert "Boolean archived" in crud_contents
-        # tags field with @queryList should be List<String>
+        # @query fields use the canonical Java property name internally, while
+        # the public query parameter remains snake_case through @JsonProperty.
+        assert "Integer someQuery" in crud_contents
+        assert 'JsonProperty(value = "some_query")' in crud_contents
+        assert "import app.server.util.PredicateBuilder.QueryFilter;" in crud_contents
+        assert ") implements QueryFilter" in crud_contents
+        assert 'queryParameters.put("someQuery", List.of(String.valueOf(someQuery)));' in crud_contents
+        assert 'queryParameters.put("some_query"' not in crud_contents
+
+        # tags field with @queryList should be List<String> and retain all values.
         assert "List<String> tags" in crud_contents
+        assert 'queryParameters.put("tags", tags.stream().map(String::valueOf).toList());' in crud_contents
+
+        predicate_builder_files = list(src_root.rglob("PredicateBuilder.java"))
+        assert len(predicate_builder_files) == 1
+        predicate_builder_contents = predicate_builder_files[0].read_text(encoding="utf-8")
+        assert "public interface QueryFilter" in predicate_builder_contents
+        assert "Map<String, List<String>> toQueryParameters();" in predicate_builder_contents
+        assert "build(QueryFilter filter, Class<T> domainClass)" in predicate_builder_contents
+        assert "JsonUtil.mapper()" not in predicate_builder_contents
 
         # Check custom operation filter
         filter_files = list(src_root.rglob("SearchProjectsFilter.java"))

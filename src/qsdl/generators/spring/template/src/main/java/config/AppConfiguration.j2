@@ -50,5 +50,42 @@ public class AppConfiguration {
             }
         };
     }
+
+    @ControllerAdvice
+    public class JsonPropertyModelAttributeBinding {
+
+        @InitBinder
+        void useJsonPropertyNames(WebDataBinder binder) {
+            binder.setNameResolver(this::resolveName);
+        }
+
+        /**
+         * Allows Spring's {@code @ModelAttribute} binding to use Jackson's
+         * {@link com.fasterxml.jackson.annotation.JsonProperty @JsonProperty} names.
+         *
+         * <p>By default, Spring binds query/form parameters using Java property names,
+         * while Jackson uses {@code @JsonProperty} for JSON serialization and
+         * deserialization. This leads to inconsistent external API names when the same
+         * DTO is used for both {@code @RequestBody} and {@code @ModelAttribute}.
+         *
+         * <p>Without this binder, Spring would expect {@code ?someValue=42} for
+         * {@code @ModelAttribute}, while Jackson expects {@code some_value} for JSON.
+         * This advice makes {@code @ModelAttribute} honor {@code @JsonProperty},
+         * providing a single, consistent external field name across all request formats.
+         *
+         * <p>Note: This implementation resolves explicit {@code @JsonProperty}
+         * annotations only. It does not apply Jackson naming strategies or other
+         * advanced Jackson introspection features.
+         */
+        private String resolveName(MethodParameter parameter) {
+            var jsonProperty = parameter.getParameterAnnotation(JsonProperty.class);
+
+            if (jsonProperty == null || jsonProperty.value().isBlank()) {
+                return null; // fall back to the Java constructor-component name
+            }
+
+            return jsonProperty.value();
+        }
+    }
 }
 {{""}}

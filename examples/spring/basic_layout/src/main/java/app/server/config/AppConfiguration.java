@@ -6,15 +6,20 @@ package app.server.config;
 import app.server.repository.BaseRepositoryImpl;
 import app.server.util.JsonMergePatchConverter;
 import app.server.util.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.util.List;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.MethodParameter;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tools.jackson.databind.json.JsonMapper;
@@ -60,5 +65,42 @@ public class AppConfiguration {
                 converters.addFirst(jsonMergePatchConverter);
             }
         };
+    }
+
+    @ControllerAdvice
+    public class JsonPropertyModelAttributeBinding {
+
+        @InitBinder
+        void useJsonPropertyNames(WebDataBinder binder) {
+            binder.setNameResolver(this::resolveName);
+        }
+
+        /**
+         * Allows Spring's {@code @ModelAttribute} binding to use Jackson's
+         * {@link com.fasterxml.jackson.annotation.JsonProperty @JsonProperty} names.
+         *
+         * <p>By default, Spring binds query/form parameters using Java property names,
+         * while Jackson uses {@code @JsonProperty} for JSON serialization and
+         * deserialization. This leads to inconsistent external API names when the same
+         * DTO is used for both {@code @RequestBody} and {@code @ModelAttribute}.
+         *
+         * <p>Without this binder, Spring would expect {@code ?someValue=42} for
+         * {@code @ModelAttribute}, while Jackson expects {@code some_value} for JSON.
+         * This advice makes {@code @ModelAttribute} honor {@code @JsonProperty},
+         * providing a single, consistent external field name across all request formats.
+         *
+         * <p>Note: This implementation resolves explicit {@code @JsonProperty}
+         * annotations only. It does not apply Jackson naming strategies or other
+         * advanced Jackson introspection features.
+         */
+        private String resolveName(MethodParameter parameter) {
+            var jsonProperty = parameter.getParameterAnnotation(JsonProperty.class);
+
+            if (jsonProperty == null || jsonProperty.value().isBlank()) {
+                return null; // fall back to the Java constructor-component name
+            }
+
+            return jsonProperty.value();
+        }
     }
 }

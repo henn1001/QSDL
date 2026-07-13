@@ -208,9 +208,11 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
     for model in util.Store.models:
         model.package.slashed = True
         # fmt: off
-        if model.has_request:
+        if model.is_query_filter:
+            model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
+        elif model.has_request:
             model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
-        if model.has_response:
+        if model.has_response and not model.is_query_filter:
             model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
 
         if model.is_object:

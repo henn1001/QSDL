@@ -174,6 +174,7 @@ class ModelClass:
     has_relation: bool = False
     has_required: bool = False
     has_query: bool = False
+    is_query_filter: bool = False
     has_request: bool = True
     has_response: bool = True
 

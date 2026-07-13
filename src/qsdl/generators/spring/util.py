@@ -501,6 +501,7 @@ def build_filter_models() -> list[spring.ModelClass]:
         # Build ModelClass from the filter base
         # The namespace was already set on filter_base and will be picked up by build()
         filter_model = spring.ModelClass().build(filter_base)
+        filter_model.is_query_filter = True
         filter_model.has_request = False
         filter_models.append(filter_model)
 
