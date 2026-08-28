@@ -26,7 +26,7 @@ def wrapper_generate_failure(test_input: str) -> pytest.ExceptionInfo[Exception]
         test_input (str): The QSDL definition.
     """
     test_input = textwrap.dedent(test_input)
-    with pytest.raises(Exception) as excinfo:  # noqa: B017
+    with pytest.raises(Exception) as excinfo:
         generate(Path(), generator_name="openapi", raw_schema=test_input)
 
     return excinfo

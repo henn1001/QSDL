@@ -83,7 +83,7 @@ def parse_models(schema: dsl.Schema) -> list[ModelObject]:
         model = get_paginated_object(schema, entity, stringcase.pascalcase(entity.name))
 
         # find index and insert one before the object
-        index = [i for i, x in enumerate(models) if x.name == entity.name][0]
+        index = next(i for i, x in enumerate(models) if x.name == entity.name)
         models.insert(index, model)
 
     return models

@@ -83,8 +83,8 @@ def render(  # pylint: disable=too-many-arguments
     context: dict,
     template_path: Path,
     output_root: Path,
-    macro_path: Path = None,
-    type_name: str = None,
+    macro_path: Path | None = None,
+    type_name: str | None = None,
     type_def: object = None,
 ) -> None:
     """Pass the python object graph to jinja for template rendering.

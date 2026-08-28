@@ -41,7 +41,6 @@ class Argument:
 
     # addons
     is_path: bool = False
-    is_query: bool = False
     is_body: bool = False
 
     # required by textX

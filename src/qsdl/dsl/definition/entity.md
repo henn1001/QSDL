@@ -147,10 +147,10 @@ legend
   Match rules:
   |= Name  |= Rule details |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | Comment | \\/\\/.*$ |
-  | Description |  |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Comment | \\/\\/.*$ |
+  | Description |  |
 end legend
 
 @enduml

@@ -91,12 +91,8 @@ class TestE2EDeepAggregationChain(BaseE2ETest):
     def test_openapi(self, openapi_schema: dict) -> None:
         """asserts generated OpenAPI spec is correct"""
 
-        pass
-
     def test_spring(self, srcgen: Path) -> None:
         """asserts generated Spring Boot code is correct"""
-
-        pass
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

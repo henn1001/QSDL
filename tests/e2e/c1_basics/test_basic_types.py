@@ -84,8 +84,6 @@ class TestE2EBasicTypes(BaseE2ETest):
     def test_spring(self, srcgen: Path) -> None:
         """asserts generated Spring Boot code is correct"""
 
-        pass
-
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:
         """runs mvn clean test to verify generated code compiles and tests pass"""

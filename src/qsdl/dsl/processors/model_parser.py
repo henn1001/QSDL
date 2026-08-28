@@ -19,6 +19,7 @@ import re
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
 from qsdl import dsl, logger
+from qsdl.exceptions import QsdlException
 from qsdl.filter import pluralize
 
 from . import CrudGeneratorEnum as CrudEnum
@@ -107,8 +108,7 @@ def path_builder(
         if not path.startswith("/"):
             path = "/" + path
 
-        if path.endswith("/"):
-            path = path[:-1]
+        path = path.removesuffix("/")
 
     return path.lower()
 
@@ -206,7 +206,7 @@ def operation_builder(
         dsl.Field: The created dsl.Operation
     """
     if not obj.api:
-        raise Exception("The object must have an api instance before creating operations.")
+        raise QsdlException("The object must have an api instance before creating operations.")
 
     # parse parameters
     # api = obj.api

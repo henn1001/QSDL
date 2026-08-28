@@ -19,6 +19,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from qsdl.dsl import Schema
+from qsdl.exceptions import QsdlException
 from qsdl.generators.base_config import BaseConfig
 
 ConfigType = type[BaseConfig]
@@ -63,13 +64,13 @@ def get_generator(generator_name: str) -> GeneratorType:
         generator_name (str): The requested generator.
 
     Raises:
-        Exception: For unknown generators.
+        QsdlException: For unknown generators.
 
     Returns:
         GeneratorType: The generator config class.
     """
     if generator_name not in GENERATORS:
-        raise Exception("unknown generator")
+        raise QsdlException("unknown generator")
 
     return GENERATORS.get(generator_name)[0]
 
@@ -81,12 +82,12 @@ def get_config(generator_name: str) -> ConfigType:
         generator_name (str): The requested generator.
 
     Raises:
-        Exception: For unknown generators.
+        QsdlException: For unknown generators.
 
     Returns:
         ConfigType: The generator config class.
     """
     if generator_name not in GENERATORS:
-        raise Exception("unknown generator")
+        raise QsdlException("unknown generator")
 
     return GENERATORS.get(generator_name)[1]

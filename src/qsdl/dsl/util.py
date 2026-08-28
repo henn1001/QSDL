@@ -18,6 +18,7 @@ from collections.abc import Callable
 
 import qsdl.dsl.textx as xtx
 from qsdl import dsl, logger
+from qsdl.exceptions import QsdlException
 
 log = logger.getLogger(__name__)
 
@@ -210,7 +211,7 @@ def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
                 duplicate.parent.name,
                 entity.name,
             )
-            raise Exception("Field redefinition without @override is not allowed.")
+            raise QsdlException("Field redefinition without @override is not allowed.")
         else:
             index = fields.index(duplicate)
             fields[index] = field

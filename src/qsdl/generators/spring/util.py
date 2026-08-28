@@ -122,7 +122,7 @@ def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -
 
 def has(
     entity: dsl.Base | dsl.Object,
-    has_type: list = None,
+    has_type: list | None = None,
     has_list: bool = False,
     has_model: bool = False,
     has_required: bool = False,

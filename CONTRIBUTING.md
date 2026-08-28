@@ -30,7 +30,7 @@ For inline comments use block types:
 
 ```python
 # some
-# comment 
+# comment
 # here
 ```
 

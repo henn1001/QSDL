@@ -25,6 +25,7 @@ from textx.metamodel import TextXMetaModel
 from qsdl import __folder__, dsl, logger
 from qsdl.dsl.processors.model_processor import model_merger, model_post_processor, model_processor
 from qsdl.dsl.processors.obj_processors import obj_processors
+from qsdl.exceptions import QsdlException
 
 log = logger.getLogger(__name__)
 
@@ -93,7 +94,7 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     return metamodel
 
 
-def parse_schema(input_path: Path = None, raw_schema: str = None) -> dsl.Schema:
+def parse_schema(input_path: Path | None = None, raw_schema: str | None = None) -> dsl.Schema:
     """Builds and returns the DSL model as python object graph.
 
     Expects either input_path or raw_schema.
@@ -107,7 +108,7 @@ def parse_schema(input_path: Path = None, raw_schema: str = None) -> dsl.Schema:
     """
 
     if not input_path and not raw_schema:
-        raise Exception("please provide either raw_schema or input_path")
+        raise QsdlException("please provide either raw_schema or input_path")
 
     # export model with plantuml
     log.info("loading metamodel...")
@@ -117,7 +118,7 @@ def parse_schema(input_path: Path = None, raw_schema: str = None) -> dsl.Schema:
     if input_path:
         schema: dsl.Schema = metamodel.model_from_file(input_path)
     elif 'import "' in raw_schema:
-        raise Exception("import statements in raw_schema are not supported")
+        raise QsdlException("import statements in raw_schema are not supported")
     else:
         # model_from_str does not seem to support the scope provider system
         # no support for multi-schema-files
