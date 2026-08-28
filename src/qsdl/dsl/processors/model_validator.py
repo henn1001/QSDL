@@ -17,6 +17,7 @@
 import re
 
 import textx.metamodel
+from textx import get_location
 from textx.exceptions import TextXSemanticError
 
 import qsdl.dsl.textx as xtx
@@ -24,6 +25,32 @@ import qsdl.dsl.util as qutil
 from qsdl import dsl
 
 from . import CrudGeneratorEnum as CrudEnum
+
+_PASCAL_CASE_NAME = re.compile(r"[A-Z][A-Za-z0-9]*")
+_ENUM_VALUE_NAME = re.compile(r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*")
+_MEMBER_NAME = re.compile(r"(?:[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[a-z][A-Za-z0-9]*)")
+_DIRECTIVE_NAME = re.compile(r"(?:[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[a-z][a-z0-9]*(?:-[a-z0-9]+)+|[a-z][A-Za-z0-9]*)")
+_NAMESPACE_NAME = re.compile(r"[A-Z][a-zA-Z]*")
+
+
+def _validate_name(entity: object, name: str, convention: str, pattern: re.Pattern[str]) -> None:
+    """Validate a model name and report the location of its containing element."""
+    if pattern.fullmatch(name) is None:
+        entity_type = entity.__class__.__name__
+        context = ""
+        if isinstance(entity, dsl.Field):
+            context = f" in {entity.parent.__class__.__name__} {entity.parent.name!r}"
+        elif isinstance(entity, dsl.Argument):
+            context = f" in Operation {entity.parent.name!r}"
+        msg = f"The {entity_type} name {name!r}{context} must use {convention}."
+        raise TextXSemanticError(msg, **get_location(entity))
+
+
+def _get_location(entity: object, schema: dsl.Schema) -> dict[str, object]:
+    """Return a source location, falling back for generated model elements."""
+    if getattr(entity, "is_generated", False):
+        return {"filename": schema._tx_filename}
+    return get_location(entity)
 
 
 def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -38,6 +65,7 @@ def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> N
     """
     validate_server_url(schema, metamodel)
     validate_type_names(schema, metamodel)
+    validate_member_names(schema)
     validate_reserved_words(schema)
     validate_arguments(schema, metamodel)
     validate_custom_operations_path(schema, metamodel)
@@ -69,23 +97,10 @@ def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
 
 
 def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
-    """Validate the naming convention.
-
-    Expect that NameSpaces, Scalars, Enums, Bases and Objects
-    start with a uppercase letter.
-
-    The used regex is ^[A-Z][a-zA-Z]*$"
-
-    Args:
-        schema (Schema): The parsed schema definition.
-        metamodel (textx.metamodel.TextXMetaModel): The metamodel.
-
-    Raises:
-        TextXSemanticError: Exception for logical errors.
-    """
+    """Validate type and enum-value naming conventions."""
     _ = metamodel
 
-    names = []
+    names: set[str] = set()
     entities = [
         *xtx.get_children_of_scalar(schema),
         *xtx.get_children_of_enum(schema),
@@ -94,30 +109,44 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
     ]
 
     for entity in entities:
-        names.append(entity.name)
+        _validate_name(entity, entity.name, "PascalCase", _PASCAL_CASE_NAME)
+        if entity.name in names:
+            msg = "Names for scalars, enums, bases and objects must be unique."
+            raise TextXSemanticError(msg, **get_location(entity))
+        names.add(entity.name)
 
-        if not re.match(r"^[A-Z][a-zA-Z]*$", entity.name):
-            msg = f"The {entity._tx_fqn} {entity.name} does not conform to the naming convention."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
-
-        if isinstance(entity, dsl.Object) and entity.namespace and not re.match(r"^[A-Z][a-zA-Z]*$", entity.namespace):
-            msg = f"The namespace of {entity._tx_fqn} {entity.name} does not conform to the naming convention."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+        if isinstance(entity, dsl.Object) and entity.namespace and _NAMESPACE_NAME.fullmatch(entity.namespace) is None:
+            msg = f"The namespace of {entity._tx_fqn} {entity.name} must use PascalCase."
+            raise TextXSemanticError(msg, **get_location(entity))
 
         if isinstance(entity, dsl.Enum):
             for value in entity.values:
-                if not re.match(r"^[A-Z_0-9]*$", value):
-                    msg = f"The value of {entity._tx_fqn} {entity.name} does not conform to the naming convention. [A-Z_0-9]"
-                    raise TextXSemanticError(msg, filename=schema._tx_filename)
+                if _ENUM_VALUE_NAME.fullmatch(value) is None:
+                    msg = (
+                        f"The Enum value {value!r} in Enum {entity.name!r} must use "
+                        "ALL_CAPS with optional underscore-separated words."
+                    )
+                    raise TextXSemanticError(msg, **get_location(entity))
 
-    # verify that we have unique names between all objects
-    if len(names) != len(set(names)):
-        msg = "Names for scalars, enums, bases and objects must be unique."
-        raise TextXSemanticError(msg, filename=schema._tx_filename)
+
+def validate_member_names(schema: dsl.Schema) -> None:
+    """Validate names of fields, operations, arguments, and custom directives."""
+    for field in xtx.get_children_of_field(schema):
+        _validate_name(field, field.name, "camelCase or snake_case", _MEMBER_NAME)
+
+    for operation in xtx.get_children_of_operation(schema):
+        _validate_name(operation, operation.name, "camelCase or snake_case", _MEMBER_NAME)
+
+    for argument in xtx.get_children_of_argument(schema):
+        _validate_name(argument, argument.name, "camelCase or snake_case", _MEMBER_NAME)
+
+    for directive in xtx.get_children_of_directive(schema):
+        _validate_name(directive, directive.name, "camelCase, snake_case, or kebab-case", _DIRECTIVE_NAME)
 
 
 def validate_reserved_words(schema: dsl.Schema) -> None:
     errors = []
+    first_entity = None
 
     for entity in xtx.get_children_of_object(schema):
         fields = qutil.get_all_fields_as_list(entity)
@@ -126,9 +155,11 @@ def validate_reserved_words(schema: dsl.Schema) -> None:
         if match:
             msg = f"The Object {entity.name} uses a reserved word {', '.join([f'"{x.name}"' for x in match])}."
             errors.append(msg)
+            first_entity = first_entity or entity
 
     if errors:
-        raise TextXSemanticError("\n".join(errors), filename=schema._tx_filename)
+        location = get_location(first_entity) if first_entity else {"filename": schema._tx_filename}
+        raise TextXSemanticError("\n".join(errors), **location)
 
 
 def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -166,18 +197,18 @@ def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaM
                             f"The Base type {argument.value.name} used as query parameter in operation {operation.name} "
                             f"contains a nested type field '{field.name}'. Query parameters with Base types must only contain scalar/enum fields."
                         )
-                        raise TextXSemanticError(msg, filename=schema._tx_filename)
+                        raise TextXSemanticError(msg, **get_location(field))
 
         if is_ref and count > 1:
             msg = (
                 f"The Operation {operation.name} references more than one Object "
                 "or tries to mix them. Currently not supported"
             )
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+            raise TextXSemanticError(msg, **get_location(operation))
 
         if operation.method == "DELETE" and count:
             msg = f"The DELETE Operation {operation.name} specifies a body. This is not supported."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+            raise TextXSemanticError(msg, **get_location(operation))
 
 
 def validate_custom_operations_path(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -198,7 +229,7 @@ def validate_custom_operations_path(schema: dsl.Schema, metamodel: textx.metamod
     for operation in operations:
         if not operation.path:
             msg = f"The custom Operation {operation.name} needs to specify a path."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+            raise TextXSemanticError(msg, **get_location(operation))
 
 
 def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -222,21 +253,21 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
             # verify that queries are only used on scalars
             if (field.is_query or field.is_query_list) and not isinstance(field.value, dsl.Scalar | dsl.Enum):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as query."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+                raise TextXSemanticError(msg, **get_location(field))
 
             # verify that composition is used only on Objects
             if field.is_composition and not isinstance(field.value, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as composition."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+                raise TextXSemanticError(msg, **get_location(field))
 
             # verify that aggregation is used only on Objects and array
             if field.is_aggregation and not isinstance(field.value, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as aggregation."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+                raise TextXSemanticError(msg, **get_location(field))
 
             if (field.is_composition or field.is_aggregation) and not field.is_array:
                 msg = f"The Field {field.name} for {field.parent.name} declares a non-array as composition/aggregation."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+                raise TextXSemanticError(msg, **get_location(field))
 
             # verify that we prevent duplicate relations
             if field.is_aggregation or field.is_composition:
@@ -246,22 +277,22 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
                     duplicate_relation.append(flag)
                 else:
                     msg = f"The Field {field.name} for {field.parent.name} creates a duplicate relation."
-                    raise TextXSemanticError(msg, filename=schema._tx_filename)
+                    raise TextXSemanticError(msg, **get_location(field))
 
             # verify that composition/aggregation is used only in Objects
             if (field.is_composition or field.is_aggregation) and not isinstance(entity, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a relation inside a Base."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+                raise TextXSemanticError(msg, **get_location(field))
 
             # verify that the relation is not self referencing
             if field.value == entity:
                 msg = f"The Field {field.name} for {field.parent.name} references itself."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+                raise TextXSemanticError(msg, **get_location(field))
 
             # verify that opaque is used only for Bases
             if field.is_opaque and not isinstance(field.value, dsl.Base):
                 msg = f"The Field {field.name} for {field.parent.name} declares opaque on a non Base value."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+                raise TextXSemanticError(msg, **get_location(field))
 
 
 def validate_crud_generator_directive(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -285,7 +316,7 @@ def validate_crud_generator_directive(schema: dsl.Schema, metamodel: textx.metam
 
         if match:
             msg = f"The Api of Object {api.parent.name} @generate directive specifies a invalid value. Needs to be one or multiples of {[e.value for e in CrudEnum]}"
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+            raise TextXSemanticError(msg, **get_location(api))
 
 
 def validate_operations(schema: dsl.Schema) -> None:
@@ -308,15 +339,15 @@ def validate_operations(schema: dsl.Schema) -> None:
 
     if len(names) != len(set(names)):
         msg = "Duplicate operation names found."
-        raise TextXSemanticError(msg, filename=schema._tx_filename)
+        raise TextXSemanticError(msg, **_get_location(operations[0], schema))
 
     if len(paths) != len(set(paths)):
         msg = "Duplicate operation paths found."
-        raise TextXSemanticError(msg, filename=schema._tx_filename)
+        raise TextXSemanticError(msg, **_get_location(operations[0], schema))
 
     if len(paths) != len(set(paths)):
         msg = "Duplicate operation paths found."
-        raise TextXSemanticError(msg, filename=schema._tx_filename)
+        raise TextXSemanticError(msg, **_get_location(operations[0], schema))
 
     # validate that path arguments do not clash with query/body arguments
     for operation in operations:
@@ -324,7 +355,7 @@ def validate_operations(schema: dsl.Schema) -> None:
 
         if len(arg_names) != len(set(arg_names)):
             msg = f"The Operation {operation.name} contains duplicated argument names."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+            raise TextXSemanticError(msg, **_get_location(operation, schema))
 
     # validate that pagination is only used for object and base responses
     for operation in operations:
@@ -332,7 +363,7 @@ def validate_operations(schema: dsl.Schema) -> None:
             operation.is_pageable and not isinstance(operation.value, dsl.Object | dsl.Base)
         ):
             msg = f"The Operation {operation.name} needs to return a 'type' or 'base' when @pagination is used."
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+            raise TextXSemanticError(msg, **_get_location(operation, schema))
 
 
 def validate_no_circular_supertypes(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -343,7 +374,7 @@ def validate_no_circular_supertypes(schema: dsl.Schema, metamodel: textx.metamod
         if entity in path:
             cycle = " -> ".join([b.name for b in path + [entity]])
             msg = f"Circular inheritance detected in Base supertypes: {cycle}"
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+            raise TextXSemanticError(msg, **get_location(entity))
         for supertype in entity.supertypes:
             dfs(supertype, path + [entity])
 

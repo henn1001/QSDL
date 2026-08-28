@@ -5,7 +5,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ## Notation
 
-- **[SYN-NNN]** — Syntax/Grammar rules (enforced by `entity.tx` grammar)
+- **[SYN-NNN]** — Syntax/Grammar rules (lexical syntax is enforced by `entity.tx`; naming style is validated by processors)
 - **[SEM-NNN]** — Semantic/DSL rules (enforced by processors/validators)
 - **[LOG-NNN]** — Logical rules (checked after model construction)
 
@@ -15,12 +15,17 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Identifiers & Naming Conventions
 
-| ID      | Element                                     | Rule                               | Reference              |
-| ------- | ------------------------------------------- | ---------------------------------- | ---------------------- |
-| SYN-001 | All type names (Enum, Base, Object, Scalar) | Must use `PascalCase`              | entity.tx: `ID` rule   |
-| SYN-002 | Enum values                                 | Must use `ALL_CAPS`                | entity.tx: Enum.values |
-| SYN-003 | Field names                                 | Must use `camelCase` (via ID rule) | entity.tx: Field.name  |
-| SYN-004 | Scalar names                                | Must use `PascalCase`              | entity.tx: Scalar.name |
+| ID      | Element                | Rule                                                          | Reference                                |
+| ------- | ---------------------- | ------------------------------------------------------------- | ---------------------------------------- |
+| SYN-001 | Scalar names           | Must use `PascalCase`                                         | `validate_type_names`                    |
+| SYN-002 | Enum names             | Must use `PascalCase`                                         | `validate_type_names`                    |
+| SYN-003 | Base names             | Must use `PascalCase`                                         | `validate_type_names`                    |
+| SYN-004 | Object names           | Must use `PascalCase`                                         | `validate_type_names`                    |
+| SYN-005 | Enum values            | Must use `ALL_CAPS`, with optional underscore-separated words | `validate_type_names`                    |
+| SYN-006 | Field names            | Must use `camelCase` or `snake_case`                          | `validate_member_names`                  |
+| SYN-007 | Operation names        | Must use `camelCase` or `snake_case`                          | `validate_member_names`                  |
+| SYN-008 | Argument names         | Must use `camelCase` or `snake_case`                          | `validate_member_names`                  |
+| SYN-009 | Custom directive names | Must use `camelCase`, `snake_case`, or `kebab-case`           | `validate_member_names`                  |
 
 ### Uniqueness Constraints
 
@@ -68,21 +73,20 @@ Rules are organized by category and may be referenced by their rule identifier (
 | SEM-502 | Object may extend zero or more Bases                      | `extends Base1, Base2, ...`                |
 | SEM-503 | Object may contain an optional `extend api { ... }` block | Overrides or extends default CRUD          |
 | SEM-504 | Object may be marked `@deprecated`                        | Affects all generated endpoints and fields |
-| SEM-505 | An Object must contain **at least one field**             | Empty objects are not allowed              |
 
 ### Field Rules
 
-| ID      | Rule                                                             | Notes                                               |
-| ------- | ---------------------------------------------------------------- | --------------------------------------------------- |
-| SEM-601 | A Field references a `ValueType` (Scalar, Enum, Base, or Object) | `name : Type` or `name : [Type]` or `name : Type!`  |
-| SEM-602 | A Field may be **required** (`!` suffix)                         | Indicates non-null in generated schemas             |
-| SEM-603 | A Field may be **array** (`[...]` wrapper)                       | Indicates a collection type                         |
-| SEM-604 | A Field may be **read-only** (`@readOnly`)                       | Not settable in input/write contexts                |
-| SEM-605 | A Field may be **write-only** (`@writeOnly`)                     | Not visible in output/read contexts                 |
-| SEM-606 | A Field cannot be both `@readOnly` and `@writeOnly`              | Logically conflicting                               |
-| SEM-607 | A Field may override an inherited field via `@override`          | Required if parent Base defines the same field name |
-| SEM-608 | A Field without `@override` cannot redefine an inherited field   | Will raise validation error                         |
-| SEM-609 | Object fields, including inherited Base fields, cannot use `id`, `uid`, or `iv` | Reserved by generated entity metadata |
+| ID      | Rule                                                                            | Notes                                               |
+| ------- | ------------------------------------------------------------------------------- | --------------------------------------------------- |
+| SEM-601 | A Field references a `ValueType` (Scalar, Enum, Base, or Object)                | `name : Type` or `name : [Type]` or `name : Type!`  |
+| SEM-602 | A Field may be **required** (`!` suffix)                                        | Indicates non-null in generated schemas             |
+| SEM-603 | A Field may be **array** (`[...]` wrapper)                                      | Indicates a collection type                         |
+| SEM-604 | A Field may be **read-only** (`@readOnly`)                                      | Not settable in input/write contexts                |
+| SEM-605 | A Field may be **write-only** (`@writeOnly`)                                    | Not visible in output/read contexts                 |
+| SEM-606 | A Field cannot be both `@readOnly` and `@writeOnly`                             | Logically conflicting                               |
+| SEM-607 | A Field may override an inherited field via `@override`                         | Required if parent Base defines the same field name |
+| SEM-608 | A Field without `@override` cannot redefine an inherited field                  | Will raise validation error                         |
+| SEM-609 | Object fields, including inherited Base fields, cannot use `id`, `uid`, or `iv` | Reserved by generated entity metadata               |
 
 ### Relationship Rules
 
@@ -101,7 +105,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | SEM-802 | An Operation defines an HTTP endpoint (method, path, parameters, return type) | `name(args) : ReturnType`                                          |
 | SEM-803 | An Operation may specify `@path(...)` to define the URI template              | Default path derived from operation name if not specified          |
 | SEM-804 | An Operation may specify `@method(...)` to define HTTP verb                   | Valid values: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`              |
-| SEM-805 | An Operation may be marked `@pagination` to indicate list pagination support  | Generators interpret as offset/limit or cursor pagination          |
+| SEM-805 | An Operation may be marked `@pagination` to indicate list pagination support  | Must return an Object or Base                                      |
 | SEM-806 | An Operation may declare response headers via `@headers(...)`                 | Headers are metadata on the HTTP response                          |
 | SEM-807 | An Api can be used **multiple times** in a schema                             | Multiple Api blocks define separate custom endpoints               |
 | SEM-808 | An Api can be used **once inside an Object** via `extend api { ... }`         | Used to override or extend auto-generated CRUD operations          |
@@ -158,20 +162,20 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 For quick lookup, here is a subset of high-impact rules:
 
-| Category                 | High-Impact Rules                               |
-| ------------------------ | ----------------------------------------------- |
-| **Naming**               | SYN-001, SYN-002                                |
-| **Uniqueness**           | SEM-101, SEM-102, SEM-103, SEM-104, SEM-105     |
-| **Inheritance**          | SEM-402, SEM-502, LOG-102                       |
-| **Relationships**        | SEM-701, SEM-702, SEM-704                       |
-| **Required Constraints** | SEM-301 (Enum), SEM-505 (Object), SEM-801 (Api) |
-| **Field Directives**     | SEM-604, SEM-605, SEM-606, SEM-607, SEM-608     |
+| Category                 | High-Impact Rules                           |
+| ------------------------ | ------------------------------------------- |
+| **Naming**               | SYN-001 through SYN-009                     |
+| **Uniqueness**           | SEM-101, SEM-102, SEM-103, SEM-104, SEM-105 |
+| **Inheritance**          | SEM-402, SEM-502, LOG-102                   |
+| **Relationships**        | SEM-701, SEM-702, SEM-704                   |
+| **Required Constraints** | SEM-301 (Enum), SEM-801 (Api)               |
+| **Field Directives**     | SEM-604, SEM-605, SEM-606, SEM-607, SEM-608 |
 
 ---
 
 ## Notes for Implementation
 
-- Rules prefixed **SYN-** are enforced by the TextX grammar (`src/qsdl/dsl/definition/entity.tx`).
+- Rules prefixed **SYN-** describe syntax constraints. Lexical syntax is enforced by the TextX grammar (`src/qsdl/dsl/definition/entity.tx`); naming style checks are performed by processors as noted above.
 - Rules prefixed **SEM-** are enforced by DSL processors (`src/qsdl/dsl/processors/`).
 - Rules prefixed **LOG-** are enforced by post-processing validators and semantic checks.
 - See `src/qsdl/dsl/util.py` for helper functions that implement many of these rules.

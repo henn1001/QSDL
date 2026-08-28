@@ -34,5 +34,5 @@ class Schema:
     types: list[dsl.Scalar | dsl.Enum | dsl.Base | dsl.Api | dsl.Object] = field(default_factory=list)
 
     # required by textX
-    _tx_filename: str = ""
+    _tx_filename: str | None = None
     _tx_fqn: str = "entity.Schema"

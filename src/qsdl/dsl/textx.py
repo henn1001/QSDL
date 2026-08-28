@@ -30,6 +30,20 @@ from qsdl.exceptions import QsdlException
 log = logger.getLogger(__name__)
 
 
+type_builtins = {
+    "Int": dsl.Scalar(name="Int"),
+    "Long": dsl.Scalar(name="Long"),
+    "Float": dsl.Scalar(name="Float"),
+    "Double": dsl.Scalar(name="Double"),
+    "String": dsl.Scalar(name="String"),
+    "Boolean": dsl.Scalar(name="Boolean"),
+    "Date": dsl.Scalar(name="Date"),
+    "Datetime": dsl.Scalar(name="Datetime"),
+    "Object": dsl.Scalar(name="Object"),
+    "Void": dsl.Scalar(name="Void"),
+}
+
+
 def draw_metamodel(metamodel: TextXMetaModel) -> None:
     """Exports a PlantUml diagram of the metamodel.
 
@@ -63,19 +77,6 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     metamodel = None
     grammar_path = __folder__ / "dsl/definition/entity.tx"
 
-    type_builtins = {
-        "Int": dsl.Scalar(name="Int"),
-        "Long": dsl.Scalar(name="Long"),
-        "Float": dsl.Scalar(name="Float"),
-        "Double": dsl.Scalar(name="Double"),
-        "String": dsl.Scalar(name="String"),
-        "Boolean": dsl.Scalar(name="Boolean"),
-        "Date": dsl.Scalar(name="Date"),
-        "Datetime": dsl.Scalar(name="Datetime"),
-        "Object": dsl.Scalar(name="Object"),
-        "Void": dsl.Scalar(name="Void"),
-    }
-
     # parse the grammar file
     metamodel = metamodel_from_file(grammar_path, classes=dsl.all_dsl_models(), builtins=type_builtins)
 
@@ -92,6 +93,17 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
         draw_metamodel(metamodel)
 
     return metamodel
+
+
+def _set_source_filenames(schema: dsl.Schema) -> None:
+    """Preserve source filenames on custom TextX model roots."""
+    parser = getattr(schema, "_tx_parser", None)
+    schema._tx_filename = getattr(parser, "file_name", None) if parser else None
+
+    for imported_schema in (
+        loaded_schema for imprt in schema.imports for loaded_schema in getattr(imprt, "_tx_loaded_models", [])
+    ):
+        _set_source_filenames(imported_schema)
 
 
 def parse_schema(input_path: Path | None = None, raw_schema: str | None = None) -> dsl.Schema:
@@ -123,6 +135,10 @@ def parse_schema(input_path: Path | None = None, raw_schema: str | None = None) 
         # model_from_str does not seem to support the scope provider system
         # no support for multi-schema-files
         schema: dsl.Schema = metamodel.model_from_str(raw_schema)
+
+    # TextX cannot populate this special attribute on our dataclass model root,
+    # so copy the parser filename before semantic validation and location lookup.
+    _set_source_filenames(schema)
 
     # merge schema for multi-schema-files
     model_merger(schema)

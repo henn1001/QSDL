@@ -7,11 +7,6 @@ class TestSpringEntityMetadata:
     def test_abstract_entity_date_aliases_are_reused(self) -> None:
         """Date metadata aliases should use the fields inherited from AbstractEntity."""
         test_input = """\
-            base KebabAudit {
-                creation-date: Datetime @readOnly
-                modification-date: Datetime @readOnly
-            }
-
             base CamelAudit {
                 creationDate: Datetime @readOnly
                 modificationDate: Datetime @readOnly
@@ -20,10 +15,6 @@ class TestSpringEntityMetadata:
             base SnakeAudit {
                 creation_date: Datetime @readOnly
                 modification_date: Datetime @readOnly
-            }
-
-            type KebabObject extends KebabAudit {
-                name: String!
             }
 
             type CamelObject extends CamelAudit {
@@ -47,7 +38,6 @@ class TestSpringEntityMetadata:
         )
 
         aliases = {
-            "KebabObject": ("creation-date", "modification-date", "t_kebab_object"),
             "CamelObject": ("creationDate", "modificationDate", "t_camel_object"),
             "SnakeObject": ("creation_date", "modification_date", "t_snake_object"),
         }

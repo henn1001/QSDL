@@ -109,7 +109,7 @@ class entity.Argument  {
 
 class entity.Directive  {
   name : ID
-  value : STRING
+  value : DirectiveValue
 }
 
 
@@ -139,18 +139,18 @@ entity.Api *--> "0..*" entity.Directive: directives
 entity.Api *--> "0..*" entity.Operation: operations
 entity.Operation *--> "1..*" entity.Argument: arguments
 entity.Operation -->  entity.ValueType: value
-entity.Operation *--> "1..*" entity.Argument: response_headers
 entity.Operation *--> "0..*" entity.Directive: directives
 entity.Argument -->  entity.ValueType: value
 
 legend
   Match rules:
   |= Name  |= Rule details |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Comment | \\/\\/.*$ |
+  | DirectiveValue | (\?:(\?:\"(\?:\\\\.\|[^\"\\\\])*\")\|[^)])+ |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Description |  |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend
 
 @enduml

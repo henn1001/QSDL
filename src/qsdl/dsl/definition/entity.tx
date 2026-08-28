@@ -32,14 +32,14 @@ Scalar:
 
 Enum:
     description=Description?
-    'enum' name=ID 
+    'enum' name=ID
 
     // Special directives
     ('@namespace(' namespace=STRING ')')?
 
     // Custom directives
     directives*=Directive
-    
+
     '{'
         values+=ID
     '}'
@@ -171,7 +171,6 @@ Operation:
         is_pageable?='@pagination'
         ('@consumes(' consumes=STRING ')')?
         ('@produces(' produces=STRING ')')?
-        ('@headers(' response_headers+=Argument[','] ')')?
     )#
 
     // Custom directives
@@ -205,9 +204,8 @@ Method:
 Directive:
     '@'
     name=ID
-    ( '(' )?
-    ( value=STRING )?
-    ( ')' )?
+    // Directive payloads are interpreted during post-processing.
+    ('(' value=DirectiveValue? ')')?
 ;
 
 Description:
@@ -228,4 +226,8 @@ Comment:
 
 ID:
     /[^\d\W][\w-]*/
+;
+
+DirectiveValue:
+    /(?:(?:"(?:\\.|[^"\\])*")|[^)])+/
 ;

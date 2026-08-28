@@ -23,6 +23,7 @@ from qsdl.exceptions import QsdlException
 from qsdl.filter import pluralize
 
 from . import CrudGeneratorEnum as CrudEnum
+from .directive_parser import parse_response_headers
 
 log = logger.getLogger(__name__)
 
@@ -425,6 +426,11 @@ def is_used(schema: dsl.Schema, entity: dsl.Base | dsl.Enum) -> bool:
     entity_list += xtx.get_children_of_operation(schema)
     entity_list += xtx.get_children_of_argument(schema)
 
+    # Response headers are derived from opaque directives and therefore are
+    # not part of the TextX containment graph.
+    for operation in xtx.get_children_of_operation(schema):
+        entity_list.extend(operation.response_headers)
+
     # for objects, we first check all fields
     obj_list = xtx.get_children_of_object(schema)
 
@@ -605,3 +611,7 @@ def parse_operations(schema: dsl.Schema) -> None:
 
             if not operation.consumes:
                 operation.consumes = "application/json" if operation.body_parameters else None
+
+            # Parse @headers as a generic directive payload while preserving
+            # the argument-shaped response-header interface for generators.
+            operation.response_headers = parse_response_headers(schema, operation)
