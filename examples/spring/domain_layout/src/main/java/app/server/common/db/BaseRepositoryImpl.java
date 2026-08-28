@@ -3,7 +3,7 @@
  */
 package app.server.common.db;
 
-import app.server.common.model.AbstractPersistentObject;
+import app.server.common.model.AbstractEntity;
 import app.server.common.model.CursorPage;
 import app.server.common.model.CursorPageable;
 import com.querydsl.core.types.Predicate;
@@ -18,7 +18,7 @@ import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
-public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Serializable>
+public class BaseRepositoryImpl<T extends AbstractEntity, S extends Serializable>
         extends SimpleJpaRepository<T, S> implements BaseRepository<T, S> {
 
     private final EntityManager entityManager;

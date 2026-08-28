@@ -101,7 +101,7 @@ CREATE TABLE t_customer (
 @Setter
 @Entity
 @Table(name = "t_customer")
-public class CustomerEntity extends AbstractPersistentObject {
+public class CustomerEntity extends AbstractEntity {
   private String name;
 
   // Manually flattened base type fields
@@ -149,7 +149,7 @@ CREATE TABLE t_service (
 ```java
 @Entity
 @Table(name = "t_service")
-public class ServiceEntity extends AbstractPersistentObject {
+public class ServiceEntity extends AbstractEntity {
   private String name;
 
   @JdbcTypeCode(SqlTypes.JSON)
@@ -445,7 +445,7 @@ type Foo {
 @Setter
 @Entity
 @Table(name = "t_foo")
-public class FooEntity extends AbstractPersistentObject {
+public class FooEntity extends AbstractEntity {
 
     // Fields from a_field: B (which extends A)
     private Integer aFieldIntField;

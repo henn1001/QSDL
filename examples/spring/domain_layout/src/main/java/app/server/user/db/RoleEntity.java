@@ -3,8 +3,7 @@
  */
 package app.server.user.db;
 
-import app.server.common.model.AbstractPersistentBase;
-import app.server.common.model.AbstractPersistentObject;
+import app.server.common.model.AbstractEntity;
 import app.server.project.db.ProjectEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
@@ -39,7 +38,7 @@ import tools.jackson.databind.node.ObjectNode;
 @Setter
 @Entity
 @Table(name = "t_role")
-public class RoleEntity extends AbstractPersistentObject {
+public class RoleEntity extends AbstractEntity {
 
     @NotNull
     private String name;

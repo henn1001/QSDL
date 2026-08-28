@@ -7,7 +7,7 @@ package {{package.repository}};
 {{ util.macro_imports(self._TemplateReference__context.name) }}
 
 @NoRepositoryBean
-public interface AbstractRepository<T extends AbstractPersistentObject, S extends Serializable>
+public interface AbstractRepository<T extends AbstractEntity, S extends Serializable>
         extends BaseRepository<T, S> {
 
     public Optional<T> findByUid(String uid);

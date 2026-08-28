@@ -3,13 +3,13 @@
  */
 package app.server.repository;
 
-import app.server.model.AbstractPersistentObject;
+import app.server.model.AbstractEntity;
 import java.io.Serializable;
 import java.util.Optional;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface AbstractRepository<T extends AbstractPersistentObject, S extends Serializable>
+public interface AbstractRepository<T extends AbstractEntity, S extends Serializable>
         extends BaseRepository<T, S> {
 
     public Optional<T> findByUid(String uid);

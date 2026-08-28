@@ -7,7 +7,7 @@ package {{package.repository}};
 {{ util.macro_imports(self._TemplateReference__context.name) }}
 
 @NoRepositoryBean
-public interface BaseRepository<T extends AbstractPersistentObject, S extends Serializable>
+public interface BaseRepository<T extends AbstractEntity, S extends Serializable>
         extends JpaRepository<T, S> {
 
     public EntityManager entityManager();

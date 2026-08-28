@@ -4,8 +4,7 @@
 package app.server.domain.entity;
 
 import app.server.constant.Status;
-import app.server.model.AbstractPersistentBase;
-import app.server.model.AbstractPersistentObject;
+import app.server.model.AbstractEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -39,7 +38,7 @@ import tools.jackson.databind.node.ObjectNode;
 @Setter
 @Entity
 @Table(name = "t_ticket")
-public class TicketEntity extends AbstractPersistentObject {
+public class TicketEntity extends AbstractEntity {
 
     private Integer number = 42;
 

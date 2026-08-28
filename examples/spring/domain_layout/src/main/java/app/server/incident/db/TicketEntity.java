@@ -4,8 +4,7 @@
 package app.server.incident.db;
 
 import app.server.common.constants.Status;
-import app.server.common.model.AbstractPersistentBase;
-import app.server.common.model.AbstractPersistentObject;
+import app.server.common.model.AbstractEntity;
 import app.server.user.db.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
@@ -40,7 +39,7 @@ import tools.jackson.databind.node.ObjectNode;
 @Setter
 @Entity
 @Table(name = "t_ticket")
-public class TicketEntity extends AbstractPersistentObject {
+public class TicketEntity extends AbstractEntity {
 
     private Integer number = 42;
 

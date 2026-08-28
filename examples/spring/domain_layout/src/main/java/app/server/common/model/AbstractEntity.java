@@ -10,25 +10,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Version;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
- * MappedSuperclass for QSDL Object-Classes.
+ * MappedSuperclass for QSDL entities.
  */
 @Slf4j
 @MappedSuperclass
-public abstract class AbstractPersistentObject {
+public abstract class AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -79,9 +71,9 @@ public abstract class AbstractPersistentObject {
     }
 
     /**
-     * Copies the id, uid and iv field from another AbstractPersistentObject.
+     * Copies the id, uid and iv field from another AbstractEntity.
      */
-    public void copyIdentity(AbstractPersistentObject o) {
+    public void copyIdentity(AbstractEntity o) {
         this.id = o.getId();
         this.uid = o.getUid();
         this.iv = o.getIv();
@@ -92,11 +84,11 @@ public abstract class AbstractPersistentObject {
             return true;
         }
 
-        if (!(o instanceof AbstractPersistentObject)) {
+        if (!(o instanceof AbstractEntity)) {
             return false;
         }
 
-        AbstractPersistentObject other = (AbstractPersistentObject) o;
+        AbstractEntity other = (AbstractEntity) o;
 
         // if the uid is missing, return false
         if (uid == null) {

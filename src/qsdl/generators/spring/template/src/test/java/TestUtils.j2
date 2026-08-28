@@ -8,8 +8,7 @@ import static org.instancio.Select.field;
 import static org.instancio.Select.fields;
 
 {% if database == "HIBERNATE" %}
-import {{package.model}}.AbstractPersistentBase;
-import {{package.model}}.AbstractPersistentObject;
+import {{package.model}}.AbstractEntity;
 {% endif %}
 import {{package.util}}.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -63,23 +62,21 @@ public class TestUtils {
     }
     {% if database == "HIBERNATE" %}
 
-    private static <T extends AbstractPersistentObject> InstancioApi<T> instanceIoIgnoreIds(Class<T> cls) {
+    private static <T extends AbstractEntity> InstancioApi<T> instanceIoIgnoreIds(Class<T> cls) {
         return instanceIo(cls)
-                .ignore(field(AbstractPersistentObject::getId))
-                .ignore(field(AbstractPersistentObject::getUid))
-                .ignore(field(AbstractPersistentBase::getId))
-                .ignore(field(AbstractPersistentBase::getUid))
+                .ignore(field(AbstractEntity::getId))
+                .ignore(field(AbstractEntity::getUid))
                 .ignore(fields().annotated(OneToOne.class))
                 .ignore(fields().annotated(OneToMany.class))
                 .ignore(fields().annotated(ManyToOne.class))
                 .ignore(fields().annotated(ManyToMany.class));
     }
 
-    public static <T extends AbstractPersistentObject> T getRandomEntityWithNullId(Class<T> cls) {
+    public static <T extends AbstractEntity> T getRandomEntityWithNullId(Class<T> cls) {
         return instanceIoIgnoreIds(cls).create();
     }
 
-    public static <T extends AbstractPersistentObject> List<T> getRandomEntityWithNullId(Class<T> cls, int count) {
+    public static <T extends AbstractEntity> List<T> getRandomEntityWithNullId(Class<T> cls, int count) {
         return instanceIoIgnoreIds(cls).stream().limit(count).collect(Collectors.toList());
     }
 
@@ -109,15 +106,11 @@ public class TestUtils {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void copyAllIdentities(Object a, Object b) throws Exception {
 
-        // we only care about AbstractPersistentObject and AbstractPersistentBase types
+        // we only care about AbstractEntity types
         // evoke copyIdentity, otherwise return silently
-        if (a instanceof AbstractPersistentObject && b instanceof AbstractPersistentObject) {
-            AbstractPersistentObject.class
-                    .getDeclaredMethod("copyIdentity", AbstractPersistentObject.class)
-                    .invoke(a, b);
-        } else if (a instanceof AbstractPersistentBase && b instanceof AbstractPersistentBase) {
-            AbstractPersistentBase.class
-                    .getDeclaredMethod("copyIdentity", AbstractPersistentBase.class)
+        if (a instanceof AbstractEntity && b instanceof AbstractEntity) {
+            AbstractEntity.class
+                    .getDeclaredMethod("copyIdentity", AbstractEntity.class)
                     .invoke(a, b);
         } else {
             return;
@@ -147,8 +140,7 @@ public class TestUtils {
                 }
             }
             // for nested objects, we can call self directly
-            else if (field.get(a) instanceof AbstractPersistentObject
-                    || field.get(a) instanceof AbstractPersistentBase) {
+            else if (field.get(a) instanceof AbstractEntity) {
 
                 Object f1 = field.get(a);
                 Object f2 = field.get(b);

@@ -292,8 +292,7 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
 
     if config.database == "HIBERNATE":
         # fmt: off
-        supporting_files.append( ("src/main/java/model/AbstractPersistentObject.j2", f"src/main/java/{package.model}/AbstractPersistentObject.java"))
-        supporting_files.append(("src/main/java/model/AbstractPersistentBase.j2", f"src/main/java/{package.model}/AbstractPersistentBase.java"))
+        supporting_files.append(("src/main/java/model/AbstractEntity.j2", f"src/main/java/{package.model}/AbstractEntity.java"))
         supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
         supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))

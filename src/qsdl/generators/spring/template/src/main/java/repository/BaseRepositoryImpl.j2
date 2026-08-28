@@ -6,7 +6,7 @@ package {{package.repository}};
 
 {{ util.macro_imports(self._TemplateReference__context.name) }}
 
-public class BaseRepositoryImpl<T extends AbstractPersistentObject, S extends Serializable>
+public class BaseRepositoryImpl<T extends AbstractEntity, S extends Serializable>
         extends SimpleJpaRepository<T, S> implements BaseRepository<T, S> {
 
     private final EntityManager entityManager;
