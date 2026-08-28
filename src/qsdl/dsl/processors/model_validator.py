@@ -269,6 +269,11 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
     for entity in bases + objects:
         duplicate_relation = []
         for field in entity.fields:
+            # verify that read-only and write-only are not combined
+            if field.is_read_only and field.is_write_only:
+                msg = f"The Field {field.name} for {field.parent.name} cannot be both read-only and write-only."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+
             # verify that queries are only used on scalars
             if (field.is_query or field.is_query_list) and not isinstance(field.value, dsl.Scalar | dsl.Enum):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as query."
