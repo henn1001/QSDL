@@ -66,6 +66,7 @@ def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> N
     validate_server_url(schema, metamodel)
     validate_type_names(schema, metamodel)
     validate_member_names(schema)
+    validate_enum_values(schema)
     validate_reserved_words(schema)
     validate_arguments(schema, metamodel)
     validate_custom_operations_path(schema, metamodel)
@@ -142,6 +143,24 @@ def validate_member_names(schema: dsl.Schema) -> None:
 
     for directive in xtx.get_children_of_directive(schema):
         _validate_name(directive, directive.name, "camelCase, snake_case, or kebab-case", _DIRECTIVE_NAME)
+
+
+def validate_enum_values(schema: dsl.Schema) -> None:
+    """Validate that enum values are unique within each enum.
+
+    Args:
+        schema (Schema): The parsed schema definition.
+
+    Raises:
+        TextXSemanticError: Exception for duplicate enum values.
+    """
+    for enum in xtx.get_children_of_enum(schema):
+        seen: set[str] = set()
+        for value in enum.values:
+            if value in seen:
+                msg = f"The Enum {enum.name} contains the duplicate value {value}."
+                raise TextXSemanticError(msg, filename=schema._tx_filename)
+            seen.add(value)
 
 
 def validate_reserved_words(schema: dsl.Schema) -> None:
