@@ -82,6 +82,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | SEM-606 | A Field cannot be both `@readOnly` and `@writeOnly`              | Logically conflicting                               |
 | SEM-607 | A Field may override an inherited field via `@override`          | Required if parent Base defines the same field name |
 | SEM-608 | A Field without `@override` cannot redefine an inherited field   | Will raise validation error                         |
+| SEM-609 | Object fields, including inherited Base fields, cannot use `id`, `uid`, or `iv` | Reserved by generated entity metadata |
 
 ### Relationship Rules
 

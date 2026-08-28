@@ -26,7 +26,7 @@ public interface ProjectMapper {
     @Mapping(target = "creationBy", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "lastUpdateBy", ignore = true)
-    @Mapping(target = "lastUpdateDate", ignore = true)
+    @Mapping(target = "modificationDate", ignore = true)
     @Mapping(target = "roles", ignore = true)
     ProjectEntity toEntity(ProjectRequest dto);
 

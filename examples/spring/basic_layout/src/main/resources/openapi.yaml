@@ -726,13 +726,13 @@ components:
           maxLength: 255
         creation_date:
           type: string
-          format: date
+          format: date-time
           readOnly: true
         last_update_by:
           type: string
           readOnly: true
           maxLength: 255
-        last_update_date:
+        modification_date:
           type: string
           format: date-time
           readOnly: true
@@ -779,13 +779,13 @@ components:
           maxLength: 255
         creation_date:
           type: string
-          format: date
+          format: date-time
           readOnly: true
         last_update_by:
           type: string
           readOnly: true
           maxLength: 255
-        last_update_date:
+        modification_date:
           type: string
           format: date-time
           readOnly: true

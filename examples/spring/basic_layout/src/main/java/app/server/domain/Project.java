@@ -40,14 +40,14 @@ public record Project(
     String creationBy,
 
     @JsonProperty(value = "creation_date")
-    LocalDate creationDate,
+    OffsetDateTime creationDate,
 
     @Size(min = 0, max = 255)
     @JsonProperty(value = "last_update_by")
     String lastUpdateBy,
 
-    @JsonProperty(value = "last_update_date")
-    OffsetDateTime lastUpdateDate,
+    @JsonProperty(value = "modification_date")
+    OffsetDateTime modificationDate,
 
     @JsonProperty(value = "meta_inf")
     ObjectNode metaInf

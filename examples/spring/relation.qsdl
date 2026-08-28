@@ -23,9 +23,9 @@ base BaseType @spring-package("custom") {
     name: String! @query
     description: String
     creation_by: String @readOnly
-    creation_date: Date @readOnly
+    creation_date: Datetime @readOnly
     last_update_by: String @readOnly
-    last_update_date: Datetime @readOnly
+    modification_date: Datetime @readOnly
     meta_inf: Object
 }
 

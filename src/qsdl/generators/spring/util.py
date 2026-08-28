@@ -404,7 +404,7 @@ def extract_embedded_columns(
         if isinstance(dsl_field.value, dsl.Base) and not (dsl_field.is_array or dsl_field.is_opaque):
             # Flatten Base types - recursively process nested Base fields
             embedded_prefix = prefix + qfilter.snakecase(dsl_field.name).lower() + "_"
-            embedded_dto_path = dto_path + stringcase.camelcase(dsl_field.name) + "."
+            embedded_dto_path = dto_path + qfilter.camelcase(dsl_field.name) + "."
             embedded_fields = extract_embedded_columns(dsl_field.value, embedded_prefix, embedded_dto_path)
             model_fields.extend(embedded_fields)
         else:
@@ -414,10 +414,10 @@ def extract_embedded_columns(
             # Apply prefix to names if we're in a nested context
             if prefix:
                 prefixed_snake = prefix + qfilter.snakecase(dsl_field.name).lower()
-                new_field.name = stringcase.camelcase(prefixed_snake)
+                new_field.name = qfilter.camelcase(prefixed_snake)
                 new_field.json_key = prefixed_snake
                 # Set the nested DTO path (remove trailing dot)
-                new_field.dto_nested_path = dto_path + stringcase.camelcase(dsl_field.name)
+                new_field.dto_nested_path = dto_path + qfilter.camelcase(dsl_field.name)
 
             model_fields.append(new_field)
 

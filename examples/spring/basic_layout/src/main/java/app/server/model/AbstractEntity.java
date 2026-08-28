@@ -4,15 +4,16 @@
 package app.server.model;
 
 import app.server.util.IdGenerator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import app.server.util.TimeUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Version;
+import java.time.OffsetDateTime;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -24,16 +25,17 @@ public abstract class AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @Column(unique = true, updatable = false)
-    @JsonIgnore
     private String uid;
 
     @Version
-    @JsonIgnore
     private Integer iv;
+
+    private OffsetDateTime creationDate;
+
+    private OffsetDateTime modificationDate;
 
     /**
      * The internal numeric identifier.
@@ -63,11 +65,32 @@ public abstract class AbstractEntity {
         return iv;
     }
 
+    /**
+     * The creation date field.
+     */
+    public OffsetDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    /**
+     * The modification date field.
+     */
+    public OffsetDateTime getModificationDate() {
+        return modificationDate;
+    }
+
     @PrePersist
-    private void ensureUid() {
+    private void onCreate() {
         if (this.uid == null) {
             this.uid = IdGenerator.createId();
         }
+
+        creationDate = TimeUtil.now();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        modificationDate = TimeUtil.now();
     }
 
     /**

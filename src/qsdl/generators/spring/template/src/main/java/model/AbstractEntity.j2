@@ -15,16 +15,17 @@ public abstract class AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    {{ '@JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)' if id_type == "Long" else "@JsonIgnore" }}
     private Long id;
 
     @Column(unique = true, updatable = false)
-    {{ '@JsonProperty(value = "id", required = true, access = JsonProperty.Access.READ_ONLY)' if id_type == "String" else "@JsonIgnore" }}
     private String uid;
 
     @Version
-    @JsonIgnore
     private Integer iv;
+
+    private OffsetDateTime creationDate;
+
+    private OffsetDateTime modificationDate;
 
     /**
      * The internal numeric identifier.
@@ -54,11 +55,32 @@ public abstract class AbstractEntity {
         return iv;
     }
 
+    /**
+     * The creation date field.
+     */
+    public OffsetDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    /**
+     * The modification date field.
+     */
+    public OffsetDateTime getModificationDate() {
+        return modificationDate;
+    }
+
     @PrePersist
-    private void ensureUid() {
+    private void onCreate() {
         if (this.uid == null) {
             this.uid = IdGenerator.createId();
         }
+
+        creationDate = TimeUtil.now();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        modificationDate = TimeUtil.now();
     }
 
     /**

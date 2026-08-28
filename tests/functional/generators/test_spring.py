@@ -1,71 +1,6 @@
-import shutil
-import subprocess
-import textwrap
-from pathlib import Path
-
 import pytest
 
-from qsdl.core import generate
-
-
-def wrapper_generate(test_input: str) -> Path:
-    """Generates Spring Boot code and returns the output path.
-
-    Args:
-        test_input (str): The QSDL definition.
-
-    Returns:
-        Path: The output directory path.
-    """
-    test_input = textwrap.dedent(test_input)
-    test_output = Path("srcgen/")
-
-    # generate
-    shutil.rmtree(test_output / "src", ignore_errors=True)
-    assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
-
-    return test_output
-
-
-def read_java_file(output_path: Path, relative_path: str) -> str:
-    """Reads a generated Java file.
-
-    Args:
-        output_path: The root output directory
-        relative_path: Relative path to the Java file (e.g., 'src/main/java/app/server/domain/entity/UserEntity.java')
-
-    Returns:
-        The file content as string
-    """
-    file_path = output_path / relative_path
-    assert file_path.exists(), f"Expected file not found: {file_path}"
-    return file_path.read_text(encoding="utf-8")
-
-
-def assert_contains(content: str, *patterns: str) -> None:
-    """Asserts that content contains all specified patterns.
-
-    Args:
-        content: The content to search in
-        patterns: Patterns that must be present in the content
-    """
-    for pattern in patterns:
-        assert pattern in content, f"Expected pattern not found: {pattern}\n\nContent:\n{content}"
-
-
-def assert_not_contains(content: str, *patterns: str) -> None:
-    """Asserts that content does NOT contain any of the specified patterns.
-
-    Args:
-        content: The content to search in
-        patterns: Patterns that must NOT be present in the content
-    """
-    for pattern in patterns:
-        assert pattern not in content, f"Unexpected pattern found: {pattern}\n\nContent:\n{content}"
-
-
-def assert_tests_succeed() -> None:
-    assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+from .spring_test_utils import SpringTestUtils
 
 
 @pytest.mark.skip
@@ -93,11 +28,13 @@ class TestGeneratorSpring:
         """
 
         # When
-        output_path = wrapper_generate(test_input)
-        entity_content = read_java_file(output_path, "src/main/java/app/server/domain/entity/UserEntity.java")
+        output_path = SpringTestUtils.generate(test_input)
+        entity_content = SpringTestUtils.read_file(
+            output_path, "src/main/java/app/server/domain/entity/UserEntity.java"
+        )
 
         # Then: Verify flattened fields with @Column annotations
-        assert_contains(
+        SpringTestUtils.assert_contains(
             entity_content,
             # Should have individual fields with prefixed column names
             '@Column(name = "address_street")',
@@ -109,7 +46,7 @@ class TestGeneratorSpring:
         )
 
         # Should NOT have @Embedded or @AttributeOverrides (fields are expanded inline)
-        assert_not_contains(
+        SpringTestUtils.assert_not_contains(
             entity_content,
             "@Embedded",
             "@AttributeOverrides",
@@ -137,13 +74,13 @@ class TestGeneratorSpring:
         """
 
         # When
-        output_path = wrapper_generate(test_input)
-        entity_content = read_java_file(
+        output_path = SpringTestUtils.generate(test_input)
+        entity_content = SpringTestUtils.read_file(
             output_path, "src/main/java/app/server/domain/entity/FinancialInstrumentEntity.java"
         )
 
         # Then: Verify JSONB storage with @JdbcTypeCode
-        assert_contains(
+        SpringTestUtils.assert_contains(
             entity_content,
             # Should have @JdbcTypeCode annotation for JSONB
             "@JdbcTypeCode(SqlTypes.JSON)",
@@ -152,7 +89,7 @@ class TestGeneratorSpring:
         )
 
         # Should NOT have flattened fields or entity relationships
-        assert_not_contains(
+        SpringTestUtils.assert_not_contains(
             entity_content,
             "@Embedded",
             "@AttributeOverrides",
@@ -181,11 +118,13 @@ class TestGeneratorSpring:
         """
 
         # When
-        output_path = wrapper_generate(test_input)
-        entity_content = read_java_file(output_path, "src/main/java/app/server/domain/entity/ProductEntity.java")
+        output_path = SpringTestUtils.generate(test_input)
+        entity_content = SpringTestUtils.read_file(
+            output_path, "src/main/java/app/server/domain/entity/ProductEntity.java"
+        )
 
         # Then: Verify JSONB array storage
-        assert_contains(
+        SpringTestUtils.assert_contains(
             entity_content,
             # Should have @JdbcTypeCode for JSONB array
             "@JdbcTypeCode(SqlTypes.JSON)",
@@ -194,7 +133,7 @@ class TestGeneratorSpring:
         )
 
         # Should NOT have join table or entity relationships
-        assert_not_contains(
+        SpringTestUtils.assert_not_contains(
             entity_content,
             "@OneToMany",
             "@JoinColumn",
@@ -219,26 +158,30 @@ class TestGeneratorSpring:
         """
 
         # When
-        output_path = wrapper_generate(test_input)
+        output_path = SpringTestUtils.generate(test_input)
 
         # Verify Entity has flattened fields
-        entity_content = read_java_file(output_path, "src/main/java/app/server/domain/entity/CustomerEntity.java")
-        assert_contains(
+        entity_content = SpringTestUtils.read_file(
+            output_path, "src/main/java/app/server/domain/entity/CustomerEntity.java"
+        )
+        SpringTestUtils.assert_contains(
             entity_content,
             "private String contactEmail;",
             "private String contactPhone;",
         )
 
         # Verify POJO (DTO) has nested structure
-        pojo_content = read_java_file(output_path, "src/main/java/app/server/domain/Customer.java")
-        assert_contains(
+        pojo_content = SpringTestUtils.read_file(output_path, "src/main/java/app/server/domain/Customer.java")
+        SpringTestUtils.assert_contains(
             pojo_content,
             "private ContactInfo contact;",
         )
 
         # Verify MapStruct mapper is generated with proper annotations
-        mapper_content = read_java_file(output_path, "src/main/java/app/server/domain/mapper/CustomerMapStruct.java")
-        assert_contains(
+        mapper_content = SpringTestUtils.read_file(
+            output_path, "src/main/java/app/server/domain/mapper/CustomerMapStruct.java"
+        )
+        SpringTestUtils.assert_contains(
             mapper_content,
             "@Mapper",
             "CustomerEntity",
@@ -280,7 +223,7 @@ class TestGeneratorSpring:
         """
 
         # When
-        wrapper_generate(test_input)
+        SpringTestUtils.generate(test_input)
 
         # Then - Verify all tests pass (compilation + unit tests)
-        assert_tests_succeed()
+        SpringTestUtils.assert_tests_succeed()

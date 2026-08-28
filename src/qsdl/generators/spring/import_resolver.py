@@ -557,8 +557,7 @@ def generate_imports_for_template(
         ],
         "AbstractEntity.j2": [
             f"import {util.Store.package.util}.IdGenerator;",
-            "import com.fasterxml.jackson.annotation.JsonIgnore;",
-            "import com.fasterxml.jackson.annotation.JsonProperty;",
+            f"import {util.Store.package.util}.TimeUtil;",
             "import lombok.extern.slf4j.Slf4j;",
             "import jakarta.persistence.Column;",
             "import jakarta.persistence.GeneratedValue;",
@@ -566,7 +565,9 @@ def generate_imports_for_template(
             "import jakarta.persistence.Id;",
             "import jakarta.persistence.MappedSuperclass;",
             "import jakarta.persistence.PrePersist;",
+            "import jakarta.persistence.PreUpdate;",
             "import jakarta.persistence.Version;",
+            "import java.time.OffsetDateTime;",
         ],
         "AppError.j2": [
             f"import {util.Store.package.util}.TimeUtil;",

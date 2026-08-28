@@ -22,6 +22,7 @@ from typing import Self
 import stringcase
 
 import qsdl.dsl.util as qutil
+import qsdl.filter as qfilter
 from qsdl import dsl
 
 from .. import models as spring
@@ -82,7 +83,7 @@ class ModelField:
         """Init our dataclass by reading information from _ref"""
 
         # rename to naming convention
-        self.name = stringcase.camelcase(_ref.name)
+        self.name = qfilter.camelcase(_ref.name)
         self.json_key = _ref.name
         self.description = _ref.description
 

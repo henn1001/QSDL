@@ -13,28 +13,7 @@ Focus areas:
 5. Nested base types (extending other bases)
 """
 
-import shutil
-import textwrap
-from pathlib import Path
-
-from qsdl.core import generate
-
-
-def wrapper_generate(test_input: str) -> Path:
-    """Generates Spring Boot code and returns the output path."""
-    test_input = textwrap.dedent(test_input)
-    test_output = Path("srcgen/")
-
-    # generate
-    shutil.rmtree(test_output / "src", ignore_errors=True)
-    assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
-
-    return test_output
-
-
-def file_exists(output_path: Path, relative_path: str) -> bool:
-    """Check if a file exists."""
-    return (output_path / relative_path).exists()
+from .spring_test_utils import SpringTestUtils
 
 
 class TestBaseDtoSplitBehavior:
@@ -60,14 +39,14 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Base type without @readOnly/@writeOnly should NOT generate Request DTO
-        assert file_exists(output, "src/main/java/app/server/domain/SimpleBase.java")
-        assert not file_exists(output, "src/main/java/app/server/domain/SimpleBaseRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/SimpleBase.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/SimpleBaseRequest.java")
 
         # API should reference SimpleBase directly (not SimpleBaseRequest)
-        api_content = (output / "src/main/java/app/server/api/DefaultApi.java").read_text()
+        api_content = SpringTestUtils.read_file(output, "src/main/java/app/server/api/DefaultApi.java")
         assert "ResponseEntity<SimpleBase> createEntity" in api_content
         assert "SimpleBase data" in api_content
 
@@ -89,27 +68,27 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Should generate both Request and Response DTOs
-        assert file_exists(output, "src/main/java/app/server/domain/AuditedBase.java")
-        assert file_exists(output, "src/main/java/app/server/domain/AuditedBaseRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/AuditedBase.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/AuditedBaseRequest.java")
 
         # Verify Request DTO does not contain @readOnly fields
-        request_content = (output / "src/main/java/app/server/domain/AuditedBaseRequest.java").read_text()
+        request_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/AuditedBaseRequest.java")
         assert "createdAt" not in request_content
         assert "createdBy" not in request_content
         assert "name" in request_content
         assert "description" in request_content
 
         # Verify Response DTO contains @readOnly fields
-        response_content = (output / "src/main/java/app/server/domain/AuditedBase.java").read_text()
+        response_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/AuditedBase.java")
         assert "createdAt" in response_content
         assert "createdBy" in response_content
         assert "name" in response_content
 
         # Verify API operation uses AuditedBaseRequest for input, AuditedBase for output
-        api_content = (output / "src/main/java/app/server/api/DefaultApi.java").read_text()
+        api_content = SpringTestUtils.read_file(output, "src/main/java/app/server/api/DefaultApi.java")
         assert "ResponseEntity<AuditedBase> createAudited" in api_content
         assert "AuditedBaseRequest data" in api_content
 
@@ -130,24 +109,24 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Should generate both Request and Response DTOs
-        assert file_exists(output, "src/main/java/app/server/domain/SecureBase.java")
-        assert file_exists(output, "src/main/java/app/server/domain/SecureBaseRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/SecureBase.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/SecureBaseRequest.java")
 
         # Verify Request DTO contains @writeOnly field
-        request_content = (output / "src/main/java/app/server/domain/SecureBaseRequest.java").read_text()
+        request_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/SecureBaseRequest.java")
         assert "password" in request_content
         assert "username" in request_content
 
         # Verify Response DTO does not contain @writeOnly field
-        response_content = (output / "src/main/java/app/server/domain/SecureBase.java").read_text()
+        response_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/SecureBase.java")
         assert "password" not in response_content
         assert "username" in response_content
 
         # Verify API operation uses SecureBaseRequest for input, SecureBase for output
-        api_content = (output / "src/main/java/app/server/api/DefaultApi.java").read_text()
+        api_content = SpringTestUtils.read_file(output, "src/main/java/app/server/api/DefaultApi.java")
         assert "ResponseEntity<SecureBase> register" in api_content
         assert "SecureBaseRequest credentials" in api_content
 
@@ -169,21 +148,21 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Should generate both Request and Response DTOs
-        assert file_exists(output, "src/main/java/app/server/domain/ComplexBase.java")
-        assert file_exists(output, "src/main/java/app/server/domain/ComplexBaseRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/ComplexBase.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/ComplexBaseRequest.java")
 
         # Verify Request DTO has @writeOnly but not @readOnly fields
-        request_content = (output / "src/main/java/app/server/domain/ComplexBaseRequest.java").read_text()
+        request_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/ComplexBaseRequest.java")
         assert "password" in request_content
         assert "name" in request_content
         assert "createdAt" not in request_content
         assert "updatedAt" not in request_content
 
         # Verify Response DTO has @readOnly but not @writeOnly fields
-        response_content = (output / "src/main/java/app/server/domain/ComplexBase.java").read_text()
+        response_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/ComplexBase.java")
         assert "password" not in response_content
         assert "name" in response_content
         assert "createdAt" in response_content
@@ -210,23 +189,25 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Only ExtendedEntity generates DTOs (it's used in API)
         # BaseEntity is only extended, not used directly in API, so no standalone DTO generated
-        assert not file_exists(output, "src/main/java/app/server/domain/BaseEntity.java")
-        assert not file_exists(output, "src/main/java/app/server/domain/BaseEntityRequest.java")
-        assert file_exists(output, "src/main/java/app/server/domain/ExtendedEntity.java")
-        assert file_exists(output, "src/main/java/app/server/domain/ExtendedEntityRequest.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/BaseEntity.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/BaseEntityRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/ExtendedEntity.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/ExtendedEntityRequest.java")
 
         # Verify ExtendedEntityRequest does not contain inherited @readOnly field
-        request_content = (output / "src/main/java/app/server/domain/ExtendedEntityRequest.java").read_text()
+        request_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/server/domain/ExtendedEntityRequest.java"
+        )
         assert "createdAt" not in request_content
         assert "name" in request_content
         assert "description" in request_content
 
         # Verify ExtendedEntity contains inherited @readOnly field
-        response_content = (output / "src/main/java/app/server/domain/ExtendedEntity.java").read_text()
+        response_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/ExtendedEntity.java")
         assert "createdAt" in response_content
         assert "name" in response_content
 
@@ -254,17 +235,17 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Only EnhancedBase generates DTO (it's used in API)
         # PlainBase is only extended, not used directly, so no DTO generated
-        assert not file_exists(output, "src/main/java/app/server/domain/PlainBase.java")
-        assert not file_exists(output, "src/main/java/app/server/domain/PlainBaseRequest.java")
-        assert file_exists(output, "src/main/java/app/server/domain/EnhancedBase.java")
-        assert not file_exists(output, "src/main/java/app/server/domain/EnhancedBaseRequest.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/PlainBase.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/PlainBaseRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/EnhancedBase.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/EnhancedBaseRequest.java")
 
         # API should reference EnhancedBase directly (not EnhancedBaseRequest)
-        api_content = (output / "src/main/java/app/server/api/DefaultApi.java").read_text()
+        api_content = SpringTestUtils.read_file(output, "src/main/java/app/server/api/DefaultApi.java")
         assert "ResponseEntity<EnhancedBase> process" in api_content
         assert "EnhancedBase input" in api_content
 
@@ -296,38 +277,40 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Both Person and Address generate Request/Response DTOs
         # Address splits because it has @readOnly field
         # Person must also split (transitively) because it contains Address
-        assert file_exists(output, "src/main/java/app/server/domain/Address.java")
-        assert file_exists(output, "src/main/java/app/server/domain/AddressRequest.java")
-        assert file_exists(output, "src/main/java/app/server/domain/Person.java")
-        assert file_exists(output, "src/main/java/app/server/domain/PersonRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/Address.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/AddressRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/Person.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/PersonRequest.java")
 
         # Verify Address Response contains @readOnly field
-        address_response_content = (output / "src/main/java/app/server/domain/Address.java").read_text()
+        address_response_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/Address.java")
         assert "createdAt" in address_response_content
 
         # Verify AddressRequest excludes @readOnly field
-        address_request_content = (output / "src/main/java/app/server/domain/AddressRequest.java").read_text()
+        address_request_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/server/domain/AddressRequest.java"
+        )
         assert "createdAt" not in address_request_content
         assert "street" in address_request_content
         assert "city" in address_request_content
 
         # Verify PersonRequest references AddressRequest (not Address)
-        person_request_content = (output / "src/main/java/app/server/domain/PersonRequest.java").read_text()
+        person_request_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/PersonRequest.java")
         assert "AddressRequest address" in person_request_content
         assert "name" in person_request_content
         assert "age" in person_request_content
 
         # Verify Person Response references full Address type
-        person_content = (output / "src/main/java/app/server/domain/Person.java").read_text()
+        person_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/Person.java")
         assert "Address address" in person_content
 
         # Verify API uses PersonRequest for input and Person for output
-        api_content = (output / "src/main/java/app/server/api/DefaultApi.java").read_text()
+        api_content = SpringTestUtils.read_file(output, "src/main/java/app/server/api/DefaultApi.java")
         assert "ResponseEntity<Person> createPerson" in api_content
         assert "PersonRequest person" in api_content
 
@@ -360,30 +343,30 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Address splits because it has @readOnly field
         # Only used in response, so no Request DTO
-        assert file_exists(output, "src/main/java/app/server/domain/Address.java")
-        assert not file_exists(output, "src/main/java/app/server/domain/AddressRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/Address.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/AddressRequest.java")
 
         # Person should only generate response DTO (not PersonRequest)
         # because it's only used as a response type and doesn't have its own @readOnly/@writeOnly
-        assert file_exists(output, "src/main/java/app/server/domain/Person.java")
-        assert not file_exists(output, "src/main/java/app/server/domain/PersonRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/Person.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/PersonRequest.java")
 
         # Verify Address Response contains @readOnly field
-        address_response_content = (output / "src/main/java/app/server/domain/Address.java").read_text()
+        address_response_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/Address.java")
         assert "createdAt" not in address_response_content
 
         # Verify Person Response references full Address type
-        person_content = (output / "src/main/java/app/server/domain/Person.java").read_text()
+        person_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/Person.java")
         assert "Address address" in person_content
         assert "name" in person_content
         assert "age" in person_content
 
         # Verify API uses only Person for output (no PersonRequest needed)
-        api_content = (output / "src/main/java/app/server/api/DefaultApi.java").read_text()
+        api_content = SpringTestUtils.read_file(output, "src/main/java/app/server/api/DefaultApi.java")
         assert "ResponseEntity<Person> getPerson" in api_content
         assert "PersonRequest" not in api_content
 
@@ -416,32 +399,34 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Address splits because it has @readOnly field
         # Only used in request, so no Response DTO
-        assert not file_exists(output, "src/main/java/app/server/domain/Address.java")
-        assert file_exists(output, "src/main/java/app/server/domain/AddressRequest.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/Address.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/AddressRequest.java")
 
         # Person should only generate request DTO (not Person)
         # because it's only used as a request type and doesn't have its own @readOnly/@writeOnly
-        assert not file_exists(output, "src/main/java/app/server/domain/Person.java")
-        assert file_exists(output, "src/main/java/app/server/domain/PersonRequest.java")
+        assert not SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/Person.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/PersonRequest.java")
 
         # Verify AddressRequest excludes @readOnly field
-        address_request_content = (output / "src/main/java/app/server/domain/AddressRequest.java").read_text()
+        address_request_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/server/domain/AddressRequest.java"
+        )
         assert "createdAt" not in address_request_content
         assert "street" in address_request_content
         assert "city" in address_request_content
 
         # Verify PersonRequest references AddressRequest (not Address)
-        person_request_content = (output / "src/main/java/app/server/domain/PersonRequest.java").read_text()
+        person_request_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/PersonRequest.java")
         assert "AddressRequest address" in person_request_content
         assert "name" in person_request_content
         assert "age" in person_request_content
 
         # Verify API uses PersonRequest for input and no Person response
-        api_content = (output / "src/main/java/app/server/api/DefaultApi.java").read_text()
+        api_content = SpringTestUtils.read_file(output, "src/main/java/app/server/api/DefaultApi.java")
         assert "createPerson" in api_content
         assert "PersonRequest person" in api_content
         assert "ResponseEntity<Person>" not in api_content
@@ -466,14 +451,14 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Should generate both Request and Response DTOs (only once)
-        assert file_exists(output, "src/main/java/app/server/domain/UserData.java")
-        assert file_exists(output, "src/main/java/app/server/domain/UserDataRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/UserData.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/UserDataRequest.java")
 
         # Verify all API operations use the correct DTO variants
-        api_content = (output / "src/main/java/app/server/api/DefaultApi.java").read_text()
+        api_content = SpringTestUtils.read_file(output, "src/main/java/app/server/api/DefaultApi.java")
         assert "ResponseEntity<UserData> register" in api_content
         assert "UserDataRequest user" in api_content
         assert "ResponseEntity<UserData> updateProfile" in api_content
@@ -507,28 +492,30 @@ class TestBaseDtoSplitBehavior:
         }
         """
 
-        output = wrapper_generate(schema)
+        output = SpringTestUtils.generate(schema)
 
         # Company is an Object, so it always generates Request/Response (due to auto-generated ID)
-        assert file_exists(output, "src/main/java/app/server/domain/entity/CompanyEntity.java")
-        assert file_exists(output, "src/main/java/app/server/domain/Company.java")
-        assert file_exists(output, "src/main/java/app/server/domain/CompanyRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/entity/CompanyEntity.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/Company.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/CompanyRequest.java")
 
         # Employee must also split (transitively) because it contains Company
-        assert file_exists(output, "src/main/java/app/server/domain/Employee.java")
-        assert file_exists(output, "src/main/java/app/server/domain/EmployeeRequest.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/Employee.java")
+        assert SpringTestUtils.file_exists(output, "src/main/java/app/server/domain/EmployeeRequest.java")
 
         # Verify EmployeeRequest references CompanyRequest
-        employee_request_content = (output / "src/main/java/app/server/domain/EmployeeRequest.java").read_text()
+        employee_request_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/server/domain/EmployeeRequest.java"
+        )
         assert "CompanyRequest company" in employee_request_content
         assert "firstName" in employee_request_content
         assert "lastName" in employee_request_content
 
         # Verify Employee Response references full Company type
-        employee_content = (output / "src/main/java/app/server/domain/Employee.java").read_text()
+        employee_content = SpringTestUtils.read_file(output, "src/main/java/app/server/domain/Employee.java")
         assert "Company company" in employee_content
 
         # Verify API uses EmployeeRequest for input and Employee for output
-        api_content = (output / "src/main/java/app/server/api/DefaultApi.java").read_text()
+        api_content = SpringTestUtils.read_file(output, "src/main/java/app/server/api/DefaultApi.java")
         assert "ResponseEntity<Employee> createEmployee" in api_content
         assert "EmployeeRequest employee" in api_content

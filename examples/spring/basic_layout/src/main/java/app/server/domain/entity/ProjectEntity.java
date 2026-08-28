@@ -46,11 +46,7 @@ public class ProjectEntity extends AbstractEntity {
 
     private String creationBy;
 
-    private LocalDate creationDate;
-
     private String lastUpdateBy;
-
-    private OffsetDateTime lastUpdateDate;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private ObjectNode metaInf;
