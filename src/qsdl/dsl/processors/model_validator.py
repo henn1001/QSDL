@@ -26,6 +26,7 @@ import qsdl.dsl.util as qutil
 from qsdl import dsl
 
 from . import CrudGeneratorEnum as CrudEnum
+from .directive_parser import validate_directives
 
 _PASCAL_CASE_NAME = re.compile(r"[A-Z][A-Za-z0-9]*")
 _ENUM_VALUE_NAME = re.compile(r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*")
@@ -192,98 +193,6 @@ def validate_member_names(schema: dsl.Schema) -> None:
 
     for directive in xtx.get_children_of_directive(schema):
         _validate_name(directive, directive.name, "camelCase, snake_case, or kebab-case", _DIRECTIVE_NAME)
-
-
-def _present_special_directive_names(entity: object) -> set[str]:
-    """Return special directives represented by populated model attributes."""
-    names: set[str] = set()
-
-    if isinstance(entity, dsl.Enum | dsl.Base | dsl.Object | dsl.Api) and entity.namespace is not None:
-        names.add("namespace")
-
-    if isinstance(entity, dsl.Api) and entity.generate:
-        names.add("generate")
-
-    if isinstance(entity, dsl.Field):
-        for attribute, directive_name in (
-            ("is_query_list", "queryList"),
-            ("is_query", "query"),
-            ("is_read_only", "readOnly"),
-            ("is_write_only", "writeOnly"),
-            ("is_composition", "composition"),
-            ("is_aggregation", "aggregation"),
-            ("is_opaque", "opaque"),
-            ("is_unique", "unique"),
-            ("is_hidden", "hidden"),
-            ("is_transient", "transient"),
-            ("is_ignored", "ignore"),
-            ("is_override", "override"),
-        ):
-            if getattr(entity, attribute):
-                names.add(directive_name)
-
-        for attribute, directive_name in (
-            ("min_size", "minSize"),
-            ("max_size", "maxSize"),
-            ("default", "default"),
-        ):
-            if getattr(entity, attribute) is not None:
-                names.add(directive_name)
-
-    if isinstance(entity, dsl.Operation):
-        if entity.is_pageable:
-            names.add("pagination")
-
-        for attribute, directive_name in (
-            ("path", "path"),
-            ("method", "method"),
-            ("is_pageable", "pagination"),
-            ("consumes", "consumes"),
-            ("produces", "produces"),
-        ):
-            if getattr(entity, attribute) is not None:
-                names.add(directive_name)
-
-    return names
-
-
-def _directive_entity_label(entity: object) -> str:
-    """Return a useful label for duplicate-directive errors."""
-    if isinstance(entity, dsl.Field):
-        return f"Field {entity.name} of {entity.parent.name}"
-
-    if isinstance(entity, dsl.Operation):
-        return f"Operation {entity.name}"
-
-    if isinstance(entity, dsl.Api):
-        if isinstance(entity.parent, dsl.Object):
-            return f"Api of Object {entity.parent.name}"
-        return "Api"
-
-    return f"{entity.__class__.__name__} {entity.name}"
-
-
-def validate_directives(schema: dsl.Schema) -> None:
-    """Reject repeated directive names on the same entity."""
-    entities = [
-        *xtx.get_children_of_scalar(schema),
-        *xtx.get_children_of_enum(schema),
-        *xtx.get_children_of_base(schema),
-        *xtx.get_children_of_object(schema),
-        *xtx.get_children_of_field(schema),
-        *xtx.get_children_of_api(schema),
-        *xtx.get_children_of_operation(schema),
-    ]
-
-    for entity in entities:
-        seen_names = _present_special_directive_names(entity)
-        custom_names: set[str] = set()
-
-        for directive in entity.directives:
-            if directive.name in seen_names or directive.name in custom_names:
-                msg = f"The {_directive_entity_label(entity)} specifies @{directive.name} more than once."
-                raise TextXSemanticError(msg, **get_location(directive))
-            custom_names.add(directive.name)
 
 
 def validate_enum_values(schema: dsl.Schema) -> None:

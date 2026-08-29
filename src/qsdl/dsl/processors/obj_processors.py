@@ -14,11 +14,10 @@
 
 """Entity post-processor"""
 
-import ast
-
 from qsdl import dsl
 
 from ..util import description_wrapper
+from .directive_parser import normalize_directive_value
 
 
 def schema_processor(entity: dsl.Schema) -> None:
@@ -112,28 +111,8 @@ def argument_processor(entity: dsl.Argument) -> None:
 
 
 def directive_processor(entity: dsl.Directive) -> None:
-    """Normalize a directive's opaque payload for existing consumers.
-
-    Directive payloads are captured as raw text by the grammar. Existing
-    scalar directives use a single quoted string, so remove that syntactic
-    quoting while preserving arbitrary payloads such as ``@headers(...)``.
-
-    Args:
-        entity (Directive): The directive object.
-    """
-    if entity.value is None:
-        return
-
-    value = entity.value.strip()
-    if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
-        try:
-            decoded = ast.literal_eval(value)
-        except (SyntaxError, ValueError):
-            decoded = value
-        if isinstance(decoded, str):
-            value = decoded
-
-    entity.value = value
+    """Normalize a directive's opaque payload for existing consumers."""
+    entity.value = normalize_directive_value(entity.value)
 
 
 obj_processors = {
