@@ -1,10 +1,9 @@
-from pathlib import Path
 from typing import Any
 
 from tests.functional.generators.openapi import generate_openapi
 
 
-def test_inherited_base_fields_are_flattened_in_base_and_object_schemas(tmp_path: Path) -> None:
+def test_inherited_base_fields_are_flattened_in_base_and_object_schemas() -> None:
     schema = """
         base Fruit {
             banana: Int
@@ -23,7 +22,7 @@ def test_inherited_base_fields_are_flattened_in_base_and_object_schemas(tmp_path
         }
     """
 
-    openapi = generate_openapi(schema, tmp_path)
+    openapi = generate_openapi(schema)
     schemas: dict[str, Any] = openapi["components"]["schemas"]
 
     assert set(schemas["Bar"]["properties"]) >= {"banana", "field", "barName"}

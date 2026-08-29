@@ -1,48 +1,36 @@
-import shutil
 import textwrap
 from pathlib import Path
 
-from qsdl.core import generate as qsdl_generate
+from qsdl.artifacts import GeneratedFiles
+from qsdl.core import build
 
 
 class SpringTestUtils:
-    """Shared helpers for Spring generator tests."""
-
-    OUTPUT_PATH = Path("srcgen/")
+    """Shared helpers for in-memory Spring generator tests."""
 
     @staticmethod
     def generate(
         test_input: str,
         config_path: str | Path | None = None,
         config: dict[str, object] | None = None,
-    ) -> Path:
-        """Generate a Spring project and return its output path."""
-        test_input = textwrap.dedent(test_input)
-        shutil.rmtree(SpringTestUtils.OUTPUT_PATH / "src", ignore_errors=True)
-
-        arguments: dict[str, object] = {
-            "generator_name": "spring",
-            "raw_schema": test_input,
-        }
-        if config_path is not None:
-            arguments["config_path"] = config_path
-        if config is not None:
-            arguments["config"] = config
-
-        assert qsdl_generate(SpringTestUtils.OUTPUT_PATH, **arguments) is None
-        return SpringTestUtils.OUTPUT_PATH
+    ) -> GeneratedFiles:
+        """Build a Spring project and return its generated artifacts."""
+        return build(
+            generator_name="spring",
+            raw_schema=textwrap.dedent(test_input),
+            config_path=Path(config_path) if config_path is not None else None,
+            config=config,
+        )
 
     @staticmethod
-    def read_file(output_path: Path, relative_path: str) -> str:
-        """Read a generated file."""
-        file_path = output_path / relative_path
-        assert file_path.exists(), f"Expected file not found: {file_path}"
-        return file_path.read_text(encoding="utf-8")
+    def read_file(files: GeneratedFiles, relative_path: str) -> str:
+        """Read text from a generated artifact."""
+        return files.text(relative_path)
 
     @staticmethod
-    def file_exists(output_path: Path, relative_path: str) -> bool:
-        """Check whether a generated file exists."""
-        return (output_path / relative_path).exists()
+    def file_exists(files: GeneratedFiles, relative_path: str) -> bool:
+        """Check whether a generated artifact exists."""
+        return files.exists(relative_path)
 
     @staticmethod
     def assert_contains(content: str, *patterns: str) -> None:

@@ -18,11 +18,11 @@ class TestSpringDomainLayout:
         """
 
         # When: Generate with domain layout config
-        output_path = SpringTestUtils.generate(test_input, "util/domain_config.json")
+        files = SpringTestUtils.generate(test_input, "util/domain_config.json")
 
         # Then: Verify the Controller imports Project from the correct package
         controller_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/common/api/DefaultController.java"
+            files, "src/main/java/app/server/common/api/DefaultController.java"
         )
         SpringTestUtils.assert_contains(
             controller_content,
@@ -35,7 +35,7 @@ class TestSpringDomainLayout:
         assert "import app.server.project.dto.Project;" in controller_content
 
         # Then: Verify the Api interface also has correct imports
-        api_content = SpringTestUtils.read_file(output_path, "src/main/java/app/server/common/api/DefaultApi.java")
+        api_content = SpringTestUtils.read_file(files, "src/main/java/app/server/common/api/DefaultApi.java")
         SpringTestUtils.assert_contains(
             api_content,
             "import app.server.project.dto.Project;",  # Should import Project from project package
@@ -44,7 +44,7 @@ class TestSpringDomainLayout:
 
         # Then: Verify the Service has correct imports (Project is generated with CRUD)
         service_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/project/service/ProjectService.java"
+            files, "src/main/java/app/server/project/service/ProjectService.java"
         )
         SpringTestUtils.assert_contains(
             service_content,
@@ -74,11 +74,11 @@ class TestSpringDomainLayout:
         """
 
         # When: Generate with domain layout config
-        output_path = SpringTestUtils.generate(test_input, "util/domain_config.json")
+        files = SpringTestUtils.generate(test_input, "util/domain_config.json")
 
         # Then: Verify imports for both parameter and return type
         controller_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/common/api/DefaultController.java"
+            files, "src/main/java/app/server/common/api/DefaultController.java"
         )
         SpringTestUtils.assert_contains(
             controller_content,
@@ -86,7 +86,7 @@ class TestSpringDomainLayout:
             "import app.server.project.dto.ProjectRequest;",  # Import for body parameter
         )
 
-        api_content = SpringTestUtils.read_file(output_path, "src/main/java/app/server/common/api/DefaultApi.java")
+        api_content = SpringTestUtils.read_file(files, "src/main/java/app/server/common/api/DefaultApi.java")
         SpringTestUtils.assert_contains(
             api_content,
             "import app.server.project.dto.Project;",
@@ -95,7 +95,7 @@ class TestSpringDomainLayout:
 
         # Then: Verify Service has no wildcard imports
         service_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/project/service/ProjectService.java"
+            files, "src/main/java/app/server/project/service/ProjectService.java"
         )
         SpringTestUtils.assert_contains(
             service_content,
@@ -123,11 +123,11 @@ class TestSpringDomainLayout:
         """
 
         # When: Generate with domain layout config
-        output_path = SpringTestUtils.generate(test_input, "util/domain_config.json")
+        files = SpringTestUtils.generate(test_input, "util/domain_config.json")
 
         # Then: Verify all cross-namespace imports are present
         controller_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/common/api/DefaultController.java"
+            files, "src/main/java/app/server/common/api/DefaultController.java"
         )
         SpringTestUtils.assert_contains(
             controller_content,
@@ -135,7 +135,7 @@ class TestSpringDomainLayout:
             "import app.server.user.dto.User;",
         )
 
-        api_content = SpringTestUtils.read_file(output_path, "src/main/java/app/server/common/api/DefaultApi.java")
+        api_content = SpringTestUtils.read_file(files, "src/main/java/app/server/common/api/DefaultApi.java")
         SpringTestUtils.assert_contains(
             api_content,
             "import app.server.project.dto.Project;",
@@ -160,10 +160,10 @@ class TestSpringDomainLayout:
         """
 
         # When: Generate with domain layout config
-        output_path = SpringTestUtils.generate(test_input, "util/domain_config.json")
+        files = SpringTestUtils.generate(test_input, "util/domain_config.json")
 
         # Then: Api file should have explicit imports, no wildcards (generated in common since no CRUD)
-        api_content = SpringTestUtils.read_file(output_path, "src/main/java/app/server/common/api/DefaultApi.java")
+        api_content = SpringTestUtils.read_file(files, "src/main/java/app/server/common/api/DefaultApi.java")
         SpringTestUtils.assert_contains(
             api_content,
             "import app.server.project.dto.ProjectBase;",
@@ -192,11 +192,11 @@ class TestSpringDomainLayout:
         """
 
         # When: Generate with domain layout config
-        output_path = SpringTestUtils.generate(test_input, "util/domain_config.json")
+        files = SpringTestUtils.generate(test_input, "util/domain_config.json")
 
         # Then: Controller file should have explicit imports, no wildcards (generated in common since no CRUD)
         controller_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/common/api/DefaultController.java"
+            files, "src/main/java/app/server/common/api/DefaultController.java"
         )
         SpringTestUtils.assert_contains(
             controller_content,
@@ -225,10 +225,10 @@ class TestSpringDomainLayout:
             }
         """
 
-        output_path = SpringTestUtils.generate(test_input, "util/domain_config.json")
+        files = SpringTestUtils.generate(test_input, "util/domain_config.json")
 
         user_service_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/user/service/UserService.java"
+            files, "src/main/java/app/server/user/service/UserService.java"
         )
         SpringTestUtils.assert_contains(
             user_service_content,
@@ -242,7 +242,7 @@ class TestSpringDomainLayout:
         SpringTestUtils.assert_not_contains(user_service_content, ".*;")  # No wildcard imports
 
         project_service_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/project/service/ProjectService.java"
+            files, "src/main/java/app/server/project/service/ProjectService.java"
         )
         SpringTestUtils.assert_contains(
             project_service_content,
@@ -265,10 +265,10 @@ class TestSpringDomainLayout:
             }
         """
 
-        output_path = SpringTestUtils.generate(test_input, "util/domain_config.json")
+        files = SpringTestUtils.generate(test_input, "util/domain_config.json")
 
         controller_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/common/api/DefaultController.java"
+            files, "src/main/java/app/server/common/api/DefaultController.java"
         )
         SpringTestUtils.assert_contains(
             controller_content,
@@ -276,7 +276,7 @@ class TestSpringDomainLayout:
             "public ResponseEntity<ProjectBase> getProjectBase",
         )
 
-        api_content = SpringTestUtils.read_file(output_path, "src/main/java/app/server/common/api/DefaultApi.java")
+        api_content = SpringTestUtils.read_file(files, "src/main/java/app/server/common/api/DefaultApi.java")
         SpringTestUtils.assert_contains(
             api_content,
             "import app.server.project.dto.ProjectBase;",
@@ -295,9 +295,9 @@ class TestSpringDomainLayout:
             "package_placeholder_fallback": "common",
         }
 
-        output_path = SpringTestUtils.generate(test_input, config=config)
+        files = SpringTestUtils.generate(test_input, config=config)
 
-        assert SpringTestUtils.file_exists(output_path, "src/main/java/app/server/project/dto/GetProjectsFilter.java")
+        assert SpringTestUtils.file_exists(files, "src/main/java/app/server/project/dto/GetProjectsFilter.java")
         assert not SpringTestUtils.file_exists(
-            output_path, "src/main/java/app/server/common/dto/GetProjectsFilter.java"
+            files, "src/main/java/app/server/common/dto/GetProjectsFilter.java"
         )

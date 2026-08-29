@@ -126,8 +126,8 @@ def get_paginated_object(schema: dsl.Schema, obj: dsl.Object, model_name: str) -
     return model
 
 
-def build_files(schema: dsl.Schema, config: Config) -> GeneratedFiles:
-    """Build OpenAPI artifacts in memory."""
+def generate(schema: dsl.Schema, config: Config) -> GeneratedFiles:
+    """Generate OpenAPI artifacts in memory."""
 
     if config.id_type not in IDTYPE.__members__:
         raise ValueError("id_type must be `LONG` or `STRING`")
@@ -164,8 +164,3 @@ def build_files(schema: dsl.Schema, config: Config) -> GeneratedFiles:
     files = GeneratedFiles()
     files.add_text("openapi.yaml", content)
     return files
-
-
-def generate(schema: dsl.Schema, config: Config) -> GeneratedFiles:
-    """Generate OpenAPI artifacts in memory."""
-    return build_files(schema, config)

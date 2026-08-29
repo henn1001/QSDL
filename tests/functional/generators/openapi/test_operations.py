@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any
 
 from tests.functional.generators.openapi import generate_openapi
@@ -9,7 +8,7 @@ def response_schema(openapi: dict[str, Any], path: str, method: str = "get") -> 
     return openapi["paths"][path][method]["responses"]["200"]["content"]["application/json"]["schema"]
 
 
-def test_operation_response_scalar_reference_and_array_schemas(tmp_path: Path) -> None:
+def test_operation_response_scalar_reference_and_array_schemas() -> None:
     schema = """
         enum Status {
             OPEN
@@ -43,7 +42,7 @@ def test_operation_response_scalar_reference_and_array_schemas(tmp_path: Path) -
         }
     """
 
-    openapi = generate_openapi(schema, tmp_path)
+    openapi = generate_openapi(schema)
 
     assert response_schema(openapi, "/int-result") == {"type": "integer", "format": "int32"}
     assert response_schema(openapi, "/long-result") == {"type": "integer", "format": "int64"}
@@ -69,7 +68,7 @@ def test_operation_response_scalar_reference_and_array_schemas(tmp_path: Path) -
     }
 
 
-def test_object_api_replaces_generated_crud_operations(tmp_path: Path) -> None:
+def test_object_api_replaces_generated_crud_operations() -> None:
     schema = """
         type Foo {
             name: String
@@ -85,7 +84,7 @@ def test_object_api_replaces_generated_crud_operations(tmp_path: Path) -> None:
         }
     """
 
-    openapi = generate_openapi(schema, tmp_path)
+    openapi = generate_openapi(schema)
 
     assert openapi["paths"]["/foos"]["get"]["operationId"] == "getFoo"
     assert set(openapi["paths"]["/foos"]) == {"get"}

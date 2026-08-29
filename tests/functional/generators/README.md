@@ -44,13 +44,13 @@ OpenAPI tests must use the target-specific helper rather than a generic wrapper:
 from tests.functional.generators.openapi import generate_openapi
 
 
-def test_openapi_output(tmp_path: Path) -> None:
-    openapi = generate_openapi(schema, tmp_path)
+def test_openapi_output() -> None:
+    openapi = generate_openapi(schema)
 ```
 
-`generate_openapi` requires the caller to provide a temporary output directory,
-generates `openapi.yaml` there, and loads that YAML into a mapping. It never
-uses the repository-level `srcgen/` directory.
+`generate_openapi` builds the output in memory and loads `openapi.yaml` into a
+mapping. Content-focused functional tests do not use a generated output
+directory.
 
 ## Directive and description ownership
 

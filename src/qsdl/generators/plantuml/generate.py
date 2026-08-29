@@ -53,8 +53,8 @@ def generate_pngs(markdown: str) -> tuple[bytes, ...]:
     return tuple(uml.processes(definition) for definition in definitions)
 
 
-def build_files(schema: Schema, config: Config) -> GeneratedFiles:
-    """Build PlantUML Markdown and PNG artifacts in memory."""
+def generate(schema: Schema, config: Config) -> GeneratedFiles:
+    """Generate PlantUML Markdown and PNG artifacts in memory."""
     template_path = Path(__file__).parent / "template" / "uml.j2"
 
     util.schema = schema
@@ -76,8 +76,3 @@ def build_files(schema: Schema, config: Config) -> GeneratedFiles:
         files.add_bytes(path, png)
 
     return files
-
-
-def generate(schema: Schema, config: Config) -> GeneratedFiles:
-    """Generate PlantUML artifacts in memory."""
-    return build_files(schema, config)

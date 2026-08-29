@@ -18,10 +18,11 @@ def wrapper_generate(test_input: str) -> Path:
     """
     test_input = textwrap.dedent(test_input)
     test_output = Path("srcgen/")
-    test_output.mkdir(exist_ok=True)
 
-    # generate
-    shutil.rmtree(test_output / "src", ignore_errors=True)
+    # Clear the complete controlled generation root so stale artifacts cannot
+    # hide missing files in disk-based E2E assertions.
+    shutil.rmtree(test_output, ignore_errors=True)
+    test_output.mkdir(parents=True, exist_ok=True)
     assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
 
     return test_output

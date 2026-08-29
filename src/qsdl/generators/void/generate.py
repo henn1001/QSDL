@@ -20,13 +20,8 @@ from qsdl.dsl import Schema
 from .config import Config
 
 
-def build_files(schema: Schema, config: Config) -> GeneratedFiles:
-    """Build an empty artifact collection."""
+def generate(schema: Schema, config: Config) -> GeneratedFiles:
+    """Generate no artifacts."""
     _ = schema
     _ = config
     return GeneratedFiles()
-
-
-def generate(schema: Schema, config: Config) -> GeneratedFiles:
-    """Generate no artifacts."""
-    return build_files(schema, config)

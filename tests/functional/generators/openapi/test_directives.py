@@ -1,10 +1,9 @@
-from pathlib import Path
 from typing import Any
 
 from tests.functional.generators.openapi import generate_openapi
 
 
-def test_field_visibility_io_and_ignore_directives(tmp_path: Path) -> None:
+def test_field_visibility_io_and_ignore_directives() -> None:
     schema = """
         enum Status {
             OPEN
@@ -28,7 +27,7 @@ def test_field_visibility_io_and_ignore_directives(tmp_path: Path) -> None:
         }
     """
 
-    openapi = generate_openapi(schema, tmp_path)
+    openapi = generate_openapi(schema)
     properties = openapi["components"]["schemas"]["User"]["properties"]
 
     assert "hidden" not in properties
@@ -45,7 +44,7 @@ def test_field_visibility_io_and_ignore_directives(tmp_path: Path) -> None:
     assert "writeOnly" not in properties["visible"]
 
 
-def test_default_directive_is_rendered_with_yaml_value_types(tmp_path: Path) -> None:
+def test_default_directive_is_rendered_with_yaml_value_types() -> None:
     schema = """
         enum Status {
             OPEN
@@ -64,7 +63,7 @@ def test_default_directive_is_rendered_with_yaml_value_types(tmp_path: Path) -> 
         }
     """
 
-    openapi = generate_openapi(schema, tmp_path)
+    openapi = generate_openapi(schema)
     properties = openapi["components"]["schemas"]["User"]["properties"]
 
     assert properties["name"]["default"] == "guest"
@@ -77,7 +76,7 @@ def test_default_directive_is_rendered_with_yaml_value_types(tmp_path: Path) -> 
     assert properties["status"]["default"] == "OPEN"
 
 
-def test_query_directive_on_read_only_crud_fields(tmp_path: Path) -> None:
+def test_query_directive_on_read_only_crud_fields() -> None:
     schema = """
         type Project {
             name: String! @query
@@ -90,7 +89,7 @@ def test_query_directive_on_read_only_crud_fields(tmp_path: Path) -> None:
         }
     """
 
-    openapi = generate_openapi(schema, tmp_path)
+    openapi = generate_openapi(schema)
     parameters = openapi["paths"]["/projects"]["get"]["parameters"]
     assert len(parameters) == 4
     assert [parameter["$ref"] for parameter in parameters[1:]] == [
@@ -107,7 +106,7 @@ def test_query_directive_on_read_only_crud_fields(tmp_path: Path) -> None:
     assert filter_properties["last_update_by"] == {"type": "string"}
 
 
-def test_force_generated_base_and_referenced_components(tmp_path: Path) -> None:
+def test_force_generated_base_and_referenced_components() -> None:
     schema = """
         base Unused {
             value: String
@@ -135,7 +134,7 @@ def test_force_generated_base_and_referenced_components(tmp_path: Path) -> None:
         }
     """
 
-    openapi = generate_openapi(schema, tmp_path)
+    openapi = generate_openapi(schema)
     schemas: dict[str, Any] = openapi["components"]["schemas"]
 
     assert "Payload" in schemas
@@ -148,7 +147,7 @@ def test_force_generated_base_and_referenced_components(tmp_path: Path) -> None:
     assert "UnusedStatus" not in schemas
 
 
-def test_namespace_tags_and_custom_path_methods_are_rendered(tmp_path: Path) -> None:
+def test_namespace_tags_and_custom_path_methods_are_rendered() -> None:
     schema = """
         type User @namespace("Domain") {
             name: String
@@ -160,7 +159,7 @@ def test_namespace_tags_and_custom_path_methods_are_rendered(tmp_path: Path) -> 
         }
     """
 
-    openapi = generate_openapi(schema, tmp_path)
+    openapi = generate_openapi(schema)
 
     assert openapi["paths"]["/users"]["get"]["tags"] == ["Domain"]
     assert openapi["paths"]["/lookup"]["get"]["operationId"] == "lookup"

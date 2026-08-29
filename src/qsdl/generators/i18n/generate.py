@@ -174,7 +174,7 @@ def _serialize(data: dict | None, sort_keys: bool) -> str:
     return yaml.dump(data, sort_keys=sort_keys, allow_unicode=True, width=9999)
 
 
-def build_files(
+def _generate_files(
     schema: dsl.Schema,
     config: Config,
     *,
@@ -230,9 +230,9 @@ def build_files_for_directory(schema: dsl.Schema, config: Config, output_root: P
         if destination.is_file():
             existing[path] = destination.read_text(encoding="utf-8")
 
-    return build_files(schema, config, existing_files=existing)
+    return _generate_files(schema, config, existing_files=existing)
 
 
 def generate(schema: dsl.Schema, config: Config) -> GeneratedFiles:
     """Generate i18n artifacts without reading an existing destination."""
-    return build_files(schema, config)
+    return _generate_files(schema, config)

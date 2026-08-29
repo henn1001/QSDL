@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any
 
 from tests.functional.generators.openapi import generate_openapi
@@ -14,7 +13,7 @@ def request_schema(openapi: dict[str, Any], path: str, method: str = "post") -> 
     return openapi["paths"][path][method]["requestBody"]["content"]["application/json"]["schema"]
 
 
-def test_argument_locations_and_request_shapes(tmp_path: Path) -> None:
+def test_argument_locations_and_request_shapes() -> None:
     schema = """
         enum Bar {
             OPEN
@@ -61,7 +60,7 @@ def test_argument_locations_and_request_shapes(tmp_path: Path) -> None:
         }
     """
 
-    openapi = generate_openapi(schema, tmp_path)
+    openapi = generate_openapi(schema)
     schemas = openapi.get("components", {}).get("schemas", {})
 
     query_cases = [

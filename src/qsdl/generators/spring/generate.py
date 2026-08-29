@@ -128,8 +128,8 @@ def _add_rendered(
     )
 
 
-def build_files(schema: Schema, config: Config) -> GeneratedFiles:
-    """Build Spring, OpenAPI, and PostgreSQL artifacts in memory."""
+def generate(schema: Schema, config: Config) -> GeneratedFiles:
+    """Generate Spring, OpenAPI, and PostgreSQL artifacts in memory."""
 
     if config.id_type not in IDTYPE.__members__:
         raise ValueError("id_type must be `LONG` or `STRING`")
@@ -353,8 +353,3 @@ def build_files(schema: Schema, config: Config) -> GeneratedFiles:
     )
 
     return files
-
-
-def generate(schema: Schema, config: Config) -> GeneratedFiles:
-    """Generate Spring artifacts in memory."""
-    return build_files(schema, config)

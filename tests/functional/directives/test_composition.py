@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pathlib import Path
-
 import pytest
 from textx.exceptions import TextXSemanticError
 
-from qsdl.core import generate
+from qsdl.core import build
 
 
 class TestCompositionDirective:
@@ -58,8 +56,8 @@ class TestCompositionDirective:
         ]
 
         for test_input in test_inputs:
-            result = generate(Path("srcgen/"), generator_name="void", raw_schema=test_input)
-            assert result is None
+            result = build(generator_name="void", raw_schema=test_input)
+            assert len(result) == 0
 
     def test_prevent_invalid(self) -> None:
         """Test prevent invalid usage"""
@@ -107,4 +105,4 @@ class TestCompositionDirective:
 
         for test_input in test_inputs:
             with pytest.raises(TextXSemanticError):
-                generate(Path("srcgen/"), generator_name="void", raw_schema=test_input)
+                build(generator_name="void", raw_schema=test_input)

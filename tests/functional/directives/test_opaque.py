@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pathlib import Path
-
 import pytest
 from textx.exceptions import TextXSemanticError
 
-from qsdl.core import generate
+from qsdl.core import build
 
 
 class TestOpaqueDirective:
@@ -45,8 +43,8 @@ class TestOpaqueDirective:
             }
         """
         # Should not raise any exceptions
-        result = generate(Path("srcgen/"), generator_name="void", raw_schema=test_input)
-        assert result is None
+        result = build(generator_name="void", raw_schema=test_input)
+        assert len(result) == 0
 
     def test_opaque_only_allowed_on_base_fields(self) -> None:
         """Test that opaque directive is only allowed on base type fields."""
@@ -85,4 +83,4 @@ class TestOpaqueDirective:
 
         for test_input in test_inputs:
             with pytest.raises(TextXSemanticError, match="declares opaque on a non Base value"):
-                generate(Path("srcgen/"), generator_name="void", raw_schema=test_input)
+                build(generator_name="void", raw_schema=test_input)

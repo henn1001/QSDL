@@ -55,8 +55,8 @@ def parse_models(schema: Schema) -> list[Table]:
     return models
 
 
-def build_files(schema: Schema, config: Config) -> GeneratedFiles:
-    """Build PostgreSQL artifacts in memory."""
+def generate(schema: Schema, config: Config) -> GeneratedFiles:
+    """Generate PostgreSQL artifacts in memory."""
 
     # save to store
     util.Store.schema = schema
@@ -74,8 +74,3 @@ def build_files(schema: Schema, config: Config) -> GeneratedFiles:
     files = GeneratedFiles()
     files.add_text(config.file_name, render_text(template_path, context))
     return files
-
-
-def generate(schema: Schema, config: Config) -> GeneratedFiles:
-    """Generate PostgreSQL artifacts in memory."""
-    return build_files(schema, config)

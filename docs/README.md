@@ -23,6 +23,7 @@ Step-by-step guides for common tasks:
 
 - **[Basic data modeling](./guides/basic-data-modeling.md)** — How to design effective domain models
 - **[Relationships](./guides/relationships.md)** — Composition, aggregation, and entity patterns
+- **[Library generation](./guides/library-generation.md)** — In-memory generation and filesystem materialization
 
 ## Generators
 
