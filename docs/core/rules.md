@@ -26,7 +26,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | SYN-007 | Operation names        | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
 | SYN-008 | Argument names         | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
 | SYN-009 | Custom directive names | Must use `camelCase`, `snake_case`, or `kebab-case`           | `validate_member_names` |
-| SYN-010 | Namespace values       | Must use `PascalCase`                                         | `validate_namespaces`   |
+| SYN-010 | Namespace values       | Must be one alphanumeric identifier beginning with a letter   | `validate_namespaces`   |
 
 ### Uniqueness Constraints
 
@@ -77,19 +77,19 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Field Rules
 
-| ID      | Rule                                                                            | Notes                                                       |
-| ------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| SEM-601 | A Field references a `ValueType` (Scalar, Enum, Base, or Object)                | `name : Type` or `name : [Type]` or `name : Type!`          |
-| SEM-602 | A Field may be **required** (`!` suffix)                                        | Indicates non-null in generated schemas                     |
-| SEM-603 | A Field may be **array** (`[...]` wrapper)                                      | Indicates a collection type                                 |
-| SEM-604 | A Field may be **read-only** (`@readOnly`)                                      | Not settable in input/write contexts                        |
-| SEM-605 | A Field may be **write-only** (`@writeOnly`)                                    | Not visible in output/read contexts                         |
-| SEM-606 | A Field cannot be both `@readOnly` and `@writeOnly`                             | Logically conflicting                                       |
-| SEM-607 | A Field may override an inherited field via `@override`                         | Required if parent Base defines the same field name         |
-| SEM-608 | A Field without `@override` cannot redefine an inherited field                  | Will raise validation error                                 |
-| SEM-609 | Object fields, including inherited Base fields, cannot use `id`, `uid`, or `iv` | Reserved by generated entity metadata                       |
-| SEM-610 | A Field marked `@query` or `@queryList` must reference a Scalar or Enum         | Query fields cannot expose structured Object or Base values |
-| SEM-611 | `@opaque` may be used only on a Field whose value type is a Base                | Opaque storage applies to reusable Base values              |
+| ID      | Rule                                                                            | Notes                                                                |
+| ------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| SEM-601 | A Field references a `ValueType` (Scalar, Enum, Base, or Object)                | `name : Type` or `name : [Type]` or `name : Type!`                   |
+| SEM-602 | A Field may be **required** (`!` suffix)                                        | Indicates non-null in generated schemas                              |
+| SEM-603 | A Field may be **array** (`[...]` wrapper)                                      | Indicates a collection type                                          |
+| SEM-604 | A Field may be **read-only** (`@readOnly`)                                      | Not settable in input/write contexts                                 |
+| SEM-605 | A Field may be **write-only** (`@writeOnly`)                                    | Not visible in output/read contexts                                  |
+| SEM-606 | A Field cannot be both `@readOnly` and `@writeOnly`                             | Logically conflicting                                                |
+| SEM-607 | A Field may override an inherited field via `@override`                         | Required if parent Base defines the same field name                  |
+| SEM-608 | A Field without `@override` cannot redefine an inherited field                  | Will raise validation error                                          |
+| SEM-609 | Object fields, including inherited Base fields, cannot use `id`, `uid`, or `iv` | Reserved by generated entity metadata; standalone Bases may use `id` |
+| SEM-610 | A Field marked `@query` or `@queryList` must reference a Scalar or Enum         | Query fields cannot expose structured Object or Base values          |
+| SEM-611 | `@opaque` may be used only on a Field whose value type is a Base                | Opaque storage applies to reusable Base values                       |
 
 ### Relationship Rules
 

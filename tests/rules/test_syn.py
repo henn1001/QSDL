@@ -24,6 +24,7 @@ Rules covered:
 - SYN-007: Operation names
 - SYN-008: Argument names
 - SYN-009: Custom directive names
+- SYN-010: Namespace values
 """
 
 import pytest
@@ -195,6 +196,24 @@ class TestSynNaming:
             "spring-package",
             "api-v2",
         }
+
+    def test_SYN_010_namespace_alphanumeric_positive(self, parse: ParseFixture) -> None:
+        """SYN-010: Namespace values begin with a letter and may contain digits."""
+        schema = parse("""
+            type User @namespace("common2") {
+                name: String
+            }
+        """)
+        user = xtx.get_children_of_object(schema)[0]
+        assert user.namespace == "common2"
+
+    @pytest.mark.parametrize(
+        "namespace",
+        ["2common", "common-name", "common_name", "Common.Domain", "!common"],
+    )
+    def test_SYN_010_namespace_invalid(self, namespace: str, parse_expect_name_error: ParseExpectErrorFixture) -> None:
+        """SYN-010: Namespace values reject separators, punctuation, and leading digits."""
+        parse_expect_name_error(f'type User @namespace("{namespace}") {{ name: String }}')
 
     @pytest.mark.parametrize(
         "name",

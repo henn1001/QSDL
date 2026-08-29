@@ -161,7 +161,7 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
 
 
 def validate_namespaces(schema: dsl.Schema) -> None:
-    """Validate namespace syntax for every declaration that supports it."""
+    """Validate that namespaces are single alphanumeric identifiers beginning with a letter."""
     entities = [
         *xtx.get_children_of_enum(schema),
         *xtx.get_children_of_base(schema),
@@ -176,7 +176,9 @@ def validate_namespaces(schema: dsl.Schema) -> None:
 
         name = getattr(entity, "name", None)
         label = f"{entity.__class__.__name__} {name!r}" if name is not None else entity.__class__.__name__
-        msg = f"The namespace of {label} must use PascalCase"
+        msg = (
+            f"The namespace of {label} must be a single alphanumeric identifier beginning with a letter."
+        )
         raise TextXSemanticError(msg, **get_location(entity))
 
 
