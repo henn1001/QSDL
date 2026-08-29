@@ -15,7 +15,7 @@ def test_writer_creates_parents_and_preserves_exact_text_and_bytes(tmp_path: Pat
 
     assert report.written == (PurePosixPath("nested/data.bin"), PurePosixPath("nested/text.txt"))
     assert report.skipped == ()
-    assert (tmp_path / "nested/text.txt").read_bytes() == "héllo\n".encode("utf-8")
+    assert (tmp_path / "nested/text.txt").read_bytes() == "héllo\n".encode()
     assert (tmp_path / "nested/data.bin").read_bytes() == b"\x00\xff\x01"
 
 

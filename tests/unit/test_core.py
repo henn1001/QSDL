@@ -90,9 +90,11 @@ class TestCore:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         captured: list[ProbeConfig] = []
+        initial_values: list[str] = []
 
         def probe(schema: Schema, config: ProbeConfig) -> GeneratedFiles:
             captured.append(config)
+            initial_values.append(config.value)
             config.value = "mutated"
             return GeneratedFiles()
 
@@ -102,7 +104,7 @@ class TestCore:
         build(generator_name="probe", raw_schema=schema)
 
         assert captured[0] is not captured[1]
-        assert captured[1].value == "default"
+        assert initial_values == ["default", "default"]
 
     def test_generator_returning_none_is_rejected(self, monkeypatch: pytest.MonkeyPatch) -> None:
         def invalid_generator(schema: Schema, config: ProbeConfig) -> None:

@@ -17,9 +17,8 @@
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from pathlib import PurePosixPath
-from typing import TypeAlias
 
-FileContent: TypeAlias = str | bytes
+type FileContent = str | bytes
 
 
 def _artifact_path(value: str | PurePosixPath) -> PurePosixPath:

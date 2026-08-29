@@ -27,7 +27,6 @@ from qsdl.artifacts import GeneratedFile, GeneratedFiles
 
 from .config import Config
 
-
 type ExistingTranslations = Mapping[PurePosixPath, str]
 type Entity = dsl.Base | dsl.Object | dsl.Enum
 type YamlOperation = tuple[PurePosixPath, str, tuple[Entity, ...], str, bool, bool]

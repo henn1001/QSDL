@@ -7,8 +7,8 @@ import pytest
 from qsdl.core import build
 from qsdl.dsl.textx import parse_schema
 from qsdl.generators.i18n import Config as I18nConfig
-from qsdl.generators.i18n import build_files_for_directory, generate as generate_i18n
-
+from qsdl.generators.i18n import build_files_for_directory
+from qsdl.generators.i18n import generate as generate_i18n
 
 SCHEMA = """
     enum Status {
@@ -32,8 +32,9 @@ def test_i18n_builds_in_memory_with_single_file_layout() -> None:
 
     assert files.paths() == (PurePosixPath("en.yaml"),)
     content = files.text("en.yaml")
-    assert "domain.User:" in content
-    assert "constant.Status:" in content
+    assert "domain:\n" in content
+    assert "\n  User:" in content
+    assert "constant:\n  Status:" in content
     assert "OPEN:" in content
 
 
