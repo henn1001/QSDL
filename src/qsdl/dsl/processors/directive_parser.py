@@ -109,10 +109,7 @@ def parse_response_headers(schema: dsl.Schema, operation: dsl.Operation) -> list
     if not directives:
         return []
 
-    if len(directives) > 1:
-        msg = f"The Operation {operation.name} specifies @headers more than once."
-        raise TextXSemanticError(msg, **get_location(directives[1]))
-
+    # Duplicate directive names are rejected centrally before operation parsing.
     directive = directives[0]
     if not directive.value:
         msg = f"The Operation {operation.name} must specify at least one response header in @headers(...)."

@@ -16,9 +16,11 @@
 
 from collections.abc import Callable
 
+from textx import get_location
+from textx.exceptions import TextXSemanticError
+
 import qsdl.dsl.textx as xtx
 from qsdl import dsl, logger
-from qsdl.exceptions import QsdlException
 
 log = logger.getLogger(__name__)
 
@@ -208,7 +210,10 @@ def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
                 duplicate.parent.name,
                 conflicting.parent.name,
             )
-        raise QsdlException("Field redefinition without @override is not allowed.")
+        raise TextXSemanticError(
+            "Field redefinition without @override is not allowed.",
+            **get_location(conflicting),
+        )
 
     for supertype in entity.supertypes:
         for inherited_field in get_all_fields_as_list(supertype):

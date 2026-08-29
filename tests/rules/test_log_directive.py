@@ -17,13 +17,15 @@
 Rules covered:
 - LOG-201: Directives are generator-agnostic or generator-specific
 - LOG-202: Custom directives are preserved in the model
-- LOG-203: Multiple instances of same directive on same entity not allowed
+- LOG-203: Duplicate directive names on the same entity are semantic errors
 """
+
+import pytest
 
 import qsdl.dsl.textx as xtx
 from qsdl.dsl.util import get_directive_of_name
 
-from .conftest import ParseFixture
+from .conftest import ParseExpectErrorFixture, ParseFixture
 
 
 class TestLogDirective:
@@ -94,3 +96,106 @@ class TestLogDirective:
         directive = get_directive_of_name("custom", field)
         assert directive is not None
         assert directive.value == "test"
+
+    @pytest.mark.parametrize(
+        "raw",
+        [
+            """
+                type Foo @custom @custom {
+                    field: String
+                }
+            """,
+            """
+                scalar Email @openapi("string") @openapi("string")
+            """,
+            """
+                type Foo {
+                    field: String @custom @custom
+                }
+            """,
+            """
+                extend api @custom @custom {
+                    getFoo: String @path("foo")
+                }
+            """,
+            """
+                extend api {
+                    getFoo: String @path("foo") @custom @custom
+                }
+            """,
+            """
+                type Foo @namespace("One") @namespace("Two") {
+                    field: String
+                }
+            """,
+            """
+                type Foo @deprecated @deprecated {
+                    field: String
+                }
+            """,
+            """
+                type Foo {
+                    field: String @readOnly @readOnly
+                }
+            """,
+            """
+                type Foo {
+                    field: String @minSize(1) @minSize(2)
+                }
+            """,
+            """
+                extend api @namespace("one") @namespace("two") {
+                    getFoo: String @path("foo")
+                }
+            """,
+            """
+                extend api @deprecated @deprecated {
+                    getFoo: String @path("foo")
+                }
+            """,
+            """
+                type Foo {
+                    field: String
+                    extend api @generate("GET") @generate("GET") {}
+                }
+            """,
+            """
+                extend api {
+                    getFoo: String @path("foo") @path("bar")
+                }
+            """,
+            """
+                extend api {
+                    getFoo: String @path("foo") @method(GET) @method(POST)
+                }
+            """,
+            """
+                extend api {
+                    getFoo: String @path("foo") @pagination @pagination
+                }
+            """,
+            """
+                extend api {
+                    getFoo: String @path("foo")
+                        @consumes("application/json") @consumes("text/plain")
+                }
+            """,
+            """
+                extend api {
+                    getFoo: String @path("foo")
+                        @produces("application/json") @produces("text/plain")
+                }
+            """,
+            """
+                extend api {
+                    getFoo: String @path("foo")
+                        @headers(X-Token: String) @headers(X-Request: String)
+                }
+            """,
+        ],
+    )
+    def test_LOG_203_duplicate_directive_negative(
+        self, raw: str, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """LOG-203: Repeated custom and special directives are semantic errors."""
+        parse_expect_semantic_error(raw)

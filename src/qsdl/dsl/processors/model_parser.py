@@ -501,7 +501,8 @@ def inherit_force_generation(schema: dsl.Schema) -> None:
         matched_entity = [x.value for x in base.fields if isinstance(x.value, dsl.Base | dsl.Enum)]
 
         for entity in matched_entity:
-            entity.directives.append(dsl.Directive(entity, name="force-generate"))
+            if not qutil.get_directive_of_name("force-generate", entity):
+                entity.directives.append(dsl.Directive(entity, name="force-generate"))
 
             if isinstance(entity, dsl.Base):
                 recurser(entity)

@@ -139,7 +139,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | LOG-201 | Directives are **generator-agnostic by default** (DSL core directives) or **generator-specific** (`@openapi(...)`, `@spring(...)`, etc.) |
 | LOG-202 | Custom directives (`@myDirective(...)`) are preserved in the model and available to generators                                           |
-| LOG-203 | Multiple instances of the same directive on the same entity are **not allowed** (last one wins or error, per parser)                     |
+| LOG-203 | Each directive name may occur at most once on an entity; duplicates are rejected with a semantic validation error |
 
 ### Schema Header Ordering
 
