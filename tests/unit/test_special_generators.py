@@ -30,10 +30,11 @@ SCHEMA = """
 def test_i18n_builds_in_memory_with_single_file_layout() -> None:
     files = build(generator_name="i18n", raw_schema=SCHEMA)
 
-    assert files.exists("en/domain.yaml")
-    assert files.exists("en/constant.yaml")
-    assert "User" in files.text("en/domain.yaml")
-    assert "OPEN" in files.text("en/constant.yaml")
+    assert files.paths() == (PurePosixPath("en.yaml"),)
+    content = files.text("en.yaml")
+    assert "domain.User:" in content
+    assert "constant.Status:" in content
+    assert "OPEN:" in content
 
 
 def test_i18n_builds_split_files_for_each_locale() -> None:
@@ -61,15 +62,16 @@ def test_i18n_builds_split_files_for_each_locale() -> None:
 def test_i18n_directory_adapter_reads_existing_translations_without_writing(tmp_path: Path) -> None:
     schema = parse_schema(raw_schema=SCHEMA)
     config = I18nConfig()
-    target = tmp_path / "en/domain.yaml"
-    target.parent.mkdir(parents=True)
-    target.write_text("User:\n  name: Existing Name\n", encoding="utf-8")
+    target = tmp_path / "en.yaml"
+    existing = "domain:\n  User:\n    name: Existing Name\n"
+    target.write_text(existing, encoding="utf-8")
 
     files = build_files_for_directory(schema, config, tmp_path)
 
-    assert "Existing Name" in files.text("en/domain.yaml")
-    assert not (tmp_path / "en/constant.yaml").exists()
-    assert target.read_text(encoding="utf-8") == "User:\n  name: Existing Name\n"
+    assert "Existing Name" in files.text("en.yaml")
+    assert files.paths() == (PurePosixPath("en.yaml"),)
+    assert sorted(path.relative_to(tmp_path) for path in tmp_path.rglob("*") if path.is_file()) == [Path("en.yaml")]
+    assert target.read_text(encoding="utf-8") == existing
 
 
 def test_i18n_generation_does_not_mutate_config() -> None:
@@ -86,9 +88,9 @@ def test_i18n_builds_do_not_leak_locale_configuration() -> None:
     first = build(generator_name="i18n", raw_schema=SCHEMA, config={"locale": "fr"})
     second = build(generator_name="i18n", raw_schema=SCHEMA, config={"locale": "de"})
 
-    assert first.exists("fr/domain.yaml")
-    assert second.exists("de/domain.yaml")
-    assert not second.exists("fr/domain.yaml")
+    assert first.exists("fr.yaml")
+    assert second.exists("de.yaml")
+    assert not second.exists("fr.yaml")
 
 
 def test_plantuml_returns_markdown_and_exact_png_bytes(monkeypatch: pytest.MonkeyPatch) -> None:
