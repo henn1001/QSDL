@@ -68,10 +68,50 @@ class TestE2EMixedRelation(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        product_properties = schemas["Product"]["properties"]
+        assert set(product_properties) == {"id", "name"}
+        assert "tags" not in product_properties
+        assert "categories" not in product_properties
+
+        tag_collection = openapi_schema["paths"]["/products/{product_id}/tags"]
+        assert tag_collection["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/TagList"
+        }
+        assert tag_collection["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/Tag"
+        }
+        assert tag_collection["post"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/Tag"
+        }
+
+        category_collection = openapi_schema["paths"]["/products/{product_id}/categorys"]
+        assert category_collection["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/CategoryList"
+        }
+        assert "/products/{product_id}/categorys/{id}/add" in openapi_schema["paths"]
+        assert "/products/{product_id}/categorys/{id}/remove" in openapi_schema["paths"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        product_entity = next(src_root.rglob("ProductEntity.java")).read_text(encoding="utf-8")
+        assert '@OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)' in product_entity
+        assert '@ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)' in product_entity
+        assert "public final Set<TagEntity> tags" in product_entity
+        assert "public final Set<CategoryEntity> categorys" in product_entity
+
+        tag_entity = next(src_root.rglob("TagEntity.java")).read_text(encoding="utf-8")
+        assert '@ManyToOne(fetch = FetchType.LAZY)' in tag_entity
+        assert '@JoinColumn(name = "tags_product_id")' in tag_entity
+
+        category_entity = next(src_root.rglob("CategoryEntity.java")).read_text(encoding="utf-8")
+        assert '@ManyToMany(fetch = FetchType.LAZY)' in category_entity
+        assert 't_product_to_t_category' in category_entity
+        assert len(list(src_root.rglob("ProductRepository.java"))) == 1
+        assert len(list(src_root.rglob("ProductService.java"))) == 1
+        assert len(list(src_root.rglob("ProductController.java"))) == 1
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

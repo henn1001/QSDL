@@ -48,10 +48,43 @@ class TestE2EOneToMany(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        user_properties = schemas["User"]["properties"]
+        assert user_properties["primary_metric"] == {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/Metric"},
+        }
+        assert user_properties["secondary_metric"] == {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/Metric"},
+        }
+
+        users = openapi_schema["paths"]["/users"]
+        assert users["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/User"
+        }
+        assert users["post"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/User"
+        }
+        assert "/users/{user_id}/primary_metric" not in openapi_schema["paths"]
+        assert "/users/{user_id}/secondary_metric" not in openapi_schema["paths"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        user_entity = next(src_root.rglob("UserEntity.java")).read_text(encoding="utf-8")
+        assert (
+            '@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)\n    @JoinColumn(name = "primary_metric_user_id")'
+            in user_entity
+        )
+        assert "private List<MetricEntity> primaryMetric;" in user_entity
+        assert (
+            '@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)\n    @JoinColumn(name = "secondary_metric_user_id")'
+            in user_entity
+        )
+        assert "private List<MetricEntity> secondaryMetric;" in user_entity
+        assert len(list(src_root.rglob("UserRepository.java"))) == 1
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

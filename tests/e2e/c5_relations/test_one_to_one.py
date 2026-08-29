@@ -87,10 +87,46 @@ class TestE2EOneToOne(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        user = schemas["User"]
+        assert user["properties"]["primary_metric"] == {"$ref": "#/components/schemas/Metric"}
+        assert user["properties"]["secondary_metric"] == {"$ref": "#/components/schemas/Metric"}
+        assert schemas["Metric"]["properties"]["role"] == {"$ref": "#/components/schemas/Role"}
+
+        users = openapi_schema["paths"]["/users"]
+        assert users["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/User"
+        }
+        assert users["post"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/User"
+        }
+        assert (
+            openapi_schema["paths"]["/users/{id}"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+            == {"$ref": "#/components/schemas/User"}
+        )
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        user_entity = next(src_root.rglob("UserEntity.java")).read_text(encoding="utf-8")
+        assert (
+            '@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)\n    @JoinColumn(name = "primary_metric_metric_id")'
+            in user_entity
+        )
+        assert (
+            '@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)\n    @JoinColumn(name = "secondary_metric_metric_id")'
+            in user_entity
+        )
+
+        metric_entity = next(src_root.rglob("MetricEntity.java")).read_text(encoding="utf-8")
+        assert (
+            '@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)\n    @JoinColumn(name = "role_role_id")'
+            in metric_entity
+        )
+        assert len(list(src_root.rglob("UserRepository.java"))) == 1
+        assert len(list(src_root.rglob("UserService.java"))) == 1
+        assert len(list(src_root.rglob("UserController.java"))) == 1
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

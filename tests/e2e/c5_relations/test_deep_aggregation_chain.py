@@ -97,10 +97,49 @@ class TestE2EDeepAggregationChain(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+        assert set(schemas["University"]["properties"]) == {"id", "name"}
+        assert set(schemas["Course"]["properties"]) == {"id", "name"}
+        assert set(schemas["Student"]["properties"]) == {"id", "name"}
+
+        university_courses = openapi_schema["paths"]["/universitys/{university_id}/courses"]
+        assert university_courses["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/CourseList"
+        }
+        assert "/universitys/{university_id}/courses/{id}/add" in openapi_schema["paths"]
+        assert "/universitys/{university_id}/courses/{id}/remove" in openapi_schema["paths"]
+
+        course_students = openapi_schema["paths"]["/courses/{course_id}/students"]
+        assert course_students["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/StudentList"
+        }
+        assert "/courses/{course_id}/students/{id}/add" in openapi_schema["paths"]
+        assert "/courses/{course_id}/students/{id}/remove" in openapi_schema["paths"]
+
+        student_addresses = openapi_schema["paths"]["/students/{student_id}/address"]
+        assert student_addresses["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/AddressList"
+        }
+        assert "/students/{student_id}/address/{id}/add" in openapi_schema["paths"]
+        assert "/students/{student_id}/address/{id}/remove" in openapi_schema["paths"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        student_entity = next(src_root.rglob("StudentEntity.java")).read_text(encoding="utf-8")
+        assert '@ManyToMany(fetch = FetchType.LAZY)' in student_entity
+        assert 't_course_to_t_student' in student_entity
+        assert 'public final Set<CourseEntity> courses' in student_entity
+
+        course_entity = next(src_root.rglob("CourseEntity.java")).read_text(encoding="utf-8")
+        assert '@ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)' in course_entity
+        assert '@ManyToMany(fetch = FetchType.LAZY)' in course_entity
+        assert 't_university_to_t_course' in course_entity
+
+        university_entity = next(src_root.rglob("UniversityEntity.java")).read_text(encoding="utf-8")
+        assert '@ManyToMany(mappedBy = "universitys", fetch = FetchType.LAZY)' in university_entity
+        assert "public final Set<CourseEntity> courses" in university_entity
+        assert len(list(src_root.rglob("UniversityRepository.java"))) == 1
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

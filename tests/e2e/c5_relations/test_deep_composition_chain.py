@@ -79,10 +79,63 @@ class TestE2EDeepCompositionChain(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+        assert set(schemas["Organization"]["properties"]) == {"id", "name"}
+        assert set(schemas["Department"]["properties"]) == {"id", "name"}
+        assert set(schemas["Team"]["properties"]) == {"id", "name"}
+        assert set(schemas["Employee"]["properties"]) == {"email", "id", "name"}
+
+        departments = openapi_schema["paths"]["/organizations/{organization_id}/departments"]
+        assert departments["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/DepartmentList"
+        }
+        assert departments["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/Department"
+        }
+        assert departments["post"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/Department"
+        }
+        assert "/organizations/{organization_id}/departments/{id}" in openapi_schema["paths"]
+
+        teams = openapi_schema["paths"]["/departments/{department_id}/teams"]
+        assert teams["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/TeamList"
+        }
+        assert "/departments/{department_id}/teams/{id}" in openapi_schema["paths"]
+
+        employees = openapi_schema["paths"]["/teams/{team_id}/employees"]
+        assert employees["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/Employee"
+        }
+        assert employees["post"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/Employee"
+        }
+        assert "/teams/{team_id}/employees/{id}" in openapi_schema["paths"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        employee_entity = next(src_root.rglob("EmployeeEntity.java")).read_text(encoding="utf-8")
+        assert '@ManyToOne(fetch = FetchType.LAZY)' in employee_entity
+        assert '@JoinColumn(name = "members_team_id")' in employee_entity
+
+        team_entity = next(src_root.rglob("TeamEntity.java")).read_text(encoding="utf-8")
+        assert (
+            '@OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)' in team_entity
+        )
+        assert '@JoinColumn(name = "teams_department_id")' in team_entity
+
+        department_entity = next(src_root.rglob("DepartmentEntity.java")).read_text(encoding="utf-8")
+        assert (
+            '@OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)' in department_entity
+        )
+        assert '@JoinColumn(name = "departments_organization_id")' in department_entity
+
+        organization_entity = next(src_root.rglob("OrganizationEntity.java")).read_text(encoding="utf-8")
+        assert (
+            '@OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.ALL)' in organization_entity
+        )
+        assert len(list(src_root.rglob("OrganizationRepository.java"))) == 1
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

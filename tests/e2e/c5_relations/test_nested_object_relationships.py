@@ -77,10 +77,42 @@ class TestE2ENestedObjectRelationships(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        assert schemas["Company"]["properties"]["headquarters"] == {"$ref": "#/components/schemas/Address"}
+        assert schemas["Address"]["properties"]["city"] == {"$ref": "#/components/schemas/City"}
+        assert schemas["City"]["properties"]["country"] == {"$ref": "#/components/schemas/Country"}
+
+        company = openapi_schema["paths"]["/companys"]
+        assert company["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/Company"
+        }
+        assert company["post"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/Company"
+        }
+        assert "/companys/{company_id}/headquarters" not in openapi_schema["paths"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        company_entity = next(src_root.rglob("CompanyEntity.java")).read_text(encoding="utf-8")
+        assert (
+            '@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)\n    @JoinColumn(name = "headquarters_address_id")'
+            in company_entity
+        )
+
+        address_entity = next(src_root.rglob("AddressEntity.java")).read_text(encoding="utf-8")
+        assert (
+            '@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)\n    @JoinColumn(name = "city_city_id")'
+            in address_entity
+        )
+
+        city_entity = next(src_root.rglob("CityEntity.java")).read_text(encoding="utf-8")
+        assert (
+            '@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)\n    @JoinColumn(name = "country_country_id")'
+            in city_entity
+        )
+        assert len(list(src_root.rglob("CompanyRepository.java"))) == 1
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

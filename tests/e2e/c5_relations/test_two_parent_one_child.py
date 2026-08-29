@@ -16,10 +16,14 @@ class TestE2ETwoParentOneChild(BaseE2ETest):
         type Foo {
           name: String
           basket: [Fruit]! @composition
+
+          extend api { }
         }
         type Bar {
           name: String
           basket: [Fruit]! @composition
+
+          extend api { }
         }
     """
 
@@ -62,10 +66,45 @@ class TestE2ETwoParentOneChild(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+        assert "basket" not in schemas["Foo"]["properties"]
+        assert "basket" not in schemas["Bar"]["properties"]
+        assert "/foos" not in openapi_schema["paths"]
+        assert "/bars" not in openapi_schema["paths"]
+        assert "/fruits" not in openapi_schema["paths"]
+
+        for parent in ("foo", "bar"):
+            collection = openapi_schema["paths"][f"/{parent}s/{{{parent}_id}}/fruits"]
+            assert collection["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+                "$ref": "#/components/schemas/FruitList"
+            }
+            assert collection["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+                "$ref": "#/components/schemas/Fruit"
+            }
+            assert collection["post"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+                "$ref": "#/components/schemas/Fruit"
+            }
+            item = openapi_schema["paths"][f"/{parent}s/{{{parent}_id}}/fruits/{{id}}"]
+            assert item["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+                "$ref": "#/components/schemas/Fruit"
+            }
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        for parent in ("Foo", "Bar"):
+            parent_entity = next(src_root.rglob(f"{parent}Entity.java")).read_text(encoding="utf-8")
+            expected_relation = (
+                '@OneToMany(mappedBy = "' + parent.lower() + '", fetch = FetchType.LAZY, cascade = CascadeType.ALL)'
+            )
+            assert expected_relation in parent_entity
+            assert "public final Set<FruitEntity> fruits" in parent_entity
+
+        fruit_entity = next(src_root.rglob("FruitEntity.java")).read_text(encoding="utf-8")
+        assert '@ManyToOne(fetch = FetchType.LAZY)' in fruit_entity
+        assert '@JoinColumn(name = "basket_foo_id")' in fruit_entity
+        assert '@JoinColumn(name = "basket_bar_id")' in fruit_entity
+        assert len(list(src_root.rglob("FruitRepository.java"))) == 1
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:
