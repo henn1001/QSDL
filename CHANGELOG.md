@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.0](https://github.com/henn1001/QSDL/compare/v6.4.0...v6.5.0) (2026-08-29)
+
+
+### Features
+
+* **directive:** entirely remove is_deprecated ([e76a0d3](https://github.com/henn1001/QSDL/commit/e76a0d361aa6bd8732669dc9d436dea3594d1c2f))
+* **generators:** support entity timestamp metadata ([a9f72d2](https://github.com/henn1001/QSDL/commit/a9f72d256a498aec1405cb0bdd37ec32a39e47d5))
+
+
+### Bug Fixes
+
+* **api:** clarify empty API semantics ([11af548](https://github.com/henn1001/QSDL/commit/11af548fbd83001152c96e473164f47811d12249))
+* **api:** enforce operation route uniqueness ([ce9d234](https://github.com/henn1001/QSDL/commit/ce9d23449e59fe0a56cb180b4fac43ecb6a9e884))
+* **core:** align namespace validation contract ([ae2fab7](https://github.com/henn1001/QSDL/commit/ae2fab7132a7e1e81cdbb51765dd6b2dcf491d64))
+* **core:** enforce enum value uniqueness ([69cec07](https://github.com/henn1001/QSDL/commit/69cec078c8b5c767a2c3fc1c6bf583fa08411ace))
+* **core:** enforce prevention of combining read and write-only directive ([95b1e44](https://github.com/henn1001/QSDL/commit/95b1e444aa13787f8f2afd92a0384568a618af86))
+* **core:** enforce qsdl naming conventions in the textx grammar ([450b56e](https://github.com/henn1001/QSDL/commit/450b56eb6aa4be3c77e1b0fe58a26f2edb782dca))
+* **directives:** reject duplicate directives ([c22244a](https://github.com/henn1001/QSDL/commit/c22244a5a2343d2fea243879aaa464af4ad8eb62))
+* **dsl:** clarify Base CRUD scope ([8238529](https://github.com/henn1001/QSDL/commit/8238529de450ae5bb44350759567fd25e2612246))
+* **dsl:** normalize namespace syntax ([2d87dc0](https://github.com/henn1001/QSDL/commit/2d87dc05ee06f73b6b0aacfae6ea47441b8296d2))
+* **dsl:** validate server URLs ([993cb8d](https://github.com/henn1001/QSDL/commit/993cb8d70f7c3a0af805fb1b2e341436b913e7b7))
+* **inheritance:** resolve multiple-inheritance conflicts ([c4f09f9](https://github.com/henn1001/QSDL/commit/c4f09f903c83e93f056945018f512a8f12cd9bad))
+* **parser:** enforce argument location precedence ([ea6df24](https://github.com/henn1001/QSDL/commit/ea6df24d7f3d6779d59d1161688f4d881737add7))
+* **parser:** harden canonical import graph ([1dd8959](https://github.com/henn1001/QSDL/commit/1dd89596be6c0bacc16a6629fa497ebfa200c7d4))
+* **relationships:** enforce required arrays ([193e69e](https://github.com/henn1001/QSDL/commit/193e69e939118217c302d1ee77a6a06a5f083637))
+
 ## [6.4.0](https://github.com/henn1001/QSDL/compare/v6.3.1...v6.4.0) (2026-07-13)
 
 
