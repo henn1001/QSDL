@@ -531,8 +531,9 @@ def parse_objects(schema: dsl.Schema) -> None:
         id_field = id_builder(obj)
         obj.fields.insert(0, id_field)
 
-    # we want to generate apis for all types that do not overwrite the api
-    # or specify the generate directive
+    # An explicit object API controls automatic CRUD generation. In particular,
+    # an empty API intentionally suppresses all automatic CRUD for that object.
+    # Objects without an API, or with @generate, proceed to api_builder.
     objects = list(filter(lambda x: not x.api or x.api.generate, objects))
     for obj in objects:
         # aggregations

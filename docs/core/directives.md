@@ -154,6 +154,10 @@ type Project extends AuditFields {
 
 Api blocks support `@deprecated` and `@namespace` (see [Cross-cutting directives](#cross-cutting-directives)).
 
+An API block may be empty. An empty top-level `extend api {}` is a valid no-op and produces no endpoints. An empty
+object-level `extend api {}` explicitly suppresses automatic CRUD generation for that object. A non-empty object API
+retains its custom operations; use `@generate(...)` when selected automatic CRUD operations should also be generated.
+
 ### `@generate(String, ...)`
 
 **Applies to:** `Api`

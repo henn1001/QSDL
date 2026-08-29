@@ -314,9 +314,9 @@ Object types (`type`) usually represent your **main domain entities**.
 They are the core of most schemas: objects define the data structures that other parts of the schema refer
 to (fields, operations, request/response models).
 
-QSDL automatically creates a set of CRUD-style operations for each object as part of schema processing.
-Generators then use these operations to produce the actual output (for example an OpenAPI spec or Spring
-controllers).
+QSDL automatically creates a set of CRUD-style operations for each object as part of schema processing when
+there is no explicit object-level API block. Generators then use these operations to produce the actual output
+(for example an OpenAPI spec or Spring controllers).
 
 An object can extend one or more `base` types to reuse common fields.
 
@@ -325,7 +325,13 @@ An object can extend one or more `base` types to reuse common fields.
 If you want to add or override endpoints related to a specific object, you can put an `extend api { ... }`
 block inside the object. This is optional.
 
-If you don’t write any operations, QSDL still provides an implicit CRUD API for each object.
+An explicit object-level API block controls automatic CRUD generation:
+
+- A block containing operations keeps those custom operations. Add `@generate(...)` when selected automatic CRUD
+  operations should also be generated.
+- An empty block, `extend api {}`, explicitly suppresses all automatic CRUD operations for that object.
+
+An object without an `extend api` block receives the default CRUD API.
 
 **Examples:**
 
@@ -475,13 +481,17 @@ extend api [directives...] {
 }
 ```
 
-Api blocks let you define **custom API operations** (endpoints).
+Api blocks let you define **custom API operations** (endpoints). An API block may also be empty.
 
 You can place an `extend api` block at the **top level** of your schema (global operations) or **inside an Object**
-(object-specific operations).
+(object-specific operations). Empty blocks have scope-specific behavior:
 
-By default, QSDL automatically generates CRUD operations for each `Object`. If you want to add additional
-operations, override the implicit ones, or define completely custom endpoints, use an `extend api` block.
+- An empty top-level `extend api {}` is a valid no-op and contributes no endpoints.
+- An empty object-level `extend api {}` is valid and suppresses that object’s automatic CRUD operations.
+
+For an `Object` without an explicit API block, QSDL automatically generates CRUD operations. To add additional
+operations, override the implicit ones, or define completely custom endpoints, use an `extend api` block. An
+empty block remains valid and follows the scope-specific behavior described above.
 
 Think of an api block as a collection of endpoint definitions:
 

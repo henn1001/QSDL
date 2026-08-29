@@ -15,7 +15,7 @@
 """Tests for SEM-8xx rules: Api & Operation rules.
 
 Rules covered:
-- SEM-801: An Api must contain at least one Operation
+- SEM-801: An Api may contain zero or more Operations
 - SEM-802: An Operation defines an HTTP endpoint
 - SEM-803: An Operation may specify @path(...)
 - SEM-804: An Operation may specify @method(...)
@@ -35,7 +35,7 @@ class TestSemApi:
     """Tests for SEM-801 to SEM-809: Api & Operation rules."""
 
     def test_SEM_801_api_with_operation_positive(self, parse: ParseFixture) -> None:
-        """SEM-801: Api with at least one operation is valid."""
+        """SEM-801: An Api with operations is valid."""
         schema = parse("""
             extend api {
                 getFoo: String @path("foo")
@@ -45,8 +45,8 @@ class TestSemApi:
         assert len(apis) == 1
         assert len(apis[0].operations) == 1
 
-    def test_SEM_801_empty_api_positive(self, parse: ParseFixture) -> None:
-        """SEM-801: Empty api is allowed (for extend api blocks)."""
+    def test_SEM_801_empty_top_level_api_positive(self, parse: ParseFixture) -> None:
+        """SEM-801: An empty top-level Api is a valid no-op."""
         schema = parse("""
             extend api {
             }
@@ -54,6 +54,23 @@ class TestSemApi:
         apis = xtx.get_children_of_api(schema)
         assert len(apis) == 1
         assert len(apis[0].operations) == 0
+        assert xtx.get_children_of_operation(schema) == []
+
+    def test_SEM_801_empty_object_api_suppresses_crud(self, parse: ParseFixture) -> None:
+        """SEM-801: An empty object Api suppresses automatic CRUD operations."""
+        schema = parse("""
+            type User {
+                name: String
+
+                extend api {
+                }
+            }
+        """)
+        obj = xtx.get_children_of_object(schema)[0]
+        assert obj.api is not None
+        assert obj.api.operations == []
+        assert obj.api.has_generated is False
+        assert xtx.get_children_of_operation(schema) == []
 
     def test_SEM_802_operation_defines_endpoint_positive(self, parse: ParseFixture) -> None:
         """SEM-802: Operation defines HTTP endpoint with return type."""
@@ -208,6 +225,8 @@ class TestSemApi:
         obj = xtx.get_children_of_object(schema)[0]
         assert obj.api is not None
         assert len(obj.api.operations) == 1
+        assert obj.api.has_generated is False
+        assert all(not operation.is_generated for operation in obj.api.operations)
 
     def test_SEM_808_multiple_apis_in_object_negative(
         self, parse_expect_semantic_error: ParseExpectErrorFixture

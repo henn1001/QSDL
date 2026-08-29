@@ -15,17 +15,17 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Identifiers & Naming Conventions
 
-| ID      | Element                | Rule                                                          | Reference                                |
-| ------- | ---------------------- | ------------------------------------------------------------- | ---------------------------------------- |
-| SYN-001 | Scalar names           | Must use `PascalCase`                                         | `validate_type_names`                    |
-| SYN-002 | Enum names             | Must use `PascalCase`                                         | `validate_type_names`                    |
-| SYN-003 | Base names             | Must use `PascalCase`                                         | `validate_type_names`                    |
-| SYN-004 | Object names           | Must use `PascalCase`                                         | `validate_type_names`                    |
-| SYN-005 | Enum values            | Must use `ALL_CAPS`, with optional underscore-separated words | `validate_type_names`                    |
-| SYN-006 | Field names            | Must use `camelCase` or `snake_case`                          | `validate_member_names`                  |
-| SYN-007 | Operation names        | Must use `camelCase` or `snake_case`                          | `validate_member_names`                  |
-| SYN-008 | Argument names         | Must use `camelCase` or `snake_case`                          | `validate_member_names`                  |
-| SYN-009 | Custom directive names | Must use `camelCase`, `snake_case`, or `kebab-case`           | `validate_member_names`                  |
+| ID      | Element                | Rule                                                          | Reference               |
+| ------- | ---------------------- | ------------------------------------------------------------- | ----------------------- |
+| SYN-001 | Scalar names           | Must use `PascalCase`                                         | `validate_type_names`   |
+| SYN-002 | Enum names             | Must use `PascalCase`                                         | `validate_type_names`   |
+| SYN-003 | Base names             | Must use `PascalCase`                                         | `validate_type_names`   |
+| SYN-004 | Object names           | Must use `PascalCase`                                         | `validate_type_names`   |
+| SYN-005 | Enum values            | Must use `ALL_CAPS`, with optional underscore-separated words | `validate_type_names`   |
+| SYN-006 | Field names            | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
+| SYN-007 | Operation names        | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
+| SYN-008 | Argument names         | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
+| SYN-009 | Custom directive names | Must use `camelCase`, `snake_case`, or `kebab-case`           | `validate_member_names` |
 
 ### Uniqueness Constraints
 
@@ -71,7 +71,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | ------- | --------------------------------------------------------- | ------------------------------------------ |
 | SEM-501 | Object represents a primary domain entity                 | Typically drives CRUD generation           |
 | SEM-502 | Object may extend zero or more Bases                      | `extends Base1, Base2, ...`                |
-| SEM-503 | Object may contain an optional `extend api { ... }` block | Overrides or extends default CRUD          |
+| SEM-503 | Object may contain an optional `extend api { ... }` block | Customizes or suppresses default CRUD      |
 | SEM-504 | Object may be marked `@deprecated`                        | Affects all generated endpoints and fields |
 
 ### Field Rules
@@ -99,17 +99,17 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Api & Operation Rules
 
-| ID      | Rule                                                                          | Notes                                                              |
-| ------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| SEM-801 | An Api must contain **at least one Operation**                                | Empty Api blocks are not allowed                                   |
-| SEM-802 | An Operation defines an HTTP endpoint (method, path, parameters, return type) | `name(args) : ReturnType`                                          |
-| SEM-803 | An Operation may specify `@path(...)` to define the URI template              | Default path derived from operation name if not specified          |
-| SEM-804 | An Operation may specify `@method(...)` to define HTTP verb                   | Valid values: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`              |
-| SEM-805 | An Operation may be marked `@pagination` to indicate list pagination support  | Must return an Object or Base                                      |
-| SEM-806 | An Operation may declare response headers via `@headers(...)`                 | Headers are metadata on the HTTP response                          |
-| SEM-807 | An Api can be used **multiple times** in a schema                             | Multiple Api blocks define separate custom endpoints               |
-| SEM-808 | An Api can be used **once inside an Object** via `extend api { ... }`         | Used to override or extend auto-generated CRUD operations          |
-| SEM-809 | Api endpoints must specify **unique paths** across all operations             | Maximum of two operations per path (with and without ID parameter) |
+| ID      | Rule                                                                          | Notes                                                                      |
+| ------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| SEM-801 | An Api may contain zero or more Operations                                    | Empty top-level APIs are no-ops; empty object APIs suppress automatic CRUD |
+| SEM-802 | An Operation defines an HTTP endpoint (method, path, parameters, return type) | `name(args) : ReturnType`                                                  |
+| SEM-803 | An Operation may specify `@path(...)` to define the URI template              | Default path derived from operation name if not specified                  |
+| SEM-804 | An Operation may specify `@method(...)` to define HTTP verb                   | Valid values: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`                      |
+| SEM-805 | An Operation may be marked `@pagination` to indicate list pagination support  | Must return an Object or Base                                              |
+| SEM-806 | An Operation may declare response headers via `@headers(...)`                 | Headers are metadata on the HTTP response                                  |
+| SEM-807 | An Api can be used **multiple times** in a schema                             | Multiple Api blocks define separate custom endpoints                       |
+| SEM-808 | An Api can be used **once inside an Object** via `extend api { ... }`         | Customizes or suppresses auto-generated CRUD operations                    |
+| SEM-809 | Api endpoints must specify **unique paths** across all operations             | Maximum of two operations per path (with and without ID parameter)         |
 
 ### Argument Rules
 
@@ -168,7 +168,7 @@ For quick lookup, here is a subset of high-impact rules:
 | **Uniqueness**           | SEM-101, SEM-102, SEM-103, SEM-104, SEM-105 |
 | **Inheritance**          | SEM-402, SEM-502, LOG-102                   |
 | **Relationships**        | SEM-701, SEM-702, SEM-704                   |
-| **Required Constraints** | SEM-301 (Enum), SEM-801 (Api)               |
+| **Required Constraints** | SEM-301 (Enum)                              |
 | **Field Directives**     | SEM-604, SEM-605, SEM-606, SEM-607, SEM-608 |
 
 ---
