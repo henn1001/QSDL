@@ -129,11 +129,6 @@ class TestLogDirective:
                 }
             """,
             """
-                type Foo @deprecated @deprecated {
-                    field: String
-                }
-            """,
-            """
                 type Foo {
                     field: String @readOnly @readOnly
                 }
@@ -145,11 +140,6 @@ class TestLogDirective:
             """,
             """
                 extend api @namespace("One") @namespace("Two") {
-                    getFoo: String @path("foo")
-                }
-            """,
-            """
-                extend api @deprecated @deprecated {
                     getFoo: String @path("foo")
                 }
             """,

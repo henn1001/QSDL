@@ -87,7 +87,6 @@ class Operation:
     description: list[str] = field(default_factory=list)
     path: str = None
     method: str = None
-    is_deprecated: bool = False
     is_generated: bool = False
     is_pageable: bool = False
 

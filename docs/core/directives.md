@@ -11,14 +11,13 @@ This page documents **where directives can be applied** in QSDL and what they co
 
 Cross-cutting directives apply to enum, base, object, and API declarations for organization and control over generation behavior. Generator-specific scalar directives are listed below.
 
-| Directive            | Purpose                                                                             | Applies to              |
-| -------------------- | ----------------------------------------------------------------------------------- | ----------------------- |
-| `@namespace(String)` | Organize types and operations into logical groups (packages, API tags, etc.).       | Enum, Base, Object, Api |
-| `@deprecated`        | Mark a type or API as deprecated to guide generators on handling legacy structures. | Base, Object, Api       |
-| `@force-generate`    | Force generation of an unused type (by default, unused Enum and Base are removed).  | Enum, Base              |
-| `@openapi(...)`      | Map custom scalar to OpenAPI type (generator-specific).                             | Scalar                  |
-| `@spring(...)`       | Map custom scalar to Spring type (generator-specific).                              | Scalar                  |
-| `@postgres(...)`     | Map custom scalar to PostgreSQL type (generator-specific).                          | Scalar                  |
+| Directive            | Purpose                                                                            | Applies to              |
+| -------------------- | ---------------------------------------------------------------------------------- | ----------------------- |
+| `@namespace(String)` | Organize types and operations into logical groups (packages, API tags, etc.).      | Enum, Base, Object, Api |
+| `@force-generate`    | Force generation of an unused type (by default, unused Enum and Base are removed). | Enum, Base              |
+| `@openapi(...)`      | Map custom scalar to OpenAPI type (generator-specific).                            | Scalar                  |
+| `@spring(...)`       | Map custom scalar to Spring type (generator-specific).                             | Scalar                  |
+| `@postgres(...)`     | Map custom scalar to PostgreSQL type (generator-specific).                         | Scalar                  |
 
 ### Examples
 
@@ -43,17 +42,9 @@ extend api @namespace("Admin") {
 }
 ```
 
-**Deprecation and custom scalar mapping:**
+**Custom scalar mapping:**
 
 ```qsdl
-base LegacyBase @deprecated {
-    old_field: String
-}
-
-type OldObject @deprecated {
-    name: String
-}
-
 scalar UUID @openapi("string, format: uuid") @spring("UUID") @postgres("UUID")
 
 enum FutureStatus @force-generate {
@@ -150,7 +141,7 @@ type Project extends AuditFields {
 
 ## Api directives
 
-Api blocks support `@deprecated` and `@namespace` (see [Cross-cutting directives](#cross-cutting-directives)).
+Api blocks support `@namespace` (see [Cross-cutting directives](#cross-cutting-directives)).
 
 An API block may be empty. An empty top-level `extend api {}` is a valid no-op and produces no endpoints. An empty
 object-level `extend api {}` explicitly suppresses automatic CRUD generation for that object. A non-empty object API

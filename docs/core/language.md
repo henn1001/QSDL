@@ -296,7 +296,6 @@ base AuditedOwned extends BaseAudit, BaseOwned {
 
 **Usable directives**
 
-- `@deprecated`
 - `@namespace("...")`
 - `@force-generate`
 - Any custom directive
@@ -365,7 +364,6 @@ HTTP methods follow this pattern.
 
 **Usable directives**
 
-- `@deprecated`
 - `@namespace("...")`
 - Any custom directive
 

@@ -170,9 +170,6 @@ def _present_special_directive_names(entity: object) -> set[str]:
     if isinstance(entity, dsl.Enum | dsl.Base | dsl.Object | dsl.Api) and entity.namespace is not None:
         names.add("namespace")
 
-    if isinstance(entity, dsl.Base | dsl.Object | dsl.Api) and entity.is_deprecated:
-        names.add("deprecated")
-
     if isinstance(entity, dsl.Api) and entity.generate:
         names.add("generate")
 
@@ -209,6 +206,7 @@ def _present_special_directive_names(entity: object) -> set[str]:
         for attribute, directive_name in (
             ("path", "path"),
             ("method", "method"),
+            ("is_pageable", "pagination"),
             ("consumes", "consumes"),
             ("produces", "produces"),
         ):

@@ -31,7 +31,6 @@ class Api:
     # defined in entity.tx
     description: list[str] = field(default_factory=list)
     # Special directives
-    is_deprecated: bool = False
     namespace: str | None = None
     generate: list[str] = field(default_factory=list)
     # Custom directives

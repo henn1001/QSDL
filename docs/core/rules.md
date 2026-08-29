@@ -63,19 +63,17 @@ Rules are organized by category and may be referenced by their rule identifier (
 | ------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | SEM-401 | Base types define reusable field collections                                       | Used for inheritance and nested value composition; relationship directives are Object-only (SEM-706) |
 | SEM-402 | Base may extend zero or more other Bases (linear inheritance chain recommended)    | `extends Base1, Base2, ...`                                                                          |
-| SEM-403 | Base may be marked `@deprecated`                                                   | Applies to all consumers of the Base                                                                 |
 | SEM-404 | Base cannot be directly instantiated in generated code (used only for inheritance) | Only Objects are instantiable                                                                        |
 | SEM-405 | Bases may have an optional namespace via `@namespace(...)`                         | The value must follow SYN-010                                                                        |
 
 ### Object Rules
 
-| ID      | Rule                                                         | Notes                                      |
-| ------- | ------------------------------------------------------------ | ------------------------------------------ |
-| SEM-501 | Object represents a primary domain entity                    | Typically drives CRUD generation           |
-| SEM-502 | Object may extend zero or more Bases                         | `extends Base1, Base2, ...`                |
-| SEM-503 | Object may contain an optional `extend api { ... }` block    | Customizes or suppresses default CRUD      |
-| SEM-504 | Object may be marked `@deprecated`                           | Affects all generated endpoints and fields |
-| SEM-505 | Objects may have an optional namespace via `@namespace(...)` | The value must follow SYN-010              |
+| ID      | Rule                                                         | Notes                                 |
+| ------- | ------------------------------------------------------------ | ------------------------------------- |
+| SEM-501 | Object represents a primary domain entity                    | Typically drives CRUD generation      |
+| SEM-502 | Object may extend zero or more Bases                         | `extends Base1, Base2, ...`           |
+| SEM-503 | Object may contain an optional `extend api { ... }` block    | Customizes or suppresses default CRUD |
+| SEM-505 | Objects may have an optional namespace via `@namespace(...)` | The value must follow SYN-010         |
 
 ### Field Rules
 

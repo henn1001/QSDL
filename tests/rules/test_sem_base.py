@@ -17,7 +17,6 @@
 Rules covered:
 - SEM-401: Base types define reusable field collections
 - SEM-402: Base may extend zero or more other Bases
-- SEM-403: Base may be marked @deprecated
 - SEM-404: Base cannot be directly instantiated (used only for inheritance)
 - SEM-405: Bases may have optional namespace via @namespace(...)
 """
@@ -117,32 +116,3 @@ class TestSemBase:
                 fieldB: Int
             }
         """)
-
-    def test_SEM_403_base_deprecated_positive(self, parse: ParseFixture) -> None:
-        """SEM-403: Base may be marked @deprecated."""
-        schema = parse("""
-            base OldStyle @deprecated @namespace("LegacyCommon") {
-                legacy: String
-            }
-            type Foo extends OldStyle {
-                name: String
-            }
-        """)
-        obj = xtx.get_children_of_object(schema)[0]
-        old_style = obj.supertypes[0]
-        assert old_style.is_deprecated is True
-        assert old_style.namespace == "LegacyCommon"
-
-    def test_SEM_403_base_not_deprecated_positive(self, parse: ParseFixture) -> None:
-        """SEM-403: Base without @deprecated is not deprecated."""
-        schema = parse("""
-            base Modern {
-                current: String
-            }
-            type Foo extends Modern {
-                name: String
-            }
-        """)
-        obj = xtx.get_children_of_object(schema)[0]
-        modern = obj.supertypes[0]
-        assert modern.is_deprecated is False

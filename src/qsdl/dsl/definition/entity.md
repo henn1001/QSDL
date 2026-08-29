@@ -41,7 +41,6 @@ class entity.Enum  {
 class entity.Base  {
   description : Description
   name : ID
-  is_deprecated : optional<BOOL>
   namespace : STRING
 }
 
@@ -49,7 +48,6 @@ class entity.Base  {
 class entity.Object  {
   description : Description
   name : ID
-  is_deprecated : optional<BOOL>
   namespace : STRING
 }
 
@@ -79,7 +77,6 @@ class entity.Field  {
 
 class entity.Api  {
   description : Description
-  is_deprecated : optional<BOOL>
   namespace : STRING
   generate : optional<list[STRING]>
 }
@@ -145,12 +142,12 @@ entity.Argument -->  entity.ValueType: value
 legend
   Match rules:
   |= Name  |= Rule details |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
   | Comment | \\/\\/.*$ |
   | DirectiveValue | (\?:(\?:\"(\?:\\\\.\|[^\"\\\\])*\")\|[^)])+ |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | Description |  |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
 end legend
 
 @enduml

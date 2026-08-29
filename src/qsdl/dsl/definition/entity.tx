@@ -19,7 +19,7 @@ ValueType:
     Scalar | Enum | Base | Object
 ;
 
-Import: 
+Import:
     'import' importURI=STRING
 ;
 
@@ -51,12 +51,9 @@ Base:
     'base' name=ID
 
     ('extends' supertypes+=[Base][','])?
-    
-    // Special directives in any order
-    ( 
-        is_deprecated?='@deprecated'
-        ('@namespace(' namespace=STRING ')')?
-    )#
+
+    // Special directives
+    ('@namespace(' namespace=STRING ')')?
 
     // Custom directives
     directives*=Directive
@@ -73,11 +70,8 @@ Object:
 
     ('extends' supertypes+=[Base][','])?
 
-    // Special directives in any order
-    ( 
-        is_deprecated?='@deprecated'
-        ('@namespace(' namespace=STRING ')')?
-    )#
+    // Special directives
+    ('@namespace(' namespace=STRING ')')?
 
     // Custom directives
     directives*=Directive
@@ -104,7 +98,7 @@ Field:
     (is_required?='!')?
 
     // Special directives in any order
-    ( 
+    (
         is_query_list?='@queryList'
         is_query?='@query'
         is_read_only?='@readOnly'
@@ -129,11 +123,10 @@ Field:
 Api :
     description=Description?
 
-    'extend' 'api' 
+    'extend' 'api'
 
     // Special directives in any order
-    ( 
-        is_deprecated?='@deprecated'
+    (
         ('@namespace(' namespace=STRING ')')?
         ('@generate(' generate*=STRING[','] ')')?
     )#
@@ -165,7 +158,7 @@ Operation:
     (is_required?='!')?
 
     // Special directives in any order
-    ( 
+    (
         ('@path(' path=STRING ')')?
         ('@method(' method=Method ')')?
         is_pageable?='@pagination'

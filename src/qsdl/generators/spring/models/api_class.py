@@ -88,7 +88,6 @@ class Operation:
     path: str = None
     method: str = None
 
-    is_deprecated: bool = False
     is_generated: bool = False
     is_pageable: bool = False
 
@@ -123,7 +122,6 @@ class Operation:
         self.path = _ref.path
         self.method = _ref.method.lower()
 
-        self.is_deprecated = False
         self.is_generated = _ref.is_generated
         self.is_pageable = _ref.is_pageable
 

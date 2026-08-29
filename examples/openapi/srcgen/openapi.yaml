@@ -1263,10 +1263,12 @@ paths:
         content:
           application/json:
             schema:
+              title: UpdateBuzzwordRequest
               type: object
               properties:
                 body:
                   type: string
+                  maxLength: 255
                 test:
                   type: array
                   items:
@@ -1362,7 +1364,7 @@ components:
       required: false
       schema:
         type: string
-    limit:  
+    limit:
       name: limit
       description: |
         The maximum number of items to return.

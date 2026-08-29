@@ -35,7 +35,6 @@ class Base:
     description: list[str] = field(default_factory=list)
     supertypes: list[dsl.Base] = field(default_factory=list)
     # Special directives
-    is_deprecated: bool = False
     namespace: str | None = None
     # Custom directives
     directives: list[dsl.Directive] = field(default_factory=list)

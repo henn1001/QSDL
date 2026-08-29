@@ -18,7 +18,6 @@ Rules covered:
 - SEM-501: Object represents a primary domain entity
 - SEM-502: Object may extend zero or more Bases
 - SEM-503: Object may contain an optional `extend api { ... }` block
-- SEM-504: Object may be marked @deprecated
 - SEM-505: Objects may have optional namespace via @namespace(...)
 """
 
@@ -127,24 +126,3 @@ class TestSemObject:
         obj = xtx.get_children_of_object(schema)[0]
         assert obj.api is not None
         assert obj.api.has_generated is True
-
-    def test_SEM_504_object_deprecated_positive(self, parse: ParseFixture) -> None:
-        """SEM-504: Object may be marked @deprecated."""
-        schema = parse("""
-            type LegacyUser @deprecated @namespace("LegacyUsers") {
-                name: String
-            }
-        """)
-        obj = xtx.get_children_of_object(schema)[0]
-        assert obj.is_deprecated is True
-        assert obj.namespace == "LegacyUsers"
-
-    def test_SEM_504_object_not_deprecated_positive(self, parse: ParseFixture) -> None:
-        """SEM-504: Object without @deprecated is not deprecated."""
-        schema = parse("""
-            type User {
-                name: String
-            }
-        """)
-        obj = xtx.get_children_of_object(schema)[0]
-        assert obj.is_deprecated is False
