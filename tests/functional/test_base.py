@@ -1,57 +1,14 @@
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate
 
 
 class TestBase:
     """Test Bases.
 
-    01. `Base` names must use `PascalCase`.
+    OpenAPI-specific Base inheritance rendering remains here until WP-09.
 
-    02. `Base` recursion on extends must be detected and prevented.
-
-    03. `Base` may inherit `Field`s from a `Base`.
-
-    04. `Base` name must be unique between `Object`, `Base` and `Scalar`.
+    Validation coverage for naming and inheritance is owned by tests/rules.
 
     """
-
-    def test_base_01_positive(self) -> None:
-        """Verify PascalCase naming convention"""
-        test_input = """\
-            base Foo {
-                field: Int
-            }
-        """
-
-        wrapper_generate(test_input)
-
-    def test_base_01_negative(self) -> None:
-        """Verify PascalCase naming convention"""
-        inputs = []
-
-        inputs.append("base wrong { test: String } ")
-        inputs.append("base Wro-Ng { test: String } ")
-        inputs.append("base WRO_NG { test: String } ")
-
-        for test_input in inputs:
-            wrapper_generate_failure(test_input)
-
-    def test_base_02_negative(self) -> None:
-        """Verify PascalCase naming convention"""
-        test_input = """\
-            base Fruit extends Foo {
-                bar: Int
-            }
-            
-            base AA extends Fruit {
-                foo: Int
-            }
-            
-            base Foo extends AA {
-                field: Int
-            }
-        """
-
-        wrapper_generate_failure(test_input)
 
     def test_base_03_positive(self) -> None:
         """Verify base extends base"""

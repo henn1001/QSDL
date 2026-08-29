@@ -23,6 +23,7 @@ Rules covered:
 - SEM-606: A Field cannot be both @readOnly and @writeOnly
 - SEM-607: A Field may override an inherited field via @override
 - SEM-608: A Field without @override cannot redefine an inherited field
+- SEM-609: Object fields cannot use reserved metadata names
 - SEM-610: Query fields reference only Scalars or Enums
 - SEM-611: @opaque applies only to Base-valued fields
 """
@@ -245,6 +246,46 @@ class TestSemField:
                 field: String
             }
         """)
+
+    @pytest.mark.parametrize("reserved_name", ["id", "uid", "iv"])
+    def test_SEM_609_object_reserved_field_negative(
+        self, reserved_name: str, parse: ParseFixture
+    ) -> None:
+        """SEM-609: Object fields cannot use generated entity metadata names."""
+        assert_semantic_error(
+            parse,
+            f"""
+                type User {{
+                    {reserved_name}: String
+                }}
+            """,
+            f'The Object User uses a reserved word "{reserved_name}".',
+        )
+
+    def test_SEM_609_inherited_object_reserved_field_negative(self, parse: ParseFixture) -> None:
+        """SEM-609: Objects cannot inherit a reserved field from a Base."""
+        assert_semantic_error(
+            parse,
+            """
+                base Metadata {
+                    id: String
+                }
+                type User extends Metadata {
+                    name: String
+                }
+            """,
+            'The Object User uses a reserved word "id".',
+        )
+
+    def test_SEM_609_base_id_positive(self, parse: ParseFixture) -> None:
+        """SEM-609: A standalone Base may define an id field."""
+        schema = parse("""
+            base Metadata @force-generate {
+                id: String
+            }
+        """)
+        base = xtx.get_children_of_base(schema)[0]
+        assert [field.name for field in base.fields] == ["id"]
 
     def test_SEM_610_query_scalar_and_enum_positive(self, parse: ParseFixture) -> None:
         """SEM-610: Query directives accept scalar and enum values."""

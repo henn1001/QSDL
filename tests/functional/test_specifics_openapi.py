@@ -1,4 +1,4 @@
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate
 
 
 class TestSpecificsOpenAPI:
@@ -7,8 +7,6 @@ class TestSpecificsOpenAPI:
     01. The usage of a `Base` on any `Field` value creates a nested JSON Object.
 
     02. The usage of a `Object` on any `Field` value creates a nested JSON Object.
-
-    03. `Directive` @namespace must use `PascalCase`.
 
     """
 
@@ -57,30 +55,6 @@ class TestSpecificsOpenAPI:
 
         assert properties["field1"]["$ref"]
         assert properties["field2"]["items"]["$ref"]
-
-    def test_specifics_03_positive(self) -> None:
-        """Verify PascalCase naming convention"""
-        test_input = """\
-            type Foo @namespace("Test") {
-                field: String
-            }
-        """
-
-        wrapper_generate(test_input)
-
-    def test_specifics_03_negative(self) -> None:
-        """Verify PascalCase naming convention"""
-        inputs = []
-
-        inputs.append('type Foo @namespace("!wrong") { field: String } ')
-        inputs.append('type Foo @namespace("Test.Domain") { field: String } ')
-        inputs.append('type Foo @namespace("Wro-Ng") { field: String } ')
-        inputs.append('type Foo @namespace("WRO_NG") { field: String } ')
-        inputs.append('type Foo @namespace("Test..Domain") { field: String } ')
-        inputs.append('type Foo @namespace("Test/Domain") { field: String } ')
-
-        for test_input in inputs:
-            wrapper_generate_failure(test_input)
 
     def test_specifics_04_positive(self) -> None:
         """Verify usage of relations without parent endpoints"""
