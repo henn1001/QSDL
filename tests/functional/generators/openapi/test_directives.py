@@ -77,6 +77,36 @@ def test_default_directive_is_rendered_with_yaml_value_types(tmp_path: Path) -> 
     assert properties["status"]["default"] == "OPEN"
 
 
+def test_query_directive_on_read_only_crud_fields(tmp_path: Path) -> None:
+    schema = """
+        type Project {
+            name: String! @query
+            description: String
+            creation_by: String @readOnly @query
+            creation_date: Date @readOnly @query
+            last_update_by: String @readOnly @query
+            last_update_date: Datetime @readOnly
+            meta_inf: Object
+        }
+    """
+
+    openapi = generate_openapi(schema, tmp_path)
+    parameters = openapi["paths"]["/projects"]["get"]["parameters"]
+    assert len(parameters) == 4
+    assert [parameter["$ref"] for parameter in parameters[1:]] == [
+        "#/components/parameters/cursor",
+        "#/components/parameters/limit",
+        "#/components/parameters/count",
+    ]
+
+    filter_properties = parameters[0]["schema"]["properties"]
+    assert set(filter_properties) == {"name", "creation_by", "creation_date", "last_update_by"}
+    assert filter_properties["name"] == {"type": "string"}
+    assert filter_properties["creation_by"] == {"type": "string"}
+    assert filter_properties["creation_date"] == {"type": "string", "format": "date"}
+    assert filter_properties["last_update_by"] == {"type": "string"}
+
+
 def test_force_generated_base_and_referenced_components(tmp_path: Path) -> None:
     schema = """
         base Unused {

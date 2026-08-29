@@ -79,6 +79,29 @@ class TestSemArgument:
             }
         """)
 
+    def test_SEM_901_unknown_argument_type_negative(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-901: An argument must reference a declared value type."""
+        parse_expect_semantic_error("""
+            extend api {
+                search(filter: UnknownType): String @path("search")
+            }
+        """)
+
+    @pytest.mark.parametrize(
+        "declaration",
+        [
+            "base Filter { field(arg: String): String }",
+            "type User { field(arg: String): String }",
+        ],
+    )
+    def test_SEM_901_arguments_only_operations_negative(
+        self, declaration: str, parse_expect_syntax_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-901: Arguments can only be declared on Operations."""
+        parse_expect_syntax_error(declaration)
+
     def test_SEM_902_argument_required_positive(self, parse: ParseFixture) -> None:
         """SEM-902: Argument may be required (! suffix)."""
         schema = parse("""

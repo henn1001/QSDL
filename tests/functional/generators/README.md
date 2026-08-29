@@ -50,9 +50,7 @@ def test_openapi_output(tmp_path: Path) -> None:
 
 `generate_openapi` requires the caller to provide a temporary output directory,
 generates `openapi.yaml` there, and loads that YAML into a mapping. It never
-uses the repository-level `srcgen/` directory. Existing root tests and generic
-wrappers remain temporarily for the later migration work packages; do not add
-new imports of those wrappers.
+uses the repository-level `srcgen/` directory.
 
 ## Directive and description ownership
 
@@ -62,11 +60,10 @@ The final ownership split established by WP-04 is:
   void-based directive tests retaining their composition and opaque coverage. In particular, query field semantics,
   relationship validity, duplicate directives, and inheritance overrides are not OpenAPI tests.
 - **E2E scenarios:** query-filter output is owned by `tests/e2e/c3_advanced/test_query_filter_object.py`; custom
-  operation payload/path behavior is owned by `tests/e2e/c3_advanced/test_operation_payload.py`. Positive relation
-  output remains in the legacy directive test until the c5 E2E target assertions are implemented by WP-07.
-- **Direct OpenAPI (final WP-09 location):** `@hidden`, `@readOnly`, `@writeOnly`, `@default`, `@ignore`,
-  `@force-generate`, namespace-to-tag rendering, and rendering-specific `@path`/`@method` behavior. Rendered
-  descriptions also remain direct OpenAPI assertions. These assertions currently remain in the legacy root files
-  until WP-09 moves them under `generators/openapi/`.
+  operation payload/path behavior is owned by `tests/e2e/c3_advanced/test_operation_payload.py`; relation output is
+  owned by the scenarios under `tests/e2e/c5_relations/`.
+- **Direct OpenAPI:** `@hidden`, `@readOnly`, `@writeOnly`, `@default`, `@ignore`, `@force-generate`,
+  namespace-to-tag rendering, rendering-specific `@path`/`@method` behavior, operation argument schemas, and
+  rendered descriptions live under `generators/openapi/`.
 - **Language descriptions:** empty-description rejection is generator-independent and is owned by
   `tests/rules/test_description.py`; rendered description output remains OpenAPI-specific.
