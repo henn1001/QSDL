@@ -117,9 +117,9 @@ Rules are organized by category and may be referenced by their rule identifier (
 | ------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | SEM-901 | An Argument defines an Operation parameter                                                      | `name : Type`, `name : [Type]`, `name : Type!`               |
 | SEM-902 | An Argument may be **required** (`!` suffix)                                                    | Indicates mandatory parameter                                |
-| SEM-903 | An Argument may be **query** (`?` suffix)                                                       | Parameter appears in query string; default for most contexts |
-| SEM-904 | An Argument may be **header** (`^` suffix)                                                      | Parameter appears in HTTP header                             |
-| SEM-905 | An Argument without explicit location (`?` or `^`) is inferred as body or path based on context | POST/PUT/PATCH typically use body; GET uses query            |
+| SEM-903 | An Argument may be **query** (`?` suffix)                                                       | Explicit query location takes precedence over method defaults; cannot be combined with `^` |
+| SEM-904 | An Argument may be **header** (`^` suffix)                                                      | Explicit header location takes precedence over method defaults; cannot be combined with `?` |
+| SEM-905 | An Argument without explicit location (`?` or `^`) is inferred from context                    | Path placeholders are always path parameters; otherwise GET uses query, POST/PUT/PATCH use body, and DELETE's body default is invalid |
 
 ---
 

@@ -17,14 +17,16 @@
 Rules covered:
 - SEM-901: An Argument defines an Operation parameter
 - SEM-902: An Argument may be required (! suffix)
-- SEM-903: An Argument may be query (? suffix)
-- SEM-904: An Argument may be header (^ suffix)
-- SEM-905: Argument without explicit location is inferred from context
+- SEM-903: An Argument may be query (? suffix), with explicit-location precedence
+- SEM-904: An Argument may be header (^ suffix), with explicit-location precedence
+- SEM-905: Argument without explicit location is inferred from context and path takes precedence
 """
+
+import pytest
 
 import qsdl.dsl.textx as xtx
 
-from .conftest import ParseFixture
+from .conftest import ParseExpectErrorFixture, ParseFixture
 
 
 class TestSemArgument:
@@ -78,26 +80,86 @@ class TestSemArgument:
         assert query_arg.is_required is False
 
     def test_SEM_903_argument_query_positive(self, parse: ParseFixture) -> None:
-        """SEM-903: Argument may be query (? suffix)."""
+        """SEM-903: Argument may be query (? suffix) and overrides method inference."""
         schema = parse("""
             extend api {
-                search(filter: String?): [String] @path("search")
+                search(filter: String?): [String] @path("search") @method(POST)
             }
         """)
+        operation = xtx.get_children_of_operation(schema)[0]
         args = xtx.get_children_of_argument(schema)
         filter_arg = next(a for a in args if a.name == "filter")
         assert filter_arg.is_query is True
+        assert [argument.name for argument in operation.query_parameters] == ["filter"]
+        assert operation.path_parameters == []
+        assert operation.header_parameters == []
+        assert operation.body_parameters == []
 
-    def test_SEM_904_argument_header_positive(self, parse: ParseFixture) -> None:
-        """SEM-904: Argument may be header (^ suffix)."""
-        schema = parse("""
-            extend api {
-                secure(token: String^): String @path("secure")
-            }
+    @pytest.mark.parametrize("method", ["GET", "POST", "PUT", "PATCH", "DELETE"])
+    def test_SEM_904_argument_header_positive(self, method: str, parse: ParseFixture) -> None:
+        """SEM-904: A header argument stays a header for every HTTP method."""
+        schema = parse(f"""
+            extend api {{
+                secure{method.title()}(token: String^): String @path("secure-{method.lower()}") @method({method})
+            }}
         """)
+        operation = xtx.get_children_of_operation(schema)[0]
         args = xtx.get_children_of_argument(schema)
         token_arg = next(a for a in args if a.name == "token")
         assert token_arg.is_header is True
+        assert [argument.name for argument in operation.header_parameters] == ["token"]
+        assert operation.path_parameters == []
+        assert operation.query_parameters == []
+        assert operation.body_parameters == []
+
+    def test_SEM_903_904_argument_locations_are_mutually_exclusive(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-903/904: Query and header modifiers cannot be combined."""
+        parse_expect_semantic_error("""
+            extend api {
+                search(filter: String?^): String @path("search")
+            }
+        """)
+
+    def test_SEM_905_argument_location_inferred_from_method(self, parse: ParseFixture) -> None:
+        """SEM-905: Unmodified arguments use the HTTP method default location."""
+        schema = parse("""
+            extend api {
+                getItem(filter: String): String @path("get-item") @method(GET)
+                createItem(data: String): String @path("create-item") @method(POST)
+                replaceItem(data: String): String @path("replace-item") @method(PUT)
+                patchItem(data: String): String @path("patch-item") @method(PATCH)
+            }
+        """)
+        operations = {operation.name: operation for operation in xtx.get_children_of_operation(schema)}
+
+        assert [argument.name for argument in operations["getItem"].query_parameters] == ["filter"]
+        assert operations["getItem"].body_parameters == []
+        assert [argument.name for argument in operations["createItem"].body_parameters] == ["data"]
+        assert operations["createItem"].query_parameters == []
+        assert [argument.name for argument in operations["replaceItem"].body_parameters] == ["data"]
+        assert operations["replaceItem"].query_parameters == []
+        assert [argument.name for argument in operations["patchItem"].body_parameters] == ["data"]
+        assert operations["patchItem"].query_parameters == []
+
+        for operation in operations.values():
+            assert operation.path_parameters == []
+            assert operation.header_parameters == []
+
+    def test_SEM_905_path_arguments_take_precedence(self, parse: ParseFixture) -> None:
+        """SEM-905: URI placeholders remain path parameters."""
+        schema = parse("""
+            extend api {
+                getItem: String @path("items/{item_id}") @method(GET)
+            }
+        """)
+        operation = xtx.get_children_of_operation(schema)[0]
+
+        assert [argument.name for argument in operation.path_parameters] == ["item_id"]
+        assert operation.query_parameters == []
+        assert operation.header_parameters == []
+        assert operation.body_parameters == []
 
     def test_SEM_905_argument_array_positive(self, parse: ParseFixture) -> None:
         """SEM-905: Argument can be array type."""

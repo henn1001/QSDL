@@ -604,7 +604,7 @@ How arguments are interpreted depends on the HTTP method and modifiers:
 - **GET**: Arguments without modifiers become **query parameters**.
 - **POST/PUT/PATCH**: Arguments without modifiers become **request body** fields. Use `?` to make them query
   parameters instead.
-- **DELETE**: Arguments **must be query parameters** (use `?` modifier). Request body arguments (without modifiers) are not allowed.
+- **DELETE**: Arguments without a location modifier would be request body parameters and are rejected. Use `?` for query parameters or `^` for header parameters.
 
 For all HTTP methods, use `{name}` in the `@path` to create **path parameters** (always strings, do not require a matching argument in the operation signature).
 
@@ -635,7 +635,7 @@ The default behavior changes by HTTP method; modifiers override defaults:
 | `^` (header)         | Header parameter         | Header parameter      | Header parameter         |
 | `[...]` (array)      | Array query param        | Array in request body | Array query param        |
 
-Modifiers can be combined (e.g., `Int!?` means a required query parameter of type Int).
+Required and array modifiers can be combined with a location modifier (e.g., `Int!?` means a required query parameter of type Int). The `?` and `^` location modifiers are mutually exclusive. Explicit locations are resolved before method defaults, and URI placeholders always remain path parameters.
 
 **Examples:**
 

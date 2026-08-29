@@ -592,15 +592,16 @@ def parse_operations(schema: dsl.Schema) -> None:
 
             # loop over operation arguments
             for argument in operation.arguments:
-                # set the argument type
-                if argument.value.name == "ID":
-                    argument.is_path = True
+                # Explicit locations take precedence over method-based inference.
+                if argument.is_path:
                     operation.path_parameters.append(argument)
-                elif operation.method == "GET" or argument.is_query:
-                    argument.is_query = True
-                    operation.query_parameters.append(argument)
                 elif argument.is_header:
                     operation.header_parameters.append(argument)
+                elif argument.is_query:
+                    operation.query_parameters.append(argument)
+                elif operation.method == "GET":
+                    argument.is_query = True
+                    operation.query_parameters.append(argument)
                 else:
                     argument.is_body = True
                     operation.body_parameters.append(argument)

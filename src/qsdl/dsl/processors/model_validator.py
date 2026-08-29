@@ -296,6 +296,10 @@ def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaM
         is_ref = False
 
         for argument in operation.arguments:
+            if argument.is_query and argument.is_header:
+                msg = f"The Argument {argument.name} of Operation {operation.name} cannot be both query and header."
+                raise TextXSemanticError(msg, **get_location(argument))
+
             # we only wanty limit the request body to one value
             if not argument.is_query and not argument.is_header:
                 count = count + 1
