@@ -16,13 +16,21 @@
 
 from pathlib import Path
 
+from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
+from qsdl.writer import DirectoryWriter
 
 from .config import Config
 
 
-def generate(schema: Schema, output_path: Path, config: Config) -> None:
-    """Generator func for that does nothing"""
+def build_files(schema: Schema, config: Config) -> GeneratedFiles:
+    """Build an empty artifact collection."""
     _ = schema
-    _ = output_path
     _ = config
+    return GeneratedFiles()
+
+
+# Temporary compatibility wrapper; remove in Work Package 05.
+def generate(schema: Schema, output_path: Path, config: Config) -> None:
+    """Generate no files through the legacy filesystem API."""
+    DirectoryWriter(output_path).write(build_files(schema, config))

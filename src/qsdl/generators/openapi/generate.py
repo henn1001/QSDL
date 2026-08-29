@@ -20,7 +20,9 @@ import stringcase
 
 import qsdl.dsl.textx as xtx
 from qsdl import dsl
-from qsdl.render import render
+from qsdl.artifacts import GeneratedFiles
+from qsdl.render import render_text
+from qsdl.writer import DirectoryWriter
 
 from . import util
 from .config import IDTYPE, Config
@@ -125,8 +127,8 @@ def get_paginated_object(schema: dsl.Schema, obj: dsl.Object, model_name: str) -
     return model
 
 
-def generate(schema: dsl.Schema, output_path: Path, config: Config) -> None:
-    """Generator func for OpenAPI"""
+def build_files(schema: dsl.Schema, config: Config) -> GeneratedFiles:
+    """Build OpenAPI artifacts in memory."""
 
     if config.id_type not in IDTYPE.__members__:
         raise ValueError("id_type must be `LONG` or `STRING`")
@@ -144,7 +146,6 @@ def generate(schema: dsl.Schema, output_path: Path, config: Config) -> None:
     util.schema = schema
     util.used_paths = []
 
-    output_file = output_path / "openapi.yaml"
     template_path = Path(__file__).parent / "template" / "openapi.j2"
 
     # parse schema into OpenApi custom models
@@ -160,4 +161,13 @@ def generate(schema: dsl.Schema, output_path: Path, config: Config) -> None:
         "config": config,
     }
 
-    render(output_file, context, template_path, output_path)
+    content = render_text(template_path, context)
+    files = GeneratedFiles()
+    files.add_text("openapi.yaml", content)
+    return files
+
+
+# Temporary compatibility wrapper; remove in Work Package 05.
+def generate(schema: dsl.Schema, output_path: Path, config: Config) -> None:
+    """Generate OpenAPI files through the legacy filesystem API."""
+    DirectoryWriter(output_path).write(build_files(schema, config))

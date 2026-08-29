@@ -17,8 +17,10 @@
 from pathlib import Path
 
 import qsdl.dsl.textx as xtx
+from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
-from qsdl.render import render
+from qsdl.render import render_text
+from qsdl.writer import DirectoryWriter
 
 from . import util
 from .config import Config
@@ -54,16 +56,14 @@ def parse_models(schema: Schema) -> list[Table]:
     return models
 
 
-def generate(schema: Schema, output_path: Path, config: Config) -> None:
-    """Generator func for that does nothing"""
-
-    output_file = output_path / config.file_name
-    template_path = Path(__file__).parent / "template" / "schema.j2"
+def build_files(schema: Schema, config: Config) -> GeneratedFiles:
+    """Build PostgreSQL artifacts in memory."""
 
     # save to store
     util.Store.schema = schema
     util.Store.config = config
 
+    template_path = Path(__file__).parent / "template" / "schema.j2"
     tables = parse_models(schema)
 
     # build the render arguments
@@ -72,4 +72,12 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         "config": config,
     }
 
-    render(output_file, context, template_path, output_path)
+    files = GeneratedFiles()
+    files.add_text(config.file_name, render_text(template_path, context))
+    return files
+
+
+# Temporary compatibility wrapper; remove in Work Package 05.
+def generate(schema: Schema, output_path: Path, config: Config) -> None:
+    """Generate PostgreSQL files through the legacy filesystem API."""
+    DirectoryWriter(output_path).write(build_files(schema, config))
