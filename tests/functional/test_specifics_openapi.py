@@ -72,9 +72,12 @@ class TestSpecificsOpenAPI:
         """Verify PascalCase naming convention"""
         inputs = []
 
-        inputs.append('type Foo @namespace("wrong") { field: String } ')
+        inputs.append('type Foo @namespace("!wrong") { field: String } ')
+        inputs.append('type Foo @namespace("Test.Domain") { field: String } ')
         inputs.append('type Foo @namespace("Wro-Ng") { field: String } ')
         inputs.append('type Foo @namespace("WRO_NG") { field: String } ')
+        inputs.append('type Foo @namespace("Test..Domain") { field: String } ')
+        inputs.append('type Foo @namespace("Test/Domain") { field: String } ')
 
         for test_input in inputs:
             wrapper_generate_failure(test_input)

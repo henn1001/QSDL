@@ -30,7 +30,7 @@ _PASCAL_CASE_NAME = re.compile(r"[A-Z][A-Za-z0-9]*")
 _ENUM_VALUE_NAME = re.compile(r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*")
 _MEMBER_NAME = re.compile(r"(?:[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[a-z][A-Za-z0-9]*)")
 _DIRECTIVE_NAME = re.compile(r"(?:[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[a-z][a-z0-9]*(?:-[a-z0-9]+)+|[a-z][A-Za-z0-9]*)")
-_NAMESPACE_NAME = re.compile(r"[A-Z][a-zA-Z]*")
+_NAMESPACE_NAME = re.compile(r"[A-Za-z][A-Za-z0-9]*")
 
 
 def _validate_name(entity: object, name: str, convention: str, pattern: re.Pattern[str]) -> None:
@@ -65,6 +65,7 @@ def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> N
     """
     validate_server_url(schema, metamodel)
     validate_type_names(schema, metamodel)
+    validate_namespaces(schema)
     validate_member_names(schema)
     validate_directives(schema)
     validate_enum_values(schema)
@@ -117,10 +118,6 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
             raise TextXSemanticError(msg, **get_location(entity))
         names.add(entity.name)
 
-        if isinstance(entity, dsl.Object) and entity.namespace and _NAMESPACE_NAME.fullmatch(entity.namespace) is None:
-            msg = f"The namespace of {entity._tx_fqn} {entity.name} must use PascalCase."
-            raise TextXSemanticError(msg, **get_location(entity))
-
         if isinstance(entity, dsl.Enum):
             for value in entity.values:
                 if _ENUM_VALUE_NAME.fullmatch(value) is None:
@@ -129,6 +126,26 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
                         "ALL_CAPS with optional underscore-separated words."
                     )
                     raise TextXSemanticError(msg, **get_location(entity))
+
+
+def validate_namespaces(schema: dsl.Schema) -> None:
+    """Validate namespace syntax for every declaration that supports it."""
+    entities = [
+        *xtx.get_children_of_enum(schema),
+        *xtx.get_children_of_base(schema),
+        *xtx.get_children_of_object(schema),
+        *xtx.get_children_of_api(schema),
+    ]
+
+    for entity in entities:
+        namespace = entity.namespace
+        if not namespace or _NAMESPACE_NAME.fullmatch(namespace) is not None:
+            continue
+
+        name = getattr(entity, "name", None)
+        label = f"{entity.__class__.__name__} {name!r}" if name is not None else entity.__class__.__name__
+        msg = f"The namespace of {label} must use PascalCase"
+        raise TextXSemanticError(msg, **get_location(entity))
 
 
 def validate_member_names(schema: dsl.Schema) -> None:

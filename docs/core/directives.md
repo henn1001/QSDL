@@ -4,43 +4,41 @@ This page documents **where directives can be applied** in QSDL and what they co
 
 > Scope note
 >
-> This page does not attempt to fully document generator-specific behavior. Generator-specific directives/arguments 
+> This page does not attempt to fully document generator-specific behavior. Generator-specific directives/arguments
 > should be documented under `docs/generators/<name>/`.
 
 ## General directives
 
-These directives apply to types, scalars, enums, and API blocks for organization and control over generation behavior.
+Cross-cutting directives apply to enum, base, object, and API declarations for organization and control over generation behavior. Generator-specific scalar directives are listed below.
 
-| Directive           | Purpose                                                                       | Applies to                    |
-| ------------------- | ----------------------------------------------------------------------------- | ----------------------------- |
-| `@namespace(String)` | Organize types and operations into logical groups (packages, API tags, etc.). | Scalar, Enum, Base, Object, Api |
-| `@deprecated`       | Mark a type or API as deprecated to guide generators on handling legacy structures. | Base, Object, Api             |
-| `@force-generate`   | Force generation of an unused type (by default, unused Enum and Base are removed). | Enum, Base                    |
-| `@openapi(...)`     | Map custom scalar to OpenAPI type (generator-specific). | Scalar                        |
-| `@spring(...)`      | Map custom scalar to Spring type (generator-specific). | Scalar                        |
-| `@postgres(...)`    | Map custom scalar to PostgreSQL type (generator-specific). | Scalar                        |
+| Directive            | Purpose                                                                             | Applies to              |
+| -------------------- | ----------------------------------------------------------------------------------- | ----------------------- |
+| `@namespace(String)` | Organize types and operations into logical groups (packages, API tags, etc.).       | Enum, Base, Object, Api |
+| `@deprecated`        | Mark a type or API as deprecated to guide generators on handling legacy structures. | Base, Object, Api       |
+| `@force-generate`    | Force generation of an unused type (by default, unused Enum and Base are removed).  | Enum, Base              |
+| `@openapi(...)`      | Map custom scalar to OpenAPI type (generator-specific).                             | Scalar                  |
+| `@spring(...)`       | Map custom scalar to Spring type (generator-specific).                              | Scalar                  |
+| `@postgres(...)`     | Map custom scalar to PostgreSQL type (generator-specific).                          | Scalar                  |
 
 ### Examples
 
 **Type organization with `@namespace`:**
 
 ```qsdl
-scalar UUID @namespace("common")
-
-enum Status @namespace("domain") {
+enum Status @namespace("Domain") {
     OPEN
     CLOSED
 }
 
-base AuditFields @namespace("common") {
+base AuditFields @namespace("Common") {
     created_at: Datetime @readOnly
 }
 
-type Project @namespace("projects") {
+type Project @namespace("Projects") {
     name: String!
 }
 
-extend api @namespace("admin") {
+extend api @namespace("Admin") {
     archiveAll(): Void @path("admin/archive-all") @method(POST)
 }
 ```
@@ -94,8 +92,8 @@ type Project {
 
 ### Relationship directives
 
-| Directive      | Purpose                                               |
-| -------------- | ----------------------------------------------------- |
+| Directive      | Purpose                                                        |
+| -------------- | -------------------------------------------------------------- |
 | `@composition` | Parent-child relationship (required array field only).         |
 | `@aggregation` | Independent reference relationship (required array field only) |
 
@@ -107,7 +105,7 @@ Use `@composition` when deleting a parent should delete its children. Use `@aggr
 type User {
     # Children of this user; delete user → delete projects
     owned_projects: [Project]! @composition
-    
+
     # Independent references; delete user → keep teams
     team_memberships: [Team]! @aggregation
 }
@@ -115,17 +113,17 @@ type User {
 
 ### Constraint and semantic modifiers
 
-| Directive           | Purpose                                                           |
-| ------------------- | ----------------------------------------------------------------- |
-| `@unique`           | Field values must be unique across all records.                   |
-| `@default("value")` | Provide a default value (used in schema/documentation).           |
-| `@minSize(int)`     | Set minimum length (strings) or value (numbers).                  |
-| `@maxSize(int)`     | Set maximum length (strings) or value (numbers).                  |
-| `@opaque`           | Treat field as opaque data (not inspected/decomposed).            |
-| `@hidden`           | Exclude field from API data layer.                                |
-| `@transient`        | Exclude field from database layer (requests/responses only).      |
-| `@ignore`           | Exclude field from generation (useful for documentation).         |
-| `@override`         | **Required** when redefining an inherited field from a base.      |
+| Directive           | Purpose                                                      |
+| ------------------- | ------------------------------------------------------------ |
+| `@unique`           | Field values must be unique across all records.              |
+| `@default("value")` | Provide a default value (used in schema/documentation).      |
+| `@minSize(int)`     | Set minimum length (strings) or value (numbers).             |
+| `@maxSize(int)`     | Set maximum length (strings) or value (numbers).             |
+| `@opaque`           | Treat field as opaque data (not inspected/decomposed).       |
+| `@hidden`           | Exclude field from API data layer.                           |
+| `@transient`        | Exclude field from database layer (requests/responses only). |
+| `@ignore`           | Exclude field from generation (useful for documentation).    |
+| `@override`         | **Required** when redefining an inherited field from a base. |
 
 **Example:**
 
@@ -171,7 +169,7 @@ Control which implicit CRUD operations to generate for an object's custom API bl
 ```qsdl
 type Project {
     name: String!
-    
+
     extend api @generate("GET_ALL", "GET", "UPDATE") {
         # Implicit DELETE is skipped due to @generate
         archive(id: Long!): Project @path("projects/{id}/archive") @method(PATCH)
@@ -187,19 +185,19 @@ Operation directives specify how endpoints are exposed and behave.
 
 ### Required directive
 
-| Directive       | Purpose                                             |
-| --------------- | --------------------------------------------------- |
+| Directive       | Purpose                                                            |
+| --------------- | ------------------------------------------------------------------ |
 | `@path(String)` | **Required.** Sets the API path; use `{name}` for path parameters. |
 
 ### Optional directives
 
-| Directive              | Purpose                                                       |
-| ---------------------- | ------------------------------------------------------------- |
-| `@method(HTTP_METHOD)` | HTTP method (GET, POST, PUT, PATCH, DELETE); defaults to GET. |
-| `@pagination`          | Convert response into a pageable object.                      |
-| `@consumes(String)`    | Override the media type consumed (e.g., `multipart/form-data`).|
-| `@produces(String)`    | Override the media type produced.                             |
-| `@headers(name: Type, ...)` | Define additional response headers the operation returns. |
+| Directive                   | Purpose                                                         |
+| --------------------------- | --------------------------------------------------------------- |
+| `@method(HTTP_METHOD)`      | HTTP method (GET, POST, PUT, PATCH, DELETE); defaults to GET.   |
+| `@pagination`               | Convert response into a pageable object.                        |
+| `@consumes(String)`         | Override the media type consumed (e.g., `multipart/form-data`). |
+| `@produces(String)`         | Override the media type produced.                               |
+| `@headers(name: Type, ...)` | Define additional response headers the operation returns.       |
 
 **Example:**
 
@@ -215,7 +213,7 @@ extend api {
     searchItems(name: String?): [Item] @path("items/search") @method(GET) @pagination
 
     "Get items with custom headers."
-    getItemsWithHeaders(): [Item] @path("items") 
+    getItemsWithHeaders(): [Item] @path("items")
         @headers(X-Total-Count: Int, X-Page-Number: Int)
 }
 ```

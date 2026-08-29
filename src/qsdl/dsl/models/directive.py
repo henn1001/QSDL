@@ -26,7 +26,7 @@ class Directive:
     """textX Directive class"""
 
     # required by textX
-    parent: dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation | dsl.Enum
+    parent: dsl.Scalar | dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation | dsl.Enum
 
     # defined in entity.tx
     name: str

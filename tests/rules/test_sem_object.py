@@ -19,6 +19,7 @@ Rules covered:
 - SEM-502: Object may extend zero or more Bases
 - SEM-503: Object may contain an optional `extend api { ... }` block
 - SEM-504: Object may be marked @deprecated
+- SEM-505: Objects may have optional namespace via @namespace(...)
 """
 
 import qsdl.dsl.textx as xtx
@@ -27,7 +28,7 @@ from .conftest import ParseFixture
 
 
 class TestSemObject:
-    """Tests for SEM-501 to SEM-504: Object rules."""
+    """Tests for SEM-501 to SEM-505: Object rules."""
 
     def test_SEM_501_object_domain_entity_positive(self, parse: ParseFixture) -> None:
         """SEM-501: Object represents a primary domain entity."""
@@ -130,12 +131,13 @@ class TestSemObject:
     def test_SEM_504_object_deprecated_positive(self, parse: ParseFixture) -> None:
         """SEM-504: Object may be marked @deprecated."""
         schema = parse("""
-            type LegacyUser @deprecated {
+            type LegacyUser @deprecated @namespace("LegacyUsers") {
                 name: String
             }
         """)
         obj = xtx.get_children_of_object(schema)[0]
         assert obj.is_deprecated is True
+        assert obj.namespace == "LegacyUsers"
 
     def test_SEM_504_object_not_deprecated_positive(self, parse: ParseFixture) -> None:
         """SEM-504: Object without @deprecated is not deprecated."""

@@ -85,7 +85,7 @@ class TestSemEnum:
     def test_SEM_303_enum_namespace_positive(self, parse: ParseFixture) -> None:
         """SEM-303: Enum may have optional namespace via @namespace(...)."""
         schema = parse("""
-            enum Status @namespace("com.example.domain") {
+            enum Status @namespace("ComExampleDomain") {
                 OPEN
                 CLOSED
             }
@@ -95,7 +95,7 @@ class TestSemEnum:
         """)
         enums = xtx.get_children_of_enum(schema)
         status_enum = next(e for e in enums if e.name == "Status")
-        assert status_enum.namespace == "com.example.domain"
+        assert status_enum.namespace == "ComExampleDomain"
 
     def test_SEM_303_enum_without_namespace_positive(self, parse: ParseFixture) -> None:
         """SEM-303: Enum without namespace is valid (optional)."""

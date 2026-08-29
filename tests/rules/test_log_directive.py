@@ -144,7 +144,7 @@ class TestLogDirective:
                 }
             """,
             """
-                extend api @namespace("one") @namespace("two") {
+                extend api @namespace("One") @namespace("Two") {
                     getFoo: String @path("foo")
                 }
             """,

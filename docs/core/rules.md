@@ -26,6 +26,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | SYN-007 | Operation names        | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
 | SYN-008 | Argument names         | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
 | SYN-009 | Custom directive names | Must use `camelCase`, `snake_case`, or `kebab-case`           | `validate_member_names` |
+| SYN-010 | Namespace values       | Must use `PascalCase`                                         | `validate_namespaces`   |
 
 ### Uniqueness Constraints
 
@@ -50,11 +51,11 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Enum Rules
 
-| ID      | Rule                                                                |
-| ------- | ------------------------------------------------------------------- |
-| SEM-301 | An Enum must contain **at least one value**                         |
-| SEM-302 | Enum values are constrained domain values (immutable in generators) |
-| SEM-303 | Enums may have optional namespace via `@namespace(...)`             |
+| ID      | Rule                                                                | Notes                         |
+| ------- | ------------------------------------------------------------------- | ----------------------------- |
+| SEM-301 | An Enum must contain **at least one value**                         |                               |
+| SEM-302 | Enum values are constrained domain values (immutable in generators) |                               |
+| SEM-303 | Enums may have optional namespace via `@namespace(...)`             | The value must follow SYN-010 |
 
 ### Base Rules
 
@@ -64,15 +65,17 @@ Rules are organized by category and may be referenced by their rule identifier (
 | SEM-402 | Base may extend zero or more other Bases (linear inheritance chain recommended)    | `extends Base1, Base2, ...`                                                                          |
 | SEM-403 | Base may be marked `@deprecated`                                                   | Applies to all consumers of the Base                                                                 |
 | SEM-404 | Base cannot be directly instantiated in generated code (used only for inheritance) | Only Objects are instantiable                                                                        |
+| SEM-405 | Bases may have an optional namespace via `@namespace(...)`                         | The value must follow SYN-010                                                                        |
 
 ### Object Rules
 
-| ID      | Rule                                                      | Notes                                      |
-| ------- | --------------------------------------------------------- | ------------------------------------------ |
-| SEM-501 | Object represents a primary domain entity                 | Typically drives CRUD generation           |
-| SEM-502 | Object may extend zero or more Bases                      | `extends Base1, Base2, ...`                |
-| SEM-503 | Object may contain an optional `extend api { ... }` block | Customizes or suppresses default CRUD      |
-| SEM-504 | Object may be marked `@deprecated`                        | Affects all generated endpoints and fields |
+| ID      | Rule                                                         | Notes                                      |
+| ------- | ------------------------------------------------------------ | ------------------------------------------ |
+| SEM-501 | Object represents a primary domain entity                    | Typically drives CRUD generation           |
+| SEM-502 | Object may extend zero or more Bases                         | `extends Base1, Base2, ...`                |
+| SEM-503 | Object may contain an optional `extend api { ... }` block    | Customizes or suppresses default CRUD      |
+| SEM-504 | Object may be marked `@deprecated`                           | Affects all generated endpoints and fields |
+| SEM-505 | Objects may have an optional namespace via `@namespace(...)` | The value must follow SYN-010              |
 
 ### Field Rules
 
@@ -115,6 +118,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | SEM-807 | An Api can be used **multiple times** in a schema                             | Multiple Api blocks define separate custom endpoints                                    |
 | SEM-808 | An Api can be used **once inside an Object** via `extend api { ... }`         | Customizes or suppresses auto-generated CRUD operations                                 |
 | SEM-809 | Api endpoints must specify **unique routes** across all operations            | A route is `(HTTP method, normalized URI template)`; different methods may share a path |
+| SEM-810 | APIs may have an optional namespace via `@namespace(...)`                     | The value must follow SYN-010                                                           |
 
 ### Argument Rules
 
@@ -172,7 +176,7 @@ For quick lookup, here is a subset of high-impact rules:
 
 | Category                 | High-Impact Rules                           |
 | ------------------------ | ------------------------------------------- |
-| **Naming**               | SYN-001 through SYN-009                     |
+| **Naming**               | SYN-001 through SYN-010                     |
 | **Uniqueness**           | SEM-101, SEM-102, SEM-103, SEM-104, SEM-105 |
 | **Inheritance**          | SEM-402, SEM-502, LOG-102                   |
 | **Relationships**        | SEM-701 through SEM-707                     |

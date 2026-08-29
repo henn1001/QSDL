@@ -720,7 +720,7 @@ type User {
 Type-level directives (organize and control generation):
 
 ```qsdl
-type Project @namespace("core") {
+type Project @namespace("Core") {
     name: String!
     archived: Boolean
 }

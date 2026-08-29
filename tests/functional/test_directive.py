@@ -24,7 +24,7 @@ class TestDirective:
 
     9.  `Directive` `@method` may be used on any `Operation` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
 
-    10. `Directive` `@namespace` may be used on any `Base`, `Api` or `Object` for grouping.
+    10. `Directive` `@namespace` may be used on any `Enum`, `Base`, `Api` or `Object` for grouping.
 
     11. `Directive` `@pagination` may be used on any `Operation` for converting response in a pageable object.
 
@@ -257,7 +257,7 @@ class TestDirective:
             extend api {
                 getObjects: [String] @path("objects")
             }
-            
+
             type Foo {
                 field : Int
 
@@ -395,7 +395,7 @@ class TestDirective:
                 APPLE
                 MELON
             }
-            
+
             type Foo {
                 field1 : String @default("test")
                 field2 : Int @default("1")
@@ -426,7 +426,7 @@ class TestDirective:
             base AA {
                 world: String @ignore
             }
-            
+
             base Foo extends AA {
                 world: String @override
                 fruit: String @ignore

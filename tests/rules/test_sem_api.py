@@ -24,6 +24,7 @@ Rules covered:
 - SEM-807: An Api can be used multiple times in a schema
 - SEM-808: An Api can be used once inside an Object via extend api
 - SEM-809: Api endpoints must specify unique method/path routes
+- SEM-810: APIs may have optional namespace via @namespace(...)
 """
 
 import qsdl.dsl.textx as xtx
@@ -32,17 +33,18 @@ from .conftest import ParseExpectErrorFixture, ParseFixture
 
 
 class TestSemApi:
-    """Tests for SEM-801 to SEM-809: Api & Operation rules."""
+    """Tests for SEM-801 to SEM-810: Api & Operation rules."""
 
     def test_SEM_801_api_with_operation_positive(self, parse: ParseFixture) -> None:
         """SEM-801: An Api with operations is valid."""
         schema = parse("""
-            extend api {
+            extend api @namespace("PublicApi") {
                 getFoo: String @path("foo")
             }
         """)
         apis = xtx.get_children_of_api(schema)
         assert len(apis) == 1
+        assert apis[0].namespace == "PublicApi"
         assert len(apis[0].operations) == 1
 
     def test_SEM_801_empty_top_level_api_positive(self, parse: ParseFixture) -> None:

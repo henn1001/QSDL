@@ -138,7 +138,7 @@ QSDL directives influence OpenAPI output:
 | `@readOnly`       | Field     | Field is excluded from request schemas (only in responses).                                   |
 | `@writeOnly`      | Field     | Field is excluded from response schemas (only in requests).                                   |
 | `@hidden`         | Field     | Field is completely excluded from OpenAPI output.                                             |
-| `@namespace(...)` | Type      | Type is tagged with the namespace for grouping in OpenAPI UI.                                 |
+| `@namespace(...)` | Enum, Base, Object, Api | Declarations and generated operations use the namespace for grouping in OpenAPI UI where applicable. |
 | `@pagination`     | Operation | Operation response is wrapped in a list model with `items`, `next_cursor`, and `total_count`. |
 | `@method(...)`    | Operation | Specifies HTTP method (GET, POST, PUT, PATCH, DELETE, etc.). Defaults to GET.                 |
 | `@path(...)`      | Operation | Specifies the endpoint path. Can include path parameters like `{id}`.                         |

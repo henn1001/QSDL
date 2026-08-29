@@ -19,6 +19,7 @@ Rules covered:
 - SEM-402: Base may extend zero or more other Bases
 - SEM-403: Base may be marked @deprecated
 - SEM-404: Base cannot be directly instantiated (used only for inheritance)
+- SEM-405: Bases may have optional namespace via @namespace(...)
 """
 
 import qsdl.dsl.textx as xtx
@@ -27,7 +28,7 @@ from .conftest import ParseExpectErrorFixture, ParseFixture
 
 
 class TestSemBase:
-    """Tests for SEM-401 to SEM-404: Base rules."""
+    """Tests for SEM-401 to SEM-405: Base rules."""
 
     def test_SEM_401_base_defines_fields_positive(self, parse: ParseFixture) -> None:
         """SEM-401: Base types define reusable field collections."""
@@ -120,7 +121,7 @@ class TestSemBase:
     def test_SEM_403_base_deprecated_positive(self, parse: ParseFixture) -> None:
         """SEM-403: Base may be marked @deprecated."""
         schema = parse("""
-            base OldStyle @deprecated {
+            base OldStyle @deprecated @namespace("LegacyCommon") {
                 legacy: String
             }
             type Foo extends OldStyle {
@@ -130,6 +131,7 @@ class TestSemBase:
         obj = xtx.get_children_of_object(schema)[0]
         old_style = obj.supertypes[0]
         assert old_style.is_deprecated is True
+        assert old_style.namespace == "LegacyCommon"
 
     def test_SEM_403_base_not_deprecated_positive(self, parse: ParseFixture) -> None:
         """SEM-403: Base without @deprecated is not deprecated."""
