@@ -17,7 +17,7 @@
 Rules covered:
 - LOG-101: All inherited fields from supertypes appear in flattened field list
 - LOG-102: Child redefining inherited field must use @override
-- LOG-103: @override field must have same base type or compatible subtype
+- LOG-103: @override replaces an inherited field; changed value types are allowed with a warning
 """
 
 import qsdl.dsl.textx as xtx
@@ -185,8 +185,8 @@ class TestLogInheritance:
         field = next(f for f in obj.fields if f.name == "field")
         assert field.value.name == "String"
 
-    def test_LOG_103_override_different_type_positive(self, parse: ParseFixture) -> None:
-        """LOG-103: Override can change type (with warning in implementation)."""
+    def test_LOG_103_override_changed_type_positive(self, parse: ParseFixture) -> None:
+        """LOG-103: Override can change value type with a warning during model processing."""
         schema = parse("""
             base Parent {
                 field: Int

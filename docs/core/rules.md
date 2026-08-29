@@ -131,7 +131,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | ------- | ----------------------------------------------------------------------------------------- |
 | LOG-101 | All inherited fields from supertypes must appear in the flattened field list of a type    |
 | LOG-102 | If a child type redefines an inherited field name, it **must** use `@override`            |
-| LOG-103 | An `@override` field must have the same base type as the parent (or a compatible subtype) |
+| LOG-103 | An `@override` field replaces an inherited field with the same name. A changed value type is allowed, but a warning is emitted during model processing. |
 
 ### Directive & Metadata
 
