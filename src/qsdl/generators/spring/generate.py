@@ -20,13 +20,12 @@ from pathlib import Path
 import qsdl.dsl.textx as xtx
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
-from qsdl.generators.openapi.config import Config as OpenApiConfig
+from qsdl.generators.openapi import Config as OpenApiConfig
+from qsdl.generators.openapi import generate as generate_openapi
 from qsdl.generators.openapi.config import IDTYPE as OpenApiIDType
-from qsdl.generators.openapi.generate import build_files as build_openapi_files
-from qsdl.generators.postgres.config import Config as PostgresConfig
-from qsdl.generators.postgres.generate import build_files as build_postgres_files
+from qsdl.generators.postgres import Config as PostgresConfig
+from qsdl.generators.postgres import generate as generate_postgres
 from qsdl.render import render_text
-from qsdl.writer import DirectoryWriter
 
 from . import import_resolver as resolver
 from . import util
@@ -345,18 +344,17 @@ def build_files(schema: Schema, config: Config) -> GeneratedFiles:
     postgres_config = PostgresConfig(table_prefix=config.table_prefix)
 
     files.extend(
-        build_openapi_files(schema, openapi_config),
+        generate_openapi(schema, openapi_config),
         prefix="src/main/resources",
     )
     files.extend(
-        build_postgres_files(schema, postgres_config),
+        generate_postgres(schema, postgres_config),
         prefix="src/main/resources/db/migration",
     )
 
     return files
 
 
-# Temporary compatibility wrapper; remove in Work Package 05.
-def generate(schema: Schema, output_path: Path, config: Config) -> None:
-    """Generate Spring files through the legacy filesystem API."""
-    DirectoryWriter(output_path).write(build_files(schema, config))
+def generate(schema: Schema, config: Config) -> GeneratedFiles:
+    """Generate Spring artifacts in memory."""
+    return build_files(schema, config)

@@ -24,7 +24,6 @@ import yaml
 import qsdl.dsl.textx as xtx
 from qsdl import dsl
 from qsdl.artifacts import GeneratedFile, GeneratedFiles
-from qsdl.writer import DirectoryWriter
 
 from .config import Config
 
@@ -234,7 +233,6 @@ def build_files_for_directory(schema: dsl.Schema, config: Config, output_root: P
     return build_files(schema, config, existing_files=existing)
 
 
-# Temporary compatibility wrapper; remove in Work Package 05.
-def generate(schema: dsl.Schema, output_path: Path, config: Config) -> None:
-    """Generate i18n files through the legacy filesystem API."""
-    DirectoryWriter(output_path).write(build_files_for_directory(schema, config, output_path))
+def generate(schema: dsl.Schema, config: Config) -> GeneratedFiles:
+    """Generate i18n artifacts without reading an existing destination."""
+    return build_files(schema, config)

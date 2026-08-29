@@ -22,7 +22,6 @@ import qsdl.dsl.textx as xtx
 from qsdl import dsl
 from qsdl.artifacts import GeneratedFiles
 from qsdl.render import render_text
-from qsdl.writer import DirectoryWriter
 
 from . import util
 from .config import IDTYPE, Config
@@ -167,7 +166,6 @@ def build_files(schema: dsl.Schema, config: Config) -> GeneratedFiles:
     return files
 
 
-# Temporary compatibility wrapper; remove in Work Package 05.
-def generate(schema: dsl.Schema, output_path: Path, config: Config) -> None:
-    """Generate OpenAPI files through the legacy filesystem API."""
-    DirectoryWriter(output_path).write(build_files(schema, config))
+def generate(schema: dsl.Schema, config: Config) -> GeneratedFiles:
+    """Generate OpenAPI artifacts in memory."""
+    return build_files(schema, config)

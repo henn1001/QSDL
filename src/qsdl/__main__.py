@@ -23,7 +23,9 @@ from typing import Annotated
 import typer
 
 from qsdl import __version__
+from qsdl.artifacts import GeneratedFiles
 from qsdl.core import generate
+from qsdl.writer import DirectoryWriter
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_show_locals=False)
 
@@ -53,12 +55,13 @@ def entrypoint(
     # set default output path if not provided
     output_path = output_path or input_path.parent / "srcgen"
 
-    # print version
-    if print_version:
-        with open(output_path / ".qversion", "w", encoding="utf-8") as file:
-            file.write(__version__)
-
     generate(output_path, generator_name=generator, input_path=input_path, config_path=config_path)
+
+    if print_version:
+        # A separate writer call intentionally applies the destination ignore policy here too.
+        files = GeneratedFiles()
+        files.add_text(".qversion", __version__)
+        DirectoryWriter(output_path).write(files)
 
 
 if __name__ == "__main__":

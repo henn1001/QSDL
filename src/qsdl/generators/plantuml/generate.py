@@ -22,7 +22,6 @@ import textx.model
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
 from qsdl.render import render_text
-from qsdl.writer import DirectoryWriter
 
 from . import util
 from .config import Config
@@ -79,7 +78,6 @@ def build_files(schema: Schema, config: Config) -> GeneratedFiles:
     return files
 
 
-# Temporary compatibility wrapper; remove in Work Package 05.
-def generate(schema: Schema, output_path: Path, config: Config) -> None:
-    """Generate PlantUML files through the legacy filesystem API."""
-    DirectoryWriter(output_path).write(build_files(schema, config))
+def generate(schema: Schema, config: Config) -> GeneratedFiles:
+    """Generate PlantUML artifacts in memory."""
+    return build_files(schema, config)

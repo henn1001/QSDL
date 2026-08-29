@@ -14,11 +14,8 @@
 
 """Generator Main entrypoint"""
 
-from pathlib import Path
-
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
-from qsdl.writer import DirectoryWriter
 
 from .config import Config
 
@@ -30,7 +27,6 @@ def build_files(schema: Schema, config: Config) -> GeneratedFiles:
     return GeneratedFiles()
 
 
-# Temporary compatibility wrapper; remove in Work Package 05.
-def generate(schema: Schema, output_path: Path, config: Config) -> None:
-    """Generate no files through the legacy filesystem API."""
-    DirectoryWriter(output_path).write(build_files(schema, config))
+def generate(schema: Schema, config: Config) -> GeneratedFiles:
+    """Generate no artifacts."""
+    return build_files(schema, config)

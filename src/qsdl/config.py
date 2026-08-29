@@ -12,35 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Global QSDL Configuration"""
+"""Compatibility access to registered generator names."""
 
-from collections.abc import Callable
-from pathlib import Path
-
-from qsdl import dsl
-from qsdl.generators import GENERATORS, ConfigType
+from qsdl.generators import available_generators as get_available_generators
 
 
 class Config:
-    """A configuration class that holds relevant data for QSDL"""
+    """Compatibility view of the available generators."""
 
-    # the unparsed schema definition
-    raw_schema: str = None
-
-    # the parsed schema definition.
-    schema: dsl.Schema = None
-
-    # path to a input file
-    input_path: Path = None
-
-    # path to a output folder
-    output_path: Path = None
-
-    # the used generator
-    generator: Callable = None
-
-    # Generator specific parameters
-    config: ConfigType = None
-
-    # All registered generators
-    available_generators: list[str] = GENERATORS.keys()
+    available_generators: tuple[str, ...] = get_available_generators()
