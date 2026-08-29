@@ -19,7 +19,10 @@ from pathlib import Path, PurePosixPath
 
 import pathspec
 
+from qsdl import logger
 from qsdl.artifacts import GeneratedFiles
+
+log = logger.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,12 +82,14 @@ class DirectoryWriter:
 
         for artifact in files:
             path = artifact.path
+            destination = self.root.joinpath(*path.parts)
             if ignore_policy.matches(path):
+                log.info("skipping ignored file: %s", destination)
                 skipped.append(path)
                 continue
 
-            destination = self.root.joinpath(*path.parts)
             if path in (PurePosixPath(".qignore"), PurePosixPath(".qsdl-ignore")) and destination.exists():
+                log.info("skipping existing ignore file: %s", destination)
                 skipped.append(path)
                 continue
 
@@ -95,6 +100,7 @@ class DirectoryWriter:
             resolved_destination = destination.resolve(strict=False)
             self._require_below_root(path, destination, resolved_destination, resolved_root)
 
+            log.info("writing file: %s", destination)
             if isinstance(artifact.content, str):
                 destination.write_bytes(artifact.content.encode("utf-8"))
             else:
