@@ -31,10 +31,30 @@ class TestE2EObjectScalarArray(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        foo = openapi_schema["components"]["schemas"]["Foo"]
+
+        assert foo["required"] == ["id"]
+        assert foo["properties"]["metadata"] == {
+            "type": "array",
+            "items": {"type": "object"},
+        }
+        assert openapi_schema["paths"]["/foos"]["post"]["requestBody"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/Foo"
+        }
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        foo_entity = next(src_root.rglob("FooEntity.java")).read_text(encoding="utf-8")
+        assert "@JdbcTypeCode(SqlTypes.JSON)\n    private List<ObjectNode> metadata;" in foo_entity
+
+        foo_request = next(src_root.rglob("FooRequest.java")).read_text(encoding="utf-8")
+        assert "List<ObjectNode> metadata" in foo_request
+        assert '@JsonProperty(value = "metadata")' in foo_request
+
+        foo_mapper = next(src_root.rglob("FooMapper.java")).read_text(encoding="utf-8")
+        assert "Foo toResponse(FooEntity entity);" in foo_mapper
+        assert "FooEntity toEntity(FooRequest dto);" in foo_mapper
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

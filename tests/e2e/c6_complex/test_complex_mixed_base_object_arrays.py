@@ -62,10 +62,45 @@ class TestE2EComplexMixedBaseObjectArrays(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+        employee = schemas["Employee"]["properties"]
+
+        assert employee["homeAddress"] == {"$ref": "#/components/schemas/Address"}
+        assert employee["workAddress"] == {"$ref": "#/components/schemas/Address"}
+        assert employee["department"] == {"$ref": "#/components/schemas/Department"}
+        assert employee["metadata"] == {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/Metadata"},
+        }
+        assert employee["skills"] == {
+            "type": "array",
+            "items": {"type": "string", "maxLength": 255},
+        }
+        assert schemas["Address"]["properties"]["street"]["type"] == "string"
+        assert schemas["Metadata"]["properties"]["value"]["type"] == "string"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        employee_entity = next(src_root.rglob("EmployeeEntity.java")).read_text(encoding="utf-8")
+        assert "private String homeAddressStreet;" in employee_entity
+        assert "private String homeAddressCity;" in employee_entity
+        assert "@JdbcTypeCode(SqlTypes.JSON)\n    private Address workAddress;" in employee_entity
+        assert "@JdbcTypeCode(SqlTypes.JSON)\n    private List<Metadata> metadata;" in employee_entity
+        assert "private DepartmentEntity department;" in employee_entity
+        assert "private List<String> skills;" in employee_entity
+
+        employee_request = next(src_root.rglob("EmployeeRequest.java")).read_text(encoding="utf-8")
+        assert "Address homeAddress" in employee_request
+        assert "Address workAddress" in employee_request
+        assert "List<Metadata> metadata" in employee_request
+        assert "DepartmentRequest department" in employee_request
+        assert "List<String> skills" in employee_request
+
+        employee_mapper = next(src_root.rglob("EmployeeMapper.java")).read_text(encoding="utf-8")
+        assert '@Mapping(target = "homeAddress.street", source = "homeAddressStreet")' in employee_mapper
+        assert '@Mapping(target = "homeAddressCity", source = "homeAddress.city")' in employee_mapper
+        assert "Address toAddress(AddressRequest request);" in employee_mapper
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

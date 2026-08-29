@@ -46,10 +46,33 @@ class TestE2EDeeplyNestedBaseWithOpaque(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        assert schemas["Author"]["properties"]["rating"] == {"$ref": "#/components/schemas/Rating"}
+        assert schemas["BookMetadata"]["properties"]["author"] == {"$ref": "#/components/schemas/Author"}
+        assert schemas["Book"]["properties"]["metadata"] == {"$ref": "#/components/schemas/BookMetadata"}
+        assert schemas["Rating"]["properties"]["stars"] == {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+        }
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        book_entity = next(src_root.rglob("BookEntity.java")).read_text(encoding="utf-8")
+        assert "@JdbcTypeCode(SqlTypes.JSON)\n    private BookMetadata metadata;" in book_entity
+        assert "private String title;" in book_entity
+
+        metadata = next(src_root.rglob("BookMetadata.java")).read_text(encoding="utf-8")
+        assert "public record BookMetadata(" in metadata
+        assert "Author author" in metadata
+        assert "String isbn" in metadata
+        assert "String publisher" in metadata
+
+        book_mapper = next(src_root.rglob("BookMapper.java")).read_text(encoding="utf-8")
+        assert "BookMetadata toBookMetadata(BookMetadataRequest request);" in book_mapper
+        assert "BookEntity toEntity(BookRequest dto);" in book_mapper
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

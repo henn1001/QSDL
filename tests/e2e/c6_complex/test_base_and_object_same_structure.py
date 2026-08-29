@@ -54,10 +54,38 @@ class TestE2EBaseAndObjectSameStructure(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        assert "id" not in schemas["AddressValue"]["properties"]
+        assert schemas["AddressEntity"]["required"] == ["id"]
+        person = schemas["Person"]["properties"]
+        assert person["homeAddress"] == {"$ref": "#/components/schemas/AddressValue"}
+        assert person["workAddress"] == {"$ref": "#/components/schemas/AddressEntity"}
+        assert "/addressentitys" in openapi_schema["paths"]
+        assert "/addressvalues" not in openapi_schema["paths"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        address_value = next(src_root.rglob("AddressValue.java")).read_text(encoding="utf-8")
+        assert "public record AddressValue(" in address_value
+        assert "String street" in address_value
+        assert "String city" in address_value
+
+        address_entity = next(src_root.rglob("AddressEntityEntity.java")).read_text(encoding="utf-8")
+        assert '@Table(name = "t_address_entity")' in address_entity
+        assert "private String street;" in address_entity
+        assert "private String city;" in address_entity
+
+        person_entity = next(src_root.rglob("PersonEntity.java")).read_text(encoding="utf-8")
+        assert "private String homeAddressStreet;" in person_entity
+        assert "private String homeAddressCity;" in person_entity
+        assert "private AddressEntityEntity workAddress;" in person_entity
+        assert '@JoinColumn(name = "work_address_address_entity_id")' in person_entity
+
+        person_request = next(src_root.rglob("PersonRequest.java")).read_text(encoding="utf-8")
+        assert "AddressValue homeAddress" in person_request
+        assert "AddressEntityRequest workAddress" in person_request
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

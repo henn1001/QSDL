@@ -90,10 +90,42 @@ class TestE2EComplexEntityGraph(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        assert schemas["Order"]["properties"]["customer"] == {"$ref": "#/components/schemas/Customer"}
+        assert schemas["OrderItem"]["properties"]["product"] == {"$ref": "#/components/schemas/Product"}
+        assert set(schemas["Order"]["properties"]) == {"id", "orderNumber", "customer"}
+
+        products = openapi_schema["paths"]["/orders/{order_id}/products"]
+        assert products["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/ProductList"
+        }
+        assert openapi_schema["paths"]["/orders/{order_id}/products/{id}/add"]["post"]["responses"]["200"][
+            "description"
+        ] == "OK"
+        assert "/orders/{order_id}/orderitems/{id}" in openapi_schema["paths"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        order_entity = next(src_root.rglob("OrderEntity.java")).read_text(encoding="utf-8")
+        assert "private CustomerEntity customer;" in order_entity
+        assert '@JoinColumn(name = "customer_customer_id")' in order_entity
+        assert "public final Set<OrderItemEntity> orderItems" in order_entity
+        assert "public final Set<ProductEntity> products" in order_entity
+
+        item_entity = next(src_root.rglob("OrderItemEntity.java")).read_text(encoding="utf-8")
+        assert "private ProductEntity product;" in item_entity
+        assert '@JoinColumn(name = "items_order_id")' in item_entity
+
+        product_entity = next(src_root.rglob("ProductEntity.java")).read_text(encoding="utf-8")
+        assert '@JoinTable(name = "t_order_to_t_product"' in product_entity
+        assert "public final Set<OrderEntity> orders" in product_entity
+
+        order_mapper = next(src_root.rglob("OrderMapper.java")).read_text(encoding="utf-8")
+        assert "uses = { CustomerMapper.class }" in order_mapper
+        assert '@Mapping(target = "orderItems", ignore = true)' in order_mapper
+        assert '@Mapping(target = "products", ignore = true)' in order_mapper
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

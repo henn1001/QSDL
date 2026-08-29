@@ -52,10 +52,45 @@ class TestE2EDeeplyNestedBaseTypes(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        assert schemas["ContactInfo"]["properties"]["location"] == {
+            "$ref": "#/components/schemas/GeoCoordinates"
+        }
+        assert schemas["Address"]["properties"]["contact"] == {"$ref": "#/components/schemas/ContactInfo"}
+        company = schemas["Company"]["properties"]
+        assert company["headquarters"] == {"$ref": "#/components/schemas/Address"}
+        assert schemas["GeoCoordinates"]["properties"]["latitude"] == {
+            "type": "number",
+            "format": "float",
+            "minimum": 0,
+        }
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        company_entity = next(src_root.rglob("CompanyEntity.java")).read_text(encoding="utf-8")
+        expected_fields = {
+            "headquartersStreet": "String",
+            "headquartersCity": "String",
+            "headquartersContactEmail": "String",
+            "headquartersContactPhone": "String",
+            "headquartersContactLocationLatitude": "Float",
+            "headquartersContactLocationLongitude": "Float",
+        }
+        for field, type_name in expected_fields.items():
+            assert f"private {type_name} {field};" in company_entity
+
+        company_request = next(src_root.rglob("CompanyRequest.java")).read_text(encoding="utf-8")
+        assert "Address headquarters" in company_request
+        assert '@JsonProperty(value = "headquarters")' in company_request
+
+        company_mapper = next(src_root.rglob("CompanyMapper.java")).read_text(encoding="utf-8")
+        assert (
+            '@Mapping(target = "headquartersContactLocationLongitude", '
+            'source = "headquarters.contact.location.longitude")' in company_mapper
+        )
+        assert "CompanyEntity toEntity(CompanyRequest dto);" in company_mapper
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:
