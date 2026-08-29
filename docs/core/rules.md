@@ -103,7 +103,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | ------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | SEM-801 | An Api may contain zero or more Operations                                    | Empty top-level APIs are no-ops; empty object APIs suppress automatic CRUD |
 | SEM-802 | An Operation defines an HTTP endpoint (method, path, parameters, return type) | `name(args) : ReturnType`                                                  |
-| SEM-803 | An Operation may specify `@path(...)` to define the URI template              | Default path derived from operation name if not specified                  |
+| SEM-803 | A custom Operation must specify `@path(...)` to define the URI template       | Required; no default path is derived from the operation name               |
 | SEM-804 | An Operation may specify `@method(...)` to define HTTP verb                   | Valid values: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`                      |
 | SEM-805 | An Operation may be marked `@pagination` to indicate list pagination support  | Must return an Object or Base                                              |
 | SEM-806 | An Operation may declare response headers via `@headers(...)`                 | Headers are metadata on the HTTP response                                  |

@@ -17,7 +17,7 @@
 Rules covered:
 - SEM-801: An Api may contain zero or more Operations
 - SEM-802: An Operation defines an HTTP endpoint
-- SEM-803: An Operation may specify @path(...)
+- SEM-803: A custom Operation must specify @path(...)
 - SEM-804: An Operation may specify @method(...)
 - SEM-805: An Operation may be marked @pagination
 - SEM-806: An Operation may declare response headers via @headers(...)
@@ -86,7 +86,7 @@ class TestSemApi:
         assert op.is_array is True
 
     def test_SEM_803_operation_path_positive(self, parse: ParseFixture) -> None:
-        """SEM-803: Operation may specify @path(...)."""
+        """SEM-803: A custom Operation with @path(...) is valid and normalized."""
         schema = parse("""
             extend api {
                 findByEmail: String @path("users/find-by-email")
@@ -95,6 +95,16 @@ class TestSemApi:
         operations = xtx.get_children_of_operation(schema)
         op = next(o for o in operations if o.name == "findByEmail")
         assert op.path == "/users/find-by-email"
+
+    def test_SEM_803_operation_without_path_negative(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-803: A custom Operation without @path(...) is rejected."""
+        parse_expect_semantic_error("""
+            extend api {
+                findByEmail: String
+            }
+        """)
 
     def test_SEM_804_operation_method_get_positive(self, parse: ParseFixture) -> None:
         """SEM-804: Operation may specify @method(GET)."""
