@@ -1,77 +1,13 @@
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate
 
 
 class TestDirective:
-    """Test Directives.
+    """Test OpenAPI-specific directive rendering retained for WP-09.
 
-    These directives change the OpenAPI generation.
-
-    1.  `Directive` `@query` may be use on any `Field` to create a query parameter for the get all method.
-
-    2.  `Directive` `@unique` may be use on any `Field` to mark it as unique.
-
-    3.  `Directive` `@hidden` may be use on any `Field` exclude it from api data layer.
-
-    4.  `Directive` `@readOnly` may be use on any `Field` to mark it as read only.
-
-    5.  `Directive` `@writeOnly` may be use on any `Field` to mark it as write only.
-
-    6.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a required list `Object`.
-
-    7.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a required list `Object`.
-
-    8.  `Directive` `@path` must be used on any `Operation` This specifies the API Path.
-
-    9.  `Directive` `@method` may be used on any `Operation` to specify the REST Method. Valid values are GET | POST | PUT | PATCH | DELETE.
-
-    10. `Directive` `@namespace` may be used on any `Enum`, `Base`, `Api` or `Object` for grouping.
-
-    11. `Directive` `@pagination` may be used on any `Operation` for converting response in a pageable object.
-
-    12. `Directive` `@produce` may be used on any `Operation` for changing the mime type.
-
-    13. `Directive` `@consumes` may be used on any `Operation` for changing the mime type.
-
-    14. `Directive` `@generate` may be used on `Api` to specify the generated operations. Valid values are GET_ALL, CREATE, GET, REPLACE, UPDATE, DELETE, ADD, REMOVE.
-
-    15. `Directive` `@minSize` may be used on `String`, `Int`, `Long` typed `Field` for setting minimum (length) of the value.
-
-    16. `Directive` `@maxSize` may be used on `String`, `Int`, `Long` typed `Field` for setting maximum (length) of the value.
-
-    17. `Directive` `@headers` may be used on any `Api` or `Oeration` for adding response headers to the operation.
-
-    18. `Directive` `@force-generate` may be used on any `Base` or `Enum` to force the generation regardless wether the entity is used anywhere or not.
-
-    19. `Directive` `@default("value")` may be used on `Object Field` for setting a default value.
-
-    20. `Directive` `@ignore` may be used on 'Field` to exclude it from the generation.
-
-    21. `Directive` `@transient` may be used on `Field` to exclude it from database layer.
-
-    22. `Directive` `@override` needs to be used on a `Field` which is redefining an inherited field.
+    Core directive parsing and validation belongs to ``tests/rules/`` or the
+    existing void-based directive tests. Query filtering, relationship
+    validation, and inheritance override behavior have dedicated owners.
     """
-
-    def test_directive_01_positive(self) -> None:
-        """Verify usage of @query"""
-        test_input = """\
-            base Foo {
-                name: String @query
-            }
-
-            type Bar extends Foo {
-                world: String @query
-            }
-        """
-
-        openapi = wrapper_generate(test_input)
-
-        parameter = openapi["paths"]["/bars"]["get"]["parameters"]
-
-        assert parameter[0]["in"] == "query"
-        assert parameter[0]["name"] == "filter"
-
-        assert parameter[0]["schema"]["properties"]["name"]["type"] == "string"
-        assert parameter[0]["schema"]["properties"]["world"]["type"] == "string"
 
     def test_directive_03_positive(self) -> None:
         """Verify usage of @hidden"""
@@ -172,36 +108,6 @@ class TestDirective:
         assert "/foos/{foo_id}/bars" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}" in openapi["paths"]
 
-    def test_directive_06_negative(self) -> None:
-        """Verify usage of @composition"""
-        inputs = []
-
-        test_input = """\
-            type Foo {
-                field: Int
-                ignored: String @composition
-            }
-
-            type Bar {
-                field: Int
-            }
-        """
-        inputs.append(test_input)
-
-        test_input = """\
-            type Foo {
-                field: Int
-            }
-
-            base Bar {
-                field: Foo @composition
-            }
-        """
-        inputs.append(test_input)
-
-        for test_input in inputs:
-            wrapper_generate_failure(test_input)
-
     def test_directive_07_positive(self) -> None:
         """Verify usage of @aggregation"""
         test_input = """\
@@ -222,44 +128,11 @@ class TestDirective:
         assert "/foos/{foo_id}/bars/{id}/add" in openapi["paths"]
         assert "/foos/{foo_id}/bars/{id}/remove" in openapi["paths"]
 
-    def test_directive_07_negative(self) -> None:
-        """Verify usage of @aggregation"""
-        inputs = []
-
-        test_input = """\
-            type Foo {
-                ignored: String @aggregation
-            }
-
-            type Bar {
-                field: Int
-            }
-        """
-        inputs.append(test_input)
-
-        test_input = """\
-            type Foo {
-                field: Int
-            }
-
-            base Bar {
-                field: Foo @aggregation
-            }
-        """
-        inputs.append(test_input)
-
-        for test_input in inputs:
-            wrapper_generate_failure(test_input)
-
     def test_directive_08_positive(self) -> None:
-        """Verify usage of @path"""
+        """Verify custom paths on object APIs are rendered correctly."""
         test_input = """\
-            extend api {
-                getObjects: [String] @path("objects")
-            }
-
             type Foo {
-                field : Int
+                field: Int
 
                 extend api {
                     getObject: String @path("foos")
@@ -270,28 +143,8 @@ class TestDirective:
 
         openapi = wrapper_generate(test_input)
 
-        assert openapi["paths"]["/objects"]["get"]["operationId"] == "getObjects"
         assert openapi["paths"]["/foos"]["get"]["operationId"] == "getObject"
         assert openapi["paths"]["/objectss"]["get"]["operationId"] == "getObjectss"
-
-    def test_directive_08_negative(self) -> None:
-        """Verify usage of @path"""
-        test_input = """\
-            extend api {
-                getObjects: [String]
-            }
-
-            type Foo {
-                field : Int
-
-                extend api {
-                    getObject: String
-                    getObjects: [String]
-                }
-            }
-        """
-
-        wrapper_generate_failure(test_input)
 
     def test_directive_10_positive(self) -> None:
         """Verify usage of @method"""
@@ -448,39 +301,3 @@ class TestDirective:
         properties = openapi["components"]["schemas"]["Bar"]["properties"]
         assert "world" in properties
         assert "fruit" not in properties
-
-    def test_directive_22_positive(self) -> None:
-        """Verify usage of @query"""
-        test_input = """\
-            base Fruit {
-                name: String @query
-            }
-
-            base Foo extends Fruit {
-                apple: String
-            }
-
-            type Bar extends Foo {
-                name: String @override
-            }
-        """
-
-        wrapper_generate(test_input)
-
-    def test_directive22_negative(self) -> None:
-        """Verify usage of @query"""
-        test_input = """\
-            base Fruit {
-                name: String @query
-            }
-
-            base Foo extends Fruit {
-                apple: String
-            }
-
-            type Bar extends Foo {
-                name: String
-            }
-        """
-
-        wrapper_generate_failure(test_input)

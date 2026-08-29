@@ -25,3 +25,20 @@ generates `openapi.yaml` there, and loads that YAML into a mapping. It never
 uses the repository-level `srcgen/` directory. Existing root tests and generic
 wrappers remain temporarily for the later migration work packages; do not add
 new imports of those wrappers.
+
+## Directive and description ownership
+
+The final ownership split established by WP-04 is:
+
+- **Core language/rules:** directive parsing and validation are owned by `tests/rules/`, with the existing
+  void-based directive tests retaining their composition and opaque coverage. In particular, query field semantics,
+  relationship validity, duplicate directives, and inheritance overrides are not OpenAPI tests.
+- **E2E scenarios:** query-filter output is owned by `tests/e2e/c3_advanced/test_query_filter_object.py`; custom
+  operation payload/path behavior is owned by `tests/e2e/c3_advanced/test_operation_payload.py`. Positive relation
+  output remains in the legacy directive test until the c5 E2E target assertions are implemented by WP-07.
+- **Direct OpenAPI (final WP-09 location):** `@hidden`, `@readOnly`, `@writeOnly`, `@default`, `@ignore`,
+  `@force-generate`, namespace-to-tag rendering, and rendering-specific `@path`/`@method` behavior. Rendered
+  descriptions also remain direct OpenAPI assertions. These assertions currently remain in the legacy root files
+  until WP-09 moves them under `generators/openapi/`.
+- **Language descriptions:** empty-description rejection is generator-independent and is owned by
+  `tests/rules/test_description.py`; rendered description output remains OpenAPI-specific.

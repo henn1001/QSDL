@@ -1,17 +1,11 @@
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate
 
 
 class TestDescription:
-    """Test descriptions.
+    """Test rendered descriptions.
 
-    01. A description may be added after version, for `Enum`, `Base`, `Api`, `Object` or `Field`.
-
-    02. A description may be `SingleLine` or `MultiLine`.
-
-    03. A `SingleLine` description must be presented between quotation marks and at least one character in between e.g. `"X"`.
-
-    04. A `MultiLine` description must be presented between three quotation marks and at least one character in between e.g. `""\"X\"""`.
-
+    Language-level description syntax and empty-description validation are
+    covered independently in ``tests/rules/test_description.py``.
     """
 
     def test_description_01_positive(self) -> None:
@@ -121,21 +115,3 @@ class TestDescription:
         schema = openapi["components"]["schemas"]
         assert desr in schema["Fruit"]["description"]
         assert desr in schema["Fruit"]["properties"]["field"]["description"]
-
-    def test_description_03_negative(self) -> None:
-        """Verify SingleLine minimum character."""
-
-        test_input = """\
-            description: ""
-        """
-
-        wrapper_generate_failure(test_input)
-
-    def test_description_04_negative(self) -> None:
-        """Verify MultiLine minimum character."""
-
-        test_input = """\
-            description: ""\"""\"
-        """
-
-        wrapper_generate_failure(test_input)
