@@ -19,67 +19,43 @@ from pathlib import Path
 import plantuml
 import textx.model
 
+from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
-from qsdl.render import is_ignored, render
+from qsdl.render import render_text
+from qsdl.writer import DirectoryWriter
 
 from . import util
 from .config import Config
 
 
-def generate_png(uml_markdown_file: Path, output_root: Path) -> None:
-    """Converts a markdown file containing PlantUml definitions to pngs.
+def generate_pngs(markdown: str) -> tuple[bytes, ...]:
+    """Convert the PlantUML sections in Markdown into PNG bytes."""
+    definitions = []
+    linereader = False
+    section = ""
 
-    Args:
-        uml_markdown_file (Path): The path to a markdown file.
-    """
-    if is_ignored(uml_markdown_file, output_root) or not uml_markdown_file.is_file():
-        return
+    # Keep the existing section extraction semantics while reading Markdown in memory.
+    for line in markdown.splitlines(keepends=True):
+        if line == "@startuml\n":
+            section = ""
+            linereader = True
+
+        if line == "@enduml\n":
+            definitions.append(section)
+            linereader = False
+
+        if linereader:
+            section = section + line
+
+    if len(definitions) != 3:
+        raise ValueError(f"expected 3 PlantUML definitions, got {len(definitions)}")
 
     uml = plantuml.PlantUML("http://www.plantuml.com/plantuml/img/")
-
-    # loop over markdown file and capture each start/end uml section
-    definitions = []
-
-    with open(uml_markdown_file, encoding="utf-8") as file:
-        linereader = False
-        section = ""
-
-        for line in file:
-            if line == "@startuml\n":
-                section = ""
-                linereader = True
-
-            if line == "@enduml\n":
-                definitions.append(section)
-                linereader = False
-
-            if linereader:
-                section = section + line
-
-    # these are our expected sections
-    enums = uml_markdown_file.parent / (uml_markdown_file.stem + ".enums.png")
-    bases = uml_markdown_file.parent / (uml_markdown_file.stem + ".bases.png")
-    overview = uml_markdown_file.parent / (uml_markdown_file.stem + ".overview.png")
-
-    files = [enums, bases, overview]
-
-    # create the pngs and save them along the markdown file
-    for definition in definitions:
-        png = uml.processes(definition)
-
-        png_file_name = files.pop(0)
-
-        if is_ignored(png_file_name, output_root):
-            continue
-
-        with open(png_file_name, "wb") as the_file:
-            the_file.write(png)
+    return tuple(uml.processes(definition) for definition in definitions)
 
 
-def generate(schema: Schema, output_path: Path, config: Config) -> None:
-    """Generator func for PlantUML"""
-
-    output_file = output_path / "plantuml.md"
+def build_files(schema: Schema, config: Config) -> GeneratedFiles:
+    """Build PlantUML Markdown and PNG artifacts in memory."""
     template_path = Path(__file__).parent / "template" / "uml.j2"
 
     util.schema = schema
@@ -92,6 +68,18 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         "config": config,
     }
 
-    render(output_file, context, template_path, output_path)
+    markdown = render_text(template_path, context)
+    files = GeneratedFiles()
+    files.add_text("plantuml.md", markdown)
 
-    generate_png(output_file, output_path)
+    png_paths = ("plantuml.enums.png", "plantuml.bases.png", "plantuml.overview.png")
+    for path, png in zip(png_paths, generate_pngs(markdown), strict=True):
+        files.add_bytes(path, png)
+
+    return files
+
+
+# Temporary compatibility wrapper; remove in Work Package 05.
+def generate(schema: Schema, output_path: Path, config: Config) -> None:
+    """Generate PlantUML files through the legacy filesystem API."""
+    DirectoryWriter(output_path).write(build_files(schema, config))

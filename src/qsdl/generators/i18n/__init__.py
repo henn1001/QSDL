@@ -15,9 +15,10 @@
 """QSDL Generator"""
 
 from .config import Config
-from .generate import generate
+from .generate import build_files_for_directory, generate
 
 __all__ = [
     "Config",
+    "build_files_for_directory",
     "generate",
 ]
