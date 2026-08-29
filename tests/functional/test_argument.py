@@ -30,25 +30,6 @@ class TestArgument:
 
     """
 
-    def test_argument_01_positive(self) -> None:
-        """Verify TBD naming convention"""
-        test_input = """\
-            extend api {
-                field(arg: String): Void @path("path")
-            }
-        """
-
-        wrapper_generate(test_input)
-
-    def test_argument_01_negative(self) -> None:
-        """Verify TBD naming convention"""
-        inputs = []
-
-        inputs.append('extend api { field(a?a: String): Void @path("path") } ')
-
-        for test_input in inputs:
-            wrapper_generate_failure(test_input)
-
     def test_argument_02_positive(self) -> None:
         """Verify empty arguments"""
         test_input = """\
@@ -58,16 +39,6 @@ class TestArgument:
         """
 
         wrapper_generate(test_input)
-
-    def test_argument_02_negative(self) -> None:
-        """Verify empty arguments"""
-        test_input = """\
-            extend api {
-                field(arg): Void @path("path")
-            }
-        """
-
-        wrapper_generate_failure(test_input)
 
     def test_argument_03_positive(self) -> None:
         """Verify  argument value types"""
@@ -153,17 +124,6 @@ class TestArgument:
             assert schema["properties"]["arg"]["type"] == "array"
             assert schema["properties"]["arg"]["items"]["type"] == "string"
             assert title not in schemas, f"{title} must be inline, not a component schema"
-
-    def test_argument_06_positive(self) -> None:
-        """Verify required"""
-        test_input = """\
-            extend api {
-                field1(arg: String!): Void @path("path1")
-                field2(arg: [String]!): Void @path("path2")
-            }
-        """
-
-        wrapper_generate(test_input)
 
     def test_argument_07_positive(self) -> None:
         """Verify argument is query for get"""
@@ -311,38 +271,6 @@ class TestArgument:
         schema = get_schema_request(openapi, "/path11", "post")
         assert schema["$ref"] == "#/components/schemas/Fruit"
         assert "Field11Request" not in schemas
-
-    def test_argument_09_negative(self) -> None:
-        """Verify argument can not be used for delete"""
-        test_input = """\
-            enum Bar {
-                OPEN
-                CLOSED
-            }
-
-            base Foo {
-                field: String
-            }
-
-            type Fruit {
-                field: String
-            }
-
-            extend api {
-                field1: Void @path("/path1/{arg}") @method(DELETE)
-                field2(arg: Int): Void @path("path2") @method(DELETE)
-                field3(arg: Float): Void @path("path3") @method(DELETE)
-                field4(arg: String): Void @path("path4") @method(DELETE)
-                field5(arg: Boolean): Void @path("path5") @method(DELETE)
-                field6(arg: Date): Void @path("path6") @method(DELETE)
-                field7(arg: Object): Void @path("path7") @method(DELETE)
-                field8(arg: Bar): Void @path("path8") @method(DELETE)
-                field9(arg: Foo): Void @path("path9") @method(DELETE)
-                field10(arg: Fruit): Void @path("path10") @method(DELETE)
-            }
-        """
-
-        wrapper_generate_failure(test_input)
 
     def test_argument_10_positive(self) -> None:
         """Verify argument is only used in operations"""

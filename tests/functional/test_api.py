@@ -1,4 +1,4 @@
-from tests import wrapper_generate, wrapper_generate_failure
+from tests import wrapper_generate
 
 
 class TestApi:
@@ -15,17 +15,6 @@ class TestApi:
     05. Operation IDs must be globally unique. This overlaps with auto generated CRUD operations for `Object`s.
 
     """
-
-    def test_api_01_positive(self) -> None:
-        """Verify empty Operation"""
-        test_input = """\
-            extend api {
-            }
-        """
-
-        openapi = wrapper_generate(test_input)
-
-        assert not openapi["paths"]
 
     def test_api_02_positive(self) -> None:
         """Verify Api multiple usage in schema"""
@@ -74,73 +63,3 @@ class TestApi:
         assert "post" not in openapi["paths"]["/foos"]
         assert "patch" not in openapi["paths"]["/foos"]
         assert "delete" not in openapi["paths"]["/foos"]
-
-    def test_api_03_negative(self) -> None:
-        """Verify Api CRUD overwrite"""
-        test_input = """\
-            type Type {
-                name: String
-
-                extend api {
-                    getType: Type
-                }
-
-                extend api {
-                    getTypes: [Type]
-                }
-            }
-        """
-
-        wrapper_generate_failure(test_input)
-
-    def test_api_04_negative(self) -> None:
-        """Verify unique method/path routes"""
-        inputs = []
-
-        test_input = """\
-            extend api {
-                getObject1: String @path("object")
-                getObject2: String @path("object")
-            }
-        """
-        inputs.append(test_input)
-
-        test_input = """\
-            type Type {
-                name: String
-            }
-
-            extend api {
-                getObject: String @path("types")
-            }
-        """
-        inputs.append(test_input)
-
-        for test_input in inputs:
-            wrapper_generate_failure(test_input)
-
-    def test_api_05_negative(self) -> None:
-        """Verify unique operation IDs"""
-        inputs = []
-
-        test_input = """\
-            extend api {
-                getObject: String @path("object1")
-                getObject: String @path("object2")
-            }
-        """
-        inputs.append(test_input)
-
-        test_input = """\
-            type Type {
-                name: String
-            }
-
-            extend api {
-                getType: String @path("test")
-            }
-        """
-        inputs.append(test_input)
-
-        for test_input in inputs:
-            wrapper_generate_failure(test_input)

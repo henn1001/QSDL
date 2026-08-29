@@ -69,6 +69,16 @@ class TestSemArgument:
         assert "limit" in arg_names
         assert "offset" in arg_names
 
+    def test_SEM_901_bare_argument_negative(
+        self, parse_expect_syntax_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-901: An argument must declare a value type."""
+        parse_expect_syntax_error("""
+            extend api {
+                search(query): String @path("search")
+            }
+        """)
+
     def test_SEM_902_argument_required_positive(self, parse: ParseFixture) -> None:
         """SEM-902: Argument may be required (! suffix)."""
         schema = parse("""
@@ -218,6 +228,27 @@ class TestSemArgument:
             "The Base type Filter used as query parameter in operation search contains a nested type field 'address'. Query parameters with Base types must only contain scalar/enum fields.",
         )
 
+    def test_SEM_906_query_base_with_inherited_nested_value_negative(self, parse: ParseFixture) -> None:
+        """SEM-906: Inherited nested fields are also invalid in query Bases."""
+        assert_semantic_error(
+            parse,
+            """
+                base Address {
+                    city: String
+                }
+                base FilterFields {
+                    address: Address
+                }
+                base Filter extends FilterFields {
+                    term: String
+                }
+                extend api {
+                    search(filter: Filter?): String @path("search")
+                }
+            """,
+            "The Base type Filter used as query parameter in operation search contains a nested type field 'address'. Query parameters with Base types must only contain scalar/enum fields.",
+        )
+
     @pytest.mark.parametrize(
         ("declaration", "value_type"),
         [
@@ -249,6 +280,22 @@ class TestSemArgument:
                 {declaration}
                 extend api {{
                     merge(first: Item, second: Item): String @path("merge-items") @method(POST)
+                }}
+            """,
+            "The Operation merge references more than one Object or tries to mix them. Currently not supported",
+        )
+
+    @pytest.mark.parametrize("declaration", ["type Item { value: String }", "base Item { value: String }"])
+    def test_SEM_907_reference_and_scalar_body_arguments_negative(
+        self, declaration: str, parse: ParseFixture
+    ) -> None:
+        """SEM-907: An operation cannot mix a reference and another unlocated argument."""
+        assert_semantic_error(
+            parse,
+            f"""
+                {declaration}
+                extend api {{
+                    merge(item: Item, note: String): String @path("merge-items") @method(POST)
                 }}
             """,
             "The Operation merge references more than one Object or tries to mix them. Currently not supported",
