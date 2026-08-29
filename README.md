@@ -53,18 +53,25 @@ qsdl project.qsdl -g openapi -o srcgen/
 ### CLI Options
 
 ```
-qsdl [OPTIONS] INPUT_PATH
+qsdl [OPTIONS] [INPUT_PATH]
 
 Arguments:
-  INPUT_PATH                  The path to the schema definition file. [required]
+  INPUT_PATH                  The path to the schema definition file. Required for generation.
 
 Options:
   -g, --generator TEXT        The requested generator.
   -c, --config_path PATH      Path to a config json file.
   -o, --output_path PATH      Path to a output folder. Default: 'srcgen/'
   -pv, --print_version        Prints a .qversion file to the output folder.
+  --print-default-config      Print the default JSON config and exit.
   --version                   Show the version and exit.
   --help                      Show this message and exit.
+```
+
+Print a generator's default configuration:
+
+```bash
+qsdl --print-default-config -g spring > config.json
 ```
 
 For detailed usage and examples, see [CLI documentation](./docs/cli.md).

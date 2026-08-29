@@ -15,6 +15,7 @@
 """QSDL - Generator interface"""
 
 import importlib
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -57,7 +58,7 @@ def load_generators() -> dict[str, GeneratorDefinition]:
                         config_class=config_class,
                     )
             except ImportError as error:
-                print(f"Error loading module '{folder.name}': {error}")
+                print(f"Error loading module '{folder.name}': {error}", file=sys.stderr)
 
     return generators
 

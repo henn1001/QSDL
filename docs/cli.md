@@ -7,12 +7,12 @@ This document describes the QSDL command-line interface, options, input/output h
 The QSDL CLI is the primary interface for generating code and specifications from schema definition files. It follows a simple pattern:
 
 ```
-qsdl [OPTIONS] INPUT_PATH
+qsdl [OPTIONS] [INPUT_PATH]
 ```
 
 Where:
 
-- **INPUT_PATH** — Path to a `.qsdl` schema file (required)
+- **INPUT_PATH** — Path to a `.qsdl` schema file (required for generation)
 - **OPTIONS** — Configure the generator and behavior
 
 ## Installation
@@ -41,6 +41,26 @@ qsdl myschema.qsdl -g openapi
 ```
 
 This outputs files to the default `srcgen/` directory.
+
+### Print a Generator's Default Configuration
+
+Print the default configuration for a generator as formatted JSON:
+
+```bash
+qsdl --print-default-config -g spring
+```
+
+The command does not require a schema and writes only JSON to stdout, so the
+result can be saved directly as a configuration file:
+
+```bash
+qsdl --print-default-config -g spring > config.json
+qsdl myschema.qsdl -g spring -c config.json
+```
+
+Enums are printed using their JSON values. Generator-specific configuration
+initialization is applied, so the output reflects the configuration received by
+the generator at runtime.
 
 ### Specifying Output Directory
 
@@ -75,23 +95,24 @@ srcgen/
 ## Options
 
 ```
-qsdl [OPTIONS] INPUT_PATH
+qsdl [OPTIONS] [INPUT_PATH]
 
 Arguments:
-  INPUT_PATH                  The path to the schema definition file. [required]
+  INPUT_PATH                  The path to the schema definition file. Required for generation.
 
 Options:
   -g, --generator TEXT        The requested generator.
   -c, --config_path PATH      Path to a config json file.
   -o, --output_path PATH      Path to a output folder. Default: 'srcgen/'
   -pv, --print_version        Prints a .qversion file to the output folder.
+  --print-default-config      Print the default JSON config and exit.
   --version                   Show the version and exit.
   --help                      Show this message and exit.
 ```
 
 ### Arguments
 
-**`INPUT_PATH`** — Path to your `.qsdl` schema file (required).
+**`INPUT_PATH`** — Path to your `.qsdl` schema file. Required for generation.
 
 ### Options
 
@@ -102,6 +123,8 @@ Options:
 **`-c, --config_path PATH`** — Path to a JSON configuration file with generator-specific options. See [Configuration](#configuration) for details.
 
 **`-pv, --print_version`** — Write a `.qversion` file to the output directory with the QSDL version.
+
+**`--print-default-config`** — Print the default JSON configuration for the selected generator. Requires `-g/--generator`.
 
 **`--version`** — Print the installed QSDL version and exit.
 
