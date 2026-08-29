@@ -5,7 +5,7 @@
  */
 package {{api.package.controller}};
 
-{{ util.macro_imports(self._TemplateReference__context.name, model) }}
+{{ util.macro_imports(self._TemplateReference__context.name, api) }}
 
 @WebMvcTest({{model.name}}Controller.class)
 @Import(TestConfig.class)

@@ -18,31 +18,31 @@ This generator targets modern Spring Boot applications with:
 
 All configuration options are provided either via a `config.json` file or CLI arguments.
 
-| Name                           | Type                       | Default                         | Description                                                                   | Required |
-| ------------------------------ | -------------------------- | ------------------------------- | ----------------------------------------------------------------------------- | -------- |
-| `title`                        | string                     | `"SpringBootApp"`               | Application name; used for the main entry class.                              | No       |
-| `group_id`                     | string                     | `"app"`                         | Maven group ID (reverse domain notation).                                     | No       |
-| `artifact_id`                  | string                     | `"app"`                         | Maven artifact ID.                                                            | No       |
-| `base_package`                 | string                     | `"app.server"`                  | Root Java package; all paths are relative to this.                            | No       |
-| `database`                     | enum (`HIBERNATE` \| `NO`) | `HIBERNATE`                     | Enable Hibernate JPA annotations and persistence layer.                       | No       |
-| `use_auditing`                 | boolean                    | `false`                         | Enable automatic audit fields (createdBy, createdAt, modifiedBy, modifiedAt). | No       |
-| `table_prefix`                 | string                     | `"t_"`                          | Prefix for database table names.                                              | No       |
-| `id_type`                      | enum (`LONG` \| `STRING`)  | `LONG`                          | ID type for domain objects (affects OpenAPI generation too).                  | No       |
-| `api_path`                     | string                     | `"%placeholder%.api"`           | Package path for API endpoints.                                               | No       |
-| `controller_path`              | string                     | `"%placeholder%.api"`           | Package path for controllers.                                                 | No       |
-| `service_path`                 | string                     | `"%placeholder%.service"`       | Package path for services.                                                    | No       |
-| `domain_path`                  | string                     | `"%placeholder%.domain"`        | Package path for DTOs and request/response models.                            | No       |
-| `entity_path`                  | string                     | `"%placeholder%.domain.entity"` | Package path for Hibernate entities.                                          | No       |
-| `mapper_path`                  | string                     | `"%placeholder%.domain.mapper"` | Package path for mappers (DTO ↔ Entity).                                      | No       |
-| `repository_path`              | string                     | `"%placeholder%.repository"`    | Package path for Spring Data repositories.                                    | No       |
-| `enum_path`                    | string                     | `"%placeholder%.constant"`      | Package path for enum types.                                                  | No       |
-| `exception_path`               | string                     | `"%placeholder%.exception"`     | Package path for exception classes.                                           | No       |
-| `model_path`                   | string                     | `"%placeholder%.model"`         | Package path for shared model/support classes.                                | No       |
-| `config_path`                  | string                     | `"%placeholder%.config"`        | Package path for configuration classes.                                       | No       |
-| `util_path`                    | string                     | `"%placeholder%.util"`          | Package path for utility classes.                                             | No       |
-| `package_placeholder_fallback` | string                     | `"global"`                      | Fallback package name when `@spring-package` is not specified.                | No       |
+| Name                           | Type                       | Default                         | Description                                                                         | Required |
+| ------------------------------ | -------------------------- | ------------------------------- | ----------------------------------------------------------------------------------- | -------- |
+| `title`                        | string                     | `"SpringBootApp"`               | Application name; used for the main entry class.                                    | No       |
+| `group_id`                     | string                     | `"app"`                         | Maven group ID (reverse domain notation).                                           | No       |
+| `artifact_id`                  | string                     | `"app"`                         | Maven artifact ID.                                                                  | No       |
+| `base_package`                 | string                     | `"app.server"`                  | Root Java package; all paths are relative to this.                                  | No       |
+| `database`                     | enum (`HIBERNATE` \| `NO`) | `HIBERNATE`                     | Enable Hibernate JPA annotations and persistence layer.                             | No       |
+| `use_auditing`                 | boolean                    | `false`                         | Enable automatic audit fields (createdBy, createdAt, modifiedBy, modifiedAt).       | No       |
+| `table_prefix`                 | string                     | `"t_"`                          | Prefix for database table names.                                                    | No       |
+| `id_type`                      | enum (`LONG` \| `STRING`)  | `LONG`                          | ID type for domain objects (affects OpenAPI generation too).                        | No       |
+| `api_path`                     | string                     | `"%placeholder%.api"`           | Package path for API endpoints.                                                     | No       |
+| `controller_path`              | string                     | `"%placeholder%.api"`           | Package path for controllers.                                                       | No       |
+| `service_path`                 | string                     | `"%placeholder%.service"`       | Package path for services.                                                          | No       |
+| `domain_path`                  | string                     | `"%placeholder%.domain"`        | Package path for DTOs and request/response models.                                  | No       |
+| `entity_path`                  | string                     | `"%placeholder%.domain.entity"` | Package path for Hibernate entities.                                                | No       |
+| `mapper_path`                  | string                     | `"%placeholder%.domain.mapper"` | Package path for mappers (DTO ↔ Entity).                                            | No       |
+| `repository_path`              | string                     | `"%placeholder%.repository"`    | Package path for Spring Data repositories.                                          | No       |
+| `enum_path`                    | string                     | `"%placeholder%.constant"`      | Package path for enum types.                                                        | No       |
+| `exception_path`               | string                     | `"%placeholder%.exception"`     | Package path for exception classes.                                                 | No       |
+| `model_path`                   | string                     | `"%placeholder%.model"`         | Package path for shared model/support classes.                                      | No       |
+| `config_path`                  | string                     | `"%placeholder%.config"`        | Package path for configuration classes.                                             | No       |
+| `util_path`                    | string                     | `"%placeholder%.util"`          | Package path for utility classes.                                                   | No       |
+| `package_placeholder_fallback` | string                     | `"global"`                      | Fallback package name when neither `@spring-package` nor `@namespace` is specified. | No       |
 
-**Note:** Path configuration accepts a placeholder token `%placeholder%` which is automatically replaced with the containing package (from `@spring-package` directive) or the fallback value.
+**Note:** Path configuration accepts a placeholder token `%placeholder%` which is automatically replaced with the containing package. Spring uses `@spring-package` first, then `@namespace`, and finally the configured fallback package.
 
 ### Example Configuration
 
@@ -313,7 +313,7 @@ scalar Money @spring("BigDecimal, entity: java.math.BigDecimal, pattern: ^\\d+(\
 
 ### `@spring-package`
 
-Assigns a custom package namespace for code generation. Overrides the `package_placeholder_fallback` for a specific domain object:
+Assigns a custom package namespace for code generation. It has priority over `@namespace` and the `package_placeholder_fallback` for the declaration where it appears:
 
 **Syntax:**
 
@@ -332,6 +332,15 @@ type User @spring-package("user") {
 ```
 
 When applied to a top-level `extend api`, it groups custom operations into a dedicated controller:
+
+For an API, package selection follows this order:
+
+1. `@spring-package` on the API.
+2. `@namespace` on the API.
+3. `@spring-package` or `@namespace` on its owning object.
+4. `package_placeholder_fallback`.
+
+An API-level namespace therefore can place an object API in a different package from the object's DTOs. `@spring-controller` controls which controller receives operations; when it targets an object controller, that object's package remains authoritative.
 
 ```qsdl
 extend api @spring-package("user") {

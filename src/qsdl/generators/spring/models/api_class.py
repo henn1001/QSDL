@@ -207,6 +207,8 @@ class ApiClass:
 
     # addons
     has_generated: bool = False
+    controller_target: str | None = None
+    package_priority: int = 0
 
     package: spring.Package = None
 
@@ -220,7 +222,8 @@ class ApiClass:
 
         # allow to overwrite the controller name
         controller_dir = qutil.get_directive_of_name(Directive.CONTROLLER, _ref)
-        self.name = controller_dir.value if controller_dir else self.name
+        self.controller_target = controller_dir.value if controller_dir else None
+        self.name = self.controller_target or self.name
 
         # add model
         if isinstance(_ref.parent, dsl.Object):
@@ -231,15 +234,22 @@ class ApiClass:
 
         self.has_generated = _ref.has_generated
 
-        # handle package path and imports
-        if self.model:
-            self.package = self.model.package
-        else:
-            self.package = spring.Package(util.Store.config)
-            package_directive = qutil.get_directive_of_name(Directive.PACKAGE, _ref)
+        # Handle package path and imports. API-local directives take priority
+        # over the owning Object. An inherited Object namespace is only an API
+        # tag and must not displace an Object's explicit @spring-package.
+        self.package = spring.Package(util.Store.config)
+        package_directive = qutil.get_directive_of_name(Directive.PACKAGE, _ref)
+        namespace_is_explicit = getattr(_ref, "namespace_is_explicit", bool(_ref.namespace))
 
-            if package_directive:
-                self.package.set_namespace(package_directive.value)
+        if package_directive:
+            self.package.set_namespace(package_directive.value)
+            self.package_priority = 3
+        elif namespace_is_explicit and _ref.namespace:
+            self.package.set_namespace(stringcase.lowercase(_ref.namespace))
+            self.package_priority = 2
+        elif self.model:
+            self.package = self.model.package
+            self.package_priority = 1
 
         return self
 

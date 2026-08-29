@@ -39,6 +39,7 @@ class Api:
 
     # addons
     has_generated: bool = False
+    namespace_is_explicit: bool = False
 
     # required by textX
     _tx_fqn: str = "entity.Api"

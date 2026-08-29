@@ -570,6 +570,11 @@ def parse_operations(schema: dsl.Schema) -> None:
 
     # loop over user defined APIs
     for api in apis:
+        # Keep track of whether the namespace came from the API declaration.
+        # Object namespaces are inherited below for API tags, but should not
+        # override an Object's explicit Spring package.
+        api.namespace_is_explicit = bool(api.namespace)
+
         # pass down namespace of object to api
         if isinstance(api.parent, dsl.Object) and not api.namespace:
             api.namespace = api.parent.namespace

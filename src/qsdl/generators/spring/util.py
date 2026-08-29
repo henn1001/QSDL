@@ -285,24 +285,78 @@ def add_request_info(models: list[spring.ModelClass]) -> None:
                     model_field.nested_type_has_request = nested_model.has_request
 
 
+def _apis_can_merge(first: spring.ApiClass, second: spring.ApiClass) -> bool:
+    """Return whether two API declarations should produce one controller.
+
+    APIs with the same name in different packages are separate top-level
+    controllers. Generated APIs and APIs using ``@spring-controller`` are
+    exceptions: both explicitly identify a controller that custom operations
+    should be merged into.
+    """
+    if first.name.lower() != second.name.lower():
+        return False
+
+    # Compare rendered package paths rather than only the namespace. A
+    # configuration may deliberately keep one layer in a shared package, and
+    # those declarations must not produce two files at the same destination.
+    if any(getattr(first.package, path) == getattr(second.package, path) for path in ("api", "controller", "service")):
+        return True
+
+    return (
+        first.has_generated
+        or second.has_generated
+        or first.controller_target is not None
+        or second.controller_target is not None
+    )
+
+
+def _prefer_api(first: spring.ApiClass, second: spring.ApiClass) -> spring.ApiClass:
+    """Select the package/controller metadata to retain when APIs merge."""
+    # A generated API owns the controller for its Object. This keeps
+    # @spring-controller customizations in the Object's package.
+    if first.has_generated != second.has_generated:
+        return first if first.has_generated else second
+
+    # @spring-controller targets an existing Object controller, even when that
+    # Object has no generated CRUD operations.
+    if first.model is not second.model:
+        if first.model and second.controller_target:
+            return first
+        if second.model and first.controller_target:
+            return second
+
+    # For standalone APIs, explicit @spring-package outranks @namespace,
+    # which outranks the configured fallback package.
+    if first.package_priority != second.package_priority:
+        return first if first.package_priority > second.package_priority else second
+
+    return first
+
+
 def sort_api_controller(api_list: list[spring.ApiClass]) -> list[spring.ApiClass]:
-    """Reorganize api controllers and merge operations if needed"""
-    api_store: dict[str, spring.ApiClass] = {}
+    """Reorganize API controllers and merge operations when appropriate."""
+    api_store: list[spring.ApiClass] = []
 
-    # we work with case insensitive names here to simplify things
     for api in api_list:
-        api_name = api.name.lower()
+        matching = [existing for existing in api_store if _apis_can_merge(existing, api)]
+        if not matching:
+            api_store.append(api)
+            continue
 
-        # make sure we merge custom apis into domain apis
-        if api_name not in api_store:
-            api_store[api_name] = api
-        elif api_name in api_store and api.has_generated:
-            api.operations.extend(api_store[api_name].operations)
-            api_store[api_name] = api
-        else:
-            api_store[api_name].operations.extend(api.operations)
+        # Merge all matching declarations into the selected controller. A
+        # generated/targeted Object API remains the package owner when present.
+        for existing in matching:
+            api_store.remove(existing)
+            preferred = _prefer_api(existing, api)
+            if preferred is existing:
+                existing.operations.extend(api.operations)
+                api = existing
+            else:
+                api.operations.extend(existing.operations)
 
-    return list(api_store.values())
+        api_store.append(api)
+
+    return api_store
 
 
 def get_model_for(obj_name: dsl.Object.name) -> spring.ModelClass:

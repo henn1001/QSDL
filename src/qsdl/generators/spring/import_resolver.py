@@ -33,6 +33,12 @@ def resolve_dynamic_imports() -> None:
     util.Store.packages = list(namespaced_packages.values())
 
 
+def _get_enum_package(enum_name: str) -> str:
+    """Return the generated package for an enum referenced by a model."""
+    enum = next((enum for enum in util.Store.enums if enum.name == enum_name), None)
+    return enum.package.enum if enum else util.Store.package.enum
+
+
 def _get_operation_type_imports(api_class: spring.ApiClass | None) -> list[str]:
     """Collect imports for types used in operation responses and body parameters."""
     if not api_class:
@@ -95,12 +101,13 @@ def _get_service_imports(api_class: spring.ApiClass | None, is_db: bool) -> list
     imports = set()
 
     if api_class.model:
-        imports.add(f"import {api_class.package.domain}.{api_class.model.name};")
-        imports.add(f"import {api_class.package.domain}.{api_class.model.name}Request;")
-        imports.add(f"import {api_class.package.entity}.{api_class.model.name}Entity;")
-        imports.add(f"import {api_class.package.entity}.Q{api_class.model.name}Entity;")
-        imports.add(f"import {api_class.package.mapper}.{api_class.model.name}Mapper;")
-        imports.add(f"import {api_class.package.repository}.{api_class.model.name}Repository;")
+        model_package = api_class.model.package
+        imports.add(f"import {model_package.domain}.{api_class.model.name};")
+        imports.add(f"import {model_package.domain}.{api_class.model.name}Request;")
+        imports.add(f"import {model_package.entity}.{api_class.model.name}Entity;")
+        imports.add(f"import {model_package.entity}.Q{api_class.model.name}Entity;")
+        imports.add(f"import {model_package.mapper}.{api_class.model.name}Mapper;")
+        imports.add(f"import {model_package.repository}.{api_class.model.name}Repository;")
 
         for parent in api_class.model.parents:
             imports.add(f"import {parent.model.package.domain}.{parent.model.name};")
@@ -119,7 +126,7 @@ def _get_entity_imports(model_class: spring.ModelClass | None) -> list[str]:
 
     for field in model_class.entity_fields:
         if field.is_enum:
-            imports.add(f"import {util.Store.package.enum}.{field.type};")
+            imports.add(f"import {_get_enum_package(field.type)}.{field.type};")
         elif field.is_object:
             nested = util.get_model_for(field.type)
             if nested and nested.package.entity != model_class.package.entity:
@@ -140,7 +147,7 @@ def _get_request_imports(model_class: spring.ModelClass | None) -> list[str]:
 
     for field in model_class.fields:
         if field.is_enum:
-            imports.add(f"import {util.Store.package.enum}.{field.type};")
+            imports.add(f"import {_get_enum_package(field.type)}.{field.type};")
         elif (field.is_object or field.is_base) and not field.is_relation and not field.is_read_only:
             nested = util.get_model_for(field.type)
             if nested and nested.package.domain != model_class.package.domain:
@@ -157,7 +164,7 @@ def _get_response_imports(model_class: spring.ModelClass | None) -> list[str]:
 
     for field in model_class.fields:
         if field.is_enum:
-            imports.add(f"import {util.Store.package.enum}.{field.type};")
+            imports.add(f"import {_get_enum_package(field.type)}.{field.type};")
         elif (field.is_object or field.is_base) and not field.is_relation and not field.is_write_only:
             nested = util.get_model_for(field.type)
             if nested and nested.package.domain != model_class.package.domain:
@@ -203,6 +210,8 @@ def generate_imports_for_template(
         api_class = api_or_model
     if api_or_model and isinstance(api_or_model, spring.ModelClass):
         model_class = api_or_model
+    elif api_class and api_class.model:
+        model_class = api_class.model
 
     # helpers
     is_db = util.Store.config.database == Database.HIBERNATE
@@ -235,7 +244,7 @@ def generate_imports_for_template(
             f"import {api_class.package.api}.{api_class.name}Api;" if api_class else None,
             *(
                 [
-                    f"import {api_class.package.mapper}.{api_class.name}Mapper;",
+                    f"import {api_class.model.package.mapper}.{api_class.model.name}Mapper;",
                     f"import {api_class.package.service}.{api_class.name}Service;",
                 ]
                 if api_class and api_class.has_generated
@@ -402,7 +411,7 @@ def generate_imports_for_template(
             f"import {util.Store.package.model}.CursorPage;",
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
             f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
-            f"import {model_class.package.service}.{model_class.name}Service;" if model_class else None,
+            f"import {api_class.package.service}.{model_class.name}Service;" if api_class and model_class else None,
             "import static org.junit.jupiter.api.Assertions.assertEquals;",
             "import static org.mockito.ArgumentMatchers.any;",
             "import static org.mockito.ArgumentMatchers.eq;",
