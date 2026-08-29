@@ -84,7 +84,39 @@ class TestE2EBasicTypes(BaseE2ETest):
         assert foo_props["object"]["type"] == "object"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("FooEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+
+        expected_entity_fields = {
+            "Integer int",
+            "Long long",
+            "Float float",
+            "Double double",
+            "String string",
+            "Boolean boolean",
+            "LocalDate date",
+            "OffsetDateTime datetime",
+            "ObjectNode object",
+        }
+        for field in expected_entity_fields:
+            assert f"private {field};" in entity_content
+
+        request_files = list(src_root.rglob("FooRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "public record FooRequest(" in request_content
+        for field in expected_entity_fields:
+            assert field in request_content
+
+        response_files = list(src_root.rglob("Foo.java"))
+        assert len(response_files) == 1
+        response_content = response_files[0].read_text(encoding="utf-8")
+        assert "public record Foo(" in response_content
+        for field in expected_entity_fields:
+            assert field in response_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

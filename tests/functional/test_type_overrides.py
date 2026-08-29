@@ -1,17 +1,8 @@
-import shutil
-import textwrap
-from pathlib import Path
-
-from qsdl.core import generate
 from tests import wrapper_generate
 
 
 class TestTypeOverrides:
-    """Test type override functionality.
-
-    01. It is not allowed to create the same relation multiple times.
-
-    """
+    """Retain the OpenAPI override parsing detail not covered by c1 mappings."""
 
     def test_openapi_scalar_types(self) -> None:
         test_input = """\
@@ -55,30 +46,3 @@ class TestTypeOverrides:
                 assert value["type"] == "eee"
                 assert value.get("format") == "bla"
                 assert value.get("pattern") == "^:*$"
-
-    def test_specifics_01(self) -> None:
-        """Test nested Base"""
-
-        test_input = """\
-            scalar Foo @spring("aaa")
-            scalar Bar @spring("bbb, entity: bla")
-            scalar Faa @spring("ccc, pattern: ^:*$")
-            scalar Fuu @spring("ddd, entity: bla, pattern: ^:*$")
-            scalar Boo @spring("eee,    pattern: ^:*$, entity: bla")
-
-            type Laa {
-                one: Foo
-                two: Bar
-                three: Faa
-                four: Fuu
-                five: Boo
-            }
-        """
-
-        test_input = textwrap.dedent(test_input)
-        test_output = Path("srcgen/tmp")
-
-        shutil.rmtree(test_output, ignore_errors=True)
-
-        # generate
-        assert generate(test_output, generator_name="spring", raw_schema=test_input) is None

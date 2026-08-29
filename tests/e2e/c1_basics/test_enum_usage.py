@@ -39,10 +39,44 @@ class TestE2EEnumUsage(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        assert schemas["Status"] == {
+            "type": "string",
+            "enum": ["OPEN", "TO_DO", "CLOSED"],
+        }
+
+        foo_properties = schemas["Foo"]["properties"]
+        assert foo_properties["status"]["$ref"] == "#/components/schemas/Status"
+        assert foo_properties["states"] == {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/Status"},
+        }
+        assert schemas["Foo"]["required"] == ["id"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        enum_files = list(src_root.rglob("Status.java"))
+        assert len(enum_files) == 1
+        enum_content = enum_files[0].read_text(encoding="utf-8")
+        assert "public enum Status" in enum_content
+        assert "OPEN," in enum_content
+        assert "TO_DO," in enum_content
+        assert "CLOSED;" in enum_content
+        assert "boolean hasValue(String value)" in enum_content
+
+        entity_files = list(src_root.rglob("FooEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        assert "@Enumerated(EnumType.STRING)\n    private Status status;" in entity_content
+        assert "@Enumerated(EnumType.STRING)\n    private List<Status> states;" in entity_content
+
+        request_files = list(src_root.rglob("FooRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "Status status" in request_content
+        assert "List<Status> states" in request_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

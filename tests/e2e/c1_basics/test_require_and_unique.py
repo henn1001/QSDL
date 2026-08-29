@@ -41,10 +41,49 @@ class TestE2ERequireAndUnique(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        table = openapi_schema["components"]["schemas"]["TableFour"]
+        properties = table["properties"]
+
+        assert table["required"] == ["id", "aaa", "bbb", "eee", "fff"]
+        assert properties["aaa"] == {"type": "string", "maxLength": 255}
+        assert properties["bbb"] == {
+            "type": "array",
+            "items": {"type": "string", "maxLength": 255},
+        }
+        assert properties["ccc"] == {"type": "string", "maxLength": 255}
+        assert properties["ddd"] == {
+            "type": "array",
+            "items": {"type": "string", "maxLength": 255},
+        }
+        assert properties["eee"] == {"type": "string", "maxLength": 255}
+        assert properties["fff"] == {
+            "type": "array",
+            "items": {"type": "string", "maxLength": 255},
+        }
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+        entity_files = list(src_root.rglob("TableFourEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+
+        assert entity_content.count("@NotNull") == 4
+        assert entity_content.count("@Column(unique = true)") == 4
+        for field in ("aaa", "bbb", "eee", "fff"):
+            assert f"private {'List<String>' if field in ('bbb', 'fff') else 'String'} {field};" in entity_content
+        for field in ("ccc", "ddd"):
+            assert f"private {'List<String>' if field == 'ddd' else 'String'} {field};" in entity_content
+
+        request_files = list(src_root.rglob("TableFourRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "public record TableFourRequest(" in request_content
+        assert request_content.count("@NotNull") == 4
+        assert request_content.count("@Valid") == 2
+        for field in ("aaa", "ccc", "eee"):
+            assert f"String {field}" in request_content
+        for field in ("bbb", "ddd", "fff"):
+            assert f"List<String> {field}" in request_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

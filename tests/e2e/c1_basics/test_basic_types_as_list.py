@@ -47,10 +47,52 @@ class TestE2EBasicTypesAsList(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        foo = openapi_schema["components"]["schemas"]["Foo"]
+        properties = foo["properties"]
+
+        expected_items = {
+            "int": {"type": "integer", "format": "int32", "minimum": 0},
+            "long": {"type": "integer", "format": "int64", "minimum": 0},
+            "float": {"type": "number", "format": "float", "minimum": 0},
+            "double": {"type": "number", "format": "double", "minimum": 0},
+            "string": {"type": "string", "maxLength": 255},
+            "boolean": {"type": "boolean"},
+            "date": {"type": "string", "format": "date"},
+            "datetime": {"type": "string", "format": "date-time"},
+            "object": {"type": "object"},
+        }
+        for name, item_schema in expected_items.items():
+            assert properties[name]["type"] == "array"
+            assert properties[name]["items"] == item_schema
+
+        assert foo["required"] == ["id"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+        entity_files = list(src_root.rglob("FooEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+
+        expected_fields = {
+            "int": "Integer",
+            "long": "Long",
+            "float": "Float",
+            "double": "Double",
+            "string": "String",
+            "boolean": "Boolean",
+            "date": "LocalDate",
+            "datetime": "OffsetDateTime",
+            "object": "ObjectNode",
+        }
+        for name, type_name in expected_fields.items():
+            assert f"private List<{type_name}> {name};" in entity_content
+
+        request_files = list(src_root.rglob("FooRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "public record FooRequest(" in request_content
+        for name, type_name in expected_fields.items():
+            assert f"List<{type_name}> {name}" in request_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:
