@@ -58,12 +58,12 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Base Rules
 
-| ID      | Rule                                                                               | Notes                                |
-| ------- | ---------------------------------------------------------------------------------- | ------------------------------------ |
-| SEM-401 | Base types define reusable field collections                                       | Used for inheritance and composition |
-| SEM-402 | Base may extend zero or more other Bases (linear inheritance chain recommended)    | `extends Base1, Base2, ...`          |
-| SEM-403 | Base may be marked `@deprecated`                                                   | Applies to all consumers of the Base |
-| SEM-404 | Base cannot be directly instantiated in generated code (used only for inheritance) | Only Objects are instantiable        |
+| ID      | Rule                                                                               | Notes                                                                                                |
+| ------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| SEM-401 | Base types define reusable field collections                                       | Used for inheritance and nested value composition; relationship directives are Object-only (SEM-706) |
+| SEM-402 | Base may extend zero or more other Bases (linear inheritance chain recommended)    | `extends Base1, Base2, ...`                                                                          |
+| SEM-403 | Base may be marked `@deprecated`                                                   | Applies to all consumers of the Base                                                                 |
+| SEM-404 | Base cannot be directly instantiated in generated code (used only for inheritance) | Only Objects are instantiable                                                                        |
 
 ### Object Rules
 
@@ -76,26 +76,31 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Field Rules
 
-| ID      | Rule                                                                            | Notes                                               |
-| ------- | ------------------------------------------------------------------------------- | --------------------------------------------------- |
-| SEM-601 | A Field references a `ValueType` (Scalar, Enum, Base, or Object)                | `name : Type` or `name : [Type]` or `name : Type!`  |
-| SEM-602 | A Field may be **required** (`!` suffix)                                        | Indicates non-null in generated schemas             |
-| SEM-603 | A Field may be **array** (`[...]` wrapper)                                      | Indicates a collection type                         |
-| SEM-604 | A Field may be **read-only** (`@readOnly`)                                      | Not settable in input/write contexts                |
-| SEM-605 | A Field may be **write-only** (`@writeOnly`)                                    | Not visible in output/read contexts                 |
-| SEM-606 | A Field cannot be both `@readOnly` and `@writeOnly`                             | Logically conflicting                               |
-| SEM-607 | A Field may override an inherited field via `@override`                         | Required if parent Base defines the same field name |
-| SEM-608 | A Field without `@override` cannot redefine an inherited field                  | Will raise validation error                         |
-| SEM-609 | Object fields, including inherited Base fields, cannot use `id`, `uid`, or `iv` | Reserved by generated entity metadata               |
+| ID      | Rule                                                                            | Notes                                                       |
+| ------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| SEM-601 | A Field references a `ValueType` (Scalar, Enum, Base, or Object)                | `name : Type` or `name : [Type]` or `name : Type!`          |
+| SEM-602 | A Field may be **required** (`!` suffix)                                        | Indicates non-null in generated schemas                     |
+| SEM-603 | A Field may be **array** (`[...]` wrapper)                                      | Indicates a collection type                                 |
+| SEM-604 | A Field may be **read-only** (`@readOnly`)                                      | Not settable in input/write contexts                        |
+| SEM-605 | A Field may be **write-only** (`@writeOnly`)                                    | Not visible in output/read contexts                         |
+| SEM-606 | A Field cannot be both `@readOnly` and `@writeOnly`                             | Logically conflicting                                       |
+| SEM-607 | A Field may override an inherited field via `@override`                         | Required if parent Base defines the same field name         |
+| SEM-608 | A Field without `@override` cannot redefine an inherited field                  | Will raise validation error                                 |
+| SEM-609 | Object fields, including inherited Base fields, cannot use `id`, `uid`, or `iv` | Reserved by generated entity metadata                       |
+| SEM-610 | A Field marked `@query` or `@queryList` must reference a Scalar or Enum         | Query fields cannot expose structured Object or Base values |
+| SEM-611 | `@opaque` may be used only on a Field whose value type is a Base                | Opaque storage applies to reusable Base values              |
 
 ### Relationship Rules
 
-| ID      | Rule                                                                       | Notes                                            |
-| ------- | -------------------------------------------------------------------------- | ------------------------------------------------ |
-| SEM-701 | `@composition` marks a parent-child relationship                           | Field value must be `[Object]!` (required array) |
-| SEM-702 | `@aggregation` marks an independent relationship                           | Field value must be `[Object]!` (required array) |
-| SEM-703 | A Field cannot be both `@composition` and `@aggregation`                   | Mutually exclusive                               |
-| SEM-704 | Composition/aggregation fields must reference Objects (not Base or Scalar) | Relationship targets must be concrete types      |
+| ID      | Rule                                                                         | Notes                                                      |
+| ------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| SEM-701 | `@composition` marks a parent-child relationship                             | Field value must be `[Object]!` (required array)           |
+| SEM-702 | `@aggregation` marks an independent relationship                             | Field value must be `[Object]!` (required array)           |
+| SEM-703 | A Field cannot be both `@composition` and `@aggregation`                     | Mutually exclusive                                         |
+| SEM-704 | Composition/aggregation fields must reference Objects (not Base or Scalar)   | Relationship targets must be concrete types                |
+| SEM-705 | A Field cannot reference the Object or Base that declares it                 | Self-referential model fields are not supported            |
+| SEM-706 | Composition and aggregation directives may be declared only on Object fields | Base types cannot declare relationship directives          |
+| SEM-707 | An Object may use a given relationship kind and target Object only once      | Duplicate `(target, relationship kind)` pairs are rejected |
 
 ### Api & Operation Rules
 
@@ -113,13 +118,16 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Argument Rules
 
-| ID      | Rule                                                                        | Notes                                                                                                                                 |
-| ------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| SEM-901 | An Argument defines an Operation parameter                                  | `name : Type`, `name : [Type]`, `name : Type!`                                                                                        |
-| SEM-902 | An Argument may be **required** (`!` suffix)                                | Indicates mandatory parameter                                                                                                         |
-| SEM-903 | An Argument may be **query** (`?` suffix)                                   | Explicit query location takes precedence over method defaults; cannot be combined with `^`                                            |
-| SEM-904 | An Argument may be **header** (`^` suffix)                                  | Explicit header location takes precedence over method defaults; cannot be combined with `?`                                           |
-| SEM-905 | An Argument without explicit location (`?` or `^`) is inferred from context | Path placeholders are always path parameters; otherwise GET uses query, POST/PUT/PATCH use body, and DELETE's body default is invalid |
+| ID      | Rule                                                                                                                       | Notes                                                                                                                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| SEM-901 | An Argument defines an Operation parameter                                                                                 | `name : Type`, `name : [Type]`, `name : Type!`                                                                                        |
+| SEM-902 | An Argument may be **required** (`!` suffix)                                                                               | Indicates mandatory parameter                                                                                                         |
+| SEM-903 | An Argument may be **query** (`?` suffix)                                                                                  | Explicit query location takes precedence over method defaults; cannot be combined with `^`                                            |
+| SEM-904 | An Argument may be **header** (`^` suffix)                                                                                 | Explicit header location takes precedence over method defaults; cannot be combined with `?`                                           |
+| SEM-905 | An Argument without explicit location (`?` or `^`) is inferred from context                                                | Path placeholders are always path parameters; otherwise GET uses query, POST/PUT/PATCH use body, and DELETE's body default is invalid |
+| SEM-906 | A query-marked Base Argument, or a Base Argument on an operation without `@method`, may contain only Scalar or Enum fields | The omitted method defaults to GET; flattened Base fields cannot contain Object or Base values                                        |
+| SEM-907 | An Operation with an Object or Base Argument may have at most one unlocated Argument                                       | An unlocated Argument is neither query (`?`) nor header (`^`); explicit locations do not count                                        |
+| SEM-908 | A DELETE Operation cannot contain an unlocated/body Argument                                                               | Use a path placeholder, `?`, or `^` instead of a request body                                                                         |
 
 ---
 
@@ -150,11 +158,11 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Import & Composition
 
-| ID      | Rule                                                                                          |
-| ------- | --------------------------------------------------------------------------------------------- |
+| ID      | Rule                                                                                                                                                          |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | LOG-401 | Schemas may import other `.qsdl` files via `import "path/to/file.qsdl"`; paths are resolved relative to the importing file and must use the `.qsdl` extension |
-| LOG-402 | Imported types are merged into the parent schema namespace once per canonical physical file; duplicates from distinct files cause a validation error |
-| LOG-403 | Circular imports are **not allowed** and are rejected with a semantic error that includes the import chain |
+| LOG-402 | Imported types are merged into the parent schema namespace once per canonical physical file; duplicates from distinct files cause a validation error          |
+| LOG-403 | Circular imports are **not allowed** and are rejected with a semantic error that includes the import chain                                                    |
 
 ---
 
@@ -167,9 +175,10 @@ For quick lookup, here is a subset of high-impact rules:
 | **Naming**               | SYN-001 through SYN-009                     |
 | **Uniqueness**           | SEM-101, SEM-102, SEM-103, SEM-104, SEM-105 |
 | **Inheritance**          | SEM-402, SEM-502, LOG-102                   |
-| **Relationships**        | SEM-701, SEM-702, SEM-704                   |
+| **Relationships**        | SEM-701 through SEM-707                     |
 | **Required Constraints** | SEM-301 (Enum)                              |
-| **Field Directives**     | SEM-604, SEM-605, SEM-606, SEM-607, SEM-608 |
+| **Field Directives**     | SEM-604 through SEM-611                     |
+| **Operation Arguments**  | SEM-903 through SEM-908                     |
 
 ---
 

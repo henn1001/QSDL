@@ -20,17 +20,29 @@ Rules covered:
 - SEM-903: An Argument may be query (? suffix), with explicit-location precedence
 - SEM-904: An Argument may be header (^ suffix), with explicit-location precedence
 - SEM-905: Argument without explicit location is inferred from context and path takes precedence
+- SEM-906: Query Base arguments contain only Scalar or Enum fields
+- SEM-907: Object/Base operations have at most one unlocated argument
+- SEM-908: DELETE operations cannot have body arguments
 """
 
+import re
+
 import pytest
+from textx.exceptions import TextXSemanticError
 
 import qsdl.dsl.textx as xtx
 
 from .conftest import ParseExpectErrorFixture, ParseFixture
 
 
+def assert_semantic_error(parse: ParseFixture, raw: str, message: str) -> None:
+    """Assert a specific validator error without masking unrelated failures."""
+    with pytest.raises(TextXSemanticError, match=re.escape(message)):
+        parse(raw)
+
+
 class TestSemArgument:
-    """Tests for SEM-901 to SEM-905: Argument rules."""
+    """Tests for SEM-901 to SEM-908: Argument rules."""
 
     def test_SEM_901_argument_defines_parameter_positive(self, parse: ParseFixture) -> None:
         """SEM-901: Argument defines an Operation parameter."""
@@ -171,3 +183,97 @@ class TestSemArgument:
         args = xtx.get_children_of_argument(schema)
         items_arg = next(a for a in args if a.name == "items")
         assert items_arg.is_array is True
+
+    def test_SEM_906_query_base_with_scalar_fields_positive(self, parse: ParseFixture) -> None:
+        """SEM-906: A query Base may contain scalar fields."""
+        schema = parse("""
+            base Filter {
+                term: String
+                page: Int
+            }
+            extend api {
+                search(filter: Filter?): String @path("search")
+            }
+        """)
+        operation = xtx.get_children_of_operation(schema)[0]
+        assert [argument.name for argument in operation.query_parameters] == ["filter"]
+
+    @pytest.mark.parametrize(
+        "nested_declaration",
+        ["base Address { city: String }", "type Address { city: String }"],
+    )
+    def test_SEM_906_query_base_with_nested_value_negative(self, nested_declaration: str, parse: ParseFixture) -> None:
+        """SEM-906: A query Base cannot contain nested Base or Object fields."""
+        assert_semantic_error(
+            parse,
+            f"""
+                {nested_declaration}
+                base Filter {{
+                    address: Address
+                }}
+                extend api {{
+                    search(filter: Filter?): String @path("search")
+                }}
+            """,
+            "The Base type Filter used as query parameter in operation search contains a nested type field 'address'. Query parameters with Base types must only contain scalar/enum fields.",
+        )
+
+    @pytest.mark.parametrize(
+        ("declaration", "value_type"),
+        [
+            ("type Item { value: String }", "Item"),
+            ("base Item { value: String }", "Item"),
+        ],
+    )
+    def test_SEM_907_single_reference_body_positive(
+        self, declaration: str, value_type: str, parse: ParseFixture
+    ) -> None:
+        """SEM-907: An operation may have one unlocated Object or Base body argument."""
+        schema = parse(f"""
+            {declaration}
+            extend api {{
+                saveItem(item: {value_type}): String @path("custom-items") @method(POST)
+            }}
+        """)
+        operation = next(
+            operation for operation in xtx.get_children_of_operation(schema) if operation.name == "saveItem"
+        )
+        assert [argument.name for argument in operation.body_parameters] == ["item"]
+
+    @pytest.mark.parametrize("declaration", ["type Item { value: String }", "base Item { value: String }"])
+    def test_SEM_907_multiple_reference_body_arguments_negative(self, declaration: str, parse: ParseFixture) -> None:
+        """SEM-907: An operation cannot mix multiple unlocated Object or Base arguments."""
+        assert_semantic_error(
+            parse,
+            f"""
+                {declaration}
+                extend api {{
+                    merge(first: Item, second: Item): String @path("merge-items") @method(POST)
+                }}
+            """,
+            "The Operation merge references more than one Object or tries to mix them. Currently not supported",
+        )
+
+    def test_SEM_908_delete_query_argument_positive(self, parse: ParseFixture) -> None:
+        """SEM-908: DELETE may use explicitly located query and header arguments."""
+        schema = parse("""
+            extend api {
+                deleteItems(filter: String?, token: String^): Void @path("items") @method(DELETE)
+            }
+        """)
+        operation = xtx.get_children_of_operation(schema)[0]
+        assert [argument.name for argument in operation.query_parameters] == ["filter"]
+        assert [argument.name for argument in operation.header_parameters] == ["token"]
+        assert operation.body_parameters == []
+
+    def test_SEM_908_delete_body_argument_negative(self, parse: ParseFixture) -> None:
+        """SEM-908: DELETE rejects an unlocated body argument."""
+        assert_semantic_error(
+            parse,
+            """
+                extend api {
+                    deleteItem(item: String): Void @path("items") @method(DELETE)
+                }
+            """,
+            "The DELETE Operation deleteItem specifies a body. This is not supported.",
+        )

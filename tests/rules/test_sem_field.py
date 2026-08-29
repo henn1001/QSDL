@@ -23,7 +23,14 @@ Rules covered:
 - SEM-606: A Field cannot be both @readOnly and @writeOnly
 - SEM-607: A Field may override an inherited field via @override
 - SEM-608: A Field without @override cannot redefine an inherited field
+- SEM-610: Query fields reference only Scalars or Enums
+- SEM-611: @opaque applies only to Base-valued fields
 """
+
+import re
+
+import pytest
+from textx.exceptions import TextXSemanticError
 
 import qsdl.dsl.textx as xtx
 from qsdl import dsl
@@ -31,8 +38,14 @@ from qsdl import dsl
 from .conftest import ParseExpectErrorFixture, ParseFixture
 
 
+def assert_semantic_error(parse: ParseFixture, raw: str, message: str) -> None:
+    """Assert a specific validator error without masking unrelated failures."""
+    with pytest.raises(TextXSemanticError, match=re.escape(message)):
+        parse(raw)
+
+
 class TestSemField:
-    """Tests for SEM-601 to SEM-608: Field rules."""
+    """Tests for SEM-6xx: Field rules."""
 
     def test_SEM_601_field_references_scalar_positive(self, parse: ParseFixture) -> None:
         """SEM-601: Field can reference a Scalar."""
@@ -232,3 +245,70 @@ class TestSemField:
                 field: String
             }
         """)
+
+    def test_SEM_610_query_scalar_and_enum_positive(self, parse: ParseFixture) -> None:
+        """SEM-610: Query directives accept scalar and enum values."""
+        schema = parse("""
+            enum Status {
+                ACTIVE
+            }
+            type Searchable {
+                name: String @query
+                tags: [String] @queryList
+                status: Status @query
+            }
+        """)
+        searchable = xtx.get_children_of_object(schema)[0]
+        fields = {field.name: field for field in searchable.fields}
+        assert fields["name"].is_query is True
+        assert fields["tags"].is_query_list is True
+        assert fields["status"].is_query is True
+
+    @pytest.mark.parametrize("directive", ["query", "queryList"])
+    @pytest.mark.parametrize(
+        ("declaration", "value_type"),
+        [
+            ("base Filter { term: String }", "Filter"),
+            ("type Target { value: String }", "Target"),
+        ],
+    )
+    def test_SEM_610_query_structured_value_negative(
+        self, directive: str, declaration: str, value_type: str, parse: ParseFixture
+    ) -> None:
+        """SEM-610: Query directives reject Base- and Object-valued fields."""
+        assert_semantic_error(
+            parse,
+            f"""
+                {declaration}
+                type Searchable {{
+                    filter: {value_type} @{directive}
+                }}
+            """,
+            "The Field filter for Searchable declares a invalid value as query.",
+        )
+
+    def test_SEM_611_opaque_base_positive(self, parse: ParseFixture) -> None:
+        """SEM-611: @opaque is valid for a Base-valued field."""
+        schema = parse("""
+            base Metadata {
+                source: String
+            }
+            type Item {
+                metadata: Metadata @opaque
+            }
+        """)
+        item = xtx.get_children_of_object(schema)[0]
+        field = next(field for field in item.fields if field.name == "metadata")
+        assert field.is_opaque is True
+
+    def test_SEM_611_opaque_non_base_negative(self, parse: ParseFixture) -> None:
+        """SEM-611: @opaque rejects a Scalar-valued field."""
+        assert_semantic_error(
+            parse,
+            """
+                type Item {
+                    metadata: String @opaque
+                }
+            """,
+            "The Field metadata for Item declares opaque on a non Base value.",
+        )

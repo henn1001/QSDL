@@ -63,7 +63,6 @@ def draw_metamodel(metamodel: TextXMetaModel) -> None:
         file.truncate()
 
 
-
 def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     """Builds and returns a meta-model for our meta language.
 

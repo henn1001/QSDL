@@ -107,9 +107,7 @@ def collect_imported_schemas(schema: dsl.Schema) -> list[dsl.Schema]:
             cycle_start = active.index(key)
             chain = active_labels[cycle_start:] + [_model_label(current_schema)]
             location = (
-                get_location(imported_by)
-                if imported_by is not None
-                else {"filename": current_schema._tx_filename}
+                get_location(imported_by) if imported_by is not None else {"filename": current_schema._tx_filename}
             )
             raise TextXSemanticError(f"Circular import detected: {' -> '.join(chain)}", **location)
         if key in visited:
