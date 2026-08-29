@@ -29,13 +29,13 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Uniqueness Constraints
 
-| ID      | Element                    | Scope    | Rule                                                                                        |
-| ------- | -------------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| SEM-101 | Type names                 | Global   | All type names (`Object`, `Base`, `Enum`, `Scalar`) must be unique across the entire schema |
-| SEM-102 | Field names within a type  | Per-type | Field names must be unique within a single `Base` or `Object` (including inherited fields)  |
-| SEM-103 | Enum values within an Enum | Per-enum | Enum values must be unique within a single `Enum` declaration                               |
-| SEM-104 | Operation names within Api | Per-api  | Operation names must be unique within a single `Api` container                              |
-| SEM-105 | Api/Path names             | Global   | Api names and generated CRUD paths must be globally unique across all operations            |
+| ID      | Element                    | Scope    | Rule                                                                                                                        |
+| ------- | -------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| SEM-101 | Type names                 | Global   | All type names (`Object`, `Base`, `Enum`, `Scalar`) must be unique across the entire schema                                 |
+| SEM-102 | Field names within a type  | Per-type | Field names must be unique within a single `Base` or `Object` (including inherited fields)                                  |
+| SEM-103 | Enum values within an Enum | Per-enum | Enum values must be unique within a single `Enum` declaration                                                               |
+| SEM-104 | Operation names/IDs        | Global   | Operation names (operation IDs) must be unique across all `Api` containers, including generated CRUD operations             |
+| SEM-105 | Operation routes           | Global   | Custom and generated operation routes are identified by HTTP method and normalized URI template and must be globally unique |
 
 ---
 
@@ -99,27 +99,27 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Api & Operation Rules
 
-| ID      | Rule                                                                          | Notes                                                                      |
-| ------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| SEM-801 | An Api may contain zero or more Operations                                    | Empty top-level APIs are no-ops; empty object APIs suppress automatic CRUD |
-| SEM-802 | An Operation defines an HTTP endpoint (method, path, parameters, return type) | `name(args) : ReturnType`                                                  |
-| SEM-803 | A custom Operation must specify `@path(...)` to define the URI template       | Required; no default path is derived from the operation name               |
-| SEM-804 | An Operation may specify `@method(...)` to define HTTP verb                   | Valid values: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`                      |
-| SEM-805 | An Operation may be marked `@pagination` to indicate list pagination support  | Must return an Object or Base                                              |
-| SEM-806 | An Operation may declare response headers via `@headers(...)`                 | Headers are metadata on the HTTP response                                  |
-| SEM-807 | An Api can be used **multiple times** in a schema                             | Multiple Api blocks define separate custom endpoints                       |
-| SEM-808 | An Api can be used **once inside an Object** via `extend api { ... }`         | Customizes or suppresses auto-generated CRUD operations                    |
-| SEM-809 | Api endpoints must specify **unique paths** across all operations             | Maximum of two operations per path (with and without ID parameter)         |
+| ID      | Rule                                                                          | Notes                                                                                   |
+| ------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| SEM-801 | An Api may contain zero or more Operations                                    | Empty top-level APIs are no-ops; empty object APIs suppress automatic CRUD              |
+| SEM-802 | An Operation defines an HTTP endpoint (method, path, parameters, return type) | `name(args) : ReturnType`                                                               |
+| SEM-803 | A custom Operation must specify `@path(...)` to define the URI template       | Required; no default path is derived from the operation name                            |
+| SEM-804 | An Operation may specify `@method(...)` to define HTTP verb                   | Valid values: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`                                   |
+| SEM-805 | An Operation may be marked `@pagination` to indicate list pagination support  | Must return an Object or Base                                                           |
+| SEM-806 | An Operation may declare response headers via `@headers(...)`                 | Headers are metadata on the HTTP response                                               |
+| SEM-807 | An Api can be used **multiple times** in a schema                             | Multiple Api blocks define separate custom endpoints                                    |
+| SEM-808 | An Api can be used **once inside an Object** via `extend api { ... }`         | Customizes or suppresses auto-generated CRUD operations                                 |
+| SEM-809 | Api endpoints must specify **unique routes** across all operations            | A route is `(HTTP method, normalized URI template)`; different methods may share a path |
 
 ### Argument Rules
 
-| ID      | Rule                                                                                            | Notes                                                        |
-| ------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| SEM-901 | An Argument defines an Operation parameter                                                      | `name : Type`, `name : [Type]`, `name : Type!`               |
-| SEM-902 | An Argument may be **required** (`!` suffix)                                                    | Indicates mandatory parameter                                |
-| SEM-903 | An Argument may be **query** (`?` suffix)                                                       | Explicit query location takes precedence over method defaults; cannot be combined with `^` |
-| SEM-904 | An Argument may be **header** (`^` suffix)                                                      | Explicit header location takes precedence over method defaults; cannot be combined with `?` |
-| SEM-905 | An Argument without explicit location (`?` or `^`) is inferred from context                    | Path placeholders are always path parameters; otherwise GET uses query, POST/PUT/PATCH use body, and DELETE's body default is invalid |
+| ID      | Rule                                                                        | Notes                                                                                                                                 |
+| ------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| SEM-901 | An Argument defines an Operation parameter                                  | `name : Type`, `name : [Type]`, `name : Type!`                                                                                        |
+| SEM-902 | An Argument may be **required** (`!` suffix)                                | Indicates mandatory parameter                                                                                                         |
+| SEM-903 | An Argument may be **query** (`?` suffix)                                   | Explicit query location takes precedence over method defaults; cannot be combined with `^`                                            |
+| SEM-904 | An Argument may be **header** (`^` suffix)                                  | Explicit header location takes precedence over method defaults; cannot be combined with `?`                                           |
+| SEM-905 | An Argument without explicit location (`?` or `^`) is inferred from context | Path placeholders are always path parameters; otherwise GET uses query, POST/PUT/PATCH use body, and DELETE's body default is invalid |
 
 ---
 
@@ -127,10 +127,10 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Inheritance & Overriding
 
-| ID      | Rule                                                                                      |
-| ------- | ----------------------------------------------------------------------------------------- |
-| LOG-101 | All inherited fields from supertypes must appear in the flattened field list of a type    |
-| LOG-102 | If a child type redefines an inherited field name, it **must** use `@override`            |
+| ID      | Rule                                                                                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LOG-101 | All inherited fields from supertypes must appear in the flattened field list of a type                                                                  |
+| LOG-102 | If a child type redefines an inherited field name, it **must** use `@override`                                                                          |
 | LOG-103 | An `@override` field replaces an inherited field with the same name. A changed value type is allowed, but a warning is emitted during model processing. |
 
 ### Directive & Metadata
@@ -139,7 +139,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | LOG-201 | Directives are **generator-agnostic by default** (DSL core directives) or **generator-specific** (`@openapi(...)`, `@spring(...)`, etc.) |
 | LOG-202 | Custom directives (`@myDirective(...)`) are preserved in the model and available to generators                                           |
-| LOG-203 | Each directive name may occur at most once on an entity; duplicates are rejected with a semantic validation error |
+| LOG-203 | Each directive name may occur at most once on an entity; duplicates are rejected with a semantic validation error                        |
 
 ### Schema Header Ordering
 

@@ -455,7 +455,7 @@ def validate_crud_generator_directive(schema: dsl.Schema, metamodel: textx.metam
 
 
 def validate_operations(schema: dsl.Schema) -> None:
-    """Checks if we have any duplicate operation names or paths.
+    """Check for duplicate operation names and method/path routes.
 
     Args:
         schema (Schema): The parsed schema definition.
@@ -464,24 +464,20 @@ def validate_operations(schema: dsl.Schema) -> None:
         TextXSemanticError: Exception for logical errors.
     """
     names = []
-    paths = []
+    routes = []
 
     operations = xtx.get_children_of_operation(schema)
 
     for operation in operations:
         names.append(operation.name)
-        paths.append(operation.method + operation.path)
+        routes.append((operation.method, operation.path))
 
     if len(names) != len(set(names)):
         msg = "Duplicate operation names found."
         raise TextXSemanticError(msg, **_get_location(operations[0], schema))
 
-    if len(paths) != len(set(paths)):
-        msg = "Duplicate operation paths found."
-        raise TextXSemanticError(msg, **_get_location(operations[0], schema))
-
-    if len(paths) != len(set(paths)):
-        msg = "Duplicate operation paths found."
+    if len(routes) != len(set(routes)):
+        msg = "Duplicate operation routes found."
         raise TextXSemanticError(msg, **_get_location(operations[0], schema))
 
     # validate that path arguments do not clash with query/body arguments

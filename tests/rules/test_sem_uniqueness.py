@@ -18,8 +18,8 @@ Rules covered:
 - SEM-101: Type names must be unique globally
 - SEM-102: Field names must be unique per-type (including inherited)
 - SEM-103: Enum values must be unique per-enum
-- SEM-104: Operation names must be unique per-api
-- SEM-105: Api/Path names must be globally unique
+- SEM-104: Operation names/IDs must be globally unique across APIs, including generated CRUD
+- SEM-105: Operation routes must be globally unique by HTTP method and normalized URI template
 """
 
 import qsdl.dsl.textx as xtx
@@ -150,23 +150,65 @@ class TestSemUniqueness:
             }
         """)
 
-    def test_SEM_105_unique_paths_positive(self, parse: ParseFixture) -> None:
-        """SEM-105: Different paths are allowed."""
+    def test_SEM_104_duplicate_operation_names_across_apis_negative(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-104: Duplicate operation names across Api blocks are rejected."""
+        parse_expect_semantic_error("""
+            extend api {
+                lookup: String @path("first")
+            }
+            extend api {
+                lookup: String @path("second")
+            }
+        """)
+
+    def test_SEM_104_generated_and_custom_operation_names_negative(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-104: Custom and generated operation names share one global namespace."""
+        parse_expect_semantic_error("""
+            type User {
+                name: String
+            }
+            extend api {
+                getUser: String @path("lookup")
+            }
+        """)
+
+    def test_SEM_105_same_path_with_different_methods_positive(self, parse: ParseFixture) -> None:
+        """SEM-105: Different HTTP methods may use the same normalized path."""
         schema = parse("""
             extend api {
-                getFoo: String @path("foo")
-                getBar: String @path("bar")
+                getItems: String @path("items") @method(GET)
+                createItems: String @path("/ITEMS/") @method(POST)
             }
         """)
         operations = xtx.get_children_of_operation(schema)
-        paths = [op.path for op in operations]
-        assert len(paths) == len(set(paths))
+        routes = [(operation.method, operation.path) for operation in operations]
+        assert [operation.path for operation in operations] == ["/items", "/items"]
+        assert len(routes) == len(set(routes))
 
-    def test_SEM_105_duplicate_paths_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:
-        """SEM-105: Duplicate paths with same method are rejected."""
+    def test_SEM_105_duplicate_normalized_routes_negative(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-105: Duplicate method and normalized path pairs are rejected."""
         parse_expect_semantic_error("""
             extend api {
-                getFoo: String @path("same")
-                getBar: String @path("same")
+                first: String @path("same")
+                second: String @path("/SAME/")
+            }
+        """)
+
+    def test_SEM_105_generated_and_custom_routes_negative(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-105: Custom and generated operation routes share one global namespace."""
+        parse_expect_semantic_error("""
+            type User {
+                name: String
+            }
+            extend api {
+                listUsers: String @path("/USERS/") @method(GET)
             }
         """)

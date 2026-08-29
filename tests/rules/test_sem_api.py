@@ -23,7 +23,7 @@ Rules covered:
 - SEM-806: An Operation may declare response headers via @headers(...)
 - SEM-807: An Api can be used multiple times in a schema
 - SEM-808: An Api can be used once inside an Object via extend api
-- SEM-809: Api endpoints must specify unique paths
+- SEM-809: Api endpoints must specify unique method/path routes
 """
 
 import qsdl.dsl.textx as xtx
@@ -255,23 +255,24 @@ class TestSemApi:
             }
         """)
 
-    def test_SEM_809_unique_paths_positive(self, parse: ParseFixture) -> None:
-        """SEM-809: Different paths are allowed."""
+    def test_SEM_809_same_path_with_different_methods_positive(self, parse: ParseFixture) -> None:
+        """SEM-809: Different HTTP methods may use the same normalized path."""
         schema = parse("""
             extend api {
-                getFoo: String @path("foo")
-                getBar: String @path("bar")
+                getFoo: String @path("items") @method(GET)
+                createFoo: String @path("/ITEMS/") @method(POST)
             }
         """)
         operations = xtx.get_children_of_operation(schema)
-        paths = [op.path for op in operations]
-        assert len(paths) == len(set(paths))
+        routes = [(operation.method, operation.path) for operation in operations]
+        assert [operation.path for operation in operations] == ["/items", "/items"]
+        assert len(routes) == len(set(routes))
 
-    def test_SEM_809_duplicate_paths_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:
-        """SEM-809: Duplicate paths with same method are rejected."""
+    def test_SEM_809_duplicate_routes_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:
+        """SEM-809: Duplicate HTTP method and normalized path pairs are rejected."""
         parse_expect_semantic_error("""
             extend api {
                 getFoo: String @path("same")
-                getBar: String @path("same")
+                getBar: String @path("/SAME/")
             }
         """)

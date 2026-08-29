@@ -10,9 +10,9 @@ class TestApi:
 
     03. `Api` may be used once inside a `Object` to overwrite the default CRUD operations.
 
-    04. `Api` must only specify two methods per path (with and without ID). This overlaps with all used paths including `Object`s.
+    04. Routes are globally unique by HTTP method and normalized path. This overlaps with all used routes including `Object`s.
 
-    05. `Api` names must be globally unique. This overlaps with auto generated CRUD operations for `Object`s.
+    05. Operation IDs must be globally unique. This overlaps with auto generated CRUD operations for `Object`s.
 
     """
 
@@ -94,7 +94,7 @@ class TestApi:
         wrapper_generate_failure(test_input)
 
     def test_api_04_negative(self) -> None:
-        """Verify unique paths"""
+        """Verify unique method/path routes"""
         inputs = []
 
         test_input = """\
@@ -120,7 +120,7 @@ class TestApi:
             wrapper_generate_failure(test_input)
 
     def test_api_05_negative(self) -> None:
-        """Verify unique Api names"""
+        """Verify unique operation IDs"""
         inputs = []
 
         test_input = """\
