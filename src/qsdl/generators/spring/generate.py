@@ -14,11 +14,19 @@
 
 """Generator Main entrypoint"""
 
+from collections.abc import Mapping
 from pathlib import Path
 
 import qsdl.dsl.textx as xtx
+from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
-from qsdl.render import render
+from qsdl.generators.openapi.config import Config as OpenApiConfig
+from qsdl.generators.openapi.config import IDTYPE as OpenApiIDType
+from qsdl.generators.openapi.generate import build_files as build_openapi_files
+from qsdl.generators.postgres.config import Config as PostgresConfig
+from qsdl.generators.postgres.generate import build_files as build_postgres_files
+from qsdl.render import render_text
+from qsdl.writer import DirectoryWriter
 
 from . import import_resolver as resolver
 from . import util
@@ -105,52 +113,24 @@ def parse_enums(schema: Schema) -> list[EnumClass]:
     return enums
 
 
-def generate_openapi(output_path: Path) -> None:
-    """Helper that calls the openapi generator.
-
-    Args:
-        output_path (Path): The requested destination.
-    """
-    gen_schema_file = output_path / "src/main/resources/openapi.yaml"
-    gen_schema_file.parent.mkdir(exist_ok=True, parents=True)
-
-    from qsdl import core  # pylint: disable=import-outside-toplevel
-    from qsdl.config import Config as core_config  # pylint: disable=import-outside-toplevel
-
-    core.generate(
-        gen_schema_file.parent,
-        generator_name="openapi",
-        input_path=core_config.input_path,
-        raw_schema=core_config.raw_schema,
-        config={"id_type": util.Store.config.id_type},
-        render_root=output_path,
+def _add_rendered(
+    files: GeneratedFiles,
+    *,
+    destination: str,
+    template: str,
+    context: Mapping[str, object],
+    macro_path: Path,
+) -> None:
+    """Render a Spring template and add its content to the artifact collection."""
+    template_path = Path(__file__).parent / "template" / template
+    files.add_text(
+        destination,
+        render_text(template_path, context, macro_path=macro_path),
     )
 
 
-def generate_postgres(output_path: Path) -> None:
-    """Helper that calls the postgres generator.
-
-    Args:
-        output_path (Path): The requested destination.
-    """
-    gen_schema_folder = output_path / "src/main/resources/db/migration"
-    gen_schema_folder.mkdir(exist_ok=True, parents=True)
-
-    from qsdl import core  # pylint: disable=import-outside-toplevel
-    from qsdl.config import Config as core_config  # pylint: disable=import-outside-toplevel
-
-    core.generate(
-        gen_schema_folder,
-        generator_name="postgres",
-        input_path=core_config.input_path,
-        raw_schema=core_config.raw_schema,
-        config={"table_prefix": util.Store.config.table_prefix},
-        render_root=output_path,
-    )
-
-
-def generate(schema: Schema, output_path: Path, config: Config) -> None:
-    """Generator func for spring"""
+def build_files(schema: Schema, config: Config) -> GeneratedFiles:
+    """Build Spring, OpenAPI, and PostgreSQL artifacts in memory."""
 
     if config.id_type not in IDTYPE.__members__:
         raise ValueError("id_type must be `LONG` or `STRING`")
@@ -162,12 +142,18 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         id_name = "uid"
         id_type = "String"
 
-    # sets the id type and schema
-    util.custom_types["ID"] = id_type
+    files = GeneratedFiles()
+
+    # Reset generator-local state for every build.
     util.Store.schema = schema
     util.Store.config = config
+    util.Store.models = []
+    util.Store.apis = []
+    util.Store.enums = []
+    util.Store.packages = []
     util.Store.package = package = Package(config)
     util.Store.is_id_long = id_type == "Long"
+    util.custom_types["ID"] = id_type
 
     # parse models and apis
     util.Store.models = parse_models(schema)
@@ -319,39 +305,58 @@ def generate(schema: Schema, output_path: Path, config: Config) -> None:
         "generate_imports_for_template": resolver.generate_imports_for_template,
         "table_prefix": config.table_prefix,
     }
+    macro_path = Path(__file__).parent / "template" / "_macro"
 
     # generate supporting files
     for src, dest in supporting_files:
-        output_file = output_path / dest
-        template_path = Path(__file__).parent / "template" / src
-        macro_path = Path(__file__).parent / "template" / "_macro"
-        render(output_file, context, template_path, macro_path=macro_path, output_root=output_path)
+        _add_rendered(files, destination=dest, template=src, context=context, macro_path=macro_path)
 
     # generate models
     for src, dest, model in model_files:
-        context["model"] = model
-        output_file = output_path / dest
-        template_path = Path(__file__).parent / "template" / src
-        macro_path = Path(__file__).parent / "template" / "_macro"
-        render(output_file, context, template_path, macro_path=macro_path, output_root=output_path)
+        _add_rendered(
+            files,
+            destination=dest,
+            template=src,
+            context=context | {"model": model},
+            macro_path=macro_path,
+        )
 
     # generate apis
     for src, dest, api in api_files:
-        context["api"] = api
-        context["model"] = api.model
-        output_file = output_path / dest
-        template_path = Path(__file__).parent / "template" / src
-        macro_path = Path(__file__).parent / "template" / "_macro"
-        render(output_file, context, template_path, macro_path=macro_path, output_root=output_path)
+        _add_rendered(
+            files,
+            destination=dest,
+            template=src,
+            context=context | {"api": api, "model": api.model},
+            macro_path=macro_path,
+        )
 
     # generate enums
     for src, dest, enum in enum_files:
-        context["enum"] = enum
-        output_file = output_path / dest
-        template_path = Path(__file__).parent / "template" / src
-        macro_path = Path(__file__).parent / "template" / "_macro"
-        render(output_file, context, template_path, macro_path=macro_path, output_root=output_path)
+        _add_rendered(
+            files,
+            destination=dest,
+            template=src,
+            context=context | {"enum": enum},
+            macro_path=macro_path,
+        )
 
-    # run openapi and postgres generator to create spec file
-    generate_openapi(output_path)
-    generate_postgres(output_path)
+    openapi_config = OpenApiConfig(id_type=OpenApiIDType(config.id_type.value))
+    postgres_config = PostgresConfig(table_prefix=config.table_prefix)
+
+    files.extend(
+        build_openapi_files(schema, openapi_config),
+        prefix="src/main/resources",
+    )
+    files.extend(
+        build_postgres_files(schema, postgres_config),
+        prefix="src/main/resources/db/migration",
+    )
+
+    return files
+
+
+# Temporary compatibility wrapper; remove in Work Package 05.
+def generate(schema: Schema, output_path: Path, config: Config) -> None:
+    """Generate Spring files through the legacy filesystem API."""
+    DirectoryWriter(output_path).write(build_files(schema, config))
