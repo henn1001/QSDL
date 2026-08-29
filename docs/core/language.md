@@ -51,7 +51,10 @@ This is not limited to the schema header; the same description syntax is used th
 
 #### `servers`
 
-A list of server base URLs. This is typically used by generators that produce API descriptions.
+A list of server base URLs. Each value may be a relative path beginning with `/` or an absolute `http://` or
+`https://` URL. During processing, trailing slashes are removed from the path component; the root path `/` remains
+`/`, and the other URL components are preserved. If `servers` is omitted, the processed model uses the default
+`["/api/v1"]` value.
 
 **Examples:**
 

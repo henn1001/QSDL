@@ -16,10 +16,10 @@
 
 Rules covered:
 - LOG-301: Schema header fields must appear in order: title, version, description, servers
-- LOG-302: All schema header fields are optional
+- LOG-302: All schema header fields are optional; omitted servers use the processed default
 """
 
-from .conftest import ParseFixture
+from .conftest import ParseExpectErrorFixture, ParseFixture
 
 
 class TestLogSchema:
@@ -35,6 +35,46 @@ class TestLogSchema:
         assert schema.title == ""
         assert schema.version == ""
         assert schema.description == []
+        assert schema.servers == ["/api/v1"]
+
+    def test_LOG_302_servers_accept_relative_and_absolute_urls_positive(self, parse: ParseFixture) -> None:
+        """LOG-302: Relative paths and absolute HTTP(S) URLs are valid server values."""
+        schema = parse("""
+            servers: ["/", "/api/v1/", "https://localhost:8080/api/v1/", "http://example.com"]
+
+            type Foo {
+                field: String
+            }
+        """)
+        assert schema.servers == ["/", "/api/v1", "https://localhost:8080/api/v1", "http://example.com"]
+
+    def test_LOG_302_servers_preserve_url_components_positive(self, parse: ParseFixture) -> None:
+        """LOG-302: Normalizing a trailing slash preserves query and fragment components."""
+        schema = parse("""
+            servers: ["https://example.com/api/v1/?tenant=one#docs"]
+
+            type Foo {
+                field: String
+            }
+        """)
+        assert schema.servers == ["https://example.com/api/v1?tenant=one#docs"]
+
+    def test_LOG_302_malformed_servers_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:
+        """LOG-302: Unsupported and malformed server values are rejected."""
+        for server in (
+            "api/v1",
+            "ftp://example.com",
+            "https:///api/v1",
+            "https://example.com:invalid",
+            "https://example.com/path with spaces",
+        ):
+            parse_expect_semantic_error(f"""
+                servers: ["{server}"]
+
+                type Foo {{
+                    field: String
+                }}
+            """)
 
     def test_LOG_302_title_only_positive(self, parse: ParseFixture) -> None:
         """LOG-302: Schema with only title is valid."""

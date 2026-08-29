@@ -153,10 +153,10 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Schema Header Ordering
 
-| ID      | Rule                                                                                                         |
-| ------- | ------------------------------------------------------------------------------------------------------------ |
-| LOG-301 | Schema header fields, when provided, must appear in this order: `title`, `version`, `description`, `servers` |
-| LOG-302 | All schema header fields are **optional**                                                                    |
+| ID      | Rule                                                                                                                                                                                                                                 |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| LOG-301 | Schema header fields, when provided, must appear in this order: `title`, `version`, `description`, `servers`                                                                                                                         |
+| LOG-302 | All schema header fields are **optional**. Omitted `servers` defaults to `["/api/v1"]` in the processed model; provided values may be relative paths or absolute HTTP(S) URLs, with trailing slashes normalized away except for `/`. |
 
 ### Import & Composition
 

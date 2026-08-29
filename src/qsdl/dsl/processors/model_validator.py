@@ -15,6 +15,7 @@
 """Model validation"""
 
 import re
+from urllib.parse import urlsplit, urlunsplit
 
 import textx.metamodel
 from textx import get_location
@@ -78,7 +79,7 @@ def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> N
 
 
 def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
-    """Validate the naming convention for servers.
+    """Validate and normalize relative or absolute HTTP(S) server URLs.
 
     Args:
         schema (Schema): The parsed schema definition.
@@ -89,14 +90,44 @@ def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
     """
     _ = metamodel
 
+    normalized_servers: list[str] = []
     for server in schema.servers:
-        if not server.startswith("/"):
-            msg = f"The server {server} must start with /"
+        normalized_server = _normalize_server_url(server)
+        if normalized_server is None:
+            msg = (
+                f"The server {server!r} must be a relative path beginning with '/' "
+                "or an absolute http:// or https:// URL."
+            )
             raise TextXSemanticError(msg, filename=schema._tx_filename)
+        normalized_servers.append(normalized_server)
 
-        if server.endswith("/"):
-            msg = f"The server {server} must not end with /"
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+    schema.servers = normalized_servers
+
+
+def _normalize_server_url(server: str) -> str | None:
+    """Return a normalized server URL, or ``None`` when it is not supported."""
+    if not server or any(
+        character.isspace() or ord(character) < 0x20 or ord(character) == 0x7F for character in server
+    ):
+        return None
+
+    try:
+        parsed = urlsplit(server)
+        if parsed.scheme:
+            if parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.hostname is None:
+                return None
+            # Accessing port makes urlsplit report malformed numeric ports.
+            _ = parsed.port
+        elif parsed.netloc or not parsed.path.startswith("/"):
+            return None
+
+        normalized_path = parsed.path.rstrip("/")
+        if parsed.path.startswith("/") and not normalized_path:
+            normalized_path = "/"
+
+        return urlunsplit(parsed._replace(path=normalized_path))
+    except ValueError:
+        return None
 
 
 def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
