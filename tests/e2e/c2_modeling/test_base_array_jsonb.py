@@ -39,10 +39,39 @@ class TestE2EBaseArrayJsonb(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        variant = schemas["Variant"]["properties"]
+        assert variant["size"] == {"type": "string", "maxLength": 255}
+        assert variant["color"] == {"type": "string", "maxLength": 255}
+
+        product = schemas["Product"]["properties"]
+        for field in ("variants", "other"):
+            assert product[field]["type"] == "array"
+            assert product[field]["items"]["$ref"] == "#/components/schemas/Variant"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("ProductEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        assert entity_content.count("@JdbcTypeCode(SqlTypes.JSON)") == 2
+        assert "private List<Variant> variants;" in entity_content
+        assert "private List<Variant> other;" in entity_content
+
+        request_files = list(src_root.rglob("ProductRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "List<Variant> variants" in request_content
+        assert "List<Variant> other" in request_content
+
+        mapper_files = list(src_root.rglob("ProductMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert "Product toResponse(ProductEntity entity);" in mapper_content
+        assert "ProductEntity toEntity(ProductRequest dto);" in mapper_content
+        assert "Variant toVariant(VariantRequest request);" in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

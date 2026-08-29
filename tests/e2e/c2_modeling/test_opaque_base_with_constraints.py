@@ -37,10 +37,34 @@ class TestE2EOpaqueBaseWithConstraints(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        metadata = schemas["Metadata"]
+        assert metadata["required"] == ["key", "value"]
+        assert metadata["properties"]["key"]["type"] == "string"
+        assert metadata["properties"]["value"]["maxLength"] == 255
+        assert schemas["Document"]["properties"]["metadata"]["$ref"] == "#/components/schemas/Metadata"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("DocumentEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        assert "@JdbcTypeCode(SqlTypes.JSON)\n    private Metadata metadata;" in entity_content
+
+        request_files = list(src_root.rglob("DocumentRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "Metadata metadata" in request_content
+        assert '@JsonProperty(value = "metadata")' in request_content
+
+        mapper_files = list(src_root.rglob("DocumentMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert "Document toResponse(DocumentEntity entity);" in mapper_content
+        assert "DocumentEntity toEntity(DocumentRequest dto);" in mapper_content
+        assert "Metadata toMetadata(MetadataRequest request);" in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

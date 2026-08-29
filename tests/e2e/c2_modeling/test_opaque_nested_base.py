@@ -42,10 +42,32 @@ class TestE2EOpaqueNestedBase(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        address = schemas["Address"]["properties"]
+        assert address["contact"]["$ref"] == "#/components/schemas/ContactInfo"
+        company = schemas["Company"]["properties"]
+        assert company["headquarters"]["$ref"] == "#/components/schemas/Address"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("CompanyEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        assert "@JdbcTypeCode(SqlTypes.JSON)\n    private Address headquarters;" in entity_content
+
+        request_files = list(src_root.rglob("CompanyRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "Address headquarters" in request_content
+        assert '@JsonProperty(value = "headquarters")' in request_content
+
+        mapper_files = list(src_root.rglob("CompanyMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert "Company toResponse(CompanyEntity entity);" in mapper_content
+        assert "CompanyEntity toEntity(CompanyRequest dto);" in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

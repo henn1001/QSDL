@@ -44,10 +44,38 @@ class TestE2EMultipleBaseFieldsSameType(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        address = schemas["Address"]["properties"]
+        assert address["street"] == {"type": "string", "maxLength": 255}
+        assert address["city"] == {"type": "string", "maxLength": 255}
+
+        user = schemas["User"]["properties"]
+        for field in ("billingAddress", "shippingAddress", "mailingAddress"):
+            assert user[field]["$ref"] == "#/components/schemas/Address"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("UserEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        for prefix in ("billingAddress", "shippingAddress", "mailingAddress"):
+            assert f"private String {prefix}Street;" in entity_content
+            assert f"private String {prefix}City;" in entity_content
+
+        request_files = list(src_root.rglob("UserRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        for field in ("billingAddress", "shippingAddress", "mailingAddress"):
+            assert f"Address {field}" in request_content
+
+        mapper_files = list(src_root.rglob("UserMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert '@Mapping(target = "billingAddress.street", source = "billingAddressStreet")' in mapper_content
+        assert '@Mapping(target = "shippingAddress.city", source = "shippingAddressCity")' in mapper_content
+        assert '@Mapping(target = "mailingAddress.street", source = "mailingAddressStreet")' in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

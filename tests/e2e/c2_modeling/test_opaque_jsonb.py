@@ -39,10 +39,36 @@ class TestE2EOpaqueJsonb(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        address = schemas["Address"]["properties"]
+        assert address["street"]["type"] == "string"
+        assert address["city"]["type"] == "string"
+        user = schemas["User"]["properties"]
+        assert user["primaryAddress"]["$ref"] == "#/components/schemas/Address"
+        assert user["secondaryAddress"]["$ref"] == "#/components/schemas/Address"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("UserEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        assert entity_content.count("@JdbcTypeCode(SqlTypes.JSON)") == 2
+        assert "private Address primaryAddress;" in entity_content
+        assert "private Address secondaryAddress;" in entity_content
+
+        request_files = list(src_root.rglob("UserRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "Address primaryAddress" in request_content
+        assert "Address secondaryAddress" in request_content
+
+        mapper_files = list(src_root.rglob("UserMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert "User toResponse(UserEntity entity);" in mapper_content
+        assert "UserEntity toEntity(UserRequest dto);" in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

@@ -64,10 +64,56 @@ class TestE2EDefaultFlattening(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        bar = schemas["Bar"]
+        assert bar["properties"]["string_field"] == {"type": "string", "maxLength": 255}
+
+        base = schemas["B"]
+        assert base["properties"]["int_field"]["format"] == "int32"
+        assert base["properties"]["long_field"]["format"] == "int64"
+        assert base["properties"]["fruit"]["$ref"] == "#/components/schemas/Bar"
+
+        foo = schemas["Foo"]
+        properties = foo["properties"]
+        assert properties["nested_field_a"]["$ref"] == "#/components/schemas/B"
+        assert properties["nested_field_b"]["$ref"] == "#/components/schemas/B"
+        assert properties["object_field"]["type"] == "object"
+        assert foo["required"] == ["id"]
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("FooEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        for field in (
+            "nestedFieldAIntField",
+            "nestedFieldAFruitStringField",
+            "nestedFieldBLongField",
+            "nestedFieldBFruitStringField",
+            "booleanField",
+            "dateField",
+            "datetimeField",
+            "objectField",
+        ):
+            assert f"private {field}" in entity_content
+        assert "private ObjectNode objectField;" in entity_content
+
+        request_files = list(src_root.rglob("FooRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "public record FooRequest(" in request_content
+        assert "B nestedFieldA" in request_content
+        assert "B nestedFieldB" in request_content
+        assert '@JsonProperty(value = "nested_field_a")' in request_content
+
+        mapper_files = list(src_root.rglob("FooMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert '@Mapping(target = "nestedFieldAFruitStringField", source = "nestedFieldA.fruit.stringField")' in mapper_content
+        assert '@Mapping(target = "nestedFieldBIntField", source = "nestedFieldB.intField")' in mapper_content
+        assert "FooEntity toEntity(FooRequest dto);" in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

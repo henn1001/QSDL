@@ -2,39 +2,7 @@ from tests import wrapper_generate
 
 
 class TestSpecificsOpenAPI:
-    """Test specific OpenAPI functionality.
-
-    01. The usage of a `Base` on any `Field` value creates a nested JSON Object.
-
-    02. The usage of a `Object` on any `Field` value creates a nested JSON Object.
-
-    """
-
-    def test_specifics_01_positive(self) -> None:
-        """Verify usage of base reference"""
-        test_input = """\
-            base Foo {
-                field1: Bar
-            }
-
-            base Bar {
-                name: String
-            }
-
-            type Fruit extends Foo {
-                field2: [Bar]
-            }
-        """
-
-        openapi = wrapper_generate(test_input)
-
-        properties = openapi["components"]["schemas"]["Fruit"]["properties"]
-
-        assert properties["field1"]["$ref"]
-        assert properties["field2"]["items"]["$ref"]
-
     def test_specifics_02_positive(self) -> None:
-        """Verify usage of type reference"""
         test_input = """\
             base Foo {
                 field1: Bar

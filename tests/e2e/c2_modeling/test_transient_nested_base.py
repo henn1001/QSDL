@@ -46,7 +46,6 @@ class TestE2ETransientNestedBase(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """placeholder for OpenAPI assertions"""
         schemas = openapi_schema["components"]["schemas"]
 
         # Base/object schemas should be present
@@ -73,9 +72,7 @@ class TestE2ETransientNestedBase(BaseE2ETest):
         assert "phone" in contact_props
 
     def test_spring(self, srcgen: Path) -> None:
-        """placeholder for Spring generation assertions"""
         src_root = srcgen / "src" / "main" / "java"
-        assert src_root.exists()
 
         # Entity should exclude transient fields (DB layer)
         entity_files = list(src_root.rglob("CompanyEntity.java"))
@@ -99,6 +96,14 @@ class TestE2ETransientNestedBase(BaseE2ETest):
         assert '@JsonProperty(value = "headquarters")' in request_content
         assert '@JsonProperty(value = "office")' in request_content
         assert '@JsonProperty(value = "warehouse")' in request_content
+
+        mapper_files = list(src_root.rglob("CompanyMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert '@Mapping(target = "office", ignore = true)' in mapper_content
+        assert '@Mapping(target = "warehouse", ignore = true)' in mapper_content
+        assert '@Mapping(target = "headquartersContactEmail", source = "headquarters.contact.email")' in mapper_content
+        assert "headquartersContactPhone" not in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

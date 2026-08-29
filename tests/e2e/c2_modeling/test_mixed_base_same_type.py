@@ -44,10 +44,40 @@ class TestE2EMixedBaseSameType(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        address = schemas["Address"]["properties"]
+        assert address["zipCode"] == {"type": "string", "maxLength": 255}
+        company = schemas["Company"]["properties"]
+        assert company["primaryAddress"]["$ref"] == "#/components/schemas/Address"
+        assert company["billingAddress"]["$ref"] == "#/components/schemas/Address"
+        assert company["shippingAddresses"]["type"] == "array"
+        assert company["shippingAddresses"]["items"]["$ref"] == "#/components/schemas/Address"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("CompanyEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        assert "private String primaryAddressStreet;" in entity_content
+        assert "private String primaryAddressZipCode;" in entity_content
+        assert "@JdbcTypeCode(SqlTypes.JSON)\n    private Address billingAddress;" in entity_content
+        assert "@JdbcTypeCode(SqlTypes.JSON)\n    private List<Address> shippingAddresses;" in entity_content
+
+        request_files = list(src_root.rglob("CompanyRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "Address primaryAddress" in request_content
+        assert "Address billingAddress" in request_content
+        assert "List<Address> shippingAddresses" in request_content
+
+        mapper_files = list(src_root.rglob("CompanyMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert '@Mapping(target = "primaryAddress.street", source = "primaryAddressStreet")' in mapper_content
+        assert '@Mapping(target = "primaryAddress.zipCode", source = "primaryAddressZipCode")' in mapper_content
+        assert "CompanyEntity toEntity(CompanyRequest dto);" in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

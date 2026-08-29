@@ -54,10 +54,37 @@ class TestE2EMixedBaseAndObjectFields(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        employee = schemas["Employee"]["properties"]
+        assert employee["homeAddress"]["$ref"] == "#/components/schemas/Address"
+        assert employee["manager"]["$ref"] == "#/components/schemas/Manager"
+        assert schemas["Address"]["properties"]["street"]["type"] == "string"
+        assert schemas["Manager"]["properties"]["name"]["type"] == "string"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("EmployeeEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        assert "private String homeAddressStreet;" in entity_content
+        assert "private String homeAddressCity;" in entity_content
+        assert "@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)" in entity_content
+        assert "private ManagerEntity manager;" in entity_content
+
+        request_files = list(src_root.rglob("EmployeeRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "Address homeAddress" in request_content
+        assert "ManagerRequest manager" in request_content
+
+        mapper_files = list(src_root.rglob("EmployeeMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert "uses = { ManagerMapper.class }" in mapper_content
+        assert '@Mapping(target = "homeAddress.street", source = "homeAddressStreet")' in mapper_content
+        assert "EmployeeEntity toEntity(EmployeeRequest dto);" in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

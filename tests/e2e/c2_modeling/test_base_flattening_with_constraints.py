@@ -38,10 +38,34 @@ class TestE2EBaseFlatteningWithConstraints(BaseE2ETest):
         assert_postgres(postgres_schema, expected_schema)
 
     def test_openapi(self, openapi_schema: dict) -> None:
-        """asserts generated OpenAPI spec is correct"""
+        schemas = openapi_schema["components"]["schemas"]
+
+        credentials = schemas["Credentials"]
+        assert credentials["required"] == ["username", "password"]
+        assert credentials["properties"]["username"]["type"] == "string"
+        assert credentials["properties"]["password"]["maxLength"] == 255
+        assert schemas["User"]["properties"]["credentials"]["$ref"] == "#/components/schemas/Credentials"
 
     def test_spring(self, srcgen: Path) -> None:
-        """asserts generated Spring Boot code is correct"""
+        src_root = srcgen / "src" / "main" / "java"
+
+        entity_files = list(src_root.rglob("UserEntity.java"))
+        assert len(entity_files) == 1
+        entity_content = entity_files[0].read_text(encoding="utf-8")
+        assert "@NotNull\n    @Column(unique = true)\n    private String credentialsUsername;" in entity_content
+        assert "@NotNull\n    private String credentialsPassword;" in entity_content
+
+        request_files = list(src_root.rglob("UserRequest.java"))
+        assert len(request_files) == 1
+        request_content = request_files[0].read_text(encoding="utf-8")
+        assert "Credentials credentials" in request_content
+        assert '@JsonProperty(value = "credentials")' in request_content
+
+        mapper_files = list(src_root.rglob("UserMapper.java"))
+        assert len(mapper_files) == 1
+        mapper_content = mapper_files[0].read_text(encoding="utf-8")
+        assert '@Mapping(target = "credentials.username", source = "credentialsUsername")' in mapper_content
+        assert '@Mapping(target = "credentialsPassword", source = "credentials.password")' in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:
