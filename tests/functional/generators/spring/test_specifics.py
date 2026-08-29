@@ -54,7 +54,7 @@ class TestSpringSpecifics:
         )
         SpringTestUtils.assert_contains(controller_content, "public class BuzzwordController", "submitQuery")
         api_content = SpringTestUtils.read_file(output_path, "src/main/java/app/server/api/BuzzwordApi.java")
-        SpringTestUtils.assert_contains(api_content, '@PatchMapping(value = "/query")', "submitQuery")
+        SpringTestUtils.assert_contains(api_content, '@PatchMapping(value = "/query",', "submitQuery")
 
     def test_string_ids_use_external_uid_in_services(self) -> None:
         """String identifiers should use the external UID lookup in generated services."""

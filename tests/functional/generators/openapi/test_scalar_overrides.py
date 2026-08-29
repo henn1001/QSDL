@@ -18,5 +18,15 @@ def test_scalar_override_parses_multiple_attributes_and_extra_whitespace(tmp_pat
     openapi = generate_openapi(schema, tmp_path)
     properties: dict[str, Any] = openapi["components"]["schemas"]["Record"]["properties"]
 
-    assert properties["exact"] == {"type": "string", "format": "uuid", "pattern": "^[a-f]+$"}
-    assert properties["spaced"] == {"type": "number", "format": "decimal", "pattern": "^[0-9]+$"}
+    assert properties["exact"] == {
+        "type": "string",
+        "format": "uuid",
+        "pattern": "^[a-f]+$",
+        "maxLength": 255,
+    }
+    assert properties["spaced"] == {
+        "type": "number",
+        "format": "decimal",
+        "pattern": "^[0-9]+$",
+        "minimum": 0,
+    }

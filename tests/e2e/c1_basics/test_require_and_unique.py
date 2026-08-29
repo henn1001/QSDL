@@ -79,7 +79,7 @@ class TestE2ERequireAndUnique(BaseE2ETest):
         request_content = request_files[0].read_text(encoding="utf-8")
         assert "public record TableFourRequest(" in request_content
         assert request_content.count("@NotNull") == 4
-        assert request_content.count("@Valid") == 2
+        assert request_content.count("@Valid") == 3
         for field in ("aaa", "ccc", "eee"):
             assert f"String {field}" in request_content
         for field in ("bbb", "ddd", "fff"):

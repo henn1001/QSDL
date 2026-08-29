@@ -139,5 +139,5 @@ def test_argument_locations_and_request_shapes(tmp_path: Path) -> None:
     assert mixed_parameters[1]["schema"]["type"] == "integer"
     mixed_body = request_schema(openapi, "/mixed-body")
     assert mixed_body["title"] == "MixedBodyRequest"
-    assert mixed_body["properties"]["arg"] == {"type": "string"}
+    assert mixed_body["properties"]["arg"] == {"type": "string", "maxLength": 255}
     assert "MixedBodyRequest" not in schemas

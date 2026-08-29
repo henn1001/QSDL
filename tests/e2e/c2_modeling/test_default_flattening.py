@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 import pytest
@@ -97,7 +98,7 @@ class TestE2EDefaultFlattening(BaseE2ETest):
             "datetimeField",
             "objectField",
         ):
-            assert f"private {field}" in entity_content
+            assert re.search(rf"^\s*private\s+\S+\s+{field};$", entity_content, re.MULTILINE)
         assert "private ObjectNode objectField;" in entity_content
 
         request_files = list(src_root.rglob("FooRequest.java"))
