@@ -54,6 +54,7 @@ public class ProjectEntity extends AbstractEntity {
 
     private Boolean archive;
 
+    @NotNull
     @JsonIgnore
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     public final Set<RoleEntity> roles = new LinkedHashSet<>();

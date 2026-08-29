@@ -54,8 +54,8 @@ type Project {
     admin: User               // referenced domain object (composition by default)
     users: [User]             // referenced list (composition by default)
 
-    tickets: [Ticket] @composition    // fully owned, part of the project
-    milestones: [Milestone] @aggregation // loosely linked, managed elsewhere
+    tickets: [Ticket]! @composition    // fully owned, part of the project
+    milestones: [Milestone]! @aggregation // loosely linked, managed elsewhere
 }
 ```
 

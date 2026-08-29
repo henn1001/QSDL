@@ -88,14 +88,14 @@ class TestSpecificsOpenAPI:
 
             type Bar {
                 name: String
-                foos: [Foo] @aggregation
+                foos: [Foo]! @aggregation
 
                 extend api {    }
             }
 
             type Fruit  {
                 name: String
-                foos: [Foo] @composition
+                foos: [Foo]! @composition
 
                 extend api {    }
             }

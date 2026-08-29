@@ -311,7 +311,7 @@ type Category {
 
 type Article {
   title: String!
-  categories: [Category] @aggregation  # Creates join table
+  categories: [Category]! @aggregation  # Creates join table
 }
 ```
 
@@ -352,8 +352,8 @@ type Address {
 
 type User {
   username: String!
-  homeAddress: Address @composition  # Real entity relationship
-  workAddress: Address @aggregation  # Shared reference
+  homeAddress: [Address]! @composition  # Real entity relationship
+  workAddress: [Address]! @aggregation  # Shared reference
 }
 ```
 

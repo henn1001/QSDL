@@ -18,8 +18,8 @@ class TestE2EMixedRelation(BaseE2ETest):
       }
       type Product {
         name: String
-        tags: [Tag] @composition
-        categories: [Category] @aggregation
+        tags: [Tag]! @composition
+        categories: [Category]! @aggregation
       }
     """
 

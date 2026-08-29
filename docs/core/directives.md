@@ -96,8 +96,8 @@ type Project {
 
 | Directive      | Purpose                                               |
 | -------------- | ----------------------------------------------------- |
-| `@composition` | Parent-child relationship (array field only).         |
-| `@aggregation` | Independent reference relationship (array field only) |
+| `@composition` | Parent-child relationship (required array field only).         |
+| `@aggregation` | Independent reference relationship (required array field only) |
 
 Use `@composition` when deleting a parent should delete its children. Use `@aggregation` for independent many-to-many or reference relationships.
 
@@ -106,10 +106,10 @@ Use `@composition` when deleting a parent should delete its children. Use `@aggr
 ```qsdl
 type User {
     # Children of this user; delete user → delete projects
-    owned_projects: [Project] @composition
+    owned_projects: [Project]! @composition
     
     # Independent references; delete user → keep teams
-    team_memberships: [Team] @aggregation
+    team_memberships: [Team]! @aggregation
 }
 ```
 

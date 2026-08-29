@@ -279,6 +279,11 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as query."
                 raise TextXSemanticError(msg, **get_location(field))
 
+            # verify that composition and aggregation are mutually exclusive
+            if field.is_composition and field.is_aggregation:
+                msg = f"The Field {field.name} for {field.parent.name} cannot be both composition and aggregation."
+                raise TextXSemanticError(msg, **get_location(field))
+
             # verify that composition is used only on Objects
             if field.is_composition and not isinstance(field.value, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as composition."
@@ -291,6 +296,13 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
 
             if (field.is_composition or field.is_aggregation) and not field.is_array:
                 msg = f"The Field {field.name} for {field.parent.name} declares a non-array as composition/aggregation."
+                raise TextXSemanticError(msg, **get_location(field))
+
+            if (field.is_composition or field.is_aggregation) and not field.is_required:
+                msg = (
+                    f"The Field {field.name} for {field.parent.name} declares a non-required array as "
+                    "composition/aggregation."
+                )
                 raise TextXSemanticError(msg, **get_location(field))
 
             # verify that we prevent duplicate relations

@@ -32,7 +32,7 @@ class TestCompositionDirective:
                 }
                 type Service {
                   name: String!
-                  metrics: [Metrics] @composition
+                  metrics: [Metrics]! @composition
                 }
             """,
             """\
@@ -81,26 +81,26 @@ class TestCompositionDirective:
                 }
                 type Service {
                   name: String!
-                  metrics_one: [Metrics] @composition
-                  metrics_two: [Metrics] @composition
+                  metrics_one: [Metrics]! @composition
+                  metrics_two: [Metrics]! @composition
                 }
             """,
             # should we prevent circular relations too?
             # """\
             #     type Metrics {
             #       value: Float
-            #       service: [Service] @composition
+            #       service: [Service]! @composition
             #     }
             #     type Service {
             #       name: String!
-            #       metrics: [Metrics] @composition
+            #       metrics: [Metrics]! @composition
             #     }
             # """,
             # prevent self compositions
             """\
                 type Service {
                   name: String!
-                  metrics: [Service] @composition
+                  metrics: [Service]! @composition
                 }
             """,
         ]

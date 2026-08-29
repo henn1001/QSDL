@@ -49,6 +49,7 @@ public class TicketEntity extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.OPEN;
 
+    @NotNull
     @JsonIgnore
     @ManyToMany(mappedBy = "tickets", fetch = FetchType.LAZY)
     public final Set<UserEntity> users = new LinkedHashSet<>();

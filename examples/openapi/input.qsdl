@@ -37,14 +37,14 @@ base BaseType {
 type Project extends BaseType @namespace("Management") {
     archive: Boolean @writeOnly
     metrics: [Metric]
-    tickets: [Ticket] @composition
-    roles: [Role] @composition
-    milestones: [Milestone] @composition
+    tickets: [Ticket]! @composition
+    roles: [Role]! @composition
+    milestones: [Milestone]! @composition
 }
 
 type Role @namespace("Management"){
     name: Int!
-    users: [User] @aggregation
+    users: [User]! @aggregation
 }
 
 type User @namespace("Management"){
@@ -63,17 +63,17 @@ type User @namespace("Management"){
         issuer_body: User @readOnly
         body: String
         status: Status @default("OPEN")
-        milestones: [Milestone] @aggregation
+        milestones: [Milestone]! @aggregation
     }
 
     type Milestone @namespace("Incident"){
         name: Int! @query
-        sprints: [Sprint] @composition
+        sprints: [Sprint]! @composition
     }
 
     type Sprint @namespace("Incident"){
         name: Int!
-        roles: [Role] @composition
+        roles: [Role]! @composition
     }
 
     type Buzzword @namespace("Incident"){

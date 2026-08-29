@@ -25,8 +25,8 @@ class TestE2EComplexEntityGraph(BaseE2ETest):
       type Order {
         orderNumber: String
         customer: Customer
-        items: [OrderItem] @composition
-        relatedProducts: [Product] @aggregation
+        items: [OrderItem]! @composition
+        relatedProducts: [Product]! @aggregation
       }
     """
 

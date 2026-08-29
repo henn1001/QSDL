@@ -15,11 +15,11 @@ class TestE2ETwoParentOneChild(BaseE2ETest):
         }
         type Foo {
           name: String
-          basket: [Fruit] @composition
+          basket: [Fruit]! @composition
         }
         type Bar {
           name: String
-          basket: [Fruit] @composition
+          basket: [Fruit]! @composition
         }
     """
 

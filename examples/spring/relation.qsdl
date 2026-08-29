@@ -33,7 +33,7 @@ base BaseType @spring-package("custom") {
 // NameSpace Management
 type Project extends BaseType @namespace("Management") @spring-package("project") {
     archive: Boolean @writeOnly
-    roles: [Role] @composition
+    roles: [Role]! @composition
 }
 
 type Role @namespace("Management") @spring-package("user") {
@@ -54,7 +54,7 @@ type Ticket @namespace("Incident"){
     title: String @default("Witty Title")
     body: String
     status: Status @default("OPEN")
-    users: [User] @aggregation
+    users: [User]! @aggregation
 }
 
 extend api @spring-package("custom") {

@@ -16,15 +16,15 @@ class TestE2EDeepAggregationChain(BaseE2ETest):
       }
       type Student {
         name: String
-        addresses: [Address] @aggregation
+        addresses: [Address]! @aggregation
       }
       type Course {
         name: String
-        students: [Student] @aggregation
+        students: [Student]! @aggregation
       }
       type University {
         name: String
-        courses: [Course] @aggregation
+        courses: [Course]! @aggregation
       }
     """
 

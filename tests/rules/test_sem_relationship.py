@@ -37,7 +37,7 @@ class TestSemRelationship:
             }
             type Parent {
                 name: String
-                children: [Child] @composition
+                children: [Child]! @composition
             }
         """)
         objects = xtx.get_children_of_object(schema)
@@ -45,6 +45,7 @@ class TestSemRelationship:
         children_field = next(f for f in parent.fields if f.name == "children")
         assert children_field.is_composition is True
         assert children_field.is_array is True
+        assert children_field.is_required is True
 
     def test_SEM_701_composition_non_array_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:
         """SEM-701: @composition on non-array is rejected."""
@@ -58,6 +59,20 @@ class TestSemRelationship:
             }
         """)
 
+    def test_SEM_701_composition_optional_array_negative(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-701: @composition on an optional array is rejected."""
+        parse_expect_semantic_error("""
+            type Child {
+                value: String
+            }
+            type Parent {
+                name: String
+                children: [Child] @composition
+            }
+        """)
+
     def test_SEM_702_aggregation_positive(self, parse: ParseFixture) -> None:
         """SEM-702: @aggregation marks independent relationship."""
         schema = parse("""
@@ -66,7 +81,7 @@ class TestSemRelationship:
             }
             type Article {
                 title: String
-                tags: [Tag] @aggregation
+                tags: [Tag]! @aggregation
             }
         """)
         objects = xtx.get_children_of_object(schema)
@@ -74,6 +89,7 @@ class TestSemRelationship:
         tags_field = next(f for f in article.fields if f.name == "tags")
         assert tags_field.is_aggregation is True
         assert tags_field.is_array is True
+        assert tags_field.is_required is True
 
     def test_SEM_702_aggregation_non_array_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:
         """SEM-702: @aggregation on non-array is rejected."""
@@ -87,6 +103,20 @@ class TestSemRelationship:
             }
         """)
 
+    def test_SEM_702_aggregation_optional_array_negative(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """SEM-702: @aggregation on an optional array is rejected."""
+        parse_expect_semantic_error("""
+            type Tag {
+                name: String
+            }
+            type Article {
+                title: String
+                tags: [Tag] @aggregation
+            }
+        """)
+
     def test_SEM_703_composition_aggregation_conflict_negative(
         self, parse_expect_semantic_error: ParseExpectErrorFixture
     ) -> None:
@@ -94,10 +124,12 @@ class TestSemRelationship:
         parse_expect_semantic_error("""
             type Child {
                 value: String
+
+                extend api { }
             }
             type Parent {
                 name: String
-                children: [Child] @composition @aggregation
+                children: [Child]! @composition @aggregation
             }
         """)
 
@@ -109,7 +141,7 @@ class TestSemRelationship:
             }
             type Parent {
                 name: String
-                children: [Child] @composition
+                children: [Child]! @composition
             }
         """)
         objects = xtx.get_children_of_object(schema)

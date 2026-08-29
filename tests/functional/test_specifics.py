@@ -22,8 +22,8 @@ class TestSpecifics:
             }
 
             type Bar {
-                field2: Foo @composition
-                field2: Foo @composition
+                field2: [Foo]! @composition
+                field2: [Foo]! @composition
             }
         """
         inputs.append(test_input)
@@ -34,8 +34,8 @@ class TestSpecifics:
             }
 
             type Bar {
-                field2: Foo @aggregation
-                field2: Foo @aggregation
+                field2: [Foo]! @aggregation
+                field2: [Foo]! @aggregation
             }
         """
         inputs.append(test_input)

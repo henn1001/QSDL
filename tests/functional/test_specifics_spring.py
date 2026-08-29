@@ -92,12 +92,12 @@ class TestSpecificsSpring:
 
             type Bar {
                 field1: String!
-                field2: [Fruit] @composition
+                field2: [Fruit]! @composition
             }
 
             type Foo {
                 field1: String!
-                field2: [Bar] @composition
+                field2: [Bar]! @composition
             }
         """
 
@@ -122,12 +122,12 @@ class TestSpecificsSpring:
 
             type Bar {
                 field1: String!
-                field2: [Fruit] @aggregation
+                field2: [Fruit]! @aggregation
             }
 
             type Foo {
                 field1: String!
-                field2: [Bar] @aggregation
+                field2: [Bar]! @aggregation
             }
         """
 
@@ -152,12 +152,12 @@ class TestSpecificsSpring:
 
             type Bar {
                 field1: String!
-                field2: [Fruit] @composition
+                field2: [Fruit]! @composition
             }
 
             type Foo {
                 field1: String!
-                field2: [Fruit] @composition
+                field2: [Fruit]! @composition
             }
         """
 
@@ -188,7 +188,7 @@ class TestSpecificsSpring:
 
             type Foo {
                 field1: String!
-                field2: [Bar] @composition
+                field2: [Bar]! @composition
             }
         """
 
@@ -219,7 +219,7 @@ class TestSpecificsSpring:
 
             type Foo {
                 field1: String!
-                field2: [Bar] @aggregation
+                field2: [Bar]! @aggregation
             }
         """
 
@@ -270,14 +270,14 @@ class TestSpecificsSpring:
 
             type Bar {
                 name: String
-                foos: [Foo] @aggregation
+                foos: [Foo]! @aggregation
 
                 extend api {    }
             }
 
             type Fruit  {
                 name: String
-                foos: [Foo] @composition
+                foos: [Foo]! @composition
 
                 extend api {    }
             }

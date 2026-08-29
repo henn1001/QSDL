@@ -247,11 +247,11 @@ TWO_PARENT_ONE_CHILD = """\
   }
   type Foo {
     name: String
-    basket: [Fruit] @composition
+    basket: [Fruit]! @composition
   }
   type Bar {
     name: String
-    basket: [Fruit] @composition
+    basket: [Fruit]! @composition
   }
 """
 
@@ -267,7 +267,7 @@ ONE_TO_MANY = [
     """,
     """\
       type User {
-        metric: [Metric] @aggregation
+        metric: [Metric]! @aggregation
       }
       type Metric {
         likes: Int
@@ -275,7 +275,7 @@ ONE_TO_MANY = [
     """,
     """\
       type User {
-        metric: [Metric] @composition
+        metric: [Metric]! @composition
       }
       type Metric {
         likes: Int
@@ -310,8 +310,8 @@ OBJECT_ARRAYS_WITH_DIRECTIVES = """\
   }
   type Product {
     name: String
-    tags: [Tag] @composition
-    categories: [Category] @aggregation
+    tags: [Tag]! @composition
+    categories: [Category]! @aggregation
   }
 """
 
@@ -406,15 +406,15 @@ DEEP_COMPOSITION_CHAIN = """\
   }
   type Team {
     name: String
-    members: [Employee] @composition
+    members: [Employee]! @composition
   }
   type Department {
     name: String
-    teams: [Team] @composition
+    teams: [Team]! @composition
   }
   type Organization {
     name: String
-    departments: [Department] @composition
+    departments: [Department]! @composition
   }
 """
 
@@ -425,15 +425,15 @@ DEEP_AGGREGATION_CHAIN = """\
   }
   type Student {
     name: String
-    addresses: [Address] @aggregation
+    addresses: [Address]! @aggregation
   }
   type Course {
     name: String
-    students: [Student] @aggregation
+    students: [Student]! @aggregation
   }
   type University {
     name: String
-    courses: [Course] @aggregation
+    courses: [Course]! @aggregation
   }
 """
 
@@ -443,12 +443,12 @@ MIXED_COMPOSITION_AGGREGATION = """\
   }
   type Project {
     name: String
-    tags: [Tag] @aggregation
+    tags: [Tag]! @aggregation
   }
   type Company {
     name: String
-    ownedProjects: [Project] @composition
-    industryTags: [Tag] @aggregation
+    ownedProjects: [Project]! @composition
+    industryTags: [Tag]! @aggregation
   }
 """
 
@@ -468,8 +468,8 @@ COMPLEX_ENTITY_GRAPH = """\
   type Order {
     orderNumber: String
     customer: Customer
-    items: [OrderItem] @composition
-    relatedProducts: [Product] @aggregation
+    items: [OrderItem]! @composition
+    relatedProducts: [Product]! @aggregation
   }
 """
 

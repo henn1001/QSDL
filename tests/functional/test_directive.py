@@ -16,9 +16,9 @@ class TestDirective:
 
     5.  `Directive` `@writeOnly` may be use on any `Field` to mark it as write only.
 
-    6.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a list `Object`.
+    6.  `Directive` `@composition` may be used on a `Object` `Field` to create a parent-child relation. The `Field` value must be a required list `Object`.
 
-    7.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a list `Object`.
+    7.  `Directive` `@aggregation` may be used on a `Object` `Field` to create a independent relation. The `Field` value must be a required list `Object`.
 
     8.  `Directive` `@path` must be used on any `Operation` This specifies the API Path.
 
@@ -157,7 +157,7 @@ class TestDirective:
         test_input = """\
             type Foo {
                 field: Int
-                composition: [Bar] @composition
+                composition: [Bar]! @composition
             }
 
             type Bar {
@@ -206,7 +206,7 @@ class TestDirective:
         """Verify usage of @aggregation"""
         test_input = """\
             type Foo {
-                aggregation: [Bar] @aggregation
+                aggregation: [Bar]! @aggregation
             }
 
             type Bar {

@@ -434,7 +434,7 @@ type User {
     tags: [String]
 
     "Projects owned by this user (composition: delete user → delete owned projects)."
-    owned_projects: [Project] @composition
+    owned_projects: [Project]! @composition
 
     "List of roles/permissions (read-only, computed server-side)."
     roles: [Role]! @readOnly
@@ -718,10 +718,10 @@ Relationship and constraint directives:
 ```qsdl
 type Project {
     "Tasks owned by this project (parent-child relationship)."
-    tasks: [Task] @composition
+    tasks: [Task]! @composition
 
     "Team members assigned to this project (independent reference)."
-    team: [User] @aggregation
+    team: [User]! @aggregation
 }
 ```
 

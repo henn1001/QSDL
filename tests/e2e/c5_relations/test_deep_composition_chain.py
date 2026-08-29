@@ -16,15 +16,15 @@ class TestE2EDeepCompositionChain(BaseE2ETest):
       }
       type Team {
         name: String
-        members: [Employee] @composition
+        members: [Employee]! @composition
       }
       type Department {
         name: String
-        teams: [Team] @composition
+        teams: [Team]! @composition
       }
       type Organization {
         name: String
-        departments: [Department] @composition
+        departments: [Department]! @composition
       }
     """
 
