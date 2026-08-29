@@ -120,7 +120,9 @@ def _output_operations(schema: dsl.Schema, config: Config) -> list[YamlOperation
         elif config.single_file:
             output_path = _validated_path(PurePosixPath(f"{locale}.{config.file_extension}"))
             if objects or bases:
-                operations.append((output_path, locale, tuple(objects + bases), config.single_file_name + ".", True, True))
+                operations.append(
+                    (output_path, locale, tuple(objects + bases), config.single_file_name + ".", True, True)
+                )
             if enums:
                 operations.append((output_path, locale, tuple(enums), config.single_file_enum_name + ".", True, True))
         else:
@@ -217,21 +219,16 @@ def _destination_for(root: Path, path: PurePosixPath, resolved_root: Path) -> Pa
     return destination
 
 
-def build_files_for_directory(schema: dsl.Schema, config: Config, output_root: Path) -> GeneratedFiles:
-    """Build i18n artifacts after reading only requested existing translations."""
-    root = Path(output_root)
-    resolved_root = root.resolve(strict=False)
+def generate(schema: dsl.Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
+    """Generate i18n artifacts, merging existing translations when a destination is provided."""
     existing: dict[PurePosixPath, str] = {}
-
-    requested_paths = {operation[0] for operation in _output_operations(schema, config)}
-    for path in sorted(requested_paths, key=lambda item: item.as_posix()):
-        destination = _destination_for(root, path, resolved_root)
-        if destination.is_file():
-            existing[path] = destination.read_text(encoding="utf-8")
+    if output_path is not None:
+        root = Path(output_path)
+        resolved_root = root.resolve(strict=False)
+        requested_paths = {operation[0] for operation in _output_operations(schema, config)}
+        for path in sorted(requested_paths, key=lambda item: item.as_posix()):
+            destination = _destination_for(root, path, resolved_root)
+            if destination.is_file():
+                existing[path] = destination.read_text(encoding="utf-8")
 
     return _generate_files(schema, config, existing_files=existing)
-
-
-def generate(schema: dsl.Schema, config: Config) -> GeneratedFiles:
-    """Generate i18n artifacts without reading an existing destination."""
-    return _generate_files(schema, config)

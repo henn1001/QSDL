@@ -154,8 +154,6 @@ class GeneratedFiles:
 
 def _prefix_path(value: str | PurePosixPath) -> PurePosixPath:
     """Validate an extension prefix, allowing the explicit no-prefix value."""
-    if (isinstance(value, str) and value == ".") or (
-        isinstance(value, PurePosixPath) and value == PurePosixPath(".")
-    ):
+    if (isinstance(value, str) and value == ".") or (isinstance(value, PurePosixPath) and value == PurePosixPath(".")):
         return PurePosixPath(".")
     return _artifact_path(value)

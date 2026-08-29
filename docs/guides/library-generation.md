@@ -13,7 +13,7 @@ from qsdl.core import build
 
 files = build(
     generator_name="openapi",
-    raw_schema='type User { name: String }',
+    raw_schema="type User { name: String }",
 )
 
 openapi_yaml = files.text("openapi.yaml")

@@ -7,7 +7,6 @@ import pytest
 from qsdl.core import build
 from qsdl.dsl.textx import parse_schema
 from qsdl.generators.i18n import Config as I18nConfig
-from qsdl.generators.i18n import build_files_for_directory
 from qsdl.generators.i18n import generate as generate_i18n
 
 SCHEMA = """
@@ -60,14 +59,14 @@ def test_i18n_builds_split_files_for_each_locale() -> None:
     )
 
 
-def test_i18n_directory_adapter_reads_existing_translations_without_writing(tmp_path: Path) -> None:
+def test_i18n_generator_reads_existing_translations_without_writing(tmp_path: Path) -> None:
     schema = parse_schema(raw_schema=SCHEMA)
     config = I18nConfig()
     target = tmp_path / "en.yaml"
     existing = "domain:\n  User:\n    name: Existing Name\n"
     target.write_text(existing, encoding="utf-8")
 
-    files = build_files_for_directory(schema, config, tmp_path)
+    files = generate_i18n(schema, config, tmp_path)
 
     assert "Existing Name" in files.text("en.yaml")
     assert files.paths() == (PurePosixPath("en.yaml"),)

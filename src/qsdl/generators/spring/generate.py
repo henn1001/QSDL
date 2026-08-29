@@ -128,7 +128,7 @@ def _add_rendered(
     )
 
 
-def generate(schema: Schema, config: Config) -> GeneratedFiles:
+def generate(schema: Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
     """Generate Spring, OpenAPI, and PostgreSQL artifacts in memory."""
 
     if config.id_type not in IDTYPE.__members__:
@@ -344,11 +344,11 @@ def generate(schema: Schema, config: Config) -> GeneratedFiles:
     postgres_config = PostgresConfig(table_prefix=config.table_prefix)
 
     files.extend(
-        generate_openapi(schema, openapi_config),
+        generate_openapi(schema, openapi_config, output_path),
         prefix="src/main/resources",
     )
     files.extend(
-        generate_postgres(schema, postgres_config),
+        generate_postgres(schema, postgres_config, output_path),
         prefix="src/main/resources/db/migration",
     )
 

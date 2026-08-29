@@ -55,7 +55,7 @@ def parse_models(schema: Schema) -> list[Table]:
     return models
 
 
-def generate(schema: Schema, config: Config) -> GeneratedFiles:
+def generate(schema: Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
     """Generate PostgreSQL artifacts in memory."""
 
     # save to store

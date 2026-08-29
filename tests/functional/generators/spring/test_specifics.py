@@ -25,13 +25,9 @@ class TestSpringSpecifics:
 
         files = SpringTestUtils.generate(schema, config=config)
 
-        api_content = SpringTestUtils.read_file(
-            files, "src/main/java/com/supertest/generated/iface/DefaultApi.java"
-        )
+        api_content = SpringTestUtils.read_file(files, "src/main/java/com/supertest/generated/iface/DefaultApi.java")
         SpringTestUtils.assert_contains(api_content, "package com.supertest.generated.iface;")
-        assert SpringTestUtils.file_exists(
-            files, "src/main/java/com/supertest/generated/api/DefaultController.java"
-        )
+        assert SpringTestUtils.file_exists(files, "src/main/java/com/supertest/generated/api/DefaultController.java")
         assert SpringTestUtils.file_exists(files, "src/main/java/com/supertest/generated/object/Project.java")
 
     def test_controller_directive_sets_controller_name(self) -> None:
@@ -49,9 +45,7 @@ class TestSpringSpecifics:
 
         files = SpringTestUtils.generate(schema)
 
-        controller_content = SpringTestUtils.read_file(
-            files, "src/main/java/app/server/api/BuzzwordController.java"
-        )
+        controller_content = SpringTestUtils.read_file(files, "src/main/java/app/server/api/BuzzwordController.java")
         SpringTestUtils.assert_contains(controller_content, "public class BuzzwordController", "submitQuery")
         api_content = SpringTestUtils.read_file(files, "src/main/java/app/server/api/BuzzwordApi.java")
         SpringTestUtils.assert_contains(api_content, '@PatchMapping(value = "/query",', "submitQuery")
@@ -80,9 +74,7 @@ class TestSpringSpecifics:
         )
         SpringTestUtils.assert_not_contains(configuration_content, "@EnableJpaRepositories")
         assert not SpringTestUtils.file_exists(files, "src/main/java/app/server/domain/entity/ProjectEntity.java")
-        assert not SpringTestUtils.file_exists(
-            files, "src/main/java/app/server/repository/ProjectRepository.java"
-        )
+        assert not SpringTestUtils.file_exists(files, "src/main/java/app/server/repository/ProjectRepository.java")
 
     def test_package_placeholders_use_directives_and_namespace(self) -> None:
         """Package placeholders should use Spring package directives and namespaces."""

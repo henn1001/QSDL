@@ -26,8 +26,7 @@ from qsdl.generators.base_config import BaseConfig
 
 GeneratorConfig = BaseConfig
 GeneratorConfigClass = type[BaseConfig]
-GeneratorType = Callable[[Schema, GeneratorConfig], GeneratedFiles]
-DirectoryGeneratorType = Callable[[Schema, GeneratorConfig, Path], GeneratedFiles]
+GeneratorType = Callable[[Schema, GeneratorConfig, Path | None], GeneratedFiles]
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,7 +35,6 @@ class GeneratorDefinition:
 
     generator: GeneratorType
     config_class: GeneratorConfigClass
-    directory_generator: DirectoryGeneratorType | None = None
 
 
 def load_generators() -> dict[str, GeneratorDefinition]:
@@ -52,15 +50,11 @@ def load_generators() -> dict[str, GeneratorDefinition]:
 
                 generate = getattr(module, "generate", None)
                 config_class = getattr(module, "Config", None)
-                directory_generator = (
-                    getattr(module, "build_files_for_directory", None) if folder.name == "i18n" else None
-                )
 
                 if generate and config_class:
                     generators[folder.name] = GeneratorDefinition(
                         generator=generate,
                         config_class=config_class,
-                        directory_generator=directory_generator,
                     )
             except ImportError as error:
                 print(f"Error loading module '{folder.name}': {error}")

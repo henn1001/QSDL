@@ -142,12 +142,12 @@ entity.Argument -->  entity.ValueType: value
 legend
   Match rules:
   |= Name  |= Rule details |
+  | Description |  |
   | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
+  | Comment | \\/\\/.*$ |
   | Method | GET\|POST\|PUT\|PATCH\|DELETE |
   | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
-  | Comment | \\/\\/.*$ |
   | DirectiveValue | (\?:(\?:\"(\?:\\\\.\|[^\"\\\\])*\")\|[^)])+ |
-  | Description |  |
 end legend
 
 @enduml

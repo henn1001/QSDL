@@ -298,6 +298,4 @@ class TestSpringDomainLayout:
         files = SpringTestUtils.generate(test_input, config=config)
 
         assert SpringTestUtils.file_exists(files, "src/main/java/app/server/project/dto/GetProjectsFilter.java")
-        assert not SpringTestUtils.file_exists(
-            files, "src/main/java/app/server/common/dto/GetProjectsFilter.java"
-        )
+        assert not SpringTestUtils.file_exists(files, "src/main/java/app/server/common/dto/GetProjectsFilter.java")

@@ -14,14 +14,17 @@
 
 """Generator Main entrypoint"""
 
+from pathlib import Path
+
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
 
 from .config import Config
 
 
-def generate(schema: Schema, config: Config) -> GeneratedFiles:
+def generate(schema: Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
     """Generate no artifacts."""
     _ = schema
     _ = config
+    _ = output_path
     return GeneratedFiles()

@@ -41,9 +41,7 @@ class TestSpringEntityMetadata:
             "CamelObject": ("creationDate", "modificationDate", "t_camel_object"),
             "SnakeObject": ("creation_date", "modification_date", "t_snake_object"),
         }
-        postgres_content = SpringTestUtils.read_file(
-            files, "src/main/resources/db/migration/V1_0_0__baseline.sql"
-        )
+        postgres_content = SpringTestUtils.read_file(files, "src/main/resources/db/migration/V1_0_0__baseline.sql")
         for model_name, (creation_alias, modification_alias, table_name) in aliases.items():
             entity_content = SpringTestUtils.read_file(
                 files, f"src/main/java/app/server/common/db/{model_name}Entity.java"
@@ -54,9 +52,7 @@ class TestSpringEntityMetadata:
                 "private OffsetDateTime modificationDate;",
             )
 
-            dto_content = SpringTestUtils.read_file(
-                files, f"src/main/java/app/server/common/dto/{model_name}.java"
-            )
+            dto_content = SpringTestUtils.read_file(files, f"src/main/java/app/server/common/dto/{model_name}.java")
             SpringTestUtils.assert_contains(
                 dto_content,
                 f'@JsonProperty(value = "{creation_alias}")',

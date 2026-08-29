@@ -201,18 +201,9 @@ def _validate_result(files: object, generator_name: str) -> GeneratedFiles:
     return files
 
 
-def _invoke(prepared: _PreparedGeneration) -> GeneratedFiles:
-    """Invoke a generator with its prepared in-memory request."""
-    files = prepared.definition.generator(prepared.schema, prepared.config)
-    return _validate_result(files, prepared.name)
-
-
-def _invoke_for_directory(prepared: _PreparedGeneration, output_path: Path) -> GeneratedFiles:
-    """Invoke a generator, using only i18n's destination-reading compatibility hook."""
-    if prepared.definition.directory_generator is None:
-        return _invoke(prepared)
-
-    files = prepared.definition.directory_generator(prepared.schema, prepared.config, output_path)
+def _invoke(prepared: _PreparedGeneration, output_path: Path | None) -> GeneratedFiles:
+    """Invoke a generator with its configured destination path."""
+    files = prepared.definition.generator(prepared.schema, prepared.config, output_path)
     return _validate_result(files, prepared.name)
 
 
@@ -232,7 +223,7 @@ def build(
         config_path=config_path,
         raw_config=config,
     )
-    return _invoke(prepared)
+    return _invoke(prepared, None)
 
 
 def generate(
@@ -259,6 +250,6 @@ def generate(
     )
 
     log.info("calling generator")
-    files = _invoke_for_directory(prepared, output_path)
+    files = _invoke(prepared, output_path)
     DirectoryWriter(output_path).write(files)
     log.info("all done!")

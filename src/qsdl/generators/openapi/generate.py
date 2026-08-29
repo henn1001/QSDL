@@ -126,7 +126,7 @@ def get_paginated_object(schema: dsl.Schema, obj: dsl.Object, model_name: str) -
     return model
 
 
-def generate(schema: dsl.Schema, config: Config) -> GeneratedFiles:
+def generate(schema: dsl.Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
     """Generate OpenAPI artifacts in memory."""
 
     if config.id_type not in IDTYPE.__members__:

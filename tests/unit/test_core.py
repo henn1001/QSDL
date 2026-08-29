@@ -53,7 +53,7 @@ class TestCore:
     ) -> None:
         captured: list[ProbeConfig] = []
 
-        def probe(schema: Schema, config: ProbeConfig) -> GeneratedFiles:
+        def probe(schema: Schema, config: ProbeConfig, output_path: Path | None = None) -> GeneratedFiles:
             captured.append(config)
             files = GeneratedFiles()
             files.add_text("config.txt", f"{config.value}:{config.other}")
@@ -74,10 +74,8 @@ class TestCore:
         assert captured[0].value == "raw"
         assert captured[0].other == "file-other"
 
-    def test_invalid_config_roots_are_rejected(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        _register_probe(monkeypatch, lambda schema, config: GeneratedFiles())
+    def test_invalid_config_roots_are_rejected(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        _register_probe(monkeypatch, lambda schema, config, output_path: GeneratedFiles())
         config_path = tmp_path / "config.json"
         config_path.write_text(json.dumps(["not", "an", "object"]), encoding="utf-8")
 
@@ -86,13 +84,11 @@ class TestCore:
         with pytest.raises(TypeError, match="config must be a mapping"):
             build(generator_name="probe", raw_schema="", config=["not a mapping"])  # type: ignore[arg-type]
 
-    def test_builds_use_fresh_configs_even_when_a_generator_mutates_one(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_builds_use_fresh_configs_even_when_a_generator_mutates_one(self, monkeypatch: pytest.MonkeyPatch) -> None:
         captured: list[ProbeConfig] = []
         initial_values: list[str] = []
 
-        def probe(schema: Schema, config: ProbeConfig) -> GeneratedFiles:
+        def probe(schema: Schema, config: ProbeConfig, output_path: Path | None = None) -> GeneratedFiles:
             captured.append(config)
             initial_values.append(config.value)
             config.value = "mutated"
@@ -107,7 +103,7 @@ class TestCore:
         assert initial_values == ["default", "default"]
 
     def test_generator_returning_none_is_rejected(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        def invalid_generator(schema: Schema, config: ProbeConfig) -> None:
+        def invalid_generator(schema: Schema, config: ProbeConfig, output_path: Path | None = None) -> None:
             return None
 
         _register_probe(monkeypatch, invalid_generator)
@@ -137,13 +133,11 @@ class TestCore:
         assert spring.exists("src/main/resources/openapi.yaml")
         assert spring.exists("src/main/resources/db/migration/V1_0_0__baseline.sql")
 
-    def test_spring_children_receive_the_same_schema_and_keep_prefixes(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_spring_children_receive_the_same_schema_and_keep_prefixes(self, monkeypatch: pytest.MonkeyPatch) -> None:
         spring_module = importlib.import_module("qsdl.generators.spring.generate")
         seen: list[Schema] = []
 
-        def child(schema: Schema, config: object) -> GeneratedFiles:
+        def child(schema: Schema, config: object, output_path: Path | None = None) -> GeneratedFiles:
             seen.append(schema)
             files = GeneratedFiles()
             files.add_text("child.txt", "child")
@@ -162,7 +156,7 @@ class TestCore:
     def test_spring_child_path_collision_is_propagated(self, monkeypatch: pytest.MonkeyPatch) -> None:
         spring_module = importlib.import_module("qsdl.generators.spring.generate")
 
-        def colliding_child(schema: Schema, config: object) -> GeneratedFiles:
+        def colliding_child(schema: Schema, config: object, output_path: Path | None = None) -> GeneratedFiles:
             files = GeneratedFiles()
             files.add_text("application.yaml", "collision")
             return files
