@@ -12,9 +12,7 @@ from tests.functional.generators.openapi import generate_openapi
         ('"""\n            Multi line description\n            """', "Multi line description"),
     ],
 )
-def test_descriptions_are_rendered_for_openapi_entities(
-    tmp_path: Path, description: str, expected: str
-) -> None:
+def test_descriptions_are_rendered_for_openapi_entities(tmp_path: Path, description: str, expected: str) -> None:
     schema = f"""
         description: {description}
 

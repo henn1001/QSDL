@@ -101,10 +101,9 @@ class TestE2EOneToOne(BaseE2ETest):
         assert users["post"]["responses"]["200"]["content"]["application/json"]["schema"] == {
             "$ref": "#/components/schemas/User"
         }
-        assert (
-            openapi_schema["paths"]["/users/{id}"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
-            == {"$ref": "#/components/schemas/User"}
-        )
+        assert openapi_schema["paths"]["/users/{id}"]["get"]["responses"]["200"]["content"]["application/json"][
+            "schema"
+        ] == {"$ref": "#/components/schemas/User"}
 
     def test_spring(self, srcgen: Path) -> None:
         src_root = srcgen / "src" / "main" / "java"

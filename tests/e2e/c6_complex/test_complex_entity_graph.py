@@ -100,9 +100,10 @@ class TestE2EComplexEntityGraph(BaseE2ETest):
         assert products["get"]["responses"]["200"]["content"]["application/json"]["schema"] == {
             "$ref": "#/components/schemas/ProductList"
         }
-        assert openapi_schema["paths"]["/orders/{order_id}/products/{id}/add"]["post"]["responses"]["200"][
-            "description"
-        ] == "OK"
+        assert (
+            openapi_schema["paths"]["/orders/{order_id}/products/{id}/add"]["post"]["responses"]["200"]["description"]
+            == "OK"
+        )
         assert "/orders/{order_id}/orderitems/{id}" in openapi_schema["paths"]
 
     def test_spring(self, srcgen: Path) -> None:

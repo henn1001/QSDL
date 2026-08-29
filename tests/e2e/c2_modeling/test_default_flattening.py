@@ -111,7 +111,10 @@ class TestE2EDefaultFlattening(BaseE2ETest):
         mapper_files = list(src_root.rglob("FooMapper.java"))
         assert len(mapper_files) == 1
         mapper_content = mapper_files[0].read_text(encoding="utf-8")
-        assert '@Mapping(target = "nestedFieldAFruitStringField", source = "nestedFieldA.fruit.stringField")' in mapper_content
+        assert (
+            '@Mapping(target = "nestedFieldAFruitStringField", source = "nestedFieldA.fruit.stringField")'
+            in mapper_content
+        )
         assert '@Mapping(target = "nestedFieldBIntField", source = "nestedFieldB.intField")' in mapper_content
         assert "FooEntity toEntity(FooRequest dto);" in mapper_content
 

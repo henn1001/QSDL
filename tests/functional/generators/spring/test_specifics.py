@@ -32,9 +32,7 @@ class TestSpringSpecifics:
         assert SpringTestUtils.file_exists(
             output_path, "src/main/java/com/supertest/generated/api/DefaultController.java"
         )
-        assert SpringTestUtils.file_exists(
-            output_path, "src/main/java/com/supertest/generated/object/Project.java"
-        )
+        assert SpringTestUtils.file_exists(output_path, "src/main/java/com/supertest/generated/object/Project.java")
 
     def test_controller_directive_sets_controller_name(self) -> None:
         """The Spring controller directive should rename the generated API/controller pair."""
@@ -64,9 +62,7 @@ class TestSpringSpecifics:
 
         output_path = SpringTestUtils.generate(schema, config={"id_type": "STRING"})
 
-        service_content = SpringTestUtils.read_file(
-            output_path, "src/main/java/app/server/service/ProjectService.java"
-        )
+        service_content = SpringTestUtils.read_file(output_path, "src/main/java/app/server/service/ProjectService.java")
         SpringTestUtils.assert_contains(
             service_content,
             "ProjectEntity fetchProjectFromDb(String id)",
@@ -84,7 +80,9 @@ class TestSpringSpecifics:
         )
         SpringTestUtils.assert_not_contains(configuration_content, "@EnableJpaRepositories")
         assert not SpringTestUtils.file_exists(output_path, "src/main/java/app/server/domain/entity/ProjectEntity.java")
-        assert not SpringTestUtils.file_exists(output_path, "src/main/java/app/server/repository/ProjectRepository.java")
+        assert not SpringTestUtils.file_exists(
+            output_path, "src/main/java/app/server/repository/ProjectRepository.java"
+        )
 
     def test_package_placeholders_use_directives_and_namespace(self) -> None:
         """Package placeholders should use Spring package directives and namespaces."""

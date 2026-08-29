@@ -116,24 +116,24 @@ class TestE2EDeepCompositionChain(BaseE2ETest):
         src_root = srcgen / "src" / "main" / "java"
 
         employee_entity = next(src_root.rglob("EmployeeEntity.java")).read_text(encoding="utf-8")
-        assert '@ManyToOne(fetch = FetchType.LAZY)' in employee_entity
+        assert "@ManyToOne(fetch = FetchType.LAZY)" in employee_entity
         assert '@JoinColumn(name = "members_team_id")' in employee_entity
 
         team_entity = next(src_root.rglob("TeamEntity.java")).read_text(encoding="utf-8")
-        assert (
-            '@OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)' in team_entity
-        )
+        assert '@OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)' in team_entity
         assert '@JoinColumn(name = "teams_department_id")' in team_entity
 
         department_entity = next(src_root.rglob("DepartmentEntity.java")).read_text(encoding="utf-8")
         assert (
-            '@OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)' in department_entity
+            '@OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)'
+            in department_entity
         )
         assert '@JoinColumn(name = "departments_organization_id")' in department_entity
 
         organization_entity = next(src_root.rglob("OrganizationEntity.java")).read_text(encoding="utf-8")
         assert (
-            '@OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.ALL)' in organization_entity
+            '@OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.ALL)'
+            in organization_entity
         )
         assert len(list(src_root.rglob("OrganizationRepository.java"))) == 1
 

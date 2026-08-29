@@ -176,9 +176,7 @@ def validate_namespaces(schema: dsl.Schema) -> None:
 
         name = getattr(entity, "name", None)
         label = f"{entity.__class__.__name__} {name!r}" if name is not None else entity.__class__.__name__
-        msg = (
-            f"The namespace of {label} must be a single alphanumeric identifier beginning with a letter."
-        )
+        msg = f"The namespace of {label} must be a single alphanumeric identifier beginning with a letter."
         raise TextXSemanticError(msg, **get_location(entity))
 
 

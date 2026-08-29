@@ -20,14 +20,10 @@ from .conftest import ParseExpectErrorFixture
 class TestDescription:
     """Test that descriptions cannot be empty."""
 
-    def test_empty_single_line_description_negative(
-        self, parse_expect_syntax_error: ParseExpectErrorFixture
-    ) -> None:
+    def test_empty_single_line_description_negative(self, parse_expect_syntax_error: ParseExpectErrorFixture) -> None:
         """Single-line descriptions require at least one character."""
         parse_expect_syntax_error('description: ""')
 
-    def test_empty_multi_line_description_negative(
-        self, parse_expect_syntax_error: ParseExpectErrorFixture
-    ) -> None:
+    def test_empty_multi_line_description_negative(self, parse_expect_syntax_error: ParseExpectErrorFixture) -> None:
         """Multi-line descriptions require at least one character."""
         parse_expect_syntax_error('description: """"""')

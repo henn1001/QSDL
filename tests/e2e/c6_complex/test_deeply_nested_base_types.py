@@ -54,9 +54,7 @@ class TestE2EDeeplyNestedBaseTypes(BaseE2ETest):
     def test_openapi(self, openapi_schema: dict) -> None:
         schemas = openapi_schema["components"]["schemas"]
 
-        assert schemas["ContactInfo"]["properties"]["location"] == {
-            "$ref": "#/components/schemas/GeoCoordinates"
-        }
+        assert schemas["ContactInfo"]["properties"]["location"] == {"$ref": "#/components/schemas/GeoCoordinates"}
         assert schemas["Address"]["properties"]["contact"] == {"$ref": "#/components/schemas/ContactInfo"}
         company = schemas["Company"]["properties"]
         assert company["headquarters"] == {"$ref": "#/components/schemas/Address"}

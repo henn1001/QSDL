@@ -103,12 +103,12 @@ class TestE2EMixedRelation(BaseE2ETest):
         assert "public final Set<CategoryEntity> categorys" in product_entity
 
         tag_entity = next(src_root.rglob("TagEntity.java")).read_text(encoding="utf-8")
-        assert '@ManyToOne(fetch = FetchType.LAZY)' in tag_entity
+        assert "@ManyToOne(fetch = FetchType.LAZY)" in tag_entity
         assert '@JoinColumn(name = "tags_product_id")' in tag_entity
 
         category_entity = next(src_root.rglob("CategoryEntity.java")).read_text(encoding="utf-8")
-        assert '@ManyToMany(fetch = FetchType.LAZY)' in category_entity
-        assert 't_product_to_t_category' in category_entity
+        assert "@ManyToMany(fetch = FetchType.LAZY)" in category_entity
+        assert "t_product_to_t_category" in category_entity
         assert len(list(src_root.rglob("ProductRepository.java"))) == 1
         assert len(list(src_root.rglob("ProductService.java"))) == 1
         assert len(list(src_root.rglob("ProductController.java"))) == 1

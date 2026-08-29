@@ -127,14 +127,14 @@ class TestE2EDeepAggregationChain(BaseE2ETest):
         src_root = srcgen / "src" / "main" / "java"
 
         student_entity = next(src_root.rglob("StudentEntity.java")).read_text(encoding="utf-8")
-        assert '@ManyToMany(fetch = FetchType.LAZY)' in student_entity
-        assert 't_course_to_t_student' in student_entity
-        assert 'public final Set<CourseEntity> courses' in student_entity
+        assert "@ManyToMany(fetch = FetchType.LAZY)" in student_entity
+        assert "t_course_to_t_student" in student_entity
+        assert "public final Set<CourseEntity> courses" in student_entity
 
         course_entity = next(src_root.rglob("CourseEntity.java")).read_text(encoding="utf-8")
         assert '@ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)' in course_entity
-        assert '@ManyToMany(fetch = FetchType.LAZY)' in course_entity
-        assert 't_university_to_t_course' in course_entity
+        assert "@ManyToMany(fetch = FetchType.LAZY)" in course_entity
+        assert "t_university_to_t_course" in course_entity
 
         university_entity = next(src_root.rglob("UniversityEntity.java")).read_text(encoding="utf-8")
         assert '@ManyToMany(mappedBy = "universitys", fetch = FetchType.LAZY)' in university_entity

@@ -101,7 +101,7 @@ class TestE2ETwoParentOneChild(BaseE2ETest):
             assert "public final Set<FruitEntity> fruits" in parent_entity
 
         fruit_entity = next(src_root.rglob("FruitEntity.java")).read_text(encoding="utf-8")
-        assert '@ManyToOne(fetch = FetchType.LAZY)' in fruit_entity
+        assert "@ManyToOne(fetch = FetchType.LAZY)" in fruit_entity
         assert '@JoinColumn(name = "basket_foo_id")' in fruit_entity
         assert '@JoinColumn(name = "basket_bar_id")' in fruit_entity
         assert len(list(src_root.rglob("FruitRepository.java"))) == 1

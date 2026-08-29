@@ -69,9 +69,7 @@ class TestSemArgument:
         assert "limit" in arg_names
         assert "offset" in arg_names
 
-    def test_SEM_901_bare_argument_negative(
-        self, parse_expect_syntax_error: ParseExpectErrorFixture
-    ) -> None:
+    def test_SEM_901_bare_argument_negative(self, parse_expect_syntax_error: ParseExpectErrorFixture) -> None:
         """SEM-901: An argument must declare a value type."""
         parse_expect_syntax_error("""
             extend api {
@@ -79,9 +77,7 @@ class TestSemArgument:
             }
         """)
 
-    def test_SEM_901_unknown_argument_type_negative(
-        self, parse_expect_semantic_error: ParseExpectErrorFixture
-    ) -> None:
+    def test_SEM_901_unknown_argument_type_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:
         """SEM-901: An argument must reference a declared value type."""
         parse_expect_semantic_error("""
             extend api {
@@ -309,9 +305,7 @@ class TestSemArgument:
         )
 
     @pytest.mark.parametrize("declaration", ["type Item { value: String }", "base Item { value: String }"])
-    def test_SEM_907_reference_and_scalar_body_arguments_negative(
-        self, declaration: str, parse: ParseFixture
-    ) -> None:
+    def test_SEM_907_reference_and_scalar_body_arguments_negative(self, declaration: str, parse: ParseFixture) -> None:
         """SEM-907: An operation cannot mix a reference and another unlocated argument."""
         assert_semantic_error(
             parse,

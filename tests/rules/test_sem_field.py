@@ -248,9 +248,7 @@ class TestSemField:
         """)
 
     @pytest.mark.parametrize("reserved_name", ["id", "uid", "iv"])
-    def test_SEM_609_object_reserved_field_negative(
-        self, reserved_name: str, parse: ParseFixture
-    ) -> None:
+    def test_SEM_609_object_reserved_field_negative(self, reserved_name: str, parse: ParseFixture) -> None:
         """SEM-609: Object fields cannot use generated entity metadata names."""
         assert_semantic_error(
             parse,
