@@ -152,9 +152,9 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 | ID      | Rule                                                                                          |
 | ------- | --------------------------------------------------------------------------------------------- |
-| LOG-401 | Schemas may import other `.qsdl` files via `import "path/to/file.qsdl"`                       |
-| LOG-402 | Imported types are merged into the parent schema namespace; duplicates cause validation error |
-| LOG-403 | Circular imports are **not allowed**                                                          |
+| LOG-401 | Schemas may import other `.qsdl` files via `import "path/to/file.qsdl"`; paths are resolved relative to the importing file and must use the `.qsdl` extension |
+| LOG-402 | Imported types are merged into the parent schema namespace once per canonical physical file; duplicates from distinct files cause a validation error |
+| LOG-403 | Circular imports are **not allowed** and are rejected with a semantic error that includes the import chain |
 
 ---
 

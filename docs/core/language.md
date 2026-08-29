@@ -90,17 +90,22 @@ An import statement references another `.qsdl` file via a string path.
 > Note
 >
 > Imported files are loaded automatically and treated as if their type definitions were part of the main
-> schema.
+> schema. Import paths are resolved relative to the file that contains the import, normalized to canonical
+> absolute paths, and each physical file is merged only once. Distinct files with the same basename are
+> still separate imports.
 >
-> The exact rules for how the import path is resolved depend on the underlying parser/scoping mechanism.
-> If you run into “file not found” issues, prefer explicit relative paths like `"./common.qsdl"` and keep
-> imported schemas next to (or below) the file that imports them.
+> Imports must reference files with the `.qsdl` extension. Circular imports are rejected and the semantic
+> error reports the import chain. Prefer explicit relative paths such as `"./common.qsdl"`.
 
 > Note
 >
 > When you split a schema across multiple files, QSDL merges them into a single schema and then removes
 > unused helper types (currently: unused `base` and `enum` definitions). If you want to keep a `base` or
 > `enum` around even when it is not referenced yet, use `@force-generate`.
+>
+> Imports require file-based parsing because their paths are resolved relative to the importing file. Use
+> `parse_schema(input_path=...)` or the CLI for schemas with imports; `parse_schema(raw_schema=...)` rejects
+> import statements.
 
 **Examples:**
 

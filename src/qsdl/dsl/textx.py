@@ -17,13 +17,13 @@
 from pathlib import Path
 
 import textx.model
-import textx.scoping.providers as scoping_providers
 from textx import metamodel_from_file
 from textx.export import PlantUmlRenderer, metamodel_export
 from textx.metamodel import TextXMetaModel
 
 from qsdl import __folder__, dsl, logger
-from qsdl.dsl.processors.model_processor import model_merger, model_post_processor, model_processor
+from qsdl.dsl.processors.import_processor import CanonicalImportURI, merge_imported_types
+from qsdl.dsl.processors.model_processor import model_post_processor, model_processor
 from qsdl.dsl.processors.obj_processors import obj_processors
 from qsdl.exceptions import QsdlException
 
@@ -63,6 +63,7 @@ def draw_metamodel(metamodel: TextXMetaModel) -> None:
         file.truncate()
 
 
+
 def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     """Builds and returns a meta-model for our meta language.
 
@@ -86,24 +87,13 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     metamodel.register_obj_processors(obj_processors)
 
     # register scope provider to allow multi-schema-files
-    metamodel.register_scope_providers({"*.*": scoping_providers.PlainNameImportURI()})
+    metamodel.register_scope_providers({"*.*": CanonicalImportURI()})
 
     # export model with plantuml
     if print_uml:
         draw_metamodel(metamodel)
 
     return metamodel
-
-
-def _set_source_filenames(schema: dsl.Schema) -> None:
-    """Preserve source filenames on custom TextX model roots."""
-    parser = getattr(schema, "_tx_parser", None)
-    schema._tx_filename = getattr(parser, "file_name", None) if parser else None
-
-    for imported_schema in (
-        loaded_schema for imprt in schema.imports for loaded_schema in getattr(imprt, "_tx_loaded_models", [])
-    ):
-        _set_source_filenames(imported_schema)
 
 
 def parse_schema(input_path: Path | None = None, raw_schema: str | None = None) -> dsl.Schema:
@@ -136,12 +126,8 @@ def parse_schema(input_path: Path | None = None, raw_schema: str | None = None) 
         # no support for multi-schema-files
         schema: dsl.Schema = metamodel.model_from_str(raw_schema)
 
-    # TextX cannot populate this special attribute on our dataclass model root,
-    # so copy the parser filename before semantic validation and location lookup.
-    _set_source_filenames(schema)
-
-    # merge schema for multi-schema-files
-    model_merger(schema)
+    # Merge each imported physical file once and reject circular import graphs.
+    merge_imported_types(schema)
 
     # run post processing
     model_post_processor(schema, metamodel)
