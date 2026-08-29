@@ -205,7 +205,9 @@ paths:
 
 ## Base Types & Composition
 
-Base types become OpenAPI schemas and are included in the components section. Types that extend a base inherit all base fields in their schema definition.
+Base types become OpenAPI schemas and are included in the components section. They may be referenced by nested
+fields and by custom operation request or response schemas. Types that extend a base inherit all
+base fields in their schema definition.
 
 Composition and aggregation relationships are represented as nested object references in the schema.
 

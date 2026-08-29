@@ -31,7 +31,7 @@ class Argument:
     # defined in entity.tx
     # LHS
     name: str
-    value: dsl.Scalar | dsl.Object | dsl.Enum
+    value: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object
     is_array: bool = False
 
     # Directives

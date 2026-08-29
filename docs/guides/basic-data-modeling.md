@@ -32,6 +32,7 @@ base AuditInfo {
 - Used for composition and grouping
 - Default behavior: **flattened into parent tables**
 - Can be extended by other base types or types
+- Can be used as a nested field or as a custom operation request/response schema
 
 ### Types: Domain Entities
 
@@ -213,7 +214,7 @@ type Document extends AuditableEntity {
 ### Use Default Flattening When:
 
 ✅ **Simple value objects** (2-8 fields)
-✅ **Fields are frequently populated**  
+✅ **Fields are frequently populated**
 ✅ **Need database-level validation and constraints**
 ✅ **Want standard SQL indexing**
 ✅ **Examples:** Address, ContactInfo, Coordinates, MoneyAmount

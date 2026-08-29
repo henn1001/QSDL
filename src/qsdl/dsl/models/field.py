@@ -32,7 +32,7 @@ class Field:
     # LHS
     name: str
     # RHS
-    value: dsl.Scalar | dsl.Object | dsl.Enum
+    value: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object
 
     # defined in entity.tx (with defaults)
     description: list[str] = field(default_factory=list)

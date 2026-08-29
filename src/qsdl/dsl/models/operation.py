@@ -38,7 +38,7 @@ class Operation:
     arguments: list[dsl.Argument] = field(default_factory=list)
     # RHS
     is_array: bool = False
-    value: dsl.Scalar | dsl.Object | dsl.Enum | None = None
+    value: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object | None = None
     is_required: bool = False
     # Special directives
     # path: str | None = None

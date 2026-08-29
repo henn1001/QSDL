@@ -59,12 +59,12 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 ### Base Rules
 
-| ID      | Rule                                                                               | Notes                                                                                                |
-| ------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| SEM-401 | Base types define reusable field collections                                       | Used for inheritance and nested value composition; relationship directives are Object-only (SEM-706) |
-| SEM-402 | Base may extend zero or more other Bases (linear inheritance chain recommended)    | `extends Base1, Base2, ...`                                                                          |
-| SEM-404 | Base cannot be directly instantiated in generated code (used only for inheritance) | Only Objects are instantiable                                                                        |
-| SEM-405 | Bases may have an optional namespace via `@namespace(...)`                         | The value must follow SYN-010                                                                        |
+| ID      | Rule                                                                            | Notes                                                                                                |
+| ------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| SEM-401 | Base types define reusable field collections                                    | Used for inheritance and nested value composition; relationship directives are Object-only (SEM-706) |
+| SEM-402 | Base may extend zero or more other Bases (linear inheritance chain recommended) | `extends Base1, Base2, ...`                                                                          |
+| SEM-404 | Bases do not receive automatic CRUD generation                                  | Bases may be nested field types or operation request/response schemas                                |
+| SEM-405 | Bases may have an optional namespace via `@namespace(...)`                      | The value must follow SYN-010                                                                        |
 
 ### Object Rules
 

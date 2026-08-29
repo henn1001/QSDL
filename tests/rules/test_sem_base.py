@@ -17,11 +17,12 @@
 Rules covered:
 - SEM-401: Base types define reusable field collections
 - SEM-402: Base may extend zero or more other Bases
-- SEM-404: Base cannot be directly instantiated (used only for inheritance)
+- SEM-404: Bases do not receive automatic CRUD generation and may be used as schemas
 - SEM-405: Bases may have optional namespace via @namespace(...)
 """
 
 import qsdl.dsl.textx as xtx
+from qsdl import dsl
 
 from .conftest import ParseExpectErrorFixture, ParseFixture
 
@@ -116,3 +117,45 @@ class TestSemBase:
                 fieldB: Int
             }
         """)
+
+    def test_SEM_404_base_as_field_value_positive(self, parse: ParseFixture) -> None:
+        """SEM-404: A Base may be used as a nested field value."""
+        schema = parse("""
+            base Address {
+                street: String
+            }
+            type Person {
+                address: Address
+            }
+        """)
+        person = xtx.get_children_of_object(schema)[0]
+        address = next(field for field in person.fields if field.name == "address")
+        assert isinstance(address.value, dsl.Base)
+        assert address.value.name == "Address"
+
+    def test_SEM_404_base_as_operation_schema_without_crud_positive(self, parse: ParseFixture) -> None:
+        """SEM-404: Bases may be operation schemas without receiving automatic CRUD."""
+        schema = parse("""
+            base Address {
+                street: String
+            }
+            type Person {
+                address: Address
+            }
+            extend api {
+                saveAddress(address: Address): Address @path("addresses") @method(POST)
+            }
+        """)
+
+        person = xtx.get_children_of_object(schema)[0]
+        operation = next(
+            operation for operation in xtx.get_children_of_operation(schema) if operation.name == "saveAddress"
+        )
+        assert isinstance(operation.arguments[0].value, dsl.Base)
+        assert isinstance(operation.value, dsl.Base)
+
+        generated_operations = [
+            operation for operation in xtx.get_children_of_operation(schema) if operation.is_generated
+        ]
+        assert generated_operations
+        assert all(generated.domain_object is person for generated in generated_operations)
