@@ -203,7 +203,7 @@ class ModelClass:
         self.is_supertype = util.is_supertype(_ref) if self.is_base else False
         self.is_aggregated = util.has(_ref, is_aggregated=True)
         self.has_relation = util.has(_ref, has_relation=True)
-        self.has_required = util.has(_ref, has_required_ignore_id=True)
+        self.has_required = util.has(_ref, has_required_ignore_internal=True)
         self.has_query = util.has(_ref, has_query=True)
 
         # handle package path and imports

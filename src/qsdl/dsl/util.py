@@ -185,47 +185,61 @@ def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
     Returns:
         list: [entity.dsl.Field]
     """
-    fields: list[dsl.Field] = []
-
     # skip already flattened entities
     if entity.flattened:
         return entity.fields
 
-    # Support multiple supertypes
-    if entity.supertypes:
-        for supertype in entity.supertypes:
-            tmp = get_all_fields_as_list(supertype)
-            fields.extend(tmp)
+    fields_by_name: dict[str, dsl.Field] = {}
+    override_names = {field.name for field in entity.fields if field.is_override}
 
-    for field in entity.fields:
-        # check if attribute was already defined within a supertype
-        duplicate = [x for x in fields if x.name == field.name]
-        duplicate = duplicate[0] if duplicate else None
-
-        if not duplicate:
-            fields.append(field)
-        elif not field.is_override:
+    def raise_redefinition(duplicate: dsl.Field, conflicting: dsl.Field) -> None:
+        if conflicting.parent is entity:
             log.error(
                 "The inherited field '%s' of '%s' was redefined and replaced by '%s'.",
                 duplicate.name,
                 duplicate.parent.name,
                 entity.name,
             )
-            raise QsdlException("Field redefinition without @override is not allowed.")
         else:
-            index = fields.index(duplicate)
-            fields[index] = field
+            log.error(
+                "The field '%s' is inherited by '%s' from both '%s' and '%s' without an explicit @override.",
+                duplicate.name,
+                entity.name,
+                duplicate.parent.name,
+                conflicting.parent.name,
+            )
+        raise QsdlException("Field redefinition without @override is not allowed.")
 
-            # log warning if type changed
-            if duplicate.value != field.value:
-                log.warning(
-                    "The inherited field '%s' of '%s' was redefined with a different type by '%s'.",
-                    duplicate.name,
-                    duplicate.parent.name,
-                    entity.name,
-                )
+    for supertype in entity.supertypes:
+        for inherited_field in get_all_fields_as_list(supertype):
+            duplicate = fields_by_name.get(inherited_field.name)
 
-    return fields
+            # A declaration reached repeatedly through a diamond is unambiguous.
+            if duplicate is inherited_field:
+                continue
+            if duplicate is not None and inherited_field.name not in override_names:
+                raise_redefinition(duplicate, inherited_field)
+
+            # Keep the first parent declaration until a local override replaces it.
+            fields_by_name.setdefault(inherited_field.name, inherited_field)
+
+    for field in entity.fields:
+        duplicate = fields_by_name.get(field.name)
+
+        if duplicate is not None and not field.is_override:
+            raise_redefinition(duplicate, field)
+
+        fields_by_name[field.name] = field
+
+        if duplicate is not None and duplicate.value != field.value:
+            log.warning(
+                "The inherited field '%s' of '%s' was redefined with a different type by '%s'.",
+                duplicate.name,
+                duplicate.parent.name,
+                entity.name,
+            )
+
+    return list(fields_by_name.values())
 
 
 def get_composition_fields(schema: dsl.Schema, obj_name: str) -> list[dsl.Field]:

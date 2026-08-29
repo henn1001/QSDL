@@ -126,7 +126,7 @@ def has(
     has_list: bool = False,
     has_model: bool = False,
     has_required: bool = False,
-    has_required_ignore_id: bool = False,
+    has_required_ignore_internal: bool = False,
     is_aggregated: bool = False,
     has_relation: bool = False,
     has_query: bool = False,
@@ -174,7 +174,13 @@ def has(
                 ret = True
                 break
 
-            if has_required_ignore_id and field.name != "id" and field.is_required:
+            if (
+                has_required_ignore_internal
+                and field.name != "id"
+                and not field.is_composition
+                and not field.is_aggregation
+                and field.is_required
+            ):
                 ret = True
                 break
 

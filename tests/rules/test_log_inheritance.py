@@ -68,6 +68,83 @@ class TestLogInheritance:
         assert "parentField" in field_names
         assert "childField" in field_names
 
+    def test_LOG_101_multiple_inheritance_conflict_negative(
+        self, parse_expect_semantic_error: ParseExpectErrorFixture
+    ) -> None:
+        """LOG-101: Conflicting fields from multiple supertypes are rejected."""
+        parse_expect_semantic_error("""
+            base First {
+                field: String
+            }
+            base Second {
+                field: Int
+            }
+            type Child extends First, Second {
+                value: Boolean
+            }
+        """)
+
+    def test_LOG_101_multiple_inheritance_conflict_resolved_by_override_positive(self, parse: ParseFixture) -> None:
+        """LOG-101: A child override resolves conflicting fields from multiple supertypes."""
+        schema = parse("""
+            base First {
+                field: String
+            }
+            base Second {
+                field: Int
+            }
+            type Child extends First, Second {
+                field: Long @override
+            }
+        """)
+        obj = xtx.get_children_of_object(schema)[0]
+        fields = [field for field in obj.fields if field.name == "field"]
+        assert len(fields) == 1
+        assert fields[0].value.name == "Long"
+        assert fields[0].is_override is True
+
+    def test_LOG_101_duplicate_supertype_positive(self, parse: ParseFixture) -> None:
+        """LOG-101: Repeated inheritance of the same supertype does not duplicate fields."""
+        schema = parse("""
+            base Shared {
+                sharedField: String
+            }
+            base Combined extends Shared, Shared {
+                combinedField: Int
+            }
+            type Child extends Combined {
+                childField: Boolean
+            }
+        """)
+        obj = xtx.get_children_of_object(schema)[0]
+        field_names = [f.name for f in obj.fields]
+        assert field_names.count("sharedField") == 1
+        assert "combinedField" in field_names
+        assert "childField" in field_names
+
+    def test_LOG_101_diamond_inheritance_positive(self, parse: ParseFixture) -> None:
+        """LOG-101: Diamond inheritance includes shared fields only once."""
+        schema = parse("""
+            base Root {
+                rootField: String
+            }
+            base Left extends Root {
+                leftField: Int
+            }
+            base Right extends Root {
+                rightField: Boolean
+            }
+            type Child extends Left, Right {
+                childField: String
+            }
+        """)
+        obj = xtx.get_children_of_object(schema)[0]
+        field_names = [f.name for f in obj.fields]
+        assert field_names.count("rootField") == 1
+        assert "leftField" in field_names
+        assert "rightField" in field_names
+        assert "childField" in field_names
+
     def test_LOG_102_override_required_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:
         """LOG-102: Redefining inherited field without @override is rejected."""
         parse_expect_semantic_error("""
