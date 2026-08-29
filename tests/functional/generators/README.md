@@ -3,8 +3,7 @@
 Generator-output assertions have an explicit target owner:
 
 - `openapi/` contains direct OpenAPI assertions and `openapi_test_utils.py`.
-- `spring/` contains direct Spring assertions. Until WP-10 moves the existing
-  modules, new Spring tests may import `SpringTestUtils` from
+- `spring/` contains direct Spring assertions and exports `SpringTestUtils` from
   `tests.functional.generators.spring`.
 - `postgres/` is reserved for PostgreSQL-only rendering details. The existing
   SQL snapshots remain owned by E2E scenarios unless a detail cannot be tested

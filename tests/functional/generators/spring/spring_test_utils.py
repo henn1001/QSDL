@@ -1,5 +1,4 @@
 import shutil
-import subprocess
 import textwrap
 from pathlib import Path
 
@@ -12,17 +11,23 @@ class SpringTestUtils:
     OUTPUT_PATH = Path("srcgen/")
 
     @staticmethod
-    def generate(test_input: str, config_path: str | Path | None = None) -> Path:
+    def generate(
+        test_input: str,
+        config_path: str | Path | None = None,
+        config: dict[str, object] | None = None,
+    ) -> Path:
         """Generate a Spring project and return its output path."""
         test_input = textwrap.dedent(test_input)
         shutil.rmtree(SpringTestUtils.OUTPUT_PATH / "src", ignore_errors=True)
 
-        arguments = {
+        arguments: dict[str, object] = {
             "generator_name": "spring",
             "raw_schema": test_input,
         }
         if config_path is not None:
             arguments["config_path"] = config_path
+        if config is not None:
+            arguments["config"] = config
 
         assert qsdl_generate(SpringTestUtils.OUTPUT_PATH, **arguments) is None
         return SpringTestUtils.OUTPUT_PATH
@@ -50,8 +55,3 @@ class SpringTestUtils:
         """Assert that generated content contains none of the specified patterns."""
         for pattern in patterns:
             assert pattern not in content, f"Unexpected pattern found: {pattern}\n\nContent:\n{content}"
-
-    @staticmethod
-    def assert_tests_succeed(output_path: Path | str = OUTPUT_PATH) -> None:
-        """Run Maven tests for a generated Spring project."""
-        assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd=output_path) == 0

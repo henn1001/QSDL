@@ -282,3 +282,20 @@ class TestSpringDomainLayout:
             "import app.server.project.dto.ProjectBase;",
             "ResponseEntity<ProjectBase> getProjectBase",
         )
+
+    def test_filter_respects_domain_package(self) -> None:
+        """Query filters should use the package selected by the model's Spring package directive."""
+        test_input = """\
+            type Project @namespace("ProjectNS") @spring-package("project") {
+                name: String! @query
+            }
+        """
+        config = {
+            "domain_path": "app.server.{package}.dto",
+            "package_placeholder_fallback": "common",
+        }
+
+        output_path = SpringTestUtils.generate(test_input, config=config)
+
+        assert SpringTestUtils.file_exists(output_path, "src/main/java/app/server/project/dto/GetProjectsFilter.java")
+        assert not SpringTestUtils.file_exists(output_path, "src/main/java/app/server/common/dto/GetProjectsFilter.java")
