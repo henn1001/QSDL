@@ -48,9 +48,16 @@ def _get_operation_type_imports(api_class: spring.ApiClass | None) -> list[str]:
 
     for op in api_class.operations:
         if op.response and (op.response.is_object or op.response.is_base):
-            model = util.get_model_for(op.response.type)
+            # Pageable responses are represented as CursorPage<T> in the Java
+            # model, while the referenced model is still tracked by the
+            # response flags. Resolve the inner type before looking it up.
+            response_type = op.response.type
+            if response_type.startswith("CursorPage<") and response_type.endswith(">"):
+                response_type = response_type[len("CursorPage<") : -1]
+
+            model = util.get_model_for(response_type)
             if model:
-                imports.add(f"import {model.package.domain}.{op.response.type};")
+                imports.add(f"import {model.package.domain}.{response_type};")
 
         for param in op.parameters:
             if (param.is_object or param.is_base) and param.is_body:
