@@ -16,17 +16,17 @@
 
     {%- for parameter in operation.path_parameters -%}
         @PathVariable("{{parameter.json_key}}") {{ param_helper(parameter) }}
-        {%- if not loop.last or operation.uses_filter or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if not loop.last or operation.uses_filter or operation.is_pageable or operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endfor %}
 
     {%- if operation.uses_filter -%}
             @Valid {{operation.filter_name}} filter
-        {%- if operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if operation.is_pageable or operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endif -%}
 
     {%- if operation.is_pageable -%}
             CursorPageable pageable
-        {%- if operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endif -%}
 
     {%- if operation.uses_request_dto -%}
@@ -43,17 +43,17 @@
 
     {%- for parameter in operation.path_parameters -%}
         {{ param_helper(parameter) }}
-        {%- if not loop.last or operation.uses_filter or operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if not loop.last or operation.uses_filter or operation.is_pageable or operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endfor %}
 
     {%- if operation.uses_filter -%}
             {{operation.filter_name}} filter
-        {%- if operation.is_pageable or operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if operation.is_pageable or operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endif -%}
 
     {%- if operation.is_pageable -%}
             CursorPageable pageable
-        {%- if operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endif -%}
 
     {%- if operation.uses_request_dto -%}
@@ -145,7 +145,7 @@
         {%- set _ = params.append("any()") -%}
     {%- endif -%}
 
-    {%- if operation.body_parameters -%}
+    {%- if operation.uses_request_dto or operation.body_parameters -%}
         {%- set _ = params.append("any()") -%}
     {%- endif -%}
 
