@@ -7,9 +7,7 @@ from pathlib import Path
 from qsdl.core import generate
 
 
-def wrapper_generate(
-    test_input: str, output_path: Path, config: Mapping[str, object] | None = None
-) -> Path:
+def wrapper_generate(test_input: str, output_path: Path, config: Mapping[str, object] | None = None) -> Path:
     """Generate Spring Boot code into an isolated test directory.
 
     Args:
