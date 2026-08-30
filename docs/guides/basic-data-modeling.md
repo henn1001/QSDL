@@ -469,6 +469,7 @@ public class FooEntity extends AbstractEntity {
     private LocalDate dateField;
     private OffsetDateTime datetimeField;
 
+    @Convert(converter = ObjectNodeConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
     private ObjectNode objectField;
 }

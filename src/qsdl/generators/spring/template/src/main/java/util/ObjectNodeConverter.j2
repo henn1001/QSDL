@@ -5,6 +5,7 @@ package {{package.util}};
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ObjectNode;
 
 /**
@@ -14,26 +15,43 @@ import tools.jackson.databind.node.ObjectNode;
  * the Jackson 3 {@link ObjectNode}, which would otherwise lead to:
  * {@code org.springframework.dao.InvalidDataAccessApiUsageException: Could not deserialize string to java type: class tools.jackson.databind.node.ObjectNode}
  */
-@Converter(autoApply = true)
-public class ObjectNodeConverter implements AttributeConverter<ObjectNode, String> {
+@Converter
+public final class ObjectNodeConverter implements AttributeConverter<ObjectNode, String> {
 
     @Override
     public String convertToDatabaseColumn(ObjectNode attribute) {
-        if (attribute == null) return null;
+        if (attribute == null) {
+            return null;
+        }
+
         try {
             return JsonUtil.toString(attribute);
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to convert ObjectNode to String", e);
+            throw new IllegalStateException("Failed to serialize ObjectNode to JSON", e);
         }
     }
 
     @Override
     public ObjectNode convertToEntityAttribute(String dbData) {
-        if (dbData == null) return null;
+        if (dbData == null) {
+            return null;
+        }
+
         try {
-            return JsonUtil.nodeFromJson(dbData);
+            JsonNode node = JsonUtil.mapper().readTree(dbData);
+
+            // Treat a JSON null value like a database null.
+            if (node == null || node.isNull()) {
+                return null;
+            }
+
+            if (!node.isObject()) {
+                throw new IllegalArgumentException("Expected a JSON object but got: " + node.getNodeType());
+            }
+
+            return (ObjectNode) node;
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to convert String to ObjectNode", e);
+            throw new IllegalStateException("Failed to deserialize JSON to ObjectNode", e);
         }
     }
 }

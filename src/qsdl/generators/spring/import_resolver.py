@@ -125,6 +125,9 @@ def _get_entity_imports(model_class: spring.ModelClass | None) -> list[str]:
     imports = set()
 
     for field in model_class.entity_fields:
+        if field.type == "ObjectNode":
+            converter = "ObjectNodeListConverter" if field.is_array else "ObjectNodeConverter"
+            imports.add(f"import {util.Store.package.util}.{converter};")
         if field.is_enum:
             imports.add(f"import {_get_enum_package(field.type)}.{field.type};")
         elif field.is_object:
@@ -302,6 +305,7 @@ def generate_imports_for_template(
             "import jakarta.persistence.CollectionTable;",
             "import jakarta.persistence.Column;",
             "import jakarta.persistence.CascadeType;",
+            "import jakarta.persistence.Convert;",
             "import jakarta.persistence.ElementCollection;",
             "import jakarta.persistence.Entity;",
             "import jakarta.persistence.EnumType;",

@@ -4,11 +4,13 @@
 package app.server.project.db;
 
 import app.server.common.model.AbstractEntity;
+import app.server.common.util.ObjectNodeConverter;
 import app.server.user.db.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -49,6 +51,7 @@ public class ProjectEntity extends AbstractEntity {
 
     private String lastUpdateBy;
 
+    @Convert(converter = ObjectNodeConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
     private ObjectNode metaInf;
 

@@ -6,6 +6,11 @@
         Serialization for objects
     #}
     {% if field.type == "ObjectNode" %}
+        {% if field.is_array %}
+    @Convert(converter = ObjectNodeListConverter.class)
+        {% else %}
+    @Convert(converter = ObjectNodeConverter.class)
+        {% endif %}
     @JdbcTypeCode(SqlTypes.JSON)
     {% endif %}
     {#
