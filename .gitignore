@@ -16,5 +16,6 @@ dist/
 
 # misc
 /srcgen/
+/xtmp/
 /output/
 /tests/functional/test_input.qsdl

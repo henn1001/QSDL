@@ -154,7 +154,8 @@ def _get_request_imports(model_class: spring.ModelClass | None) -> list[str]:
         elif (field.is_object or field.is_base) and not field.is_relation and not field.is_read_only:
             nested = util.get_model_for(field.type)
             if nested and nested.package.domain != model_class.package.domain:
-                imports.add(f"import {nested.package.domain}.{nested.name}Request;")
+                nested_name = f"{nested.name}Request" if field.nested_type_has_request else nested.name
+                imports.add(f"import {nested.package.domain}.{nested_name};")
 
     return list(imports)
 
@@ -199,6 +200,28 @@ def _get_repo_test_imports(model_class: spring.ModelClass | None) -> list[str]:
         rel_model = util.get_model_for(field.type)
         if rel_model:
             imports.add(f"import {rel_model.package.entity}.{rel_model.name}Entity;")
+
+    return list(imports)
+
+
+def _get_mapper_imports(model_class: spring.ModelClass | None) -> list[str]:
+    """Collect imports for nested base DTOs and object mappers used by a mapper."""
+    if not model_class:
+        return []
+
+    imports = set()
+    for mapper in model_class.mappers:
+        nested = util.get_model_for(mapper.name)
+        if not nested:
+            continue
+
+        if isinstance(mapper, dsl.Base):
+            if nested.package.domain == model_class.package.mapper:
+                continue
+            imports.add(f"import {nested.package.domain}.{nested.name};")
+            imports.add(f"import {nested.package.domain}.{util.request_type_name(mapper)};")
+        elif isinstance(mapper, dsl.Object) and nested.package.mapper != model_class.package.mapper:
+            imports.add(f"import {nested.package.mapper}.{nested.name}Mapper;")
 
     return list(imports)
 
@@ -365,26 +388,7 @@ def generate_imports_for_template(
             f"import {model_class.package.domain}.{model_class.name}Request;" if model_class else None,
             f"import {model_class.package.domain}.{model_class.name};" if model_class else None,
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class and is_db else None,
-            # Opaque base type Request imports for mapper conversion methods
-            *(
-                [
-                    f"import {model_class.package.domain}.{mapper.name}Request;"
-                    for mapper in model_class.mappers
-                    if isinstance(mapper, dsl.Base)
-                ]
-                if model_class
-                else []
-            ),
-            # Opaque base type imports for mapper conversion methods
-            *(
-                [
-                    f"import {model_class.package.domain}.{mapper.name};"
-                    for mapper in model_class.mappers
-                    if isinstance(mapper, dsl.Base)
-                ]
-                if model_class
-                else []
-            ),
+            *_get_mapper_imports(model_class),
             "import org.mapstruct.InheritConfiguration;",
             "import org.mapstruct.Mapper;",
             "import org.mapstruct.Mapping;",

@@ -16,12 +16,13 @@ class BaseE2ETest:
     """
 
     TESTCASE: str
+    CONFIG: dict[str, object] | None = None
 
     @pytest.fixture(scope="class")
     def srcgen(self) -> Path:
         """Generates code using the testcase and returns output path."""
         assert self.TESTCASE is not None, "TESTCASE must be set in subclass"
-        return wrapper_generate(self.TESTCASE)
+        return wrapper_generate(self.TESTCASE, config=self.CONFIG)
 
     @pytest.fixture(scope="class")
     def postgres_schema(self, srcgen: Path) -> str:

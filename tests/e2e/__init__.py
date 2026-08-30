@@ -2,16 +2,18 @@ import difflib
 import shutil
 import subprocess
 import textwrap
+from collections.abc import Mapping
 from pathlib import Path
 
 from qsdl.core import generate
 
 
-def wrapper_generate(test_input: str) -> Path:
+def wrapper_generate(test_input: str, config: Mapping[str, object] | None = None) -> Path:
     """Generates Spring Boot code and returns the output path.
 
     Args:
         test_input (str): The QSDL definition.
+        config (Mapping[str, object] | None): Optional generator configuration.
 
     Returns:
         Path: The output directory path.
@@ -23,7 +25,7 @@ def wrapper_generate(test_input: str) -> Path:
     # hide missing files in disk-based E2E assertions.
     shutil.rmtree(test_output, ignore_errors=True)
     test_output.mkdir(parents=True, exist_ok=True)
-    assert generate(test_output, generator_name="spring", raw_schema=test_input) is None
+    assert generate(test_output, generator_name="spring", raw_schema=test_input, config=config) is None
 
     return test_output
 
@@ -48,4 +50,4 @@ def assert_postgres(schema: str, expected_schema: str) -> None:
 
 
 def assert_mvn() -> None:
-    assert subprocess.call(["/bin/bash", "-i", "-c", "mvn clean test"], cwd="srcgen/") == 0
+    assert subprocess.call(["/bin/bash", "-i", "-c", "mvn -q clean test"], cwd="srcgen/") == 0

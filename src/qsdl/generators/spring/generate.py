@@ -303,6 +303,7 @@ def generate(schema: Schema, config: Config, output_path: Path | None = None) ->
         "id_name": id_name,
         "id_type": id_type,
         "generate_imports_for_template": resolver.generate_imports_for_template,
+        "request_type": util.request_type_name,
         "table_prefix": config.table_prefix,
     }
     macro_path = Path(__file__).parent / "template" / "_macro"

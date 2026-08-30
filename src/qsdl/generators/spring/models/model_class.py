@@ -218,7 +218,13 @@ class ModelClass:
 
         # add needed mappers
         nested_types = util.extract_fields_for_mapper(_ref)
-        self.mappers = [x.value for x in nested_types if not isinstance(x.value, dsl.Enum | dsl.Scalar)]
+        self.mappers = []
+        mapper_names = set()
+        for nested_type in nested_types:
+            if isinstance(nested_type.value, dsl.Enum | dsl.Scalar) or nested_type.value.name in mapper_names:
+                continue
+            self.mappers.append(nested_type.value)
+            mapper_names.add(nested_type.value.name)
 
         # add attributes
         self._add_fields(_ref)

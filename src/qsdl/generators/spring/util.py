@@ -378,6 +378,13 @@ def get_model_for(obj_name: dsl.Object.name) -> spring.ModelClass:
     return ret
 
 
+def request_type_name(ref: dsl.Base | dsl.Object | str) -> str:
+    """Return the generated Java type used for a model in request payloads."""
+    name = ref if isinstance(ref, str) else ref.name
+    model = get_model_for(name)
+    return f"{name}Request" if model and model.has_request else name
+
+
 def get_parent_for(obj_name: dsl.Object.name, parent_name: dsl.Object.name) -> spring.Parent:
     """Returns the spring.Parent object for the given child - parent Object names.
 

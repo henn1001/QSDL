@@ -49,8 +49,10 @@ public interface {{model.name}}Mapper {
     void update({{model.name}}Request source, @MappingTarget {{model.name}}Entity target);
 {% endif %}
 {% for mapper in model.mappers if mapper._tx_fqn == "entity.Base" %}
-
-    {{mapper.name}} to{{mapper.name}}({{mapper.name}}Request request);
+    {% for field in mapper.fields if field.is_read_only %}
+    @Mapping(target = "{{field.name|camel}}", ignore = true)
+    {% endfor %}
+    {{mapper.name}} to{{mapper.name}}({{request_type(mapper)}} request);
 {% endfor %}
 }
 {{""}}

@@ -71,7 +71,7 @@ class TestE2EBaseArrayJsonb(BaseE2ETest):
         mapper_content = mapper_files[0].read_text(encoding="utf-8")
         assert "Product toResponse(ProductEntity entity);" in mapper_content
         assert "ProductEntity toEntity(ProductRequest dto);" in mapper_content
-        assert "Variant toVariant(VariantRequest request);" in mapper_content
+        assert "Variant toVariant(Variant request);" in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

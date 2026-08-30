@@ -100,7 +100,7 @@ class TestE2EComplexMixedBaseObjectArrays(BaseE2ETest):
         employee_mapper = next(src_root.rglob("EmployeeMapper.java")).read_text(encoding="utf-8")
         assert '@Mapping(target = "homeAddress.street", source = "homeAddressStreet")' in employee_mapper
         assert '@Mapping(target = "homeAddressCity", source = "homeAddress.city")' in employee_mapper
-        assert "Address toAddress(AddressRequest request);" in employee_mapper
+        assert "Address toAddress(Address request);" in employee_mapper
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

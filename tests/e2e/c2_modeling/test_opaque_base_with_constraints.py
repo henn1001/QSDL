@@ -64,7 +64,7 @@ class TestE2EOpaqueBaseWithConstraints(BaseE2ETest):
         mapper_content = mapper_files[0].read_text(encoding="utf-8")
         assert "Document toResponse(DocumentEntity entity);" in mapper_content
         assert "DocumentEntity toEntity(DocumentRequest dto);" in mapper_content
-        assert "Metadata toMetadata(MetadataRequest request);" in mapper_content
+        assert "Metadata toMetadata(Metadata request);" in mapper_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

@@ -71,7 +71,7 @@ class TestE2EDeeplyNestedBaseWithOpaque(BaseE2ETest):
         assert "String publisher" in metadata
 
         book_mapper = next(src_root.rglob("BookMapper.java")).read_text(encoding="utf-8")
-        assert "BookMetadata toBookMetadata(BookMetadataRequest request);" in book_mapper
+        assert "BookMetadata toBookMetadata(BookMetadata request);" in book_mapper
         assert "BookEntity toEntity(BookRequest dto);" in book_mapper
 
     @pytest.mark.integration
