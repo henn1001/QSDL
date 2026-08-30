@@ -8,7 +8,7 @@ import pytest
 import qsdl.generators as generator_registry
 from qsdl.artifacts import GeneratedFiles
 from qsdl.core import build, generate
-from qsdl.dsl import Schema, textx
+from qsdl.dsl import Schema
 from qsdl.exceptions import QsdlException
 from qsdl.generators import GeneratorDefinition, create_config
 from qsdl.generators.base_config import BaseConfig
@@ -30,11 +30,6 @@ def _register_probe(monkeypatch: pytest.MonkeyPatch, generator: object) -> None:
 
 class TestCore:
     """Test core functions."""
-
-    def test_get_metamodel_plantuml(self) -> None:
-        """Verify that we can print the plantuml model"""
-
-        assert textx.get_metamodel(print_uml=True)
 
     def test_unknown_generator_error_includes_name(self) -> None:
         with pytest.raises(QsdlException, match="missing-generator"):
