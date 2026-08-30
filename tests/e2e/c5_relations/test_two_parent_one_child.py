@@ -109,4 +109,4 @@ class TestE2ETwoParentOneChild(BaseE2ETest):
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:
         """runs mvn clean test to verify generated code compiles and tests pass"""
-        assert_mvn()
+        assert_mvn(srcgen)

@@ -27,6 +27,7 @@ dev = [
   "pytest-cov==7.1.0",
   "pytest-html==4.2.0",
   "pytest-order==1.5.0",
+  "pytest-xdist==3.8.0",
   "pytest==9.1.1",
   "ruff==0.16.5",
 ]
@@ -46,6 +47,8 @@ addopts = """
   --cov=qsdl
   --cov-report=term
   --cov-report=html:dist/coverage
+  -n auto
+  --dist=loadscope
   -m 'not integration'
 """
 

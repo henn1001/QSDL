@@ -17,7 +17,11 @@ lint() {
 }
 
 test() {
-  uv run pytest
+  uv run pytest "$@"
+}
+
+test-integration() {
+  uv run pytest -m integration -n 4 "$@"
 }
 
 build() {
@@ -28,7 +32,7 @@ build-docker() {
   docker build -t qsdl .
 }
 
-release (){
+release() {
   bunx standard-version -a
 }
 

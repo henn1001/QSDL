@@ -22,10 +22,11 @@ class BaseE2ETest:
         """Apply optional test-specific changes to the generated project."""
 
     @pytest.fixture(scope="class")
-    def srcgen(self) -> Path:
-        """Generates code using the testcase, applies test patches, and returns output path."""
+    def srcgen(self, tmp_path_factory: pytest.TempPathFactory) -> Path:
+        """Generate code in an isolated directory and return its path."""
         assert self.TESTCASE is not None, "TESTCASE must be set in subclass"
-        srcgen = wrapper_generate(self.TESTCASE, config=self.CONFIG)
+        srcgen = tmp_path_factory.mktemp(f"srcgen-{self.__class__.__name__}")
+        srcgen = wrapper_generate(test_input=self.TESTCASE, output_path=srcgen, config=self.CONFIG)
         self.patch_generated(srcgen)
         return srcgen
 

@@ -175,4 +175,4 @@ class TestE2EDtoImportCombinations(BaseE2ETest):
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:
         """Maven must compile all generated source for this mixed DTO graph."""
-        assert_mvn()
+        assert_mvn(srcgen)
