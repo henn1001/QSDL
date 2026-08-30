@@ -74,12 +74,12 @@ class TestE2EBasicTypesAsList(BaseE2ETest):
         entity_content = entity_files[0].read_text(encoding="utf-8")
 
         expected_fields = {
-            "int": "Integer",
-            "long": "Long",
-            "float": "Float",
-            "double": "Double",
+            "int_": "Integer",
+            "long_": "Long",
+            "float_": "Float",
+            "double_": "Double",
             "string": "String",
-            "boolean": "Boolean",
+            "boolean_": "Boolean",
             "date": "LocalDate",
             "datetime": "OffsetDateTime",
             "object": "ObjectNode",

@@ -12,11 +12,18 @@
     @Convert(converter = ObjectNodeConverter.class)
         {% endif %}
     @JdbcTypeCode(SqlTypes.JSON)
+    {% elif field.is_array and not field.is_object and not field.is_base %}
+    @JdbcTypeCode(SqlTypes.ARRAY)
     {% endif %}
     {#
-        Uniqueness
+        Preserve the original QSDL column name when the Java field had to be
+        escaped because it is a Java keyword.
     #}
-    {% if field.is_unique %}
+    {% if field.is_name_escaped and field.is_unique %}
+    @Column(name = "{{field.json_key|snake}}", unique = true)
+    {% elif field.is_name_escaped %}
+    @Column(name = "{{field.json_key|snake}}")
+    {% elif field.is_unique %}
     @Column(unique = true)
     {% endif %}
     {#

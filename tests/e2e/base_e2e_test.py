@@ -18,11 +18,16 @@ class BaseE2ETest:
     TESTCASE: str
     CONFIG: dict[str, object] | None = None
 
+    def patch_generated(self, srcgen: Path) -> None:
+        """Apply optional test-specific changes to the generated project."""
+
     @pytest.fixture(scope="class")
     def srcgen(self) -> Path:
-        """Generates code using the testcase and returns output path."""
+        """Generates code using the testcase, applies test patches, and returns output path."""
         assert self.TESTCASE is not None, "TESTCASE must be set in subclass"
-        return wrapper_generate(self.TESTCASE, config=self.CONFIG)
+        srcgen = wrapper_generate(self.TESTCASE, config=self.CONFIG)
+        self.patch_generated(srcgen)
+        return srcgen
 
     @pytest.fixture(scope="class")
     def postgres_schema(self, srcgen: Path) -> str:

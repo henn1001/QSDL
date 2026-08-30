@@ -4,6 +4,7 @@ import pytest
 
 from tests.e2e import assert_mvn, assert_postgres
 from tests.e2e.base_e2e_test import BaseE2ETest
+from tests.e2e.patches import patch_test_utils
 
 
 class TestE2ECustomScalars(BaseE2ETest):
@@ -25,6 +26,24 @@ class TestE2ECustomScalars(BaseE2ETest):
         tokenCount: BigInt
       }
     """
+
+    def patch_generated(self, srcgen: Path) -> None:
+        """Provide valid values for generated DTOs with custom scalar patterns."""
+        patch_test_utils(
+            srcgen,
+            {
+                "UserRequest": {
+                    "walletAddress": "0xABC123",
+                    "balance": "0",
+                    "tokenCount": "0",
+                },
+                "User": {
+                    "walletAddress": "0xABC123",
+                    "balance": "0",
+                    "tokenCount": "0",
+                },
+            },
+        )
 
     def test_postgres(self, postgres_schema: str) -> None:
         """asserts generated Postgres schema uses @postgres directive mappings"""

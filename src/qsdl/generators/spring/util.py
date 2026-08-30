@@ -55,6 +55,75 @@ custom_types = {
 }
 
 
+# Java keywords and reserved literals cannot be used for generated fields.
+# Keep the mapping local to the Spring generator; the original QSDL name remains
+# available as ModelField.json_key for JSON and database mappings.
+JAVA_RESERVED_IDENTIFIERS = frozenset(
+    {
+        "abstract",
+        "assert",
+        "boolean",
+        "break",
+        "byte",
+        "case",
+        "catch",
+        "char",
+        "class",
+        "const",
+        "continue",
+        "default",
+        "do",
+        "double",
+        "else",
+        "enum",
+        "extends",
+        "final",
+        "finally",
+        "float",
+        "for",
+        "goto",
+        "if",
+        "implements",
+        "import",
+        "instanceof",
+        "int",
+        "interface",
+        "long",
+        "native",
+        "new",
+        "package",
+        "private",
+        "protected",
+        "public",
+        "return",
+        "short",
+        "static",
+        "strictfp",
+        "super",
+        "switch",
+        "synchronized",
+        "this",
+        "throw",
+        "throws",
+        "transient",
+        "try",
+        "void",
+        "volatile",
+        "while",
+        "true",
+        "false",
+        "null",
+        "_",
+    }
+)
+
+
+def java_identifier(name: str) -> str:
+    """Return a legal Java identifier for a QSDL member name."""
+    identifier = qfilter.camelcase(name)
+    return f"{identifier}_" if identifier in JAVA_RESERVED_IDENTIFIERS else identifier
+
+
 def is_direct_query_filter(operation: dsl.Operation) -> bool:
     if len(operation.query_parameters) != 1:
         return False
@@ -471,7 +540,7 @@ def extract_embedded_columns(
         if isinstance(dsl_field.value, dsl.Base) and not (dsl_field.is_array or dsl_field.is_opaque):
             # Flatten Base types - recursively process nested Base fields
             embedded_prefix = prefix + qfilter.snakecase(dsl_field.name).lower() + "_"
-            embedded_dto_path = dto_path + qfilter.camelcase(dsl_field.name) + "."
+            embedded_dto_path = dto_path + java_identifier(dsl_field.name) + "."
             embedded_fields = extract_embedded_columns(dsl_field.value, embedded_prefix, embedded_dto_path)
             model_fields.extend(embedded_fields)
         else:
@@ -483,8 +552,11 @@ def extract_embedded_columns(
                 prefixed_snake = prefix + qfilter.snakecase(dsl_field.name).lower()
                 new_field.name = qfilter.camelcase(prefixed_snake)
                 new_field.json_key = prefixed_snake
-                # Set the nested DTO path (remove trailing dot)
-                new_field.dto_nested_path = dto_path + qfilter.camelcase(dsl_field.name)
+                new_field.is_name_escaped = False
+                # Set the nested DTO path (remove trailing dot). The prefix
+                # makes the flattened name non-reserved in normal cases; use
+                # the already escaped field name for the final path segment.
+                new_field.dto_nested_path = dto_path + java_identifier(dsl_field.name)
 
             model_fields.append(new_field)
 

@@ -74,9 +74,9 @@ public record {{model.name}}{{ "" if model.is_query_filter else "Request" }}(
         {% for field in model.fields if not field.is_relation and not field.is_hidden and not field.is_read_only %}
         if ({{field.name}} != null) {
             {% if field.is_array %}
-            queryParameters.put("{{field.name}}", {{field.name}}.stream().map(String::valueOf).toList());
+            queryParameters.put("{{field.json_key if field.is_name_escaped else field.name}}", {{field.name}}.stream().map(String::valueOf).toList());
             {% else %}
-            queryParameters.put("{{field.name}}", List.of(String.valueOf({{field.name}})));
+            queryParameters.put("{{field.json_key if field.is_name_escaped else field.name}}", List.of(String.valueOf({{field.name}})));
             {% endif %}
         }
         {% endfor %}

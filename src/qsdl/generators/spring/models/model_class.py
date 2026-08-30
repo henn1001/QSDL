@@ -36,6 +36,7 @@ class ModelField:
 
     name: str = None
     json_key: str = None
+    is_name_escaped: bool = False
     description: list[str] = field(default_factory=list)
 
     type: str = None
@@ -82,9 +83,12 @@ class ModelField:
     def build(self, _ref: dsl.Field) -> Self:
         """Init our dataclass by reading information from _ref"""
 
-        # rename to naming convention
-        self.name = qfilter.camelcase(_ref.name)
+        # Rename to the target language's naming convention while retaining the
+        # original name for JSON and database mappings.
+        source_name = qfilter.camelcase(_ref.name)
+        self.name = util.java_identifier(_ref.name)
         self.json_key = _ref.name
+        self.is_name_escaped = self.name != source_name
         self.description = _ref.description
 
         self.type = util.custom_type(_ref.value)
