@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.6.0](https://github.com/henn1001/QSDL/compare/v6.5.0...v6.6.0) (2026-08-30)
+
+
+### Features
+
+* **artifacts:** add generated file writer boundary ([24e3c9e](https://github.com/henn1001/QSDL/commit/24e3c9e39e585d0d8ba86802a4080b949ef3ef07))
+* **cli:** added --print-default-config for printing a generators default config ([8eef09e](https://github.com/henn1001/QSDL/commit/8eef09e2da053b0abc32ea03a3e38c7a3fd216a2))
+* **core:** cut over generator registry and build API ([6013f81](https://github.com/henn1001/QSDL/commit/6013f8139f757a4a7c7846320df01fc690be9c14))
+* **generators:** adapt i18n and PlantUML artifacts ([8800919](https://github.com/henn1001/QSDL/commit/8800919d2a0368072c2a4945b6e2f5fd2668ba60))
+* **generators:** add artifact builders for simple generators ([327778d](https://github.com/henn1001/QSDL/commit/327778d47a516df87884580481436be392f2e8e4))
+* **spring:** compose generated artifacts in memory ([ec56c1e](https://github.com/henn1001/QSDL/commit/ec56c1ea49c48095f8032f8f0398ef4b334ae40f))
+* **spring:** update dependencies ([a8c6b45](https://github.com/henn1001/QSDL/commit/a8c6b45f220bf366fbc38f15b5b0ca4e2c718d72))
+* **writer:** log materialized files ([a09f36d](https://github.com/henn1001/QSDL/commit/a09f36d17366cf1be562d754f8c3e659cd45d4c1))
+
+
+### Bug Fixes
+
+* **pipeline:** resolve refactor validation issues ([21ece43](https://github.com/henn1001/QSDL/commit/21ece43dc0dcc28a143166f8e13f5b22fbe3a627))
+* **spring:** escape reserved Java field identifiers ([3c7a7a6](https://github.com/henn1001/QSDL/commit/3c7a7a6260bf20697faf34c2e134e32aac025498))
+* **spring:** fixed the deprecated container-level validation in Spring output ([7c27dbc](https://github.com/henn1001/QSDL/commit/7c27dbc3828077e2f5aa325241b72523e16a1089))
+* **spring:** honor API namespace package precedence ([2663b0e](https://github.com/henn1001/QSDL/commit/2663b0e14d5e77982ef2c795adf6206557a65e84))
+* **spring:** resolve nested DTO imports and mapper types ([b94522f](https://github.com/henn1001/QSDL/commit/b94522f15d9cdd7316e973cfd3d63fc1e85fb2db))
+* **spring:** separate path variables from request DTOs ([f8d76dd](https://github.com/henn1001/QSDL/commit/f8d76ddce47d0e02c1e1354f0e34341f628cdfa9))
+* **spring:** spring generator import resolution for pageable responses ([05f0cab](https://github.com/henn1001/QSDL/commit/05f0cabd18fbad4b336ffe4887f536c1639d4b2d))
+* **spring:** use explicit ObjectNode attribute converters ([95ed999](https://github.com/henn1001/QSDL/commit/95ed99906f510fb260bf5a0020f8990b6e66e005))
+
 ## [6.5.0](https://github.com/henn1001/QSDL/compare/v6.4.0...v6.5.0) (2026-08-29)
 
 
