@@ -369,30 +369,6 @@ extend api @spring-controller("User") {
 // (merged with auto-generated User CRUD endpoints)
 ```
 
-### `@spring-void-input`
-
-Suppress argument generation for custom operations. Useful for endpoints that do not accept a request body:
-
-**Syntax:**
-
-```
-@spring-void-input
-```
-
-**Example:**
-
-```qsdl
-extend api {
-    uploadFile(file: MultipartFile!, docType: String, entityId: UUID!): Void
-        @path("upload")
-        @method(POST)
-        @consumes("multipart/form-data")
-        @spring-void-input
-}
-```
-
-This prevents the generator from creating a request DTO for the operation. You implement the handler manually with direct multipart extraction.
-
 ## Common Patterns
 
 ### Read-Only Nested Objects
@@ -489,37 +465,6 @@ Generated with join table:
     inverseJoinColumns = @JoinColumn(name = "course_id")
 )
 private List<CourseEntity> courses = new ArrayList<>();
-```
-
-### File Upload
-
-Multipart file uploads use custom scalars and the `@spring-void-input` directive:
-
-```qsdl
-scalar MultipartFile @openapi("string, format: binary") @spring("MultipartFile")
-
-extend api {
-    uploadFile(file: MultipartFile!, docType: String, entityId: UUID!): Void
-        @path("upload")
-        @method(POST)
-        @consumes("multipart/form-data")
-        @spring-void-input
-}
-```
-
-Implement the multipart handling manually:
-
-```java
-@PostMapping("/upload")
-public ResponseEntity<Void> uploadFile(HttpServletRequest request) throws Exception {
-    StandardMultipartHttpServletRequest context = new StandardMultipartHttpServletRequest(request);
-    MultipartFile file = context.getFile("file");
-    String docType = context.getParameter("docType");
-    String entityId = context.getParameter("entityId");
-
-    // ... handle file upload
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-}
 ```
 
 ## Limitations

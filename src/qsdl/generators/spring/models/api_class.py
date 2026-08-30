@@ -143,15 +143,8 @@ class Operation:
     def _add_parameters(self, _ref: dsl.Operation) -> None:
         """Creates and adds all parameters to a Operation"""
 
-        # special spring directive for producing empty controller functions
-        # the user is assumed to use the request context here
-        void_input = qutil.get_directive_of_name(Directive.VOID_INPUT, _ref)
-
         for argument in _ref.arguments:
             new_param = Parameter().build(argument)
-
-            if void_input and not new_param.is_path:
-                continue
 
             self.parameters.append(new_param)
 

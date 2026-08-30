@@ -40,7 +40,6 @@ class Directive(StrEnum):
     TYPE = "spring"
     PACKAGE = "spring-package"
     CONTROLLER = "spring-controller"
-    VOID_INPUT = "spring-void-input"
 
 
 @dataclass

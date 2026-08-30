@@ -10,7 +10,7 @@ type Maasfile {
     originalExtension: String @writeOnly
 
     extend api {
-        uploadFile(file: MultipartFile!, docType: String, entityId: UUID!): Maasfile @path("upload") @method( POST) @consumes("multipart/form-data") @spring-void-input
+        uploadFile(file: MultipartFile!, docType: String, entityId: UUID!): Maasfile @path("upload") @method( POST) @consumes("multipart/form-data")
         uploadedFilesList(docType: String, entityId: UUID!): [Maasfile] @path("download") @method( GET) 
         downloadFile(): File @path("download/{id}") @method( GET) @produces( "application/octet-stream")
     }
