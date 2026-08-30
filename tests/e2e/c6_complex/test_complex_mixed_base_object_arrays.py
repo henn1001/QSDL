@@ -93,9 +93,9 @@ class TestE2EComplexMixedBaseObjectArrays(BaseE2ETest):
         employee_request = next(src_root.rglob("EmployeeRequest.java")).read_text(encoding="utf-8")
         assert "Address homeAddress" in employee_request
         assert "Address workAddress" in employee_request
-        assert "List<Metadata> metadata" in employee_request
+        assert "List<@Valid Metadata> metadata" in employee_request
         assert "DepartmentRequest department" in employee_request
-        assert "List<String> skills" in employee_request
+        assert "List<@Valid String> skills" in employee_request
 
         employee_mapper = next(src_root.rglob("EmployeeMapper.java")).read_text(encoding="utf-8")
         assert '@Mapping(target = "homeAddress.street", source = "homeAddressStreet")' in employee_mapper

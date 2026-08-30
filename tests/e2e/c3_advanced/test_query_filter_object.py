@@ -83,8 +83,8 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         assert len(crud_filter_files) == 1
         crud_contents = crud_filter_files[0].read_text(encoding="utf-8")
         assert "record GetProjectsFilter" in crud_contents
-        # @queryList fields should be List<T>
-        assert "List<String> name" in crud_contents
+        # @queryList fields should be List<T> with element validation.
+        assert "List<@Valid String> name" in crud_contents
         # @query fields should remain scalar
         assert "Boolean archived" in crud_contents
         # @query fields use the canonical Java property name internally, while
@@ -96,8 +96,8 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         assert 'queryParameters.put("someQuery", List.of(String.valueOf(someQuery)));' in crud_contents
         assert 'queryParameters.put("some_query"' not in crud_contents
 
-        # tags field with @queryList should be List<String> and retain all values.
-        assert "List<String> tags" in crud_contents
+        # tags field with @queryList should be List<T> and retain all values.
+        assert "List<@Valid String> tags" in crud_contents
         assert 'queryParameters.put("tags", tags.stream().map(String::valueOf).toList());' in crud_contents
 
         predicate_builder_files = list(src_root.rglob("PredicateBuilder.java"))
@@ -119,7 +119,7 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         # Verify custom operation parameters match their declaration
         assert "String name" in contents  # explicit String parameter
         assert "Boolean archived" in contents  # explicit Boolean parameter
-        assert "List<String> tags" in contents  # explicit [String] parameter
+        assert "List<@Valid String> tags" in contents  # explicit [String] parameter
 
         # Operation with single Base query parameter should use base directly
         search_filter_files = list(src_root.rglob("SearchOneProjectFilter.java"))

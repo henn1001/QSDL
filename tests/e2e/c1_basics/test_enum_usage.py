@@ -76,7 +76,7 @@ class TestE2EEnumUsage(BaseE2ETest):
         assert len(request_files) == 1
         request_content = request_files[0].read_text(encoding="utf-8")
         assert "Status status" in request_content
-        assert "List<Status> states" in request_content
+        assert "List<@Valid Status> states" in request_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

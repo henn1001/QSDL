@@ -119,24 +119,24 @@ class TestE2EDtoImportCombinations(BaseE2ETest):
         assert "import app.server.nested.domain.NestedObjectRequest;" in gateway_request
         assert "import app.server.shared.domain.PlainLeafRequest;" not in gateway_request
         assert "PlainLeaf plain" in gateway_request
-        assert "List<PlainLeaf> plainList" in gateway_request
+        assert "List<@Valid PlainLeaf> plainList" in gateway_request
         assert "PlainContainer plainContainer" in gateway_request
         assert "SplitLeafRequest opaqueSplit" in gateway_request
         assert "NestedObjectRequest nested" in gateway_request
-        assert "List<NestedObjectRequest> nestedList" in gateway_request
+        assert "List<@Valid NestedObjectRequest> nestedList" in gateway_request
 
         split_request = (shared / "SplitContainerRequest.java").read_text(encoding="utf-8")
         assert "PlainLeaf plain" in split_request
         assert "SplitLeafRequest split" in split_request
-        assert "List<SplitLeafRequest> splits" in split_request
+        assert "List<@Valid SplitLeafRequest> splits" in split_request
         assert "WriteOnlyLeafRequest writeOnly" in split_request
         assert "SplitLeafRequest opaqueSplit" in split_request
-        assert "List<SplitLeafRequest> opaqueSplits" in split_request
+        assert "List<@Valid SplitLeafRequest> opaqueSplits" in split_request
 
         object_request = (shared / "ObjectContainerRequest.java").read_text(encoding="utf-8")
         assert "import app.server.nested.domain.NestedObjectRequest;" in object_request
         assert "NestedObjectRequest nested" in object_request
-        assert "List<NestedObjectRequest> nestedList" in object_request
+        assert "List<@Valid NestedObjectRequest> nestedList" in object_request
 
     def test_opaque_mapper_types_and_cross_namespace_imports(self, srcgen: Path) -> None:
         """Opaque mappers must use existing request DTOs and import their real packages."""

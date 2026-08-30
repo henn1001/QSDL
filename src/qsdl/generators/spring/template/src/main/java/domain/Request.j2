@@ -19,10 +19,11 @@ public record {{model.name}}{{ "" if model.is_query_filter else "Request" }}(
     {% if field.is_required %}
     @NotNull
     {% endif %}
-    {# 
-        Set @Valid for any container
+    {#
+        Validate nested values. Container validation belongs on the type
+        argument rather than on the container itself.
     #}
-    {% if (field.is_array or field.is_base or field.is_object) %}
+    {% if not field.is_array and (field.is_base or field.is_object) %}
     @Valid
     {% endif %}
     {# 
@@ -49,7 +50,7 @@ public record {{model.name}}{{ "" if model.is_query_filter else "Request" }}(
         Set the Field definition
     #}
     {% if field.is_array %}
-    List<{{ "@Pattern(regexp = \"" + field.pattern + "\") " if field.pattern}}{{field.type}}{{ "Request" if field.nested_type_has_request else "" }}> {{field.name}}{{ "," if not loop.last else "" }}
+    List<@Valid {{ "@Pattern(regexp = \"" + field.pattern + "\") " if field.pattern}}{{field.type}}{{ "Request" if field.nested_type_has_request else "" }}> {{field.name}}{{ "," if not loop.last else "" }}
     {% else %}
     {{field.type}}{{ "Request" if field.nested_type_has_request else "" }} {{field.name}}{{ "," if not loop.last else "" }}
     {% endif %}

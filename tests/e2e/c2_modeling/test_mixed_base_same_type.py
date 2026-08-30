@@ -70,7 +70,7 @@ class TestE2EMixedBaseSameType(BaseE2ETest):
         request_content = request_files[0].read_text(encoding="utf-8")
         assert "Address primaryAddress" in request_content
         assert "Address billingAddress" in request_content
-        assert "List<Address> shippingAddresses" in request_content
+        assert "List<@Valid Address> shippingAddresses" in request_content
 
         mapper_files = list(src_root.rglob("CompanyMapper.java"))
         assert len(mapper_files) == 1

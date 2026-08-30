@@ -83,7 +83,7 @@ class TestE2ERequireAndUnique(BaseE2ETest):
         for field in ("aaa", "ccc", "eee"):
             assert f"String {field}" in request_content
         for field in ("bbb", "ddd", "fff"):
-            assert f"List<String> {field}" in request_content
+            assert f"List<@Valid String> {field}" in request_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

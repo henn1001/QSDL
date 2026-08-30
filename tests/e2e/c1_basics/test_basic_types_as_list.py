@@ -92,7 +92,7 @@ class TestE2EBasicTypesAsList(BaseE2ETest):
         request_content = request_files[0].read_text(encoding="utf-8")
         assert "public record FooRequest(" in request_content
         for name, type_name in expected_fields.items():
-            assert f"List<{type_name}> {name}" in request_content
+            assert f"List<@Valid {type_name}> {name}" in request_content
 
     @pytest.mark.integration
     def test_integration(self, srcgen: Path) -> None:

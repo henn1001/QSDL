@@ -63,8 +63,8 @@ class TestE2EBaseArrayJsonb(BaseE2ETest):
         request_files = list(src_root.rglob("ProductRequest.java"))
         assert len(request_files) == 1
         request_content = request_files[0].read_text(encoding="utf-8")
-        assert "List<Variant> variants" in request_content
-        assert "List<Variant> other" in request_content
+        assert "List<@Valid Variant> variants" in request_content
+        assert "List<@Valid Variant> other" in request_content
 
         mapper_files = list(src_root.rglob("ProductMapper.java"))
         assert len(mapper_files) == 1

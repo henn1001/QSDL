@@ -49,7 +49,7 @@ class TestE2EObjectScalarArray(BaseE2ETest):
         assert "@JdbcTypeCode(SqlTypes.JSON)\n    private List<ObjectNode> metadata;" in foo_entity
 
         foo_request = next(src_root.rglob("FooRequest.java")).read_text(encoding="utf-8")
-        assert "List<ObjectNode> metadata" in foo_request
+        assert "List<@Valid ObjectNode> metadata" in foo_request
         assert '@JsonProperty(value = "metadata")' in foo_request
 
         foo_mapper = next(src_root.rglob("FooMapper.java")).read_text(encoding="utf-8")

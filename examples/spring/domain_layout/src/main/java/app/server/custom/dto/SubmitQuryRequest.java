@@ -24,9 +24,8 @@ public record SubmitQuryRequest(
     @JsonProperty(value = "arg1")
     String arg1,
 
-    @Valid
     @JsonProperty(value = "arg2")
-    List<Integer> arg2
+    List<@Valid Integer> arg2
 
 ) {}
 // @formatter:on

@@ -34,7 +34,7 @@
     {%- elif operation.body_parameters and operation.method == "patch" -%}
             @RequestBody JsonMergePatch patch
     {%- elif operation.body_parameters -%}
-            {% if operation.body_parameters[0].is_base or operation.body_parameters[0].is_object %}@Valid {% endif %}@RequestBody {{ param_helper(operation.body_parameters[0]) }}
+            {% if (operation.body_parameters[0].is_base or operation.body_parameters[0].is_object) and not operation.body_parameters[0].is_array %}@Valid {% endif %}@RequestBody {{ param_helper(operation.body_parameters[0], true) }}
     {%- endif -%}
 
 {%- endmacro %}
@@ -152,10 +152,10 @@
     {{ params | join(", ") }}
 {%- endmacro %}
 
-{%- macro param_helper(parameter) -%}
+{%- macro param_helper(parameter, validate_items=false) -%}
 
     {%- if parameter.is_array -%}
-        List<{{parameter.type}}> {{parameter.name}}
+        List<{{ "@Valid " if validate_items and (parameter.is_base or parameter.is_object) else "" }}{{parameter.type}}> {{parameter.name}}
     {%- else -%}
         {{parameter.type}} {{parameter.name}}
     {%- endif %}
