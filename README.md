@@ -100,6 +100,10 @@ Complete documentation is available in the [`docs/`](./docs/) folder. Start with
 - [CLI usage](./docs/cli.md) — Command-line reference
 - [Basic data modeling](./docs/guides/basic-data-modeling.md) — Design best practices
 
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for local setup, validation, documentation conventions, and pull-request expectations.
+
 ## Examples
 
 Find example schemas in [`examples/`](examples/). Each generator has working samples demonstrating features.
