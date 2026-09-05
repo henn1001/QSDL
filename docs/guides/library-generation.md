@@ -50,7 +50,7 @@ Text artifacts are read with `text()`. Binary artifacts, such as the PNG files
 from PlantUML, are read with `bytes()`:
 
 ```python
-files = build(generator_name="plantuml", raw_schema=schema)
+files = build(generator_name="plantuml", raw_schema="type User { name: String }")
 png = files.bytes("plantuml.overview.png")
 ```
 
@@ -63,26 +63,30 @@ from pathlib import Path
 
 from qsdl.writer import DirectoryWriter
 
-DirectoryWriter(Path("srcgen")).write(files)
+report = DirectoryWriter(Path("srcgen")).write(files)
 ```
 
+`write()` returns a `WriteReport` with `written`/`skipped` results.
+
 `core.generate()` is the convenience and compatibility API for the same
-filesystem-oriented operation:
+filesystem-oriented operation. Note its public signature requires the
+positional `output_path` and returns `None`:
 
 ```python
 from pathlib import Path
 
 from qsdl.core import generate
 
-generate(Path("srcgen"), generator_name="openapi", raw_schema=schema)
+generate(Path("srcgen"), generator_name="openapi", raw_schema="type User { name: String }")
 ```
 
 ## Output rules
 
 - Artifact paths are relative POSIX paths, independent of the host filesystem.
-- Duplicate artifact paths are errors; generation does not silently overwrite
+- Duplicate artifact paths are errors when generators construct/return `GeneratedFiles` (`GeneratedFiles.add()`/`extend()`); generation does not silently overwrite
   an artifact.
 - Ignore files (`.qignore`, or the legacy `.qsdl-ignore`) affect
   `DirectoryWriter` materialization, not the result returned by `build()`.
 - Each `build()` creates a fresh generator configuration instance, so separate
-  builds do not share configuration mutations.
+  builds do not share configuration mutations. (In interactive `generate()`
+  prompt mode, the prompt-created config instance is passed through.)

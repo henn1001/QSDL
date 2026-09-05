@@ -2,7 +2,7 @@
 
 QSDL supports different types of object relations to express ownership, cardinality, and API exposure. Relations can appear between `type` (domain objects) and `base` (reusable/nested structures).
 
-All list relations are implemented using **join tables** in the database for consistency.
+List relations to `type` (domain objects) are implemented using **join tables** in the database. Lists of `base` value objects are instead stored as a single JSONB column — never a join table.
 
 ---
 
@@ -11,7 +11,7 @@ All list relations are implemented using **join tables** in the database for con
 | Relation        | Target Kind | Cardinality | Default Ownership     | Database Mapping           |
 | --------------- | ----------- | ----------- | --------------------- | -------------------------- |
 | `role: Role`    | base        | 1:1         | Composition (default) | `@ManyToOne`               |
-| `roles: [Role]` | base        | 1:N         | Composition (default) | `@ManyToMany + join table` |
+| `roles: [Role]` | base        | 1:N         | Composition (default) | JSONB column (arrays of bases are never join tables) |
 | `admin: User`   | type        | 1:1         | Composition (default) | `@ManyToOne`               |
 | `users: [User]` | type        | 1:N         | Composition (default) | `@ManyToMany + join table` |
 

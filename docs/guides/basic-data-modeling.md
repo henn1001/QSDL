@@ -42,7 +42,7 @@ base AuditInfo {
 type User {
   username: String!
   email: String!
-  address: Address  # Base type used as field
+  address: Address  // Base type used as field
   auditInfo: AuditInfo
 }
 
@@ -78,7 +78,7 @@ base ContactInfo {
 
 type Customer {
   name: String!
-  contact: ContactInfo  # No directive = flatten
+  contact: ContactInfo  // No directive = flatten
 }
 ```
 
@@ -129,7 +129,7 @@ base PerformanceMetrics {
 
 type Service {
   name: String!
-  metrics: PerformanceMetrics @opaque  # Store as JSONB
+  metrics: PerformanceMetrics @opaque  // Store as JSONB
 }
 ```
 
@@ -229,7 +229,7 @@ base Address {
 
 type User {
   name: String!
-  address: Address  # Default flattening is perfect here
+  address: Address  // Default flattening is perfect here
 }
 ```
 
@@ -249,12 +249,12 @@ base AnalyticsData {
   bounceRate: Float
   averageSessionDuration: Float
   conversionRate: Float
-  # ... 15+ more metrics
+  // ... 15+ more metrics
 }
 
 type Website {
   url: String!
-  analytics: AnalyticsData @opaque  # Better as JSONB
+  analytics: AnalyticsData @opaque  // Better as JSONB
 }
 ```
 
@@ -278,9 +278,9 @@ base Variant {
 
 type Article {
   title: String!
-  tags: [Tag]          # Always JSONB
-  variants: [Variant]  # Always JSONB
-  specialTags: [Tag] @opaque  # Also JSONB (directive has no effect on arrays)
+  tags: [Tag]          // Always JSONB
+  variants: [Variant]  // Always JSONB
+  specialTags: [Tag] @opaque  // Also JSONB (directive has no effect on arrays)
 }
 ```
 
@@ -312,7 +312,7 @@ type Category {
 
 type Article {
   title: String!
-  categories: [Category]! @aggregation  # Creates join table
+  categories: [Category]! @aggregation  // Creates join table
 }
 ```
 
@@ -353,8 +353,8 @@ type Address {
 
 type User {
   username: String!
-  homeAddress: [Address]! @composition  # Real entity relationship
-  workAddress: [Address]! @aggregation  # Shared reference
+  homeAddress: [Address]! @composition  // Real entity relationship
+  workAddress: [Address]! @aggregation  // Shared reference
 }
 ```
 
@@ -537,12 +537,12 @@ base AppConfig {
   language: String
   notificationsEnabled: Boolean
   darkMode: Boolean
-  # ... many more settings
+  // ... many more settings
 }
 
 type UserPreferences {
   userId: String!
-  config: AppConfig @opaque  # Perfect for user settings
+  config: AppConfig @opaque  // Perfect for user settings
 }
 ```
 
@@ -558,13 +558,13 @@ base ContactInfo {
 
 base Address {
   street: String
-  contact: ContactInfo  # Nested base type
+  contact: ContactInfo  // Nested base type
 }
 
 type Company {
-  headquarters: Address          # Flattened: headquarters_street, headquarters_contact_email, etc.
-  branches: [Address]            # Always JSONB for arrays
-  remoteOffices: Address @opaque # JSONB for complex nested structures
+  headquarters: Address          // Flattened: headquarters_street, headquarters_contact_email, etc.
+  branches: [Address]            // Always JSONB for arrays
+  remoteOffices: Address @opaque // JSONB for complex nested structures
 }
 ```
 
@@ -576,8 +576,8 @@ Add comments to explain why you chose a particular approach:
 
 ```qsdl
 base SimpleMetrics {
-  # Using default flattening for performance
-  # These fields are always populated and frequently queried
+  // Using default flattening for performance
+  // These fields are always populated and frequently queried
   responseTime: Float
   successRate: Float
 }
@@ -588,7 +588,6 @@ base ComplexAnalytics {
   pageViews: Int
   uniqueVisitors: Int
   # ... 18 more fields
-  @opaque
 }
 ```
 

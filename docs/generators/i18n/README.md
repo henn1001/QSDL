@@ -10,7 +10,7 @@ The generator creates locale-specific translation files (YAML by default) contai
 - **Enums**: All enumeration values mapped to readable capitalized labels.
 - **Multiple locales**: Primary locale (`locale`) with auto-generated labels, plus any `extra_locales` with placeholder structure.
 
-Files are organized by locale folder (e.g., `en/`, `de/`, `fr/`).
+Files are organized by locale folder (e.g., `en/`, `de/`, `fr/`) in split-file and multi-file modes. In the default single-file mode (`single_file=true`), files are written at the output root as `<locale>.<extension>` (e.g., `en.yaml`, `de.yaml`) and `subfolder` is ignored.
 
 ## Configuration
 
@@ -34,18 +34,17 @@ Files are organized by locale folder (e.g., `en/`, `de/`, `fr/`).
 
 ### Single file mode (default: `single_file=true`)
 
-Generates one file per locale containing all objects and bases under a `domain.*` prefix and enums under a `constant.*` prefix:
+Generates one file per locale at the output root containing all objects and bases under a `domain.*` prefix and enums under a `constant.*` prefix (`subfolder` is ignored in this mode):
 
 ```
-en/domain.yaml
-en/constant.yaml
-de/domain.yaml
-de/constant.yaml
+en.yaml
+constant.yaml (per `single_file_enum_name`, same root)
+de.yaml
 ```
 
 ### Split files mode (`split_files=true`)
 
-Generates one file per entity type per locale:
+Generates one file per object, base, and enum per locale (not just per entity type):
 
 ```
 en/User.yaml

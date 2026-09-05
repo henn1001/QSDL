@@ -4,7 +4,7 @@ The PlantUML generator produces a markdown file with embedded PlantUML diagrams 
 
 ## Output
 
-The generator creates a `plantuml.md` file containing PlantUML class diagrams and automatically converts them to PNG images (`.enums.png`, `.bases.png`, `.overview.png`) for easy viewing.
+The generator creates a `plantuml.md` file containing PlantUML class diagrams and automatically converts them to PNG images (`plantuml.enums.png`, `plantuml.bases.png`, `plantuml.overview.png`) for easy viewing.
 
 ## Diagrams
 

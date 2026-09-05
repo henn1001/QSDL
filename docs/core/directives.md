@@ -75,9 +75,9 @@ Field directives control how fields appear in APIs, databases, and responses.
 
 ```qsdl
 type Project {
-    name: String! @query          # Can filter projects by name
-    created_at: Datetime @readOnly # Returned in responses, cannot be set
-    password: String! @writeOnly   # Accepted on create/update, never returned
+    name: String! @query          // Can filter projects by name
+    created_at: Datetime @readOnly // Returned in responses, cannot be set
+    password: String! @writeOnly   // Accepted on create/update, never returned
 }
 ```
 
@@ -94,10 +94,10 @@ Use `@composition` when deleting a parent should delete its children. Use `@aggr
 
 ```qsdl
 type User {
-    # Children of this user; delete user → delete projects
+    // Children of this user; delete user → delete projects
     owned_projects: [Project]! @composition
 
-    # Independent references; delete user → keep teams
+    // Independent references; delete user → keep teams
     team_memberships: [Team]! @aggregation
 }
 ```
@@ -120,12 +120,12 @@ type User {
 
 ```qsdl
 type User {
-    email: String! @unique                          # Must be unique
-    birth_date: Date                                # Optional
-    status: String @default("active")               # Default value
-    internal_id: String @hidden                     # Not exposed in API
-    temp_data: String @transient                    # Not persisted
-    notes: String @maxSize(500)                     # Length constraint
+    email: String! @unique                          // Must be unique
+    birth_date: Date                                // Optional
+    status: String @default("active")               // Default value
+    internal_id: String @hidden                     // Not exposed in API
+    temp_data: String @transient                    // Not persisted
+    notes: String @maxSize(500)                     // Length constraint
 }
 
 base AuditFields {
@@ -133,7 +133,7 @@ base AuditFields {
 }
 
 type Project extends AuditFields {
-    created_at: Datetime! @readOnly @override       # Redefine with stricter type
+    created_at: Datetime! @readOnly @override       // Redefine with stricter type
 }
 ```
 
@@ -162,7 +162,7 @@ type Project {
     name: String!
 
     extend api @generate("GET_ALL", "GET", "UPDATE") {
-        # Implicit DELETE is skipped due to @generate
+        // Implicit DELETE is skipped due to @generate
         archive(id: Long!): Project @path("projects/{id}/archive") @method(PATCH)
     }
 }

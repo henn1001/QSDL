@@ -24,7 +24,7 @@ The `qsdl` command is installed automatically when you install the QSDL package:
 uv tool install git+https://github.com/henn1001/QSDL
 
 # Via pip/pipx
-pip install git+https://github.com/henn1001/QSDLl
+pip install git+https://github.com/henn1001/QSDL
 pipx install git+https://github.com/henn1001/QSDL
 ```
 
@@ -116,7 +116,7 @@ Options:
 
 ### Options
 
-**`-g, --generator TEXT`** — Which generator to use: `openapi`, `spring`, `postgres`, `plantuml`, `i18n`, or `void`.
+**`-g, --generator TEXT`** — Which generator to use (`openapi`, `spring`, `postgres`, `plantuml`, `i18n`, or `void`). The CLI accepts any string and resolves it to a generator at runtime; unknown names fail during generation setup.
 
 **`-o, --output_path PATH`** — Where to write generated files. Defaults to `srcgen/` in the same directory as the input file.
 
@@ -176,18 +176,18 @@ By default, QSDL **overwrites** existing output files on regeneration. This is i
 
 However, you may want to **protect certain files** from being overwritten after you've added custom code to them.
 
-### Using .qsdl-ignore
+### Using .qignore
 
-The **Spring Boot generator** (and other generators) support a `.qsdl-ignore` file to exclude specific files from being overwritten during regeneration.
+The **Spring Boot generator** (and other generators) support a `.qignore` file to exclude specific files from being overwritten during regeneration.
 
 #### How to Use
 
-1. Create a `.qsdl-ignore` file in your output directory
+1. Create a `.qignore` file in your output directory
 2. List patterns for files you want to protect (one per line)
 3. Patterns follow **gitignore/dockerignore syntax** (glob-style wildcards)
 4. When you regenerate, matched files will not be overwritten
 
-#### Example .qsdl-ignore
+#### Example .qignore
 
 ```
 # Protect all files in the config directory
@@ -225,7 +225,7 @@ The patterns follow **gitignore wildcard syntax**:
 
 2. **Add custom code** to some generated files
 
-3. **Create .qsdl-ignore** in `./src/` with:
+3. **Create .qignore** in `./src/` with:
 
    ```
    src/main/java/app/server/config/**
@@ -237,13 +237,7 @@ The patterns follow **gitignore wildcard syntax**:
    qsdl schema.qsdl -g spring -o ./src/
    ```
 
-The `.qsdl-ignore` file itself is also protected and won't be overwritten.
-
-#### Notes
-
-- `.qsdl-ignore` is currently supported in the **Spring Boot generator**
-- Other generators may not respect this file—check the generator-specific documentation
-- Always review the generated code before adding `pv` entries; you want to preserve intentional changes, not blocking legitimate updates
+The `.qignore` file itself is also protected and won't be overwritten.
 
 ## Configuration
 
@@ -266,7 +260,7 @@ For generator-specific configuration options, see the documentation for each gen
 
 ### Interactive Configuration (Prompt Mode)
 
-If you don't provide a generator name with `-g`, QSDL enters interactive mode:
+If you don't provide a generator name with `-g` but do provide `INPUT_PATH`, QSDL enters interactive mode:
 
 ```bash
 $ qsdl schema.qsdl
@@ -274,8 +268,10 @@ $ qsdl schema.qsdl
 
 This prompts you to:
 
-1. Select a generator from a list
-2. Configure generator options interactively
+1. Select a generator from a list (defaults to `void`)
+2. Configure generator options interactively (every generator-config field is prompted)
+
+(With no arguments at all, the CLI shows help instead of entering prompt mode; `INPUT_PATH` is still required for generation.)
 
 ## Next Steps
 

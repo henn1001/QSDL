@@ -19,7 +19,7 @@ servers: [STRING, ...]
 
 import "./other.qsdl"
 
-# followed by any number of type definitions
+// followed by any number of type definitions
 ```
 
 A `.qsdl` file may start with a small **schema header**. All header fields are **optional**: you can
@@ -293,7 +293,7 @@ base BaseTypeDated extends BaseType {
 
 "Combine multiple common aspects into one base."
 base AuditedOwned extends BaseAudit, BaseOwned {
-    # This base inherits fields from both supertypes.
+    // This base inherits fields from both supertypes.
 }
 ```
 
@@ -311,7 +311,7 @@ type Name [extends BaseName (, BaseName ...)] [directives...] {
     field
     ...
 
-    # optional: custom API block inside the object
+    // optional: custom API block inside the object
     extend api { ... }
 }
 ```
@@ -352,7 +352,7 @@ type Project extends BaseType {
 For an object named `Project`, the implicit operations look like this (QSDL syntax):
 
 ```qsdl
-# implicit operations (conceptual)
+// implicit operations (conceptual)
 extend api {
     getProjects(): [Project] @path("projects") @method(GET) @pagination
     createProject(body: Project): Project @path("projects") @method(POST)
@@ -409,9 +409,9 @@ QSDL provides two built-in type modifiers that appear after the type name:
 Marks the field as **required**. A field without `!` is optional and can be `null`.
 
 ```qsdl
-name: String!        # required
-nickname: String     # optional
-count: Int!          # required integer
+name: String!        // required
+nickname: String     // optional
+count: Int!          // required integer
 ```
 
 #### `[...]` (array/list)
@@ -419,8 +419,8 @@ count: Int!          # required integer
 Marks the field as a **collection**. Array items are of the specified type; use `!` to constrain them.
 
 ```qsdl
-tags: [String]       # array of strings (items nullable, array nullable)
-items: [Item]!       # required array
+tags: [String]       // array of strings (items nullable, array nullable)
+items: [Item]!       // required array
 ```
 
 **Examples:**
@@ -598,8 +598,8 @@ name: Type
 name: Type!
 name: [Type]
 
-name: Type?   # query argument
-name: Type^   # header argument
+name: Type?   // query argument
+name: Type^   // header argument
 ```
 
 Arguments define **inputs to operations**. Every argument has a name and a type, and can be annotated with

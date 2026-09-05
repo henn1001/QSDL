@@ -16,7 +16,7 @@ This generator targets modern Spring Boot applications with:
 
 ## Configuration
 
-All configuration options are provided either via a `config.json` file or CLI arguments.
+All configuration options are provided via a `config.json` file (passed with `-c/--config_path`). The CLI itself only exposes generator selection, config path, output path, version, and default-config flags.
 
 | Name                           | Type                       | Default                         | Description                                                                         | Required |
 | ------------------------------ | -------------------------- | ------------------------------- | ----------------------------------------------------------------------------------- | -------- |
@@ -75,7 +75,7 @@ src/
 │   │   └── com/example/travel/
 │   │       ├── TravelAPI.java               (Spring Boot entry point)
 │   │       ├── <package>/
-│   │       │   ├── api/                     (Controllers)
+│   │       │   ├── api/                     (Controllers and Api interfaces)
 │   │       │   ├── service/                 (Business logic)
 │   │       │   ├── dto/                     (Request/Response DTOs)
 │   │       │   ├── entity/                  (JPA entities)
@@ -83,14 +83,13 @@ src/
 │   │       │   └── repository/              (Spring Data repositories)
 │   │       ├── constant/                    (Enums)
 │   │       ├── exception/                   (Custom exceptions)
-│   │       ├── model/                       (Shared models: CursorPage, AppError, etc.)
+│   │       ├── model/                       (Shared models)
 │   │       ├── config/                      (Spring configuration)
 │   │       └── util/                        (Utility classes)
 │   └── resources/
-│       ├── application.yml                  (Spring application config)
-│       ├── application-dev.yml              (Development profile)
+│       ├── application.yaml                 (Spring application config)
 │       ├── logback-spring.xml               (Logging configuration)
-│       └── db/migration/                    (Flyway DB migrations, if postgres generated)
+│       └── db/migration/                    (Flyway DB migrations from the bundled PostgreSQL generator)
 ├── test/
 │   └── java/
 │       └── com/example/travel/
@@ -102,7 +101,7 @@ src/
 │               └── repository/RepositoryTest.java
 ├── pom.xml                                  (Maven build config)
 ├── docker-compose.yml                       (PostgreSQL container for development)
-└── .qsdl-ignore                              (Files to exclude from generation)
+└── .qignore                                  (Files to exclude from generation)
 ```
 
 ### Package Layout with `@spring-package`
@@ -198,16 +197,12 @@ scalar StrictJson @spring("String, entity: java.util.Map, pattern: ^\\{.*\\}$")
 
 ### Entities
 
-Entities are JPA-annotated classes mapped to database tables. For each `type` in your schema, a corresponding entity is generated:
+Entities are JPA-annotated classes mapped to database tables. For each `type` in your schema, a corresponding entity is generated. Entities extend the generated `AbstractEntity`, which centralizes ID handling (the ID column is `id` or `uid` depending on `id_type`):
 
 ```java
 @Entity
 @Table(name = "t_user")
-public class UserEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class UserEntity extends AbstractEntity {
     @Column(name = "name")
     private String name;
 
@@ -215,9 +210,11 @@ public class UserEntity {
 }
 ```
 
+(`@Id`/`@GeneratedValue` live in `AbstractEntity`, not in each entity.)
+
 ### DTOs (Data Transfer Objects)
 
-DTOs represent the API request/response layer. By default, a single DTO is generated per type. If a type has `@readOnly` or `@writeOnly` fields, the generator creates separate Request and Response DTOs:
+DTOs represent the API request/response layer. Object types always generate separate Request and Response DTOs (generated IDs are `@readOnly`, which forces the split); `@readOnly`/`@writeOnly` fields additionally control which fields appear on each side:
 
 ```java
 // Request DTO (omits read-only fields like id, createdAt)
@@ -231,7 +228,7 @@ public class UserResponse {
     private Long id;
     private String name;
     private String email;
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 }
 ```
 
