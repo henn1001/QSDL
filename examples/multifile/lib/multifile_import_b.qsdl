@@ -1,6 +1,0 @@
-import "multifile_import_c.qsdl"
-
-type ModelB {
-    firstName: String
-    lastName: ModelC
-}

@@ -1,4 +1,0 @@
-type ModelC {
-    firstName: String
-    lastName: String
-}
