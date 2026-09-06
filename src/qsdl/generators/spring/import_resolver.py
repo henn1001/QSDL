@@ -233,6 +233,22 @@ def _get_mapper_imports(model_class: spring.ModelClass | None) -> list[str]:
     return list(imports)
 
 
+def _get_mapper_impl_imports(model_class: spring.ModelClass | None) -> list[str]:
+    """Collect mapper implementations required by a controller slice test."""
+    if not model_class:
+        return []
+
+    imports = {f"import {model_class.package.mapper}.{model_class.name}MapperImpl;"}
+    for mapper in model_class.mappers:
+        if not isinstance(mapper, dsl.Object):
+            continue
+        nested = util.get_model_for(mapper.name)
+        if nested:
+            imports.add(f"import {nested.package.mapper}.{nested.name}MapperImpl;")
+
+    return list(imports)
+
+
 def generate_imports_for_template(
     template_name: str, api_or_model: spring.ApiClass | spring.ModelClass | None
 ) -> list[str]:
@@ -417,7 +433,7 @@ def generate_imports_for_template(
         ],
         "DControllerTest.j2": [
             # Model-specific imports
-            f"import {util.Store.config.base_package}.TestConfig;",
+            *_get_mapper_impl_imports(model_class),
             f"import {util.Store.config.base_package}.TestUtils;",
             f"import {util.Store.package.enum}.ErrorCode;",
             f"import {util.Store.package.util}.JsonMergePatchConverter.MediaTypeExtension;",
@@ -443,8 +459,8 @@ def generate_imports_for_template(
             "import org.springframework.beans.factory.annotation.Autowired;",
             "import org.springframework.beans.factory.annotation.Value;",
             "import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;",
-            "import org.springframework.test.context.bean.override.mockito.MockitoBean;",
             "import org.springframework.context.annotation.Import;",
+            "import org.springframework.test.context.bean.override.mockito.MockitoBean;",
             "import org.springframework.http.MediaType;",
             "import org.springframework.test.web.servlet.MockMvc;",
         ],
@@ -465,7 +481,6 @@ def generate_imports_for_template(
         ],
         "ServiceTest.j2": [
             # *(model_class.imports["service_tests"] if model_class else []),
-            f"import {util.Store.config.base_package}.TestConfig;",
             f"import {util.Store.config.base_package}.TestUtils;",
             f"import {util.Store.package.enum}.ErrorCode;",
             f"import {util.Store.package.exception}.AppException;",
@@ -505,14 +520,12 @@ def generate_imports_for_template(
             "import org.junit.jupiter.api.BeforeEach;",
             "import org.junit.jupiter.api.extension.ExtendWith;",
             "import org.junit.jupiter.api.Test;",
+            "import org.mapstruct.factory.Mappers;",
+            "import org.mockito.Mock;",
+            "import org.mockito.junit.jupiter.MockitoExtension;",
             "import org.skyscreamer.jsonassert.JSONAssert;",
-            "import org.springframework.beans.factory.annotation.Autowired;",
-            "import org.springframework.context.annotation.Import;",
-            "import org.springframework.test.context.bean.override.mockito.MockitoBean;",
-            "import org.springframework.test.context.junit.jupiter.SpringExtension;",
         ],
         "BaseController.j2": [
-            f"import {util.Store.package.model}.Context;",
             "import jakarta.servlet.http.HttpServletRequest;",
             "import org.springframework.beans.factory.annotation.Autowired;",
         ],
@@ -520,23 +533,34 @@ def generate_imports_for_template(
             f"import {util.Store.package.repository}.BaseRepositoryImpl;" if is_db else None,
             f"import {util.Store.package.util}.JsonMergePatchConverter;",
             f"import {util.Store.package.util}.JsonUtil;",
+            *([f"import {model.package.repository}.{model.name}Repository;" for model in util.Store.models if model.is_object] if is_db else []),
             "import com.fasterxml.jackson.annotation.JsonProperty;",
-            "import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;",
+            "import java.io.IOException;",
+            "import java.io.InputStream;",
+            "import java.nio.charset.StandardCharsets;",
             "import java.util.List;",
+            "import org.springdoc.core.configuration.SpringDocConfiguration;",
+            "import org.springdoc.core.properties.SpringDocConfigProperties;",
+            "import org.springdoc.core.providers.ObjectMapperProvider;",
+            "import org.springframework.beans.factory.annotation.Value;",
             "import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;",
             "import org.springframework.context.annotation.Bean;",
             "import org.springframework.context.annotation.Configuration;",
             "import org.springframework.core.MethodParameter;",
+            "import org.springframework.core.io.Resource;",
             "import org.springframework.data.jpa.repository.config.EnableJpaRepositories;",
             "import org.springframework.http.converter.HttpMessageConverter;",
             "import org.springframework.scheduling.annotation.EnableScheduling;",
             "import org.springframework.stereotype.Component;",
+            "import org.springframework.util.StreamUtils;",
             "import org.springframework.web.bind.WebDataBinder;",
             "import org.springframework.web.bind.annotation.ControllerAdvice;",
             "import org.springframework.web.bind.annotation.InitBinder;",
             "import org.springframework.web.servlet.config.annotation.CorsRegistry;",
             "import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;",
+            "import tools.jackson.databind.JsonNode;",
             "import tools.jackson.databind.json.JsonMapper;",
+            "import tools.jackson.dataformat.yaml.YAMLMapper;",
         ],
         "ErrorCode.j2": [
             f"import {util.Store.package.model}.AppError;",
@@ -650,9 +674,15 @@ def generate_imports_for_template(
         ],
         "AbstractDataJpaTest.j2": [
             f"import {util.Store.package.repository}.BaseRepositoryImpl;",
+            *[
+                f"import {model.package.repository}.{model.name}Repository;"
+                for model in util.Store.models
+                if model.is_object
+            ],
             "import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;",
-            "import org.springframework.context.annotation.Import;",
+            "import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;",
             "import org.springframework.data.jpa.repository.config.EnableJpaRepositories;",
+            "import org.springframework.test.context.ActiveProfiles;",
         ],
     }
 

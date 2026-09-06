@@ -7,8 +7,9 @@ package {{api.package.controller}};
 
 {{ util.macro_imports(self._TemplateReference__context.name, api) }}
 
+{% set object_mappers = model.mappers|selectattr("_tx_fqn", 'equalto', "entity.Object")|list -%}
 @WebMvcTest({{model.name}}Controller.class)
-@Import(TestConfig.class)
+@Import({{model.name}}MapperImpl.class{% for mapper in object_mappers %}, {{mapper.name}}MapperImpl.class{% endfor %})
 class {{model.name}}ControllerTest {
 
     @MockitoBean

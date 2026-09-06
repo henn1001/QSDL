@@ -235,12 +235,10 @@ def generate(schema: Schema, config: Config, output_path: Path | None = None) ->
         (".vscode/settings.j2", ".vscode/settings.json.template"),
         # resources
         ("src/main/resources/application.j2", "src/main/resources/application.yaml"),
-        ("src/main/resources/logback-spring.j2", "src/main/resources/logback-spring.xml"),
         ("src/main/resources/public/index.j2", "src/main/resources/public/index.html"),
         ("src/main/resources/public/error/404.j2", "src/main/resources/public/error/404.html"),
         # main
         ("src/main/java/SpringBootApp.j2", f"src/main/java/{package.base}/SpringBootApp.java"),
-        ("src/test/java/TestConfig.j2", f"src/test/java/{package.base}/TestConfig.java"),
         ("src/test/java/TestUtils.j2", f"src/test/java/{package.base}/TestUtils.java"),
         # config
         ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
@@ -270,9 +268,6 @@ def generate(schema: Schema, config: Config, output_path: Path | None = None) ->
         ("src/main/java/model/AppError.j2", f"src/main/java/{package.model}/AppError.java"),
         ("src/main/java/model/CursorPageable.j2", f"src/main/java/{package.model}/CursorPageable.java"),
         ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),
-        ("src/main/java/model/Context.j2", f"src/main/java/{package.model}/Context.java"),
-        # tests
-        ("src/test/java/api/ControllerTest.j2", f"src/test/java/{package.controller}/ControllerTest.java")
     ]
     # fmt: on
 
@@ -295,6 +290,7 @@ def generate(schema: Schema, config: Config, output_path: Path | None = None) ->
         "group_id": config.group_id,
         "artifact_id": config.artifact_id,
         "base_package": config.base_package,
+        "models": util.Store.models,
         "package": package,
         "packages": util.Store.packages,
         "basePath": schema.servers[0] if schema.servers else "/api/v1",

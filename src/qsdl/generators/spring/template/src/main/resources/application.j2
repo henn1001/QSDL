@@ -1,82 +1,66 @@
+# Optional local overrides:
+spring.config.import: optional:file:./properties.yaml
+
 ### Core
 server.port: 8080
-spring.mvc.pathmatch.matching-strategy: ant_path_matcher
-spring.threads.virtual.enabled: true
 spring.jpa.open-in-view: false
+spring.threads.virtual.enabled: true
+spring.mvc.pathmatch.matching-strategy: ant_path_matcher
+{% if use_auditing %}
+### Audits
+spring.jpa.properties.org.hibernate.envers.audit_strategy: ValidityAuditStrategy
+{% endif %}
 
 ### Monitoring service
 management.server.port: 8081
 management.endpoints.web.base-path: /actuator
-management.endpoint.health.show-details: always
-management.endpoints.web.exposure.include: health,info,metrics,prometheus,logfile,loggers
-management.endpoints.web.exposure.exclude:
-management.endpoints.web.cors.allowed-origins: "*"
-management.endpoints.web.cors.allowed-methods: GET
+management.endpoint.health.show-details: never
+management.endpoints.web.exposure.include: health,info,metrics,loggers
 
 ### Logging
-logging.file.name: logs/spring.log
+logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){faint} %highlight(%-5level) %clr(%logger{0}){cyan} %clr(-){faint} %msg %kvp%n"
+logging.pattern.file: "%d{yyyy-MM-dd HH:mm:ss.SSS XXX} %-5level [%thread] %logger - %msg %kvp%n"
 
-### H2-Console
-spring.h2.console.enabled: false
-spring.h2.console.settings.web-allow-others: true
-spring.h2.console.path: /api/h2
+# Optionally, enable structured logging in ECS format for console or file output.
+# logging.file.name: logs/app.log
+# logging.structured.format.console: ecs
+# logging.structured.format.file: ecs
+
+# Springdoc
+# Disable Springdoc's generated OpenAPI endpoints.
+springdoc.api-docs.enabled: false
+
+# Serve Swagger UI using the application-provided OpenAPI document.
+springdoc.swagger-ui.enabled: true
+springdoc.swagger-ui.path: /api/swagger-ui
+springdoc.swagger-ui.url: /api/docs/openapi.json
+springdoc.swagger-ui.disable-swagger-default-url: true
+
+# Profile
+spring.profiles.default: h2
+
+---
+################################################################################
+spring.config.activate.on-profile: h2
+
+### Datasource
+spring.jpa.hibernate.ddl-auto: update
+
+spring.datasource.url: jdbc:h2:mem:testdb;MODE=PostgreSQL
+spring.datasource.username: h2
+spring.datasource.password: h2
 
 ### Flyway
 spring.flyway.enabled: false
 
-### Audits
-spring.jpa.properties.org.hibernate.envers.audit_strategy: ValidityAuditStrategy
-
-# Springdocs
-springdoc.api-docs.path: /api/docs/generated
-springdoc.packagesToScan: X
-springdoc.swagger-ui.path: /api/swagger-ui
-springdoc.swagger-ui.url: /api/docs/openapi.json
-
 ---
 ################################################################################
-spring.config.activate.on-profile: dev
+spring.config.activate.on-profile: postgres
 
 ### Datasource
-spring.jpa.properties.hibernate.hbm2dll.create_namespaces: true
-spring.jpa.hibernate.ddl-auto: update
-
-spring.datasource.url: jdbc:hsqldb:mem:testdb;sql.syntax_pgs=true;
-spring.datasource.username: sa
-spring.datasource.password:
-
-### H2-Console
-spring.h2.console.enabled: true
-
-### Logging
-logging.level.org.hibernate.SQL: DEBUG
-spring.jpa.properties.hibernate.format_sql: true
-spring.jpa.properties.hibernate.show_sql: false
-
----
-################################################################################
-spring.config.activate.on-profile: local
-
-### Datasource
-spring.jpa.properties.hibernate.hbm2dll.create_namespaces: true
-spring.jpa.hibernate.ddl-auto: update
-
-spring.datasource.url: jdbc:hsqldb:file:./db/testdb;sql.syntax_pgs=true;
-spring.datasource.username: sa
-spring.datasource.password:
-
-### H2-Console
-spring.h2.console.enabled: true
-
----
-################################################################################
-spring.config.activate.on-profile: prod
-
-### Datasource
-spring.jpa.properties.hibernate.default_schema: spring
 spring.jpa.hibernate.ddl-auto: validate
 
-spring.datasource.url: jdbc:postgresql://localhost:5432/postgres
+spring.datasource.url: jdbc:postgresql://localhost:5432/postgres?currentSchema=spring
 spring.datasource.username: postgres
 spring.datasource.password: postgres
 
@@ -86,10 +70,3 @@ spring.flyway.schemas: spring
 spring.flyway.locations: classpath:db/migration
 spring.flyway.out-of-order: true
 spring.flyway.ignoreMigrationPatterns: "*:missing"
-
----
-################################################################################
-
-### Default Profile
-spring.profiles.active: dev
-{{""}}

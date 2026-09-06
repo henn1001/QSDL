@@ -3,56 +3,34 @@
  */
 package app.server.api;
 
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import app.server.config.AppConfiguration.OpenApiDocument;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.Resource;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Home redirection to OpenAPI api documentation.
  */
 @Controller
+@AllArgsConstructor
 public class HomeController {
 
-    @Autowired
-    YAMLMapper yamlMapper;
-
-    @Value("classpath:/openapi.yaml")
-    Resource openapi;
-
-    @Bean
-    public String openapiContent() throws IOException {
-        try (InputStream is = openapi.getInputStream()) {
-            return StreamUtils.copyToString(is, Charset.defaultCharset());
-        }
-    }
+    final OpenApiDocument document;
 
     @GetMapping(value = "/api/docs/openapi.yaml", produces = "application/vnd.oai.openapi")
     @ResponseBody
-    public String openapiYaml() throws IOException {
-        return openapiContent();
+    public String openapiYaml() {
+        return document.yaml();
     }
 
     @GetMapping(value = "/api/docs/openapi.json", produces = "application/json")
     @ResponseBody
-    public Object openapiJson() throws IOException {
-        return yamlMapper.readValue(openapiContent(), Object.class);
-    }
-
-    @GetMapping(value = "/api/ping")
-    @ResponseBody
-    public Object heartbeat() throws IOException {
-        return yamlMapper.readValue("pong", Object.class);
+    public JsonNode openapiJson() {
+        return document.json();
     }
 
     @RequestMapping("/api")

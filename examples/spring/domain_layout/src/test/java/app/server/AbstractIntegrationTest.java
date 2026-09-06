@@ -12,8 +12,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
+/**
+ * Uses Spring Boot's mock web environment by default. Subclasses that require actual network-level HTTP
+ * should declare {@code @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)}.
+ */
 @SpringBootTest
-@ActiveProfiles("prod")
+@ActiveProfiles("postgres")
 @Import(AbstractIntegrationTest.TestcontainersConfiguration.class)
 public abstract class AbstractIntegrationTest {
 

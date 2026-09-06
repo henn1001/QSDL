@@ -10,10 +10,33 @@ package {{package.config}};
 @EnableScheduling
 {% if database == "HIBERNATE" %}
 @EnableJpaRepositories(
-        basePackages = {{"{"}}{% for pkg in packages | map(attribute='repository') | unique | list %}"{{pkg}}"{{ ", " if not loop.last }}{% endfor %}{{"}"}},
+        basePackageClasses = {{"{"}}{% for model in models if model.is_object %}{{model.name}}Repository.class{{ ", " if not loop.last }}{% endfor %}{{"}"}},
         repositoryBaseClass = BaseRepositoryImpl.class)
 {% endif%}
 public class AppConfiguration {
+
+    @Value("classpath:/openapi.yaml")
+    Resource openapi;
+
+    @Bean
+    YAMLMapper yamlMapper() {
+        return new YAMLMapper();
+    }
+
+    @Bean
+    OpenApiDocument openApiDocument(YAMLMapper yamlMapper) throws IOException {
+        String yaml;
+
+        try (InputStream input = openapi.getInputStream()) {
+            yaml = StreamUtils.copyToString(input, StandardCharsets.UTF_8);
+        }
+
+        JsonNode json = yamlMapper.readTree(yaml);
+
+        return new OpenApiDocument(yaml, json);
+    }
+
+    public record OpenApiDocument(String yaml, JsonNode json) {}
 
     @Bean
     JsonMapperBuilderCustomizer jacksonCustomizer() {
@@ -25,11 +48,6 @@ public class AppConfiguration {
         public JsonUtilInitializer(JsonMapper mapper) {
             JsonUtil.initialize(mapper);
         }
-    }
-
-    @Bean
-    YAMLMapper yamlMapper() {
-        return new YAMLMapper();
     }
 
     @Bean
@@ -86,6 +104,28 @@ public class AppConfiguration {
 
             return jsonProperty.value();
         }
+    }
+
+    /**
+     * Keep Springdoc's UI infrastructure while disabling its generated OpenAPI endpoints.
+     *
+     * <p>Springdoc normally creates these beans only when
+     * {@code springdoc.api-docs.enabled} is true. The UI configuration depends on them,
+     * so they must be supplied explicitly when displaying the application-provided document.
+     */
+    @Bean
+    SpringDocConfiguration springDocConfiguration() {
+        return new SpringDocConfiguration();
+    }
+
+    @Bean
+    SpringDocConfigProperties springDocConfigProperties() {
+        return new SpringDocConfigProperties();
+    }
+
+    @Bean
+    ObjectMapperProvider objectMapperProvider(SpringDocConfigProperties springDocConfigProperties) {
+        return new ObjectMapperProvider(springDocConfigProperties);
     }
 }
 {{""}}

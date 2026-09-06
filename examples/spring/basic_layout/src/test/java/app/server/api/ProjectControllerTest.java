@@ -13,11 +13,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
 import app.server.domain.Project;
 import app.server.domain.ProjectRequest;
+import app.server.domain.mapper.ProjectMapperImpl;
 import app.server.model.AppError;
 import app.server.model.CursorPage;
 import app.server.service.ProjectService;
@@ -36,7 +36,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ProjectController.class)
-@Import(TestConfig.class)
+@Import(ProjectMapperImpl.class)
 class ProjectControllerTest {
 
     @MockitoBean

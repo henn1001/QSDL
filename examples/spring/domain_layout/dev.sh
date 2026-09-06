@@ -13,7 +13,7 @@ build() {
 
 run() {
   echo "testing..."
-  docker-compose up
+  docker compose up
 }
 
 push() {
@@ -24,7 +24,7 @@ push() {
 
 clean() {
   echo "cleaning..."
-  docker-compose down
+  docker compose down
 }
 
 # Dynamically dispatch to functions

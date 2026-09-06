@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
 import app.server.domain.Role;
@@ -32,31 +31,29 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@Import(TestConfig.class)
+@ExtendWith(MockitoExtension.class)
 class RoleServiceTest {
 
-    @MockitoBean
+    @Mock
     RoleRepository repository;
 
-    @MockitoBean
+    @Mock
     ProjectRepository projectRepository;
 
     RoleService service;
 
-    @Autowired
     RoleMapper mapper;
 
     static Long one = 1L;
 
     @BeforeEach
     void setUp() {
+        mapper = Mappers.getMapper(RoleMapper.class);
         service = new RoleService(projectRepository, repository, mapper);
     }
 

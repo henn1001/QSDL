@@ -3,32 +3,28 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Run Dev",
+      "name": "Run H2",
       "request": "launch",
       "mainClass": "{{base_package}}.SpringBootApp",
       "projectName": "{{artifact_id}}",
+      "env": {
+        "SPRING_CONFIG_ADDITIONAL_LOCATION": "optional:file:${workspaceFolder}/.env.yaml"
+      },
       "args": [
-        "--spring.profiles.active=dev"
+        "--spring.profiles.active=h2"
       ]
     },
     {
       "type": "java",
-      "name": "Run Local",
+      "name": "Run PostgreSQL",
       "request": "launch",
       "mainClass": "{{base_package}}.SpringBootApp",
       "projectName": "{{artifact_id}}",
+      "env": {
+        "SPRING_CONFIG_ADDITIONAL_LOCATION": "optional:file:${workspaceFolder}/.env.yaml"
+      },
       "args": [
-        "--spring.profiles.active=local"
-      ]
-    },
-    {
-      "type": "java",
-      "name": "Run Production",
-      "request": "launch",
-      "mainClass": "{{base_package}}.SpringBootApp",
-      "projectName": "{{artifact_id}}",
-      "args": [
-        "--spring.profiles.active=prod"
+        "--spring.profiles.active=postgres"
       ]
     }
   ]

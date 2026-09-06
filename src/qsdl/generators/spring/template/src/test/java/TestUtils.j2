@@ -29,6 +29,7 @@ import org.instancio.InstancioApi;
 import org.instancio.settings.Keys;
 import org.instancio.settings.Mode;
 import org.instancio.settings.Settings;
+import org.mapstruct.factory.Mappers;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -59,6 +60,30 @@ public class TestUtils {
 
     public static <T> List<T> getRandom(Class<T> cls, int count) {
         return instanceIo(cls).stream().limit(count).collect(Collectors.toList());
+    }
+
+    /**
+     * Creates a MapStruct mapper without starting a Spring context and wires generated mapper dependencies.
+     */
+    public static <T> T getMapper(Class<T> mapperClass) {
+        T mapper = Mappers.getMapper(mapperClass);
+
+        for (Field field : mapper.getClass().getDeclaredFields()) {
+            if (!field.getType().isInterface() || !field.getType().getSimpleName().endsWith("Mapper")) {
+                continue;
+            }
+
+            try {
+                if (!field.trySetAccessible()) {
+                    throw new IllegalStateException("Cannot access mapper dependency " + field.getName());
+                }
+                field.set(mapper, getMapper(field.getType()));
+            } catch (IllegalAccessException exception) {
+                throw new IllegalStateException("Cannot wire mapper dependency " + field.getName(), exception);
+            }
+        }
+
+        return mapper;
     }
     {% if database == "HIBERNATE" %}
 

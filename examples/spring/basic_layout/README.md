@@ -37,6 +37,18 @@ Running the service(s) is as simple as starting the jar file:
 
     java -jar app.jar
 
+## Running with Maven
+
+The application uses the in-memory H2 database by default. Select the PostgreSQL profile when running against PostgreSQL:
+
+```bash
+mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=h2
+mvn spring-boot:run -Dspring-boot.run.profiles=postgres
+```
+
+The `postgres` profile expects PostgreSQL at `localhost:5432`. The generated `docker-compose.yml` starts the application and PostgreSQL together.
+
 ## Configuration
 
 * * *

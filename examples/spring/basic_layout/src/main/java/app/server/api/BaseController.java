@@ -3,7 +3,6 @@
  */
 package app.server.api;
 
-import app.server.model.Context;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,8 +10,4 @@ public abstract class BaseController {
 
     @Autowired
     protected HttpServletRequest httpServletRequest;
-
-    protected Context getContext() {
-        return new Context(httpServletRequest);
-    }
 }

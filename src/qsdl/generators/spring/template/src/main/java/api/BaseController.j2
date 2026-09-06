@@ -10,9 +10,5 @@ public abstract class BaseController {
 
     @Autowired
     protected HttpServletRequest httpServletRequest;
-
-    protected Context getContext() {
-        return new Context(httpServletRequest);
-    }
 }
 {{""}}

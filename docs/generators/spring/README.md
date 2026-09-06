@@ -14,6 +14,18 @@ This generator targets modern Spring Boot applications with:
 - **Query filtering**: Automatic filter model generation for list endpoints
 - **Optional integrations**: OpenAPI spec and PostgreSQL schema generation
 
+## Running the generated application
+
+The generated application uses the in-memory H2 database by default. Use the PostgreSQL profile when running against PostgreSQL:
+
+```bash
+mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=h2
+mvn spring-boot:run -Dspring-boot.run.profiles=postgres
+```
+
+The `postgres` profile expects PostgreSQL at `localhost:5432`. The generated `docker-compose.yml` starts the application and PostgreSQL together.
+
 ## Configuration
 
 All configuration options are provided via a `config.json` file (passed with `-c/--config_path`). The CLI itself only exposes generator selection, config path, output path, version, and default-config flags.

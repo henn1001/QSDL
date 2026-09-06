@@ -4,13 +4,19 @@
 package app.server;
 
 import app.server.repository.BaseRepositoryImpl;
+import app.server.repository.ProjectRepository;
+import app.server.repository.RoleRepository;
+import app.server.repository.TicketRepository;
+import app.server.repository.UserRepository;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-@Import(TestConfig.class)
+@ActiveProfiles("h2")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnableJpaRepositories(
-        basePackages = {"app.server.repository"},
+        basePackageClasses = {ProjectRepository.class, RoleRepository.class, UserRepository.class, TicketRepository.class},
         repositoryBaseClass = BaseRepositoryImpl.class)
 public abstract class AbstractDataJpaTest {}

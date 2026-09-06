@@ -1,5 +1,6 @@
 /.m2
 /.idea
+/.env*
 /db
 /logs
 /target

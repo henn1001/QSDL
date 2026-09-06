@@ -6,7 +6,7 @@ services:
     command:
       - mvn
       - spring-boot:run
-      - -Dspring-boot.run.profiles=prod
+      - -Dspring-boot.run.profiles=postgres
     network_mode: host
     volumes:
       - ./:/usr/src/mymaven:rw

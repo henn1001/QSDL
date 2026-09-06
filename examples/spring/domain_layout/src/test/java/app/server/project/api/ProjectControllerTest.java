@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.common.constants.ErrorCode;
 import app.server.common.model.AppError;
@@ -22,6 +21,7 @@ import app.server.common.util.JsonMergePatchConverter.MediaTypeExtension;
 import app.server.common.util.JsonUtil;
 import app.server.project.dto.Project;
 import app.server.project.dto.ProjectRequest;
+import app.server.project.mapper.ProjectMapperImpl;
 import app.server.project.service.ProjectService;
 import java.util.Arrays;
 import org.json.JSONObject;
@@ -36,7 +36,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ProjectController.class)
-@Import(TestConfig.class)
+@Import(ProjectMapperImpl.class)
 class ProjectControllerTest {
 
     @MockitoBean

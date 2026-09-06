@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import app.server.TestConfig;
 import app.server.TestUtils;
 import app.server.constant.ErrorCode;
 import app.server.domain.User;
@@ -32,31 +31,29 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@Import(TestConfig.class)
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @MockitoBean
+    @Mock
     UserRepository repository;
 
-    @MockitoBean
+    @Mock
     TicketRepository ticketRepository;
 
     UserService service;
 
-    @Autowired
     UserMapper mapper;
 
     static Long one = 1L;
 
     @BeforeEach
     void setUp() {
+        mapper = Mappers.getMapper(UserMapper.class);
         service = new UserService(ticketRepository, repository, mapper);
     }
 

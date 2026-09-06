@@ -4,32 +4,69 @@
 package app.server.config;
 
 import app.server.repository.BaseRepositoryImpl;
+import app.server.repository.ProjectRepository;
+import app.server.repository.RoleRepository;
+import app.server.repository.TicketRepository;
+import app.server.repository.UserRepository;
 import app.server.util.JsonMergePatchConverter;
 import app.server.util.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import org.springdoc.core.configuration.SpringDocConfiguration;
+import org.springdoc.core.properties.SpringDocConfigProperties;
+import org.springdoc.core.providers.ObjectMapperProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 @Configuration
 @EnableScheduling
 @EnableJpaRepositories(
-        basePackages = {"app.server.repository"},
+        basePackageClasses = {ProjectRepository.class, RoleRepository.class, UserRepository.class, TicketRepository.class},
         repositoryBaseClass = BaseRepositoryImpl.class)
 public class AppConfiguration {
+
+    @Value("classpath:/openapi.yaml")
+    Resource openapi;
+
+    @Bean
+    YAMLMapper yamlMapper() {
+        return new YAMLMapper();
+    }
+
+    @Bean
+    OpenApiDocument openApiDocument(YAMLMapper yamlMapper) throws IOException {
+        String yaml;
+
+        try (InputStream input = openapi.getInputStream()) {
+            yaml = StreamUtils.copyToString(input, StandardCharsets.UTF_8);
+        }
+
+        JsonNode json = yamlMapper.readTree(yaml);
+
+        return new OpenApiDocument(yaml, json);
+    }
+
+    public record OpenApiDocument(String yaml, JsonNode json) {}
 
     @Bean
     JsonMapperBuilderCustomizer jacksonCustomizer() {
@@ -41,11 +78,6 @@ public class AppConfiguration {
         public JsonUtilInitializer(JsonMapper mapper) {
             JsonUtil.initialize(mapper);
         }
-    }
-
-    @Bean
-    YAMLMapper yamlMapper() {
-        return new YAMLMapper();
     }
 
     @Bean
@@ -102,5 +134,27 @@ public class AppConfiguration {
 
             return jsonProperty.value();
         }
+    }
+
+    /**
+     * Keep Springdoc's UI infrastructure while disabling its generated OpenAPI endpoints.
+     *
+     * <p>Springdoc normally creates these beans only when
+     * {@code springdoc.api-docs.enabled} is true. The UI configuration depends on them,
+     * so they must be supplied explicitly when displaying the application-provided document.
+     */
+    @Bean
+    SpringDocConfiguration springDocConfiguration() {
+        return new SpringDocConfiguration();
+    }
+
+    @Bean
+    SpringDocConfigProperties springDocConfigProperties() {
+        return new SpringDocConfigProperties();
+    }
+
+    @Bean
+    ObjectMapperProvider objectMapperProvider(SpringDocConfigProperties springDocConfigProperties) {
+        return new ObjectMapperProvider(springDocConfigProperties);
     }
 }
