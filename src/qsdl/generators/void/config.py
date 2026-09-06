@@ -20,5 +20,5 @@ from qsdl.generators.base_config import BaseConfig
 
 
 @dataclass
-class Config(BaseConfig):
+class VoidConfig(BaseConfig):
     """A configuration class that holds relevant data for the generator"""

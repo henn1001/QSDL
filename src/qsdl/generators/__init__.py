@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""QSDL - Generator interface"""
+"""Generator contract and builtin registry."""
 
 import importlib
+import inspect
 import sys
+from abc import ABC, abstractmethod
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, is_dataclass
 from pathlib import Path
+from typing import get_type_hints
 
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
@@ -30,34 +33,75 @@ GeneratorConfigClass = type[BaseConfig]
 GeneratorType = Callable[[Schema, GeneratorConfig, Path | None], GeneratedFiles]
 
 
+class Generator(ABC):
+    """Explicit generator plugin contract."""
+
+    config_class: GeneratorConfigClass
+
+    @abstractmethod
+    def generate(self, schema: Schema, config: GeneratorConfig, output_path: Path | None) -> GeneratedFiles:
+        """Generate artifacts for ``schema``."""
+
+
+def validate_generator(plugin: Generator) -> None:
+    """Validate the runtime shape and annotations of a generator plugin."""
+    if not (
+        isinstance(plugin.config_class, type)
+        and is_dataclass(plugin.config_class)
+        and issubclass(plugin.config_class, BaseConfig)
+    ):
+        raise TypeError("generator config_class must be a BaseConfig dataclass")
+    signature = inspect.signature(plugin.generate)
+    if len(signature.parameters) != 3:
+        raise TypeError("generator method must accept exactly schema, config, and output_path")
+    hints = get_type_hints(plugin.generate)
+    if hints.get("config") is not plugin.config_class:
+        raise TypeError("generator method's config annotation must match config_class")
+    if hints.get("return") is not GeneratedFiles:
+        raise TypeError("generator method must be annotated to return GeneratedFiles")
+
+
 @dataclass(frozen=True, slots=True)
 class GeneratorDefinition:
-    """Registered generator and the class used to configure it."""
+    """Registered generator plugin."""
 
-    generator: GeneratorType
-    config_class: GeneratorConfigClass
+    plugin: Generator
+
+    def __post_init__(self) -> None:
+        validate_generator(self.plugin)
+
+    @property
+    def generator(self) -> GeneratorType:
+        """Return the plugin generation method."""
+        return self.plugin.generate
+
+    @property
+    def config_class(self) -> GeneratorConfigClass:
+        """Return the plugin configuration class."""
+        return self.plugin.config_class
+
+
+def _definition_from_module(module: object, source: str) -> GeneratorDefinition:
+    plugin = getattr(module, "generator", None)
+    if not isinstance(plugin, Generator):
+        raise QsdlException(f"generator {source} must export generator: Generator")
+    try:
+        return GeneratorDefinition(plugin)
+    except TypeError as error:
+        raise QsdlException(f"generator {source} has an invalid contract: {error}") from error
 
 
 def load_generators() -> dict[str, GeneratorDefinition]:
     """Load all generators from the generators directory."""
     generators: dict[str, GeneratorDefinition] = {}
-
     generators_dir = Path(__file__).parent
 
     for folder in generators_dir.iterdir():
         if folder.is_dir() and (folder / "__init__.py").exists():
             try:
                 module = importlib.import_module(f".{folder.name}", package=__name__)
-
-                generate = getattr(module, "generate", None)
-                config_class = getattr(module, "Config", None)
-
-                if generate and config_class:
-                    generators[folder.name] = GeneratorDefinition(
-                        generator=generate,
-                        config_class=config_class,
-                    )
-            except ImportError as error:
+                generators[folder.name] = _definition_from_module(module, folder.name)
+            except (ImportError, QsdlException) as error:
                 print(f"Error loading module '{folder.name}': {error}", file=sys.stderr)
 
     return generators
@@ -67,7 +111,7 @@ GENERATORS: dict[str, GeneratorDefinition] = load_generators()
 
 
 def get_definition(generator_name: str) -> GeneratorDefinition:
-    """Return the definition for a registered generator."""
+    """Return a registered generator definition."""
     if generator_name not in GENERATORS:
         raise QsdlException(f"unknown generator: {generator_name}")
     return GENERATORS[generator_name]
@@ -94,9 +138,5 @@ def available_generators() -> tuple[str, ...]:
 
 
 def get_config(generator_name: str) -> GeneratorConfig:
-    """Return a fresh generator configuration instance.
-
-    This compatibility name is retained for callers of the previous registry
-    API.  Configurations are never stored in the registry.
-    """
+    """Return a fresh generator configuration instance."""
     return create_config(generator_name)

@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""QSDL Generator"""
+"""spring generator plugin."""
 
-from .config import Config
-from .generate import generate
+from .config import SpringConfig
+from .generate import SpringGenerator
 
-__all__ = [
-    "Config",
-    "generate",
-]
+generator = SpringGenerator()
+
+__all__ = ["SpringConfig", "SpringGenerator", "generator"]

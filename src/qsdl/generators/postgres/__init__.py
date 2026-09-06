@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generator"""
+"""postgres generator plugin."""
 
-from .config import Config
-from .generate import generate
+from .config import PostgresConfig
+from .generate import PostgresGenerator
 
-__all__ = [
-    "Config",
-    "generate",
-]
+generator = PostgresGenerator()
+
+__all__ = ["PostgresConfig", "PostgresGenerator", "generator"]

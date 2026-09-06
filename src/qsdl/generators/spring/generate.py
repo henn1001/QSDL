@@ -20,16 +20,17 @@ from pathlib import Path
 import qsdl.dsl.textx as xtx
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
-from qsdl.generators.openapi import Config as OpenApiConfig
-from qsdl.generators.openapi import generate as generate_openapi
+from qsdl.generators import Generator
+from qsdl.generators.openapi import generator as openapi_generator
 from qsdl.generators.openapi.config import IDTYPE as OpenApiIDType
-from qsdl.generators.postgres import Config as PostgresConfig
-from qsdl.generators.postgres import generate as generate_postgres
+from qsdl.generators.openapi.config import OpenApiConfig
+from qsdl.generators.postgres import generator as postgres_generator
+from qsdl.generators.postgres.config import PostgresConfig
 from qsdl.render import render_text
 
 from . import import_resolver as resolver
 from . import util
-from .config import IDTYPE, Config, Database
+from .config import IDTYPE, Database, SpringConfig
 from .models import ApiClass, EnumClass, ModelClass, Package
 
 
@@ -128,226 +129,231 @@ def _add_rendered(
     )
 
 
-def generate(schema: Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
-    """Generate Spring, OpenAPI, and PostgreSQL artifacts in memory."""
+class SpringGenerator(Generator):
+    """Generate artifacts for the spring target."""
 
-    if config.id_type not in IDTYPE.__members__:
-        raise ValueError("id_type must be `LONG` or `STRING`")
+    config_class = SpringConfig
 
-    if config.id_type == IDTYPE.LONG:
-        id_name = "id"
-        id_type = "Long"
-    else:
-        id_name = "uid"
-        id_type = "String"
+    def generate(self, schema: Schema, config: SpringConfig, output_path: Path | None = None) -> GeneratedFiles:
+        """Generate Spring, OpenAPI, and PostgreSQL artifacts in memory."""
 
-    files = GeneratedFiles()
+        if config.id_type not in IDTYPE.__members__:
+            raise ValueError("id_type must be `LONG` or `STRING`")
 
-    # Reset generator-local state for every build.
-    util.Store.schema = schema
-    util.Store.config = config
-    util.Store.models = []
-    util.Store.apis = []
-    util.Store.enums = []
-    util.Store.packages = []
-    util.Store.package = package = Package(config)
-    util.Store.is_id_long = id_type == "Long"
-    util.custom_types["ID"] = id_type
+        if config.id_type == IDTYPE.LONG:
+            id_name = "id"
+            id_type = "Long"
+        else:
+            id_name = "uid"
+            id_type = "String"
 
-    # parse models and apis
-    util.Store.models = parse_models(schema)
-    util.Store.enums = parse_enums(schema)
-    util.Store.apis = parse_apis(schema)
+        files = GeneratedFiles()
 
-    # post-process models to determine which actually need Request DTOs based on API usage
-    util.resolve_request_dto_usage()
+        # Reset generator-local state for every build.
+        util.Store.schema = schema
+        util.Store.config = config
+        util.Store.models = []
+        util.Store.apis = []
+        util.Store.enums = []
+        util.Store.packages = []
+        util.Store.package = package = Package(config)
+        util.Store.is_id_long = id_type == "Long"
+        util.custom_types["ID"] = id_type
 
-    # resolve all dynamic imports
-    resolver.resolve_dynamic_imports()
+        # parse models and apis
+        util.Store.models = parse_models(schema)
+        util.Store.enums = parse_enums(schema)
+        util.Store.apis = parse_apis(schema)
 
-    # enable slashing
-    package.slashed = True
+        # post-process models to determine which actually need Request DTOs based on API usage
+        util.resolve_request_dto_usage()
 
-    # loop and generate domain files
-    api_files = []
+        # resolve all dynamic imports
+        resolver.resolve_dynamic_imports()
 
-    for api in util.Store.apis:
-        api.package.slashed = True
+        # enable slashing
+        package.slashed = True
+
+        # loop and generate domain files
+        api_files = []
+
+        for api in util.Store.apis:
+            api.package.slashed = True
+
+            # fmt: off
+            api_files.append(("src/main/java/api/Api.j2", f"src/main/java/{api.package.api}/{api.name}Api.java", api))
+            api_files.append(("src/main/java/api/Controller.j2", f"src/main/java/{api.package.controller}/{api.name}Controller.java", api))
+
+            if api.model and api.has_generated:
+                api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{api.package.service}/{api.name}Service.java", api))
+                api_files.append(("src/test/java/api/DControllerTest.j2", f"src/test/java/{api.package.controller}/{api.name}ControllerTest.java", api))
+
+                if config.database == Database.HIBERNATE:
+                    api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{api.package.service}/{api.name}ServiceTest.java", api))
+            # fmt: on
+            api.package.slashed = False
+
+        # loop and generate model files
+        model_files = []
+
+        for model in util.Store.models:
+            model.package.slashed = True
+            # fmt: off
+            if model.is_query_filter:
+                model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
+            elif model.has_request:
+                model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
+            if model.has_response and not model.is_query_filter:
+                model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
+
+            if model.is_object:
+                model_files.append(("src/main/java/domain/Mapper.j2", f"src/main/java/{model.package.mapper}/{model.name}Mapper.java", model))
+
+            if config.database == Database.HIBERNATE and model.is_object:
+                model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))
+                model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{model.package.repository}/{model.name}Repository.java", model))
+                model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{model.package.repository}/{model.name}RepositoryTest.java", model))
+            # fmt: on
+            model.package.slashed = False
+
+        # loop and generate enum files
+        enum_files = []
+
+        for enum in util.Store.enums:
+            enum.package.slashed = True
+            # fmt: off
+            enum_files.append(("src/main/java/constant/Enum.j2", f"src/main/java/{enum.package.enum}/{enum.name}.java", enum))
+            # fmt: on
+            enum.package.slashed = False
 
         # fmt: off
-        api_files.append(("src/main/java/api/Api.j2", f"src/main/java/{api.package.api}/{api.name}Api.java", api))
-        api_files.append(("src/main/java/api/Controller.j2", f"src/main/java/{api.package.controller}/{api.name}Controller.java", api))
-
-        if api.model and api.has_generated:
-            api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{api.package.service}/{api.name}Service.java", api))
-            api_files.append(("src/test/java/api/DControllerTest.j2", f"src/test/java/{api.package.controller}/{api.name}ControllerTest.java", api))
-
-            if config.database == Database.HIBERNATE:
-                api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{api.package.service}/{api.name}ServiceTest.java", api))
-        # fmt: on
-        api.package.slashed = False
-
-    # loop and generate model files
-    model_files = []
-
-    for model in util.Store.models:
-        model.package.slashed = True
-        # fmt: off
-        if model.is_query_filter:
-            model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
-        elif model.has_request:
-            model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
-        if model.has_response and not model.is_query_filter:
-            model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
-
-        if model.is_object:
-            model_files.append(("src/main/java/domain/Mapper.j2", f"src/main/java/{model.package.mapper}/{model.name}Mapper.java", model))
-
-        if config.database == Database.HIBERNATE and model.is_object:
-            model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))
-            model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{model.package.repository}/{model.name}Repository.java", model))
-            model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{model.package.repository}/{model.name}RepositoryTest.java", model))
-        # fmt: on
-        model.package.slashed = False
-
-    # loop and generate enum files
-    enum_files = []
-
-    for enum in util.Store.enums:
-        enum.package.slashed = True
-        # fmt: off
-        enum_files.append(("src/main/java/constant/Enum.j2", f"src/main/java/{enum.package.enum}/{enum.name}.java", enum))
-        # fmt: on
-        enum.package.slashed = False
-
-    # fmt: off
-    supporting_files = [
-        # root
-        ("pom.j2", "pom.xml"),
-        ("README.j2", "README.md"),
-        (".qignore.j2", ".qignore"),
-        (".gitignore.j2", ".gitignore"),
-        ("dev.j2", "dev.sh"),
-        ("docker-compose.j2", "docker-compose.yml"),
-        # vscode
-        (".vscode/extensions.j2", ".vscode/extensions.json"),
-        (".vscode/launch.j2", ".vscode/launch.json.template"),
-        (".vscode/settings.j2", ".vscode/settings.json.template"),
-        # resources
-        ("src/main/resources/application.j2", "src/main/resources/application.yaml"),
-        ("src/main/resources/public/index.j2", "src/main/resources/public/index.html"),
-        ("src/main/resources/public/error/404.j2", "src/main/resources/public/error/404.html"),
-        # main
-        ("src/main/java/SpringBootApp.j2", f"src/main/java/{package.base}/SpringBootApp.java"),
-        ("src/test/java/TestUtils.j2", f"src/test/java/{package.base}/TestUtils.java"),
-        # config
-        ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
-        ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),
-        # constants
-        ("src/main/java/constant/ErrorCode.j2", f"src/main/java/{package.enum}/ErrorCode.java"),
-        ("src/main/java/constant/Constant.j2", f"src/main/java/{package.enum}/Constant.java"),
-        # api
-        ("src/main/java/api/BaseController.j2", f"src/main/java/{package.controller}/BaseController.java"),
-        ("src/main/java/api/HomeController.j2", f"src/main/java/{package.controller}/HomeController.java"),
-        # util
-        ("src/main/java/util/JsonUtil.j2", f"src/main/java/{package.util}/JsonUtil.java"),
-        ("src/main/java/util/JsonMergePatchConverter.j2", f"src/main/java/{package.util}/JsonMergePatchConverter.java"),
-        ("src/main/java/util/JsonMergePatchUtil.j2", f"src/main/java/{package.util}/JsonMergePatchUtil.java"),
-        ("src/main/java/util/ObjectNodeConverter.j2", f"src/main/java/{package.util}/ObjectNodeConverter.java"),
-        ("src/main/java/util/ObjectNodeListConverter.j2", f"src/main/java/{package.util}/ObjectNodeListConverter.java"),
-        ("src/main/java/util/TimeUtil.j2", f"src/main/java/{package.util}/TimeUtil.java"),
-        ("src/main/java/util/Validator.j2", f"src/main/java/{package.util}/Validator.java"),
-        ("src/main/java/util/IdGenerator.j2", f"src/main/java/{package.util}/IdGenerator.java"),
-        ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{package.util}/PredicateBuilder.java"),
-        ("src/main/java/util/WorkLoopOrchestrator.j2", f"src/main/java/{package.util}/WorkLoopOrchestrator.java"),
-        # exception
-        ("src/main/java/exception/AppException.j2", f"src/main/java/{package.exception}/AppException.java"),
-        ("src/main/java/exception/AppExceptionUtil.j2", f"src/main/java/{package.exception}/AppExceptionUtil.java"),
-        ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{package.exception}/GlobalExceptionHandler.java"),
-        # model
-        ("src/main/java/model/AppError.j2", f"src/main/java/{package.model}/AppError.java"),
-        ("src/main/java/model/CursorPageable.j2", f"src/main/java/{package.model}/CursorPageable.java"),
-        ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),
-    ]
-    # fmt: on
-
-    if config.database == "HIBERNATE":
-        # fmt: off
-        supporting_files.append(("src/main/java/model/AbstractEntity.j2", f"src/main/java/{package.model}/AbstractEntity.java"))
-        supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
-        supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
-        supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))
-        supporting_files.append(("src/test/java/AbstractDataJpaTest.j2", f"src/test/java/{package.base}/AbstractDataJpaTest.java"))
-        supporting_files.append(("src/test/java/AbstractIntegrationTest.j2", f"src/test/java/{package.base}/AbstractIntegrationTest.java"))
+        supporting_files = [
+            # root
+            ("pom.j2", "pom.xml"),
+            ("README.j2", "README.md"),
+            (".qignore.j2", ".qignore"),
+            (".gitignore.j2", ".gitignore"),
+            ("dev.j2", "dev.sh"),
+            ("docker-compose.j2", "docker-compose.yml"),
+            # vscode
+            (".vscode/extensions.j2", ".vscode/extensions.json"),
+            (".vscode/launch.j2", ".vscode/launch.json.template"),
+            (".vscode/settings.j2", ".vscode/settings.json.template"),
+            # resources
+            ("src/main/resources/application.j2", "src/main/resources/application.yaml"),
+            ("src/main/resources/public/index.j2", "src/main/resources/public/index.html"),
+            ("src/main/resources/public/error/404.j2", "src/main/resources/public/error/404.html"),
+            # main
+            ("src/main/java/SpringBootApp.j2", f"src/main/java/{package.base}/SpringBootApp.java"),
+            ("src/test/java/TestUtils.j2", f"src/test/java/{package.base}/TestUtils.java"),
+            # config
+            ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
+            ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),
+            # constants
+            ("src/main/java/constant/ErrorCode.j2", f"src/main/java/{package.enum}/ErrorCode.java"),
+            ("src/main/java/constant/Constant.j2", f"src/main/java/{package.enum}/Constant.java"),
+            # api
+            ("src/main/java/api/BaseController.j2", f"src/main/java/{package.controller}/BaseController.java"),
+            ("src/main/java/api/HomeController.j2", f"src/main/java/{package.controller}/HomeController.java"),
+            # util
+            ("src/main/java/util/JsonUtil.j2", f"src/main/java/{package.util}/JsonUtil.java"),
+            ("src/main/java/util/JsonMergePatchConverter.j2", f"src/main/java/{package.util}/JsonMergePatchConverter.java"),
+            ("src/main/java/util/JsonMergePatchUtil.j2", f"src/main/java/{package.util}/JsonMergePatchUtil.java"),
+            ("src/main/java/util/ObjectNodeConverter.j2", f"src/main/java/{package.util}/ObjectNodeConverter.java"),
+            ("src/main/java/util/ObjectNodeListConverter.j2", f"src/main/java/{package.util}/ObjectNodeListConverter.java"),
+            ("src/main/java/util/TimeUtil.j2", f"src/main/java/{package.util}/TimeUtil.java"),
+            ("src/main/java/util/Validator.j2", f"src/main/java/{package.util}/Validator.java"),
+            ("src/main/java/util/IdGenerator.j2", f"src/main/java/{package.util}/IdGenerator.java"),
+            ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{package.util}/PredicateBuilder.java"),
+            ("src/main/java/util/WorkLoopOrchestrator.j2", f"src/main/java/{package.util}/WorkLoopOrchestrator.java"),
+            # exception
+            ("src/main/java/exception/AppException.j2", f"src/main/java/{package.exception}/AppException.java"),
+            ("src/main/java/exception/AppExceptionUtil.j2", f"src/main/java/{package.exception}/AppExceptionUtil.java"),
+            ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{package.exception}/GlobalExceptionHandler.java"),
+            # model
+            ("src/main/java/model/AppError.j2", f"src/main/java/{package.model}/AppError.java"),
+            ("src/main/java/model/CursorPageable.j2", f"src/main/java/{package.model}/CursorPageable.java"),
+            ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),
+        ]
         # fmt: on
 
-    # enable dotting
-    package.slashed = False
+        if config.database == "HIBERNATE":
+            # fmt: off
+            supporting_files.append(("src/main/java/model/AbstractEntity.j2", f"src/main/java/{package.model}/AbstractEntity.java"))
+            supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
+            supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
+            supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))
+            supporting_files.append(("src/test/java/AbstractDataJpaTest.j2", f"src/test/java/{package.base}/AbstractDataJpaTest.java"))
+            supporting_files.append(("src/test/java/AbstractIntegrationTest.j2", f"src/test/java/{package.base}/AbstractIntegrationTest.java"))
+            # fmt: on
 
-    # build the render arguments
-    context = {
-        "title": config.title,
-        "group_id": config.group_id,
-        "artifact_id": config.artifact_id,
-        "base_package": config.base_package,
-        "models": util.Store.models,
-        "package": package,
-        "packages": util.Store.packages,
-        "basePath": schema.servers[0] if schema.servers else "/api/v1",
-        "database": config.database,
-        "use_auditing": config.use_auditing,
-        "id_name": id_name,
-        "id_type": id_type,
-        "generate_imports_for_template": resolver.generate_imports_for_template,
-        "request_type": util.request_type_name,
-        "table_prefix": config.table_prefix,
-    }
-    macro_path = Path(__file__).parent / "template" / "_macro"
+        # enable dotting
+        package.slashed = False
 
-    # generate supporting files
-    for src, dest in supporting_files:
-        _add_rendered(files, destination=dest, template=src, context=context, macro_path=macro_path)
+        # build the render arguments
+        context = {
+            "title": config.title,
+            "group_id": config.group_id,
+            "artifact_id": config.artifact_id,
+            "base_package": config.base_package,
+            "models": util.Store.models,
+            "package": package,
+            "packages": util.Store.packages,
+            "basePath": schema.servers[0] if schema.servers else "/api/v1",
+            "database": config.database,
+            "use_auditing": config.use_auditing,
+            "id_name": id_name,
+            "id_type": id_type,
+            "generate_imports_for_template": resolver.generate_imports_for_template,
+            "request_type": util.request_type_name,
+            "table_prefix": config.table_prefix,
+        }
+        macro_path = Path(__file__).parent / "template" / "_macro"
 
-    # generate models
-    for src, dest, model in model_files:
-        _add_rendered(
-            files,
-            destination=dest,
-            template=src,
-            context=context | {"model": model},
-            macro_path=macro_path,
+        # generate supporting files
+        for src, dest in supporting_files:
+            _add_rendered(files, destination=dest, template=src, context=context, macro_path=macro_path)
+
+        # generate models
+        for src, dest, model in model_files:
+            _add_rendered(
+                files,
+                destination=dest,
+                template=src,
+                context=context | {"model": model},
+                macro_path=macro_path,
+            )
+
+        # generate apis
+        for src, dest, api in api_files:
+            _add_rendered(
+                files,
+                destination=dest,
+                template=src,
+                context=context | {"api": api, "model": api.model},
+                macro_path=macro_path,
+            )
+
+        # generate enums
+        for src, dest, enum in enum_files:
+            _add_rendered(
+                files,
+                destination=dest,
+                template=src,
+                context=context | {"enum": enum},
+                macro_path=macro_path,
+            )
+
+        openapi_config = OpenApiConfig(id_type=OpenApiIDType(config.id_type.value))
+        postgres_config = PostgresConfig(table_prefix=config.table_prefix)
+
+        files.extend(
+            openapi_generator.generate(schema, openapi_config, output_path),
+            prefix="src/main/resources",
+        )
+        files.extend(
+            postgres_generator.generate(schema, postgres_config, output_path),
+            prefix="src/main/resources/db/migration",
         )
 
-    # generate apis
-    for src, dest, api in api_files:
-        _add_rendered(
-            files,
-            destination=dest,
-            template=src,
-            context=context | {"api": api, "model": api.model},
-            macro_path=macro_path,
-        )
-
-    # generate enums
-    for src, dest, enum in enum_files:
-        _add_rendered(
-            files,
-            destination=dest,
-            template=src,
-            context=context | {"enum": enum},
-            macro_path=macro_path,
-        )
-
-    openapi_config = OpenApiConfig(id_type=OpenApiIDType(config.id_type.value))
-    postgres_config = PostgresConfig(table_prefix=config.table_prefix)
-
-    files.extend(
-        generate_openapi(schema, openapi_config, output_path),
-        prefix="src/main/resources",
-    )
-    files.extend(
-        generate_postgres(schema, postgres_config, output_path),
-        prefix="src/main/resources/db/migration",
-    )
-
-    return files
+        return files

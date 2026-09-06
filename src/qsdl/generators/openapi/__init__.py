@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""QSDL Generator"""
+"""openapi generator plugin."""
 
-from .config import Config
-from .generate import generate
+from .config import OpenApiConfig
+from .generate import OpenApiGenerator
 
-__all__ = [
-    "Config",
-    "generate",
-]
+generator = OpenApiGenerator()
+
+__all__ = ["OpenApiConfig", "OpenApiGenerator", "generator"]

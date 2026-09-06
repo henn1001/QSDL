@@ -88,5 +88,4 @@ generate(Path("srcgen"), generator_name="openapi", raw_schema="type User { name:
 - Ignore files (`.qignore`, or the legacy `.qsdl-ignore`) affect
   `DirectoryWriter` materialization, not the result returned by `build()`.
 - Each `build()` creates a fresh generator configuration instance, so separate
-  builds do not share configuration mutations. (In interactive `generate()`
-  prompt mode, the prompt-created config instance is passed through.)
+  builds do not share configuration mutations.

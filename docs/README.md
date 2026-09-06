@@ -36,6 +36,7 @@ Code and spec generation for different targets:
 - **[PlantUML](./generators/plantuml/README.md)** — Architecture and ER diagrams
 - **[i18n](./generators/i18n/README.md)** — Internationalization resources
 - **[Void](./generators/void/README.md)** — Validation-only generator
+- **[Custom generator plugins](./generators/plugins.md)** — Implement and load generator plugins
 
 ## Reference
 

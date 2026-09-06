@@ -10,6 +10,7 @@ Generator-specific documentation.
 - [PlantUML](./plantuml/README.md)
 - [Void (no-op)](./void/README.md)
 - [i18n](./i18n/README.md)
+- [Custom generator plugins](./plugins.md)
 
 ## Template for generator pages (future)
 

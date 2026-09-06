@@ -18,14 +18,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .. import Config
+from .. import SpringConfig
 
 
 @dataclass
 class Package:
     """Parsed spring package paths"""
 
-    _config: Config
+    _config: SpringConfig
 
     _namespace: str = ""
     slashed: bool = False

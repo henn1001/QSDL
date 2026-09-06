@@ -24,14 +24,14 @@ import qsdl.filter as qfilter
 from qsdl import dsl
 
 from . import models as spring
-from .config import Config, Directive
+from .config import Directive, SpringConfig
 
 
 class Store:
     """Parsed data storage class"""
 
     schema: dsl.Schema = None
-    config: Config = None
+    config: SpringConfig = None
     models: list[spring.ModelClass] = []
     apis: list[spring.ApiClass] = []
     enums: list[spring.EnumClass] = []

@@ -27,7 +27,7 @@ class Directive(StrEnum):
 
 
 @dataclass
-class Config(BaseConfig):
+class PostgresConfig(BaseConfig):
     """A configuration class that holds relevant data for the generator"""
 
     file_name: str = "V1_0_0__baseline.sql"

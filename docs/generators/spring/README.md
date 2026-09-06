@@ -28,7 +28,7 @@ The `postgres` profile expects PostgreSQL at `localhost:5432`. The generated `do
 
 ## Configuration
 
-All configuration options are provided via a `config.json` file (passed with `-c/--config_path`). The CLI itself only exposes generator selection, config path, output path, version, and default-config flags.
+Configuration is optional: pass JSON config files with `-c/--config` (later files override earlier ones) and individual overrides with `-S/--set KEY=VALUE` (highest precedence). Use `qsdl config show spring` to inspect defaults, `qsdl config init spring` to write them, and `qsdl config validate spring` to validate a configuration without generating.
 
 | Name                           | Type                       | Default                         | Description                                                                         | Required |
 | ------------------------------ | -------------------------- | ------------------------------- | ----------------------------------------------------------------------------------- | -------- |

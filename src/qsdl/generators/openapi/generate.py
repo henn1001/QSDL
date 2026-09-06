@@ -21,10 +21,11 @@ import stringcase
 import qsdl.dsl.textx as xtx
 from qsdl import dsl
 from qsdl.artifacts import GeneratedFiles
+from qsdl.generators import Generator
 from qsdl.render import render_text
 
 from . import util
-from .config import IDTYPE, Config
+from .config import IDTYPE, OpenApiConfig
 from .models import ApiObject, ModelObject
 
 
@@ -126,41 +127,46 @@ def get_paginated_object(schema: dsl.Schema, obj: dsl.Object, model_name: str) -
     return model
 
 
-def generate(schema: dsl.Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
-    """Generate OpenAPI artifacts in memory."""
+class OpenApiGenerator(Generator):
+    """Generate artifacts for the openapi target."""
 
-    if config.id_type not in IDTYPE.__members__:
-        raise ValueError("id_type must be `LONG` or `STRING`")
+    config_class = OpenApiConfig
 
-    if config.id_type == IDTYPE.LONG:
-        id_type = "integer"
-        id_type_format = "int64"
-    else:
-        id_type = "string"
-        id_type_format = None
+    def generate(self, schema: dsl.Schema, config: OpenApiConfig, output_path: Path | None = None) -> GeneratedFiles:
+        """Generate OpenAPI artifacts in memory."""
 
-    # sets the id type and schema
-    util.custom_types["ID"] = id_type
-    util.custom_type_formats["ID"] = id_type_format
-    util.schema = schema
-    util.used_paths = []
+        if config.id_type not in IDTYPE.__members__:
+            raise ValueError("id_type must be `LONG` or `STRING`")
 
-    template_path = Path(__file__).parent / "template" / "openapi.j2"
+        if config.id_type == IDTYPE.LONG:
+            id_type = "integer"
+            id_type_format = "int64"
+        else:
+            id_type = "string"
+            id_type_format = None
 
-    # parse schema into OpenApi custom models
-    apis = parse_apis(schema)
-    models = parse_models(schema)
+        # sets the id type and schema
+        util.custom_types["ID"] = id_type
+        util.custom_type_formats["ID"] = id_type_format
+        util.schema = schema
+        util.used_paths = []
 
-    # build the render arguments
-    context = {
-        "schema": schema,
-        "apis": apis,
-        "models": models,
-        "util": util,
-        "config": config,
-    }
+        template_path = Path(__file__).parent / "template" / "openapi.j2"
 
-    content = render_text(template_path, context)
-    files = GeneratedFiles()
-    files.add_text("openapi.yaml", content)
-    return files
+        # parse schema into OpenApi custom models
+        apis = parse_apis(schema)
+        models = parse_models(schema)
+
+        # build the render arguments
+        context = {
+            "schema": schema,
+            "apis": apis,
+            "models": models,
+            "util": util,
+            "config": config,
+        }
+
+        content = render_text(template_path, context)
+        files = GeneratedFiles()
+        files.add_text("openapi.yaml", content)
+        return files

@@ -7,6 +7,7 @@ USER app
 WORKDIR /home/app
 
 COPY src ./src
+COPY examples ./examples
 COPY README.md .
 COPY pyproject.toml .
 COPY uv.lock .
@@ -24,6 +25,6 @@ CMD ["--help"]
 
 ## To generate a Spring app from the input.qsdl in UNIX-like OS ##
 # docker run -v $(pwd):/generated_content --user $(id -u $(whoami)):$(id -g $(whoami)) \
-#   -it qsdl -g spring ./examples/openapi/input.qsdl
+#   -it qsdl generate spring -i /home/app/examples/openapi/input.qsdl
 ## To generate a Spring app from the input.qsdl in Windows ##
-# docker run -v ${pwd}:/generated_content -it qsdl -g spring ./examples/openapi/input.qsdl
+# docker run -v ${pwd}:/generated_content -it qsdl generate spring -i /home/app/examples/openapi/input.qsdl

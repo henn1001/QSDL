@@ -47,31 +47,33 @@ git clone https://github.com/henn1001/QSDL && cd qsdl && bash dev.sh init
 
 ```bash
 echo "type Project { name: String }" > project.qsdl
-qsdl project.qsdl -g openapi -o srcgen/
+qsdl generate openapi -i project.qsdl -o srcgen/
 ```
 
 ### CLI Options
 
 ```
-qsdl [OPTIONS] [INPUT_PATH]
+qsdl generate GENERATOR -i INPUT [-o OUTPUT] [-c CONFIG ...] [-S KEY=VALUE ...]
 
 Arguments:
-  INPUT_PATH                  The path to the schema definition file. Required for generation.
+  GENERATOR                   Builtin generator name or path to a custom generator.
 
 Options:
-  -g, --generator TEXT        The requested generator.
-  -c, --config_path PATH      Path to a config json file.
-  -o, --output_path PATH      Path to a output folder. Default: 'srcgen/'
-  -pv, --print_version        Prints a .qversion file to the output folder.
-  --print-default-config      Print the default JSON config and exit.
-  --version                   Show the version and exit.
-  --help                      Show this message and exit.
+  -i, --input PATH            Schema definition file (required).
+  -o, --output PATH           Output folder. Default: 'srcgen/' next to the input file.
+  -c, --config PATH           JSON config file. Repeatable; later files win.
+  -S, --set KEY=VALUE         Override one config field. Repeatable; wins over files.
+  --write-version             Write a .qversion file to the output folder.
 ```
 
-Print a generator's default configuration:
-
 ```bash
-qsdl --print-default-config -g spring > config.json
+# Override config fields directly, no file needed
+qsdl generate spring -i project.qsdl -S title=MyApp -S database=NO
+
+# Inspect and author configuration
+qsdl config show spring
+qsdl config init spring -o config.json
+qsdl config validate spring -c config.json
 ```
 
 For detailed usage and examples, see [CLI documentation](./docs/cli.md).

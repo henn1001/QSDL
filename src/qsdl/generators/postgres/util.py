@@ -18,7 +18,7 @@ import qsdl.dsl.util as qutil
 import qsdl.filter as qfilter
 from qsdl import dsl
 
-from .config import Config, Directive
+from .config import Directive, PostgresConfig
 from .models import Column, Table
 
 
@@ -26,7 +26,7 @@ class Store:
     """Parsed data storage class"""
 
     schema: dsl.Schema
-    config: Config
+    config: PostgresConfig
 
 
 custom_types = {

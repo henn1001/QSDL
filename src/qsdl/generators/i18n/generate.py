@@ -24,8 +24,9 @@ import yaml
 import qsdl.dsl.textx as xtx
 from qsdl import dsl
 from qsdl.artifacts import GeneratedFile, GeneratedFiles
+from qsdl.generators import Generator
 
-from .config import Config
+from .config import I18nConfig
 
 type ExistingTranslations = Mapping[PurePosixPath, str]
 type Entity = dsl.Base | dsl.Object | dsl.Enum
@@ -95,7 +96,7 @@ def _validated_path(path: PurePosixPath) -> PurePosixPath:
     return GeneratedFile(path, "").path
 
 
-def _output_operations(schema: dsl.Schema, config: Config) -> list[YamlOperation]:
+def _output_operations(schema: dsl.Schema, config: I18nConfig) -> list[YamlOperation]:
     """Describe the logical YAML writes for a generation request."""
     objects = xtx.get_children_of_object(schema) if config.object else []
     bases = xtx.get_children_of_base(schema) if config.base else []
@@ -155,7 +156,7 @@ def _normalise_existing_files(existing_files: ExistingTranslations | None) -> di
     return normalized
 
 
-def _entity_data(entity: Entity, locale: str, config: Config) -> dict:
+def _entity_data(entity: Entity, locale: str, config: I18nConfig) -> dict:
     """Build the new YAML mapping for one schema entity."""
     translate = locale == config.locale
     if isinstance(entity, dsl.Enum):
@@ -163,7 +164,7 @@ def _entity_data(entity: Entity, locale: str, config: Config) -> dict:
     return dump_to_yaml(entity, translate)
 
 
-def _operation_data(entities: tuple[Entity, ...], locale: str, config: Config, append: str, combined: bool) -> dict:
+def _operation_data(entities: tuple[Entity, ...], locale: str, config: I18nConfig, append: str, combined: bool) -> dict:
     """Build the new YAML mapping for one logical write operation."""
     if combined:
         return {append + entity.name: _entity_data(entity, locale, config) for entity in entities}
@@ -177,7 +178,7 @@ def _serialize(data: dict | None, sort_keys: bool) -> str:
 
 def _generate_files(
     schema: dsl.Schema,
-    config: Config,
+    config: I18nConfig,
     *,
     existing_files: ExistingTranslations | None = None,
 ) -> GeneratedFiles:
@@ -219,16 +220,21 @@ def _destination_for(root: Path, path: PurePosixPath, resolved_root: Path) -> Pa
     return destination
 
 
-def generate(schema: dsl.Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
-    """Generate i18n artifacts, merging existing translations when a destination is provided."""
-    existing: dict[PurePosixPath, str] = {}
-    if output_path is not None:
-        root = Path(output_path)
-        resolved_root = root.resolve(strict=False)
-        requested_paths = {operation[0] for operation in _output_operations(schema, config)}
-        for path in sorted(requested_paths, key=lambda item: item.as_posix()):
-            destination = _destination_for(root, path, resolved_root)
-            if destination.is_file():
-                existing[path] = destination.read_text(encoding="utf-8")
+class I18nGenerator(Generator):
+    """Generate artifacts for the i18n target."""
 
-    return _generate_files(schema, config, existing_files=existing)
+    config_class = I18nConfig
+
+    def generate(self, schema: dsl.Schema, config: I18nConfig, output_path: Path | None = None) -> GeneratedFiles:
+        """Generate i18n artifacts, merging existing translations when a destination is provided."""
+        existing: dict[PurePosixPath, str] = {}
+        if output_path is not None:
+            root = Path(output_path)
+            resolved_root = root.resolve(strict=False)
+            requested_paths = {operation[0] for operation in _output_operations(schema, config)}
+            for path in sorted(requested_paths, key=lambda item: item.as_posix()):
+                destination = _destination_for(root, path, resolved_root)
+                if destination.is_file():
+                    existing[path] = destination.read_text(encoding="utf-8")
+
+        return _generate_files(schema, config, existing_files=existing)

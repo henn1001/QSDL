@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""QSDL Generator"""
+"""void generator plugin."""
 
-from .config import Config
-from .generate import generate
+from .config import VoidConfig
+from .generate import VoidGenerator
 
-__all__ = [
-    "Config",
-    "generate",
-]
+generator = VoidGenerator()
+
+__all__ = ["VoidConfig", "VoidGenerator", "generator"]

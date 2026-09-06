@@ -18,13 +18,19 @@ from pathlib import Path
 
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
+from qsdl.generators import Generator
 
-from .config import Config
+from .config import VoidConfig
 
 
-def generate(schema: Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
-    """Generate no artifacts."""
-    _ = schema
-    _ = config
-    _ = output_path
-    return GeneratedFiles()
+class VoidGenerator(Generator):
+    """Generate artifacts for the void target."""
+
+    config_class = VoidConfig
+
+    def generate(self, schema: Schema, config: VoidConfig, output_path: Path | None = None) -> GeneratedFiles:
+        """Generate no artifacts."""
+        _ = schema
+        _ = config
+        _ = output_path
+        return GeneratedFiles()

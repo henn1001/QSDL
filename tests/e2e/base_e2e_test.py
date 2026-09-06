@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from qsdl.generators.postgres.config import Config as PostgresConfig
+from qsdl.generators.postgres.config import PostgresConfig
 
 from . import wrapper_generate
 

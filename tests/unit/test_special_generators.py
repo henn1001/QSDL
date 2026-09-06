@@ -6,8 +6,8 @@ import pytest
 
 from qsdl.core import build
 from qsdl.dsl.textx import parse_schema
-from qsdl.generators.i18n import Config as I18nConfig
-from qsdl.generators.i18n import generate as generate_i18n
+from qsdl.generators.i18n import I18nConfig
+from qsdl.generators.i18n import generator as i18n_generator
 
 SCHEMA = """
     enum Status {
@@ -66,7 +66,7 @@ def test_i18n_generator_reads_existing_translations_without_writing(tmp_path: Pa
     existing = "domain:\n  User:\n    name: Existing Name\n"
     target.write_text(existing, encoding="utf-8")
 
-    files = generate_i18n(schema, config, tmp_path)
+    files = i18n_generator.generate(schema, config, tmp_path)
 
     assert "Existing Name" in files.text("en.yaml")
     assert files.paths() == (PurePosixPath("en.yaml"),)
@@ -79,7 +79,7 @@ def test_i18n_generation_does_not_mutate_config() -> None:
     config = I18nConfig(extra_locales="de", split_files=True, single_file=False)
     original = copy.deepcopy(config)
 
-    generate_i18n(schema, config)
+    i18n_generator.generate(schema, config)
 
     assert config == original
 

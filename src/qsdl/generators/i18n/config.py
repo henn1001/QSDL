@@ -20,7 +20,7 @@ from qsdl.generators.base_config import BaseConfig
 
 
 @dataclass
-class Config(BaseConfig):
+class I18nConfig(BaseConfig):
     """A configuration class that holds relevant data for the generator"""
 
     locale: str = "en"

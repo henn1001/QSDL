@@ -21,10 +21,11 @@ import textx.model
 
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
+from qsdl.generators import Generator
 from qsdl.render import render_text
 
 from . import util
-from .config import Config
+from .config import PlantUmlConfig
 
 
 def generate_pngs(markdown: str) -> tuple[bytes, ...]:
@@ -53,26 +54,31 @@ def generate_pngs(markdown: str) -> tuple[bytes, ...]:
     return tuple(uml.processes(definition) for definition in definitions)
 
 
-def generate(schema: Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
-    """Generate PlantUML Markdown and PNG artifacts in memory."""
-    template_path = Path(__file__).parent / "template" / "uml.j2"
+class PlantUmlGenerator(Generator):
+    """Generate artifacts for the plantuml target."""
 
-    util.schema = schema
+    config_class = PlantUmlConfig
 
-    # build the render arguments
-    context = {
-        "schema": schema,
-        "xtx": textx.model,
-        "util": util,
-        "config": config,
-    }
+    def generate(self, schema: Schema, config: PlantUmlConfig, output_path: Path | None = None) -> GeneratedFiles:
+        """Generate PlantUML Markdown and PNG artifacts in memory."""
+        template_path = Path(__file__).parent / "template" / "uml.j2"
 
-    markdown = render_text(template_path, context)
-    files = GeneratedFiles()
-    files.add_text("plantuml.md", markdown)
+        util.schema = schema
 
-    png_paths = ("plantuml.enums.png", "plantuml.bases.png", "plantuml.overview.png")
-    for path, png in zip(png_paths, generate_pngs(markdown), strict=True):
-        files.add_bytes(path, png)
+        # build the render arguments
+        context = {
+            "schema": schema,
+            "xtx": textx.model,
+            "util": util,
+            "config": config,
+        }
 
-    return files
+        markdown = render_text(template_path, context)
+        files = GeneratedFiles()
+        files.add_text("plantuml.md", markdown)
+
+        png_paths = ("plantuml.enums.png", "plantuml.bases.png", "plantuml.overview.png")
+        for path, png in zip(png_paths, generate_pngs(markdown), strict=True):
+            files.add_bytes(path, png)
+
+        return files

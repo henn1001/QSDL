@@ -19,10 +19,11 @@ from pathlib import Path
 import qsdl.dsl.textx as xtx
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
+from qsdl.generators import Generator
 from qsdl.render import render_text
 
 from . import util
-from .config import Config
+from .config import PostgresConfig
 from .models import Table
 
 
@@ -55,22 +56,27 @@ def parse_models(schema: Schema) -> list[Table]:
     return models
 
 
-def generate(schema: Schema, config: Config, output_path: Path | None = None) -> GeneratedFiles:
-    """Generate PostgreSQL artifacts in memory."""
+class PostgresGenerator(Generator):
+    """Generate artifacts for the postgres target."""
 
-    # save to store
-    util.Store.schema = schema
-    util.Store.config = config
+    config_class = PostgresConfig
 
-    template_path = Path(__file__).parent / "template" / "schema.j2"
-    tables = parse_models(schema)
+    def generate(self, schema: Schema, config: PostgresConfig, output_path: Path | None = None) -> GeneratedFiles:
+        """Generate PostgreSQL artifacts in memory."""
 
-    # build the render arguments
-    context = {
-        "tables": tables,
-        "config": config,
-    }
+        # save to store
+        util.Store.schema = schema
+        util.Store.config = config
 
-    files = GeneratedFiles()
-    files.add_text(config.file_name, render_text(template_path, context))
-    return files
+        template_path = Path(__file__).parent / "template" / "schema.j2"
+        tables = parse_models(schema)
+
+        # build the render arguments
+        context = {
+            "tables": tables,
+            "config": config,
+        }
+
+        files = GeneratedFiles()
+        files.add_text(config.file_name, render_text(template_path, context))
+        return files

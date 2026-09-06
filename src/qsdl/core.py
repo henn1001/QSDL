@@ -16,44 +16,20 @@
 
 import json
 from collections.abc import Mapping
-from dataclasses import dataclass, fields
-from enum import Enum
+from dataclasses import dataclass
 from pathlib import Path
 
 import dacite
-import inquirer
-from pyfiglet import Figlet
 
-from qsdl import logger
+from qsdl import logger, plugins
 from qsdl.artifacts import GeneratedFile, GeneratedFiles
 from qsdl.dsl import Schema
 from qsdl.dsl.textx import parse_schema
-from qsdl.generators import (
-    GeneratorConfig,
-    GeneratorConfigClass,
-    GeneratorDefinition,
-    available_generators,
-    create_config,
-    get_definition,
-)
+from qsdl.exceptions import QsdlException
+from qsdl.generators import GeneratorConfig, GeneratorDefinition
 from qsdl.writer import DirectoryWriter
 
 log = logger.getLogger(__name__)
-
-
-class Color:
-    """For printing stuff nicer to console."""
-
-    PURPLE = "\033[95m"
-    CYAN = "\033[96m"
-    DARKCYAN = "\033[36m"
-    BLUE = "\033[94m"
-    GREEN = "\033[92m"
-    YELLOW = "\033[93m"
-    RED = "\033[91m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
-    END = "\033[0m"
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,121 +42,50 @@ class _PreparedGeneration:
     config: GeneratorConfig
 
 
-def _convert_prompt_answer(field_type: object, value: object) -> object:
-    """Convert an interactive answer to its declared dataclass field type."""
-    if not isinstance(field_type, type) or not issubclass(field_type, Enum):
-        return value
-    if isinstance(value, field_type):
-        return value
-
-    try:
-        return field_type(value)
-    except ValueError:
-        return field_type[str(value)]
-
-
-def prompt_user() -> tuple[str, GeneratorConfig]:
-    """Prompt for a generator and its request-local configuration."""
-    figlet = Figlet(font="speed")
-
-    print(Color.BOLD)
-    print(figlet.renderText("QSDL"))
-    print("! Would you like a cup of tea with that?")
-    print(Color.END)
-
-    questions = [
-        inquirer.List(
-            "generator",
-            message="Which generator do you want to use?",
-            choices=available_generators(),
-            default="void",
-        ),
-    ]
-
-    answers = inquirer.prompt(questions)
-    generator_name = answers["generator"]
-    config = create_config(generator_name)
-
-    questions = []
-    for config_field in fields(config):
-        value = getattr(config, config_field.name)
-        field_type = config_field.type
-
-        if isinstance(value, bool):
-            question = inquirer.Confirm(
-                config_field.name,
-                message="Please select: " + config_field.name,
-                default=value,
-            )
-        elif isinstance(field_type, type) and issubclass(field_type, Enum):
-            question = inquirer.List(
-                config_field.name,
-                message="Please select: " + config_field.name,
-                choices=tuple(field_type.__members__),
-                default=value,
-            )
-        else:
-            question = inquirer.Text(
-                config_field.name,
-                message="Please select: " + config_field.name,
-                default=value,
-            )
-
-        questions.append(question)
-
-    answers = inquirer.prompt(questions)
-    for config_field in fields(config):
-        if config_field.name in answers:
-            value = _convert_prompt_answer(config_field.type, answers[config_field.name])
-            setattr(config, config_field.name, value)
-
-    return generator_name, config
-
-
-def _resolve_config(
-    config_class: GeneratorConfigClass,
-    config_path: Path | None,
+def resolve_config(
+    definition: GeneratorDefinition,
+    config_path: Path | str | list[Path | str] | tuple[Path | str, ...] | None,
     raw_config: Mapping[str, object] | None,
 ) -> GeneratorConfig:
-    """Create a config from defaults, a config file, and raw overrides."""
+    """Create a config from defaults, config files (merged in order), and raw overrides."""
     overrides: dict[str, object] = {}
 
-    if config_path is not None:
-        config_file = Path(config_path)
+    paths = (
+        [] if config_path is None else list(config_path) if isinstance(config_path, (list, tuple)) else [config_path]
+    )
+    for entry in paths:
+        config_file = Path(entry)
         with config_file.open(encoding="utf-8") as json_file:
             file_data = json.load(json_file)
         if not isinstance(file_data, Mapping):
-            raise TypeError(f"configuration file root must be a mapping: {config_file}")
+            raise QsdlException(f"configuration file root must be a mapping: {config_file}")
         overrides.update(file_data)
 
     if raw_config is not None:
         if not isinstance(raw_config, Mapping):
-            raise TypeError(f"config must be a mapping, got {raw_config!r}")
+            raise QsdlException(f"config must be a mapping, got {raw_config!r}")
         overrides.update(raw_config)
 
+    overrides = plugins.apply_overrides(definition, overrides)
+
     return dacite.from_dict(
-        data_class=config_class,
+        data_class=definition.config_class,
         data=overrides,
-        config=dacite.Config(cast=config_class._dactive_casts),
+        config=dacite.Config(cast=definition.config_class._dactive_casts),
     )
 
 
 def _prepare(
-    generator_name: str,
+    generator_ref: str,
     *,
     input_path: Path | None,
     raw_schema: str | None,
-    config_path: Path | None,
+    config_path: Path | str | list[Path | str] | tuple[Path | str, ...] | None,
     raw_config: Mapping[str, object] | None,
-    config_instance: GeneratorConfig | None = None,
 ) -> _PreparedGeneration:
     """Resolve a generator request, configure it, and parse its schema once."""
-    definition = get_definition(generator_name)
-    config = (
-        config_instance
-        if config_instance is not None
-        else _resolve_config(definition.config_class, config_path, raw_config)
-    )
+    generator_name, definition = plugins.resolve(generator_ref)
+    config = resolve_config(definition, config_path, raw_config)
     schema = parse_schema(input_path, raw_schema)
 
     log.info("QSDL Generator: %s", generator_name)
@@ -212,10 +117,12 @@ def build(
     generator_name: str,
     input_path: Path | None = None,
     raw_schema: str | None = None,
-    config_path: Path | None = None,
+    config_path: Path | str | list[Path | str] | tuple[Path | str, ...] | None = None,
     config: Mapping[str, object] | None = None,
 ) -> GeneratedFiles:
     """Build generator output in memory without materializing it."""
+    if not generator_name:
+        raise QsdlException("a generator is required")
     prepared = _prepare(
         generator_name,
         input_path=input_path,
@@ -232,13 +139,12 @@ def generate(
     generator_name: str | None = None,
     input_path: Path | None = None,
     raw_schema: str | None = None,
-    config_path: Path | None = None,
+    config_path: Path | str | list[Path | str] | tuple[Path | str, ...] | None = None,
     config: Mapping[str, object] | None = None,
 ) -> None:
     """Build generator output and materialize it below ``output_path``."""
-    config_instance = None
     if generator_name is None:
-        generator_name, config_instance = prompt_user()
+        raise QsdlException("a generator is required")
 
     prepared = _prepare(
         generator_name,
@@ -246,7 +152,6 @@ def generate(
         raw_schema=raw_schema,
         config_path=config_path,
         raw_config=config,
-        config_instance=config_instance,
     )
 
     log.info("calling generator")

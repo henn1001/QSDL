@@ -43,7 +43,7 @@ class Directive(StrEnum):
 
 
 @dataclass
-class Config(BaseConfig):
+class SpringConfig(BaseConfig):
     """A configuration class that holds relevant data for the generator"""
 
     title: str = "SpringBootApp"

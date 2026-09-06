@@ -6,18 +6,21 @@ from pathlib import Path
 class TestMain:
     """Test module main functionality."""
 
-    def test_module_call(self, tmp_path: Path) -> None:
-        """Verify that we can call the module without sharing generated files."""
+    def test_module_generate_void(self, tmp_path: Path) -> None:
+        """``python -m qsdl`` invokes the CLI and materializes its destination."""
+        output = tmp_path / "srcgen"
+        result = subprocess.run(
+            [sys.executable, "-m", "qsdl", "generate", "void", "-i", "examples/openapi/input.qsdl", "-o", str(output)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        assert output.is_dir()
+        assert "QSDL Generator: void" in result.stderr
 
-        output_path = tmp_path / "srcgen"
-
-        def run_cli(*args: str) -> None:
-            result = subprocess.run([sys.executable, "-m", "qsdl", *args], check=False)
-            assert result.returncode == 0
-
-        run_cli("examples/openapi/input.qsdl", "-g", "openapi", "-o", str(output_path))
-        run_cli("examples/openapi/input.qsdl", "-g", "plantuml", "-o", str(output_path))
-        run_cli("examples/openapi/input.qsdl", "-g", "spring", "-o", str(output_path))
-        run_cli("examples/openapi/input.qsdl", "-g", "void", "-o", str(output_path))
-        run_cli("examples/multifile/multifile.qsdl", "-g", "void", "-o", str(output_path))
-        run_cli("--help")
+    def test_module_help_lists_generate(self) -> None:
+        """The module entrypoint exposes the root CLI commands."""
+        result = subprocess.run([sys.executable, "-m", "qsdl", "--help"], capture_output=True, text=True, check=False)
+        assert result.returncode == 0, result.stderr
+        assert "generate" in result.stdout

@@ -4,16 +4,18 @@ This document describes the QSDL command-line interface, options, input/output h
 
 ## Overview
 
-The QSDL CLI is the primary interface for generating code and specifications from schema definition files. It follows a simple pattern:
+The QSDL CLI is the primary interface for generating code and specifications from schema definition files. It has three command groups:
 
 ```
-qsdl [OPTIONS] [INPUT_PATH]
+qsdl generate GENERATOR -i INPUT [-o OUTPUT] [-c CONFIG ...] [-S KEY=VALUE ...]
+qsdl config (show | init | validate) GENERATOR [...]
+qsdl list
 ```
 
 Where:
 
-- **INPUT_PATH** — Path to a `.qsdl` schema file (required for generation)
-- **OPTIONS** — Configure the generator and behavior
+- **GENERATOR** — A builtin generator name (`openapi`, `spring`, `postgres`, `plantuml`, `i18n`, `void`) or a path to a custom generator (a `.py` file or a package directory with an `__init__.py`). Unknown names fail with the list of available generators.
+- **INPUT** — Path to a `.qsdl` schema file (required for generation).
 
 ## Installation
 
@@ -37,51 +39,61 @@ After installation, the `qsdl` command is available in your PATH.
 Generate OpenAPI specification from a schema:
 
 ```bash
-qsdl myschema.qsdl -g openapi
+qsdl generate openapi -i myschema.qsdl
 ```
 
-This outputs files to the default `srcgen/` directory.
+This outputs files to `srcgen/` next to the input file.
 
-### Print a Generator's Default Configuration
+### Show a Generator's Default Configuration
 
 Print the default configuration for a generator as formatted JSON:
 
 ```bash
-qsdl --print-default-config -g spring
+qsdl config show spring
 ```
 
-The command does not require a schema and writes only JSON to stdout, so the
-result can be saved directly as a configuration file:
+Write it directly to a file to use as a starting point:
 
 ```bash
-qsdl --print-default-config -g spring > config.json
-qsdl myschema.qsdl -g spring -c config.json
+qsdl config init spring -o config.json
+qsdl generate spring -i myschema.qsdl -c config.json
 ```
-
-Enums are printed using their JSON values. Generator-specific configuration
-initialization is applied, so the output reflects the configuration received by
-the generator at runtime.
 
 ### Specifying Output Directory
 
 ```bash
-qsdl myschema.qsdl -g spring -o ./src/
+qsdl generate spring -i myschema.qsdl -o ./src/
 ```
 
-### Using a Configuration File
+### Using Configuration Files
 
-Some generators support configuration. Pass a JSON config file:
+Config files are JSON. `-c` is repeatable; later files override earlier ones:
 
 ```bash
-qsdl myschema.qsdl -g spring -c config.json -o ./generated/
+qsdl generate spring -i myschema.qsdl -c base.json -c override.json -o ./generated/
+```
+
+### Overriding Single Fields with --set
+
+`-S/--set KEY=VALUE` overrides one generator config field without a file. It is repeatable and always wins over `-c` files:
+
+```bash
+qsdl generate spring -i myschema.qsdl -S title=MyApp -S database=NO
+qsdl generate postgres -i myschema.qsdl -S table_prefix=app_
+```
+
+Keys are the generator's config field names; values are coerced to the declared type (`true`/`false` for booleans, member names for enums). Unknown keys fail and list the valid keys. Validate a combination without generating:
+
+```bash
+qsdl config validate spring -c config.json -S database=NO
 ```
 
 ### Include Version File
 
-The `-pv` flag writes a `.qversion` file to the output directory containing the QSDL version:
+The `--write-version` flag writes a `.qversion` file to the output directory containing the QSDL version:
 
 ```bash
-qsdl myschema.qsdl -g openapi -pv
+qsdl generate openapi -i myschema.qsdl --write-version
 ```
 
 Output:
@@ -95,36 +107,47 @@ srcgen/
 ## Options
 
 ```
-qsdl [OPTIONS] [INPUT_PATH]
+qsdl generate GENERATOR -i INPUT [OPTIONS]
 
 Arguments:
-  INPUT_PATH                  The path to the schema definition file. Required for generation.
+  GENERATOR                   Builtin generator name or path to a custom generator
+                              (.py file or package directory).
 
 Options:
-  -g, --generator TEXT        The requested generator.
-  -c, --config_path PATH      Path to a config json file.
-  -o, --output_path PATH      Path to a output folder. Default: 'srcgen/'
-  -pv, --print_version        Prints a .qversion file to the output folder.
-  --print-default-config      Print the default JSON config and exit.
-  --version                   Show the version and exit.
+  -i, --input PATH            Schema definition file (required).
+  -o, --output PATH           Output folder. Default: 'srcgen/' next to the input file.
+  -c, --config PATH           JSON config file. Repeatable; later files win.
+  -S, --set KEY=VALUE         Override one config field. Repeatable; wins over files.
+  --write-version             Write a .qversion file to the output folder.
   --help                      Show this message and exit.
+
+qsdl config (show | init | validate) GENERATOR [...]
+qsdl list
 ```
 
 ### Arguments
 
-**`INPUT_PATH`** — Path to your `.qsdl` schema file. Required for generation.
+**`GENERATOR`** — Which generator to use: a builtin name or a path to a custom generator file/directory. Custom generators must export `generator`, an instance of `qsdl.generators.Generator`; loading a path executes that code.
+
+**`INPUT`** — Path to your `.qsdl` schema file, via `-i/--input`. Required for generation.
 
 ### Options
 
-**`-g, --generator TEXT`** — Which generator to use (`openapi`, `spring`, `postgres`, `plantuml`, `i18n`, or `void`). The CLI accepts any string and resolves it to a generator at runtime; unknown names fail during generation setup.
+**`-o, --output PATH`** — Where to write generated files. Defaults to `srcgen/` next to the input file.
 
-**`-o, --output_path PATH`** — Where to write generated files. Defaults to `srcgen/` in the same directory as the input file.
+**`-c, --config PATH`** — Path to a JSON configuration file with generator-specific options. Repeatable; later files override earlier ones. See [Configuration](#configuration) for details.
 
-**`-c, --config_path PATH`** — Path to a JSON configuration file with generator-specific options. See [Configuration](#configuration) for details.
+**`-S, --set KEY=VALUE`** — Override a single config field. Repeatable; overrides everything from `-c` files. Values are coerced to the field's declared type.
 
-**`-pv, --print_version`** — Write a `.qversion` file to the output directory with the QSDL version.
+**`--write-version`** — Write a `.qversion` file to the output directory with the QSDL version.
 
-**`--print-default-config`** — Print the default JSON configuration for the selected generator. Requires `-g/--generator`.
+**`qsdl config show GENERATOR`** — Print the default JSON configuration. Enums are printed using their JSON values.
+
+**`qsdl config init GENERATOR -o FILE`** — Write the default JSON configuration to a file.
+
+**`qsdl config validate GENERATOR [-c ...] [-S ...]`** — Validate config files and overrides without generating.
+
+**`qsdl list`** — List available builtin generators.
 
 **`--version`** — Print the installed QSDL version and exit.
 
@@ -220,7 +243,7 @@ The patterns follow **gitignore wildcard syntax**:
 1. **First generation:**
 
    ```bash
-   qsdl schema.qsdl -g spring -o ./src/
+   qsdl generate spring -i schema.qsdl -o ./src/
    ```
 
 2. **Add custom code** to some generated files
@@ -234,17 +257,17 @@ The patterns follow **gitignore wildcard syntax**:
 
 4. **Regenerate** (these files will be skipped):
    ```bash
-   qsdl schema.qsdl -g spring -o ./src/
+   qsdl generate spring -i schema.qsdl -o ./src/
    ```
 
 The `.qignore` file itself is also protected and won't be overwritten.
 
 ## Configuration
 
-Generators support configuration via JSON files. Pass a config file with the `-c` flag:
+Generators support configuration via JSON files and `--set` overrides. Precedence is: defaults < `-c` files in order < `--set`. Pass config files with `-c`:
 
 ```bash
-qsdl schema.qsdl -g spring -c config.json -o ./generated/
+qsdl generate spring -i schema.qsdl -c config.json -o ./generated/
 ```
 
 QSDL loads the JSON file, merges it with defaults, and applies the configuration to the generator.
@@ -258,20 +281,31 @@ For generator-specific configuration options, see the documentation for each gen
 - **[i18n Configuration](./generators/i18n/README.md)** — (No configuration options)
 - **[Void Configuration](./generators/void/README.md)** — (No configuration options)
 
-### Interactive Configuration (Prompt Mode)
+### Custom Generators
 
-If you don't provide a generator name with `-g` but do provide `INPUT_PATH`, QSDL enters interactive mode:
+Any `GENERATOR` argument that looks like a path (contains a separator, ends in `.py`, or exists on disk) loads as a custom generator instead of a builtin. A single `.py` file or a package directory (with `__init__.py`) must export one `generator`: a `qsdl.generators.Generator` instance. The supplied adapter makes the contract concise:
 
-```bash
-$ qsdl schema.qsdl
+```python
+from qsdl.generators import Generator
+
+class MyGenerator(Generator):
+    config_class = Config
+
+    def generate(self, schema: Schema, config: Config, output_path: Path | None) -> GeneratedFiles:
+        ...
+
+generator = MyGenerator()
 ```
 
-This prompts you to:
+`Config` must be a `BaseConfig` dataclass. `generate` must accept exactly `schema`, that exact `Config` type, and `output_path`, and be annotated to return `GeneratedFiles`. `-c` and `-S` validate against `Config`.
 
-1. Select a generator from a list (defaults to `void`)
-2. Configure generator options interactively (every generator-config field is prompted)
+```bash
+qsdl generate ./my_gen.py -i schema.qsdl -S greeting=hi
+qsdl generate ./my_gen/ -i schema.qsdl -c my_gen.json
+qsdl config show ./my_gen.py
+```
 
-(With no arguments at all, the CLI shows help instead of entering prompt mode; `INPUT_PATH` is still required for generation.)
+A custom generator whose file stem matches a builtin name is rejected. Loading a path executes arbitrary code; only reference paths you trust. See [Custom generator plugins](./generators/plugins.md) for the complete contract, loading behavior, configuration, and error policy.
 
 ## Next Steps
 

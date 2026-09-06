@@ -34,7 +34,7 @@ class Directive(StrEnum):
 
 
 @dataclass
-class Config(BaseConfig):
+class OpenApiConfig(BaseConfig):
     """A configuration class that holds relevant data for the generator"""
 
     # used to change the OpenAPI type for ID between "string" and "integer"

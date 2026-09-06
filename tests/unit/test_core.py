@@ -10,7 +10,7 @@ from qsdl.artifacts import GeneratedFiles
 from qsdl.core import build, generate
 from qsdl.dsl import Schema
 from qsdl.exceptions import QsdlException
-from qsdl.generators import GeneratorDefinition, create_config
+from qsdl.generators import Generator, GeneratorDefinition, create_config
 from qsdl.generators.base_config import BaseConfig
 
 
@@ -20,12 +20,20 @@ class ProbeConfig(BaseConfig):
     other: str = "default-other"
 
 
+class ProbeGenerator(Generator):
+    """Test generator that delegates to a supplied implementation."""
+
+    config_class = ProbeConfig
+
+    def __init__(self, implementation: object) -> None:
+        self.implementation = implementation
+
+    def generate(self, schema: Schema, config: ProbeConfig, output_path: Path | None = None) -> GeneratedFiles:
+        return self.implementation(schema, config, output_path)  # type: ignore[operator,no-any-return]
+
+
 def _register_probe(monkeypatch: pytest.MonkeyPatch, generator: object) -> None:
-    monkeypatch.setitem(
-        generator_registry.GENERATORS,
-        "probe",
-        GeneratorDefinition(generator=generator, config_class=ProbeConfig),  # type: ignore[arg-type]
-    )
+    monkeypatch.setitem(generator_registry.GENERATORS, "probe", GeneratorDefinition(ProbeGenerator(generator)))
 
 
 class TestCore:
@@ -70,13 +78,16 @@ class TestCore:
         assert captured[0].other == "file-other"
 
     def test_invalid_config_roots_are_rejected(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-        _register_probe(monkeypatch, lambda schema, config, output_path: GeneratedFiles())
+        def probe(schema: Schema, config: ProbeConfig, output_path: Path | None = None) -> GeneratedFiles:
+            return GeneratedFiles()
+
+        _register_probe(monkeypatch, probe)
         config_path = tmp_path / "config.json"
         config_path.write_text(json.dumps(["not", "an", "object"]), encoding="utf-8")
 
-        with pytest.raises(TypeError, match="configuration file root must be a mapping"):
+        with pytest.raises(QsdlException, match="configuration file root must be a mapping"):
             build(generator_name="probe", raw_schema="", config_path=config_path)
-        with pytest.raises(TypeError, match="config must be a mapping"):
+        with pytest.raises(QsdlException, match="config must be a mapping"):
             build(generator_name="probe", raw_schema="", config=["not a mapping"])  # type: ignore[arg-type]
 
     def test_builds_use_fresh_configs_even_when_a_generator_mutates_one(self, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -138,8 +149,8 @@ class TestCore:
             files.add_text("child.txt", "child")
             return files
 
-        monkeypatch.setattr(spring_module, "generate_openapi", child)
-        monkeypatch.setattr(spring_module, "generate_postgres", child)
+        monkeypatch.setattr(spring_module.openapi_generator, "generate", child)
+        monkeypatch.setattr(spring_module.postgres_generator, "generate", child)
 
         files = build(generator_name="spring", raw_schema="type User { name: String }")
 
@@ -156,7 +167,7 @@ class TestCore:
             files.add_text("application.yaml", "collision")
             return files
 
-        monkeypatch.setattr(spring_module, "generate_openapi", colliding_child)
+        monkeypatch.setattr(spring_module.openapi_generator, "generate", colliding_child)
 
         with pytest.raises(ValueError, match="duplicate"):
             build(generator_name="spring", raw_schema="type User { name: String }")
