@@ -1,0 +1,47 @@
+title: "Selective DTO Generation"
+version: "1.0"
+
+base PlainPayload {
+    message: String!
+}
+
+base RequestOnlyPayload {
+    value: String!
+    secret: String @writeOnly
+}
+
+base ResponseOnlyPayload {
+    value: String!
+    generatedAt: Datetime @readOnly
+}
+
+base BothPayload {
+    value: String!
+    secret: String @writeOnly
+    generatedAt: Datetime @readOnly
+}
+
+base UnusedSplitPayload @force-generate {
+    value: String
+    generatedAt: Datetime @readOnly
+}
+
+type UserProfile @namespace("Profiles") {
+    displayName: String!
+    password: String @writeOnly
+    createdAt: Datetime @readOnly
+}
+
+extend api @spring-package("dtoselection") {
+    submitRequestOnly(data: RequestOnlyPayload): Void
+        @path("dto/request-only") @method(POST)
+
+    fetchResponseOnly(): ResponseOnlyPayload
+        @path("dto/response-only") @method(GET)
+
+    roundTrip(data: BothPayload): BothPayload
+        @path("dto/both") @method(POST)
+
+    echoPlain(data: PlainPayload): PlainPayload
+        @path("dto/plain") @method(POST)
+}

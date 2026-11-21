@@ -239,9 +239,7 @@ def _get_mapper_impl_imports(model_class: spring.ModelClass | None) -> list[str]
         return []
 
     imports = {f"import {model_class.package.mapper}.{model_class.name}MapperImpl;"}
-    for mapper in model_class.mappers:
-        if not isinstance(mapper, dsl.Object):
-            continue
+    for mapper in model_class.all_object_mappers:
         nested = util.get_model_for(mapper.name)
         if nested:
             imports.add(f"import {nested.package.mapper}.{nested.name}MapperImpl;")
@@ -299,7 +297,7 @@ def generate_imports_for_template(
                 if api_class and api_class.has_generated
                 else []
             ),
-            f"import {util.Store.package.controller}.BaseController;",
+            f"import {util.Store.package.shared_controller}.BaseController;",
             f"import {util.Store.package.util}.JsonMergePatchUtil;",
             f"import {util.Store.package.util}.Validator;",
             f"import {util.Store.package.model}.CursorPage;",
@@ -420,14 +418,8 @@ def generate_imports_for_template(
         ],
         "Repository.j2": [
             f"import {model_class.package.entity}.{model_class.name}Entity;" if model_class else None,
-            *(
-                [
-                    f"import {util.Store.package.repository}.AbstractRepository;",
-                    f"import {util.Store.package.repository}.BaseRepository;",
-                ]
-                if model_class and model_class.package.repository != util.Store.package.repository
-                else []
-            ),
+            f"import {util.Store.package.shared_repository}.AbstractRepository;" if model_class else None,
+            f"import {util.Store.package.shared_repository}.BaseRepository;" if model_class else None,
             "import org.springframework.stereotype.Repository;",
             "import java.util.Optional;",
         ],
@@ -530,10 +522,18 @@ def generate_imports_for_template(
             "import org.springframework.beans.factory.annotation.Autowired;",
         ],
         "AppConfiguration.j2": [
-            f"import {util.Store.package.repository}.BaseRepositoryImpl;" if is_db else None,
+            f"import {util.Store.package.shared_repository}.BaseRepositoryImpl;" if is_db else None,
             f"import {util.Store.package.util}.JsonMergePatchConverter;",
             f"import {util.Store.package.util}.JsonUtil;",
-            *([f"import {model.package.repository}.{model.name}Repository;" for model in util.Store.models if model.is_object] if is_db else []),
+            *(
+                [
+                    f"import {model.package.repository}.{model.name}Repository;"
+                    for model in util.Store.models
+                    if model.is_object
+                ]
+                if is_db
+                else []
+            ),
             "import com.fasterxml.jackson.annotation.JsonProperty;",
             "import java.io.IOException;",
             "import java.io.InputStream;",
@@ -673,7 +673,7 @@ def generate_imports_for_template(
             "import java.util.stream.Collectors;",
         ],
         "AbstractDataJpaTest.j2": [
-            f"import {util.Store.package.repository}.BaseRepositoryImpl;",
+            f"import {util.Store.package.shared_repository}.BaseRepositoryImpl;",
             *[
                 f"import {model.package.repository}.{model.name}Repository;"
                 for model in util.Store.models

@@ -1,0 +1,9 @@
+import "common.qsdl"
+import "catalog.qsdl"
+import "orders.qsdl"
+import "media.qsdl"
+
+title: "Pet Store"
+version: "1.0"
+description: "Canonical Pet Store example"
+servers: ["/api/v1"]

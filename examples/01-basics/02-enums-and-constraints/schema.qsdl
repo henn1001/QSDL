@@ -1,0 +1,17 @@
+title: "Enum and Constraint Matrix"
+version: "1.0"
+
+enum Lifecycle {
+    DRAFT
+    AVAILABLE
+    RETIRED
+}
+
+type InventoryItem @namespace("Inventory") {
+    sku: String! @unique @query
+    name: String! @minSize(3) @maxSize(80)
+    state: Lifecycle @default("AVAILABLE")
+    labels: [String] @queryList
+    enabled: Boolean @default("true")
+    weight: Double
+}

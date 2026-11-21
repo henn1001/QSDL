@@ -1,0 +1,7 @@
+{
+  "title": "Long Identifier Smoke",
+  "group_id": "app",
+  "base_package": "app.longids",
+  "artifact_id": "long-id-smoke",
+  "id_type": "LONG"
+}

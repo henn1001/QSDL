@@ -1,0 +1,25 @@
+title: "Package and Controller Directives"
+version: "1.0"
+
+enum ProjectState @namespace("Shared") @spring-package("constants") {
+    PLANNED
+    ACTIVE
+    DONE
+}
+
+type Project @namespace("Projects") @spring-package("project") {
+    name: String!
+    state: ProjectState
+}
+
+type TeamMember @namespace("Teams") @spring-package("team") {
+    name: String!
+}
+
+extend api @namespace("Operations") @spring-package("operations") @spring-controller("Project") {
+    projectSummary(): Object
+        @path("projects/{id}/summary") @method(GET)
+
+    projectHealth(): Object
+        @path("projects/{id}/health") @method(GET)
+}

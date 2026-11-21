@@ -1,0 +1,24 @@
+title: "Deep Relation Graph"
+version: "1.0"
+
+type Customer {
+    name: String!
+    email: String
+}
+
+type Product {
+    name: String!
+    price: Float
+}
+
+type OrderItem {
+    quantity: Int!
+    product: Product
+}
+
+type Order @namespace("Orders") {
+    orderNumber: String!
+    customer: Customer
+    items: [OrderItem]! @composition
+    relatedProducts: [Product]! @aggregation
+}

@@ -59,8 +59,13 @@ class Package:
 
     @property
     def controller(self) -> str:
-        """Property helper method"""
+        """Package for domain API controllers."""
         return self.__prepare(self._config.controller_path)
+
+    @property
+    def shared_controller(self) -> str:
+        """Package for shared controller support classes."""
+        return self.__prepare(self._config.shared_controller_path)
 
     @property
     def domain(self) -> str:
@@ -84,8 +89,13 @@ class Package:
 
     @property
     def repository(self) -> str:
-        """Property helper method"""
+        """Package for domain repositories."""
         return self.__prepare(self._config.repository_path)
+
+    @property
+    def shared_repository(self) -> str:
+        """Package for shared repository support classes."""
+        return self.__prepare(self._config.shared_repository_path)
 
     @property
     def service(self) -> str:

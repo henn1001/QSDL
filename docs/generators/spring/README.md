@@ -35,26 +35,28 @@ Configuration is optional: pass JSON config files with `-c/--config` (later file
 | `title`                        | string                     | `"SpringBootApp"`               | Application name; used for the main entry class.                                    | No       |
 | `group_id`                     | string                     | `"app"`                         | Maven group ID (reverse domain notation).                                           | No       |
 | `artifact_id`                  | string                     | `"app"`                         | Maven artifact ID.                                                                  | No       |
-| `base_package`                 | string                     | `"app.server"`                  | Root Java package; all paths are relative to this.                                  | No       |
+| `base_package`                 | string                     | `"app"`                         | Root Java package; all paths are relative to this.                                  | No       |
 | `database`                     | enum (`HIBERNATE` \| `NO`) | `HIBERNATE`                     | Enable Hibernate JPA annotations and persistence layer.                             | No       |
 | `use_auditing`                 | boolean                    | `false`                         | Enable automatic audit fields (createdBy, createdAt, modifiedBy, modifiedAt).       | No       |
 | `table_prefix`                 | string                     | `"t_"`                          | Prefix for database table names.                                                    | No       |
 | `id_type`                      | enum (`LONG` \| `STRING`)  | `LONG`                          | ID type for domain objects (affects OpenAPI generation too).                        | No       |
-| `api_path`                     | string                     | `"%placeholder%.api"`           | Package path for API endpoints.                                                     | No       |
-| `controller_path`              | string                     | `"%placeholder%.api"`           | Package path for controllers.                                                       | No       |
-| `service_path`                 | string                     | `"%placeholder%.service"`       | Package path for services.                                                          | No       |
-| `domain_path`                  | string                     | `"%placeholder%.domain"`        | Package path for DTOs and request/response models.                                  | No       |
-| `entity_path`                  | string                     | `"%placeholder%.domain.entity"` | Package path for Hibernate entities.                                                | No       |
-| `mapper_path`                  | string                     | `"%placeholder%.domain.mapper"` | Package path for mappers (DTO ↔ Entity).                                            | No       |
-| `repository_path`              | string                     | `"%placeholder%.repository"`    | Package path for Spring Data repositories.                                          | No       |
-| `enum_path`                    | string                     | `"%placeholder%.constant"`      | Package path for enum types.                                                        | No       |
-| `exception_path`               | string                     | `"%placeholder%.exception"`     | Package path for exception classes.                                                 | No       |
-| `model_path`                   | string                     | `"%placeholder%.model"`         | Package path for shared model/support classes.                                      | No       |
-| `config_path`                  | string                     | `"%placeholder%.config"`        | Package path for configuration classes.                                             | No       |
-| `util_path`                    | string                     | `"%placeholder%.util"`          | Package path for utility classes.                                                   | No       |
-| `package_placeholder_fallback` | string                     | `"global"`                      | Fallback package name when neither `@spring-package` nor `@namespace` is specified. | No       |
+| `api_path`                     | string                     | `"api.{package}.web"`           | Domain API interface package.                                                       | No       |
+| `controller_path`              | string                     | `"api.{package}.web"`           | Domain controller package.                                                           | No       |
+| `service_path`                 | string                     | `"api.{package}"`               | Domain service package.                                                             | No       |
+| `domain_path`                  | string                     | `"api.{package}.contract"`      | Domain DTO/request/response package.                                                | No       |
+| `entity_path`                  | string                     | `"api.{package}.persistence"`  | Domain entity package.                                                              | No       |
+| `mapper_path`                  | string                     | `"api.{package}.mapping"`       | Domain mapper package.                                                              | No       |
+| `repository_path`              | string                     | `"api.{package}.persistence"`  | Domain repository package.                                                          | No       |
+| `enum_path`                    | string                     | `"shared.constants"`            | Shared enum package.                                                                | No       |
+| `exception_path`               | string                     | `"shared.exception"`            | Shared exception package.                                                           | No       |
+| `model_path`                   | string                     | `"shared.model"`                | Shared model/support package.                                                       | No       |
+| `config_path`                  | string                     | `"shared.config"`               | Shared configuration package.                                                       | No       |
+| `util_path`                    | string                     | `"shared.util"`                 | Shared utility package.                                                             | No       |
+| `shared_controller_path`       | string                     | `"shared.web"`                  | Shared controller support package.                                                  | No       |
+| `shared_repository_path`       | string                     | `"shared.persistence"`          | Shared repository support package.                                                  | No       |
+| `package_placeholder_fallback` | string                     | `"general"`                     | Fallback package name when neither `@spring-package` nor `@namespace` is specified. | No       |
 
-**Note:** Path configuration accepts a placeholder token `%placeholder%` which is automatically replaced with the containing package. Spring uses `@spring-package` first, then `@namespace`, and finally the configured fallback package.
+`{package}` is resolved per domain object/API using `@spring-package`, then `@namespace`, then `package_placeholder_fallback`. Paths are prefixed with `base_package` unless they already start with it. Thus the default layout is `app/api/<namespace>/` for domain code and `app/shared/` for shared support. To retain an older layout, provide explicit `*_path` values in a config file; the defaults intentionally no longer provide that compatibility layout.
 
 ### Example Configuration
 
@@ -78,8 +80,18 @@ Configuration is optional: pass JSON config files with `-c/--config` (later file
 
 ## Output Structure
 
-The generator produces a Maven-based Spring Boot project with the following layout:
+The generator produces a Maven-based Spring Boot project with domain services at the domain package root:
 
+```
+app/api/<namespace>/{<Type>Service.java,web/<Type>Api.java,web/<Type>Controller.java,contract/,persistence/,mapping/}
+app/shared/{config,constants,exception,model,util,web,persistence}/
+```
+
+For an explicit custom configuration, the generated project follows the configured package paths. The default layout is shown above; custom paths should be documented alongside the configuration that selects them.
+
+<!-- Legacy custom-layout tree intentionally omitted: it was previously presented as the default. -->
+
+<!--
 ```
 src/
 ├── main/
@@ -116,6 +128,8 @@ src/
 └── .qignore                                  (Files to exclude from generation)
 ```
 
+-->
+
 ### Package Layout with `@spring-package`
 
 By default, the `package_placeholder_fallback` determines where files go. Use the `@spring-package` directive to organize code into domain-specific sub-packages:
@@ -130,28 +144,13 @@ type Order @namespace("Order") @spring-package("order") {
 }
 ```
 
-This generates:
+This generates domain code under `api/<namespace>/` and keeps shared support fixed under `shared/`:
 
 ```
-└── com/example/travel/
-    ├── user/
-    │   ├── api/UserController.java
-    │   ├── dto/UserRequest.java
-    │   ├── entity/UserEntity.java
-    │   ├── mapper/UserMapper.java
-    │   ├── repository/UserRepository.java
-    │   └── service/UserService.java
-    ├── order/
-    │   ├── api/OrderController.java
-    │   ├── dto/OrderRequest.java
-    │   ├── entity/OrderEntity.java
-    │   └── ...
-    └── common/                             (shared cross-domain code)
-        ├── config/
-        ├── constants/
-        ├── exception/
-        ├── model/
-        └── util/
+com/example/travel/
+├── api/user/{web,contract,persistence,mapping}/
+├── api/order/{web,contract,persistence,mapping}/
+└── shared/{config,constants,exception,model,util,web,persistence}/
 ```
 
 ## Type Mapping
@@ -337,7 +336,7 @@ type User @spring-package("user") {
     name: String!
 }
 
-// Generates: com/example/travel/user/api/UserController.java
+// With the default base package: app/api/user/web/UserController.java
 ```
 
 When applied to a top-level `extend api`, it groups custom operations into a dedicated controller:
@@ -374,7 +373,7 @@ extend api @spring-controller("User") {
     getUserStats(userId: Long!): Object @path("stats") @method(GET)
 }
 
-// Generates: com/example/travel/user/api/UserController.java
+// With the default base package: app/api/user/web/UserController.java
 // (merged with auto-generated User CRUD endpoints)
 ```
 

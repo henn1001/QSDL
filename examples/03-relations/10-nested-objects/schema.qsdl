@@ -1,0 +1,22 @@
+title: "Nested Objects"
+version: "1.0"
+
+type Country {
+    name: String!
+}
+
+type City {
+    name: String!
+    country: Country
+}
+
+base Address {
+    street: String!
+    city: City
+}
+
+type Company @namespace("Companies") {
+    name: String!
+    headquarters: Address
+    billingContact: Country
+}

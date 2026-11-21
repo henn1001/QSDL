@@ -253,8 +253,8 @@ class SpringGenerator(Generator):
             ("src/main/java/constant/ErrorCode.j2", f"src/main/java/{package.enum}/ErrorCode.java"),
             ("src/main/java/constant/Constant.j2", f"src/main/java/{package.enum}/Constant.java"),
             # api
-            ("src/main/java/api/BaseController.j2", f"src/main/java/{package.controller}/BaseController.java"),
-            ("src/main/java/api/HomeController.j2", f"src/main/java/{package.controller}/HomeController.java"),
+            ("src/main/java/api/BaseController.j2", f"src/main/java/{package.shared_controller}/BaseController.java"),
+            ("src/main/java/api/HomeController.j2", f"src/main/java/{package.shared_controller}/HomeController.java"),
             # util
             ("src/main/java/util/JsonUtil.j2", f"src/main/java/{package.util}/JsonUtil.java"),
             ("src/main/java/util/JsonMergePatchConverter.j2", f"src/main/java/{package.util}/JsonMergePatchConverter.java"),
@@ -280,9 +280,9 @@ class SpringGenerator(Generator):
         if config.database == "HIBERNATE":
             # fmt: off
             supporting_files.append(("src/main/java/model/AbstractEntity.j2", f"src/main/java/{package.model}/AbstractEntity.java"))
-            supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.repository}/AbstractRepository.java"))
-            supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.repository}/BaseRepository.java"))
-            supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.repository}/BaseRepositoryImpl.java"))
+            supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.shared_repository}/AbstractRepository.java"))
+            supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.shared_repository}/BaseRepository.java"))
+            supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.shared_repository}/BaseRepositoryImpl.java"))
             supporting_files.append(("src/test/java/AbstractDataJpaTest.j2", f"src/test/java/{package.base}/AbstractDataJpaTest.java"))
             supporting_files.append(("src/test/java/AbstractIntegrationTest.j2", f"src/test/java/{package.base}/AbstractIntegrationTest.java"))
             # fmt: on

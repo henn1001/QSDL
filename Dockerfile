@@ -25,6 +25,6 @@ CMD ["--help"]
 
 ## To generate a Spring app from the input.qsdl in UNIX-like OS ##
 # docker run -v $(pwd):/generated_content --user $(id -u $(whoami)):$(id -g $(whoami)) \
-#   -it qsdl generate spring -i /home/app/examples/openapi/input.qsdl
+#   -it qsdl generate spring -i /home/app/examples/00-pet-store/domain/pet-store.qsdl
 ## To generate a Spring app from the input.qsdl in Windows ##
-# docker run -v ${pwd}:/generated_content -it qsdl generate spring -i /home/app/examples/openapi/input.qsdl
+# docker run -v ${pwd}:/generated_content -it qsdl generate spring -i /home/app/examples/00-pet-store/domain/pet-store.qsdl

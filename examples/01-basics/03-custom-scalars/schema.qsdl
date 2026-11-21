@@ -1,0 +1,13 @@
+title: "Custom Scalar Matrix"
+version: "1.0"
+
+scalar EmailAddress @openapi("string, format: email") @spring("String") @postgres("TEXT")
+scalar CurrencyCode @openapi("string, pattern: ^[A-Z]{3}$") @spring("String, pattern: ^[A-Z]{3}$") @postgres("TEXT")
+scalar WalletAddress @openapi("string, pattern: ^(0x)?[0-9a-zA-Z]+$") @spring("String, pattern: ^(0x)?[0-9a-zA-Z]+$") @postgres("TEXT")
+
+type CustomerProfile @namespace("Customers") {
+    email: EmailAddress!
+    currency: CurrencyCode
+    wallet: WalletAddress
+    aliases: [EmailAddress]
+}

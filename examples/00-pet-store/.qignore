@@ -1,0 +1,11 @@
+# Hand-maintained project documentation & config
+README.md
+.gitignore
+
+# Hand-maintained media storage overlay
+src/main/java/app/api/media/web/PetMediaApi.java
+src/main/java/app/api/media/web/PetMediaController.java
+
+# Hand-maintained order placement & status overlay
+src/main/java/app/api/order/web/OrderPlacementController.java
+src/test/java/app/api/order/web/OrderPlacementControllerTest.java

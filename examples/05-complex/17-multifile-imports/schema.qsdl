@@ -1,0 +1,13 @@
+import "./lib/common.qsdl"
+import "./lib/catalog.qsdl"
+
+title: "Multifile Import Smoke"
+version: "1.0"
+description: "Cross-file bases, enums, objects, and a nested duplicate import."
+servers: ["https://example.test/api/"]
+
+type Store @namespace("Stores") {
+    name: String!
+    address: Address
+    products: [Product]! @composition
+}

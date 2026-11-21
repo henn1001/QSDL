@@ -1,0 +1,16 @@
+title: "Shared Composition Child"
+version: "1.0"
+
+type Fruit {
+    name: String!
+}
+
+type Basket {
+    label: String!
+    fruit: [Fruit]! @composition
+}
+
+type Crate {
+    label: String!
+    fruit: [Fruit]! @composition
+}

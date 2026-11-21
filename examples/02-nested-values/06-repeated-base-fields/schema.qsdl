@@ -1,0 +1,15 @@
+title: "Repeated Base Fields"
+version: "1.0"
+
+base Address {
+    street: String!
+    city: String!
+    postalCode: String
+}
+
+type UserProfile @namespace("Profiles") {
+    displayName: String!
+    billingAddress: Address
+    shippingAddress: Address
+    mailingAddress: Address
+}

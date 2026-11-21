@@ -23,7 +23,7 @@ The generated PostgreSQL schema should be the source of truth for jOOQ code gene
 
 ## Current generated model
 
-The assessed service is generated from `examples/spring/relation.qsdl` and uses the generated output under `examples/spring/domain_layout`.
+The assessed service is generated from `examples/00-pet-store/domain/pet-store.qsdl` and uses the generated output under `examples/00-pet-store/`.
 
 ### Project and Role
 

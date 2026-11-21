@@ -91,7 +91,7 @@ class TestE2EQueryFilterObject(BaseE2ETest):
         # the public query parameter remains snake_case through @JsonProperty.
         assert "Integer someQuery" in crud_contents
         assert 'JsonProperty(value = "some_query")' in crud_contents
-        assert "import app.server.util.PredicateBuilder.QueryFilter;" in crud_contents
+        assert "import app.shared.util.PredicateBuilder.QueryFilter;" in crud_contents
         assert ") implements QueryFilter" in crud_contents
         assert 'queryParameters.put("someQuery", List.of(String.valueOf(someQuery)));' in crud_contents
         assert 'queryParameters.put("some_query"' not in crud_contents

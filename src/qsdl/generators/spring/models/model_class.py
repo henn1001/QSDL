@@ -189,6 +189,7 @@ class ModelClass:
 
     parents: list[spring.Parent] = field(default_factory=list)
     mappers: list[dsl.Base | dsl.Object] = field(default_factory=list)
+    all_object_mappers: list[dsl.Object] = field(default_factory=list)
 
     def build(self, _ref: dsl.Base | dsl.Object) -> Self:
         """Init our dataclass by reading information from _ref"""
@@ -229,6 +230,8 @@ class ModelClass:
                 continue
             self.mappers.append(nested_type.value)
             mapper_names.add(nested_type.value.name)
+
+        self.all_object_mappers = util.extract_all_object_mappers(_ref)
 
         # add attributes
         self._add_fields(_ref)

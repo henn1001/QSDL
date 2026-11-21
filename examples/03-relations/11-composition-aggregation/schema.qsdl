@@ -1,0 +1,17 @@
+title: "Composition and Aggregation"
+version: "1.0"
+
+type Project @namespace("Projects") {
+    name: String!
+    tasks: [Task]! @composition
+    tags: [Tag]! @aggregation
+}
+
+type Task {
+    title: String!
+    completed: Boolean
+}
+
+type Tag {
+    label: String!
+}

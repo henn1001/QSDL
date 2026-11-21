@@ -1,0 +1,20 @@
+title: "Transient Nested Values"
+version: "1.0"
+
+base ContactInfo {
+    email: String
+    phone: String @transient
+}
+
+base Address {
+    street: String
+    city: String
+    contact: ContactInfo
+}
+
+type Office @namespace("Locations") {
+    name: String!
+    address: Address
+    temporaryAddress: Address @transient
+    labels: [String]
+}

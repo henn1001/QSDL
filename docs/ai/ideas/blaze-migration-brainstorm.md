@@ -24,7 +24,7 @@ The JPA entity model remains the source of truth. Blaze-Persistence sits on top 
 
 ## Current generated model
 
-The assessed service is generated from `examples/spring/relation.qsdl` and uses the generated output under `examples/spring/domain_layout`.
+The assessed service is generated from `examples/00-pet-store/domain/pet-store.qsdl` and uses the generated output under `examples/00-pet-store/`.
 
 ### Project and Role
 

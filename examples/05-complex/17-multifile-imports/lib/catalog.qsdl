@@ -1,0 +1,7 @@
+import "./common.qsdl"
+
+type Product extends AuditFields @namespace("Catalog") {
+    name: String!
+    visibility: Visibility @default("PUBLIC")
+    address: Address
+}

@@ -1,0 +1,8 @@
+title: "Long Identifier Smoke"
+version: "1.0"
+
+type LongIdentifierExample @namespace("Identity") {
+    label: String!
+    sequenceNumber: Long!
+    active: Boolean
+}

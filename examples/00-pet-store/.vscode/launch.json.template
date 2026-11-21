@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run H2",
+      "request": "launch",
+      "mainClass": "app.SpringBootApp",
+      "projectName": "pet-store",
+      "env": {
+        "SPRING_CONFIG_ADDITIONAL_LOCATION": "optional:file:${workspaceFolder}/.env.yaml"
+      },
+      "args": [
+        "--spring.profiles.active=h2"
+      ]
+    },
+    {
+      "type": "java",
+      "name": "Run PostgreSQL",
+      "request": "launch",
+      "mainClass": "app.SpringBootApp",
+      "projectName": "pet-store",
+      "env": {
+        "SPRING_CONFIG_ADDITIONAL_LOCATION": "optional:file:${workspaceFolder}/.env.yaml"
+      },
+      "args": [
+        "--spring.profiles.active=postgres"
+      ]
+    }
+  ]
+}

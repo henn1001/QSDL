@@ -16,6 +16,7 @@
 
 from dataclasses import dataclass
 from enum import StrEnum
+from typing import ClassVar
 
 from qsdl.generators.base_config import BaseConfig
 
@@ -48,7 +49,7 @@ class SpringConfig(BaseConfig):
 
     title: str = "SpringBootApp"
     group_id: str = "app"
-    base_package: str = "app.server"
+    base_package: str = "app"
     artifact_id: str = "app"
     database: Database = Database.HIBERNATE
     use_auditing: bool = False
@@ -58,31 +59,29 @@ class SpringConfig(BaseConfig):
     id_type: IDTYPE = IDTYPE.LONG
 
     # used for changing the folder layout
-    api_path: str = "%placeholder%.api"
-    controller_path: str = "%placeholder%.api"
-    config_path: str = "%placeholder%.config"
-    domain_path: str = "%placeholder%.domain"
-    entity_path: str = "%placeholder%.domain.entity"
-    mapper_path: str = "%placeholder%.domain.mapper"
-    enum_path: str = "%placeholder%.constant"
-    exception_path: str = "%placeholder%.exception"
-    model_path: str = "%placeholder%.model"
-    repository_path: str = "%placeholder%.repository"
-    service_path: str = "%placeholder%.service"
-    util_path: str = "%placeholder%.util"
+    api_path: str = "api.{package}.web"
+    controller_path: str = "api.{package}.web"
+    config_path: str = "shared.config"
+    domain_path: str = "api.{package}.contract"
+    entity_path: str = "api.{package}.persistence"
+    mapper_path: str = "api.{package}.mapping"
+    enum_path: str = "shared.constants"
+    exception_path: str = "shared.exception"
+    model_path: str = "shared.model"
+    repository_path: str = "api.{package}.persistence"
+    service_path: str = "api.{package}"
+    util_path: str = "shared.util"
+    shared_controller_path: str = "shared.web"
+    shared_repository_path: str = "shared.persistence"
 
-    package_placeholder_fallback: str = "global"
+    package_placeholder_fallback: str = "general"
 
     # used for dactite enum casting
-    _dactive_casts = [Database, IDTYPE]
+    _dactive_casts: ClassVar[list[type[StrEnum]]] = [Database, IDTYPE]
 
     def __post_init__(self) -> None:
         # update all fields ending with _path
         for key, value in [x for x in vars(self).items() if x[0].endswith("_path")]:
-            # value was probably not provided by the user - replace with placeholder
-            if "%placeholder%" in value:
-                self.__setattr__(key, value.replace("%placeholder%", self.base_package))
-
             # prefix with base package if it was not provided
-            elif not str(value).startswith(self.base_package):
+            if not str(value).startswith(self.base_package):
                 self.__setattr__(key, self.base_package + "." + value)

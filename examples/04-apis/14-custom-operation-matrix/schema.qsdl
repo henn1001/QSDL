@@ -1,0 +1,37 @@
+title: "Custom Operation Matrix"
+version: "1.0"
+servers: ["/api/v2"]
+
+base SearchCriteria {
+    term: String
+    region: String
+    state: String
+}
+
+enum CatalogState {
+    ACTIVE
+    ARCHIVED
+}
+
+type Catalog @namespace("Catalog") {
+    name: String!
+    state: CatalogState @default("ACTIVE")
+    labels: [String]
+}
+
+extend api @spring-package("catalogapi") {
+    searchCatalog(criteria: SearchCriteria, requestId: String^): [Catalog]
+        @path("catalogs/search") @method(GET) @pagination
+
+    postCatalog(name: String!, labels: [String], dryRun: Boolean?): Catalog
+        @path("catalogs/import") @method(POST)
+
+    patchCatalog(body: Catalog): Catalog
+        @path("catalogs/{id}/patch") @method(PATCH)
+
+    exportCatalog(): Object
+        @path("catalogs/export") @method(GET) @produces("application/json")
+
+    removeCatalog(): Void
+        @path("catalogs/{id}/retire") @method(DELETE)
+}

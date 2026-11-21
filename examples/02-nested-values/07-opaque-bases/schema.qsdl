@@ -1,0 +1,20 @@
+title: "Opaque Base Values"
+version: "1.0"
+
+base Address {
+    street: String
+    city: String
+    country: String
+}
+
+base Variant {
+    name: String
+    value: String
+}
+
+type Document @namespace("Documents") {
+    title: String!
+    primaryAddress: Address @opaque
+    secondaryAddress: Address @opaque
+    variants: [Variant] @opaque
+}

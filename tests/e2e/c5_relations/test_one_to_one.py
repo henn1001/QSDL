@@ -15,17 +15,18 @@ class TestE2EOneToOne(BaseE2ETest):
     * assert that foreign keys are in the owning entity's table
     * assert that we can use the same entity type more than once in a one-to-one relation
     * assert at least two levels of nesting works
+    * assert that required one-to-one relations are enforced with NOT NULL constraints
 
     """
 
     TESTCASE = """\
       type User {
-        primary_metric: Metric
+        primary_metric: Metric!
         secondary_metric: Metric
       }
       type Metric {
         likes: Int
-        role: Role
+        role: Role!
       }
       type Role {
         name: String
@@ -45,7 +46,7 @@ class TestE2EOneToOne(BaseE2ETest):
               iv INTEGER,
               creation_date TIMESTAMP NOT NULL,
               modification_date TIMESTAMP,
-              primary_metric_metric_id BIGINT,
+              primary_metric_metric_id BIGINT NOT NULL,
               secondary_metric_metric_id BIGINT
             );
 
@@ -56,7 +57,7 @@ class TestE2EOneToOne(BaseE2ETest):
               creation_date TIMESTAMP NOT NULL,
               modification_date TIMESTAMP,
               likes INTEGER,
-              role_role_id BIGINT
+              role_role_id BIGINT NOT NULL
             );
 
             CREATE TABLE IF NOT EXISTS t_role (

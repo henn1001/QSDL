@@ -1,0 +1,18 @@
+title: "Object API Generation"
+version: "1.0"
+
+type Report @namespace("Reports") {
+    title: String!
+    published: Boolean
+
+    extend api @generate("CREATE") {
+        publish(): Report
+            @path("reports/{id}/publish") @method(PATCH)
+    }
+}
+
+type Draft @namespace("Drafts") {
+    title: String!
+
+    extend api {}
+}

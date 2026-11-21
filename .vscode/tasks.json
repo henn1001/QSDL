@@ -7,24 +7,13 @@
       "label": "generate spring",
       "type": "shell",
       "group": "build",
-      "dependsOn": [
-        "spring/basic_layout",
-        "spring/domain_layout"
-      ]
+      "command": "qsdl generate spring -i examples/00-pet-store/domain/pet-store.qsdl -o examples/00-pet-store -S title=PetStore -S group_id=app -S artifact_id=pet-store"
     },
     {
-      "label": "spring/basic_layout",
+      "label": "spring smoke",
       "type": "shell",
-      "command": "qsdl examples/spring/relation.qsdl -g spring -o examples/spring/basic_layout",
-      "group": "build",
-      "hide": true
-    },
-    {
-      "label": "spring/domain_layout",
-      "type": "shell",
-      "command": "qsdl examples/spring/relation.qsdl -g spring -c util/domain_config.json -o examples/spring/domain_layout",
-      "group": "build",
-      "hide": true
+      "command": "python examples/run-spring-smoke.py",
+      "group": "test"
     }
   ]
 }

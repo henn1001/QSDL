@@ -1,0 +1,23 @@
+import "catalog.qsdl"
+
+scalar Upload @spring("org.springframework.web.multipart.MultipartFile") @openapi("string, format: binary")
+scalar Binary @spring("byte[]") @openapi("string, format: binary")
+
+type PetMedia @namespace("media") {
+  pet_id: Long! @writeOnly
+  pet: Pet @transient @readOnly
+  media_type: String!
+  filename: String!
+  storage_key: String!
+
+  extend api {
+    uploadPetMedia(pet_id: String!, file: Upload!, media_type: String!, filename: String!): PetMedia
+      @path("pets/media/upload") @method(POST) @consumes("multipart/form-data") @produces("application/json")
+
+    listPetMedia(pet_id: String!): [PetMedia]
+      @path("pets/media") @method(GET) @produces("application/json")
+
+    downloadPetMedia(pet_id: String!, media_id: String!): Binary
+      @path("pets/media/download") @method(GET) @produces("application/octet-stream")
+  }
+}

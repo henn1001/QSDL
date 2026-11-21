@@ -108,7 +108,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for local setup, validation, documentat
 
 ## Examples
 
-Find example schemas in [`examples/`](examples/). Each generator has working samples demonstrating features.
+Find the canonical generated Spring example in [`examples/00-pet-store/`](examples/00-pet-store/) and the source-only Spring compilation matrix in [`examples/README.md`](examples/README.md).
 
 ## Formal Specification
 

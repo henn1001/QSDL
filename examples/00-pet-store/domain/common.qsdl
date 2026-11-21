@@ -1,0 +1,22 @@
+enum PetStatus {
+  AVAILABLE
+  PENDING
+  SOLD
+}
+
+enum OrderStatus {
+  PLACED
+  APPROVED
+  DELIVERED
+}
+
+base Audit {
+  created_at: Datetime @readOnly
+  updated_at: Datetime @readOnly
+}
+
+base Address {
+  street: String
+  city: String
+  postal_code: String
+}

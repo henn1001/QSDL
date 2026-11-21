@@ -1,0 +1,2 @@
+# Hand-maintained Pet media storage overlay
+pet-media.storage-directory: ${PET_MEDIA_STORAGE_DIRECTORY:./storage/pet-media}

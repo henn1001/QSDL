@@ -1,0 +1,24 @@
+title: "Deep Base Flattening"
+version: "1.0"
+
+base GeoCoordinates {
+    latitude: Float
+    longitude: Float
+}
+
+base ContactInfo {
+    email: String
+    phone: String
+    location: GeoCoordinates
+}
+
+base Address {
+    street: String
+    city: String
+    contact: ContactInfo
+}
+
+type Company @namespace("Companies") {
+    name: String!
+    headquarters: Address
+}

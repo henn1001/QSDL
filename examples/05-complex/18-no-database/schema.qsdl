@@ -1,0 +1,15 @@
+title: "No Database Smoke"
+version: "1.0"
+
+base EchoPayload {
+    message: String!
+    metadata: Object
+}
+
+extend api @spring-package("echo") {
+    echo(payload: EchoPayload): EchoPayload
+        @path("echo") @method(POST)
+
+    inspect(): Object
+        @path("inspect") @method(GET)
+}

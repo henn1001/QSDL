@@ -1,82 +1,67 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "QSDL - OpenApi",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "qsdl",
-            "args": [
-                "examples/openapi/input.qsdl",
-                "-g",
-                "openapi",
-                "-o",
-                "examples/openapi/srcgen/"
-            ],
-            "justMyCode": false,
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "QSDL - Spring - Basic",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "qsdl",
-            "args": [
-                "examples/spring/relation.qsdl",
-                "-g",
-                "spring",
-                "-c",
-                "util/basic_config.json",
-                "-o",
-                "examples/spring/basic_layout/"
-            ],
-            "justMyCode": false,
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "QSDL - Spring - Domain",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "qsdl",
-            "args": [
-                "examples/spring/relation.qsdl",
-                "-g",
-                "spring",
-                "-c",
-                "util/domain_config.json",
-                "-o",
-                "examples/spring/domain_layout/"
-            ],
-            "justMyCode": false,
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "QSDL - PlantUML",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "qsdl",
-            "args": [
-                "examples/openapi/input.qsdl",
-                "-g",
-                "plantuml",
-                "-o",
-                "examples/openapi/srcgen/"
-            ],
-            "justMyCode": false,
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "QSDL - Void",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "qsdl",
-            "args": [
-                "examples/openapi/input.qsdl",
-                "-g",
-                "void",
-            ],
-            "justMyCode": false,
-            "console": "integratedTerminal"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "QSDL - Pet Store (Spring)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "qsdl",
+      "args": [
+        "generate",
+        "spring",
+        "-i",
+        "examples/00-pet-store/domain/pet-store.qsdl",
+        "-o",
+        "xtmp/pet-store"
+      ],
+      "justMyCode": false,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "QSDL - Pet Store (OpenAPI)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "qsdl",
+      "args": [
+        "generate",
+        "openapi",
+        "-i",
+        "examples/00-pet-store/domain/pet-store.qsdl",
+        "-o",
+        "xtmp/pet-store-openapi"
+      ],
+      "justMyCode": false,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "QSDL - Pet Store (PlantUML)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "qsdl",
+      "args": [
+        "generate",
+        "plantuml",
+        "-i",
+        "examples/00-pet-store/domain/pet-store.qsdl",
+        "-o",
+        "xtmp/pet-store-plantuml"
+      ],
+      "justMyCode": false,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "QSDL - Void",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "qsdl",
+      "args": [
+        "generate",
+        "void",
+        "-i",
+        "examples/00-pet-store/domain/pet-store.qsdl"
+      ],
+      "justMyCode": false,
+      "console": "integratedTerminal"
+    }
+  ]
 }

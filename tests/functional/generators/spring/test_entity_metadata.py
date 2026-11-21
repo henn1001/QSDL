@@ -26,11 +26,9 @@ class TestSpringEntityMetadata:
             }
         """
 
-        files = SpringTestUtils.generate(test_input, "util/domain_config.json")
+        files = SpringTestUtils.generate(test_input)
 
-        abstract_entity_content = SpringTestUtils.read_file(
-            files, "src/main/java/app/server/common/model/AbstractEntity.java"
-        )
+        abstract_entity_content = SpringTestUtils.read_file(files, "src/main/java/app/shared/model/AbstractEntity.java")
         SpringTestUtils.assert_contains(
             abstract_entity_content,
             "OffsetDateTime getCreationDate()",
@@ -44,7 +42,7 @@ class TestSpringEntityMetadata:
         postgres_content = SpringTestUtils.read_file(files, "src/main/resources/db/migration/V1_0_0__baseline.sql")
         for model_name, (creation_alias, modification_alias, table_name) in aliases.items():
             entity_content = SpringTestUtils.read_file(
-                files, f"src/main/java/app/server/common/db/{model_name}Entity.java"
+                files, f"src/main/java/app/api/general/persistence/{model_name}Entity.java"
             )
             SpringTestUtils.assert_not_contains(
                 entity_content,
@@ -52,7 +50,7 @@ class TestSpringEntityMetadata:
                 "private OffsetDateTime modificationDate;",
             )
 
-            dto_content = SpringTestUtils.read_file(files, f"src/main/java/app/server/common/dto/{model_name}.java")
+            dto_content = SpringTestUtils.read_file(files, f"src/main/java/app/api/general/contract/{model_name}.java")
             SpringTestUtils.assert_contains(
                 dto_content,
                 f'@JsonProperty(value = "{creation_alias}")',
@@ -62,7 +60,7 @@ class TestSpringEntityMetadata:
             )
 
             mapper_content = SpringTestUtils.read_file(
-                files, f"src/main/java/app/server/common/mapper/{model_name}Mapper.java"
+                files, f"src/main/java/app/api/general/mapping/{model_name}Mapper.java"
             )
             SpringTestUtils.assert_contains(
                 mapper_content,

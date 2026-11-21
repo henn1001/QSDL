@@ -1,0 +1,16 @@
+title: "Field Visibility Matrix"
+version: "1.0"
+
+base AccountAudit {
+    createdAt: Datetime @readOnly
+    updatedAt: Datetime @readOnly
+    internalVersion: Int @hidden
+}
+
+type Account extends AccountAudit @namespace("Accounts") {
+    username: String! @query
+    passwordHash: String! @writeOnly
+    displayName: String
+    sessionToken: String @transient
+    legacyNote: String @ignore
+}

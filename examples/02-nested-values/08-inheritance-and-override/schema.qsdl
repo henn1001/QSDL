@@ -1,0 +1,21 @@
+title: "Base Inheritance and Override"
+version: "1.0"
+
+base Identifiable {
+    externalCode: String
+}
+
+base Audited extends Identifiable {
+    createdAt: Datetime @readOnly
+    updatedAt: Datetime @readOnly
+}
+
+base Owned {
+    ownerName: String
+}
+
+type Article extends Audited, Owned @namespace("Content") {
+    externalCode: String! @override
+    headline: String!
+    body: String
+}

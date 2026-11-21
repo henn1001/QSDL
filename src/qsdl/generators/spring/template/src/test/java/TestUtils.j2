@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 {% endif %}
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -91,7 +90,6 @@ public class TestUtils {
         return instanceIo(cls)
                 .ignore(field(AbstractEntity::getId))
                 .ignore(field(AbstractEntity::getUid))
-                .ignore(fields().annotated(OneToOne.class))
                 .ignore(fields().annotated(OneToMany.class))
                 .ignore(fields().annotated(ManyToOne.class))
                 .ignore(fields().annotated(ManyToMany.class));

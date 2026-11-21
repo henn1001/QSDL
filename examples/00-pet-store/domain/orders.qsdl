@@ -1,0 +1,20 @@
+import "common.qsdl"
+import "catalog.qsdl"
+
+type OrderItem @namespace("order") {
+  quantity: Int!
+  pet: Pet
+}
+
+type Order extends Audit @namespace("order") {
+   status: OrderStatus @default("PLACED")
+   items: [OrderItem]! @composition
+   shipping_address: Address
+
+  extend api @generate("GET_ALL", "GET") {}
+}
+
+extend api @namespace("order") @spring-controller("OrderPlacement") {
+  placeOrder(order: Order!): Order @path("orders/place") @method(POST)
+  updateOrderStatus(status: OrderStatus!): Order @path("orders/{order_id}/status") @method(PATCH)
+}

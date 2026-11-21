@@ -1,0 +1,8 @@
+{
+  "title": "QSDL Spring Compilation Smoke",
+  "group_id": "app",
+  "artifact_id": "qsdl-spring-compilation-smoke",
+  "database": "HIBERNATE",
+  "id_type": "STRING",
+  "table_prefix": ""
+}

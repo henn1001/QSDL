@@ -1,0 +1,1138 @@
+openapi: 3.1.0
+info:
+  title: Pet Store
+  description: |
+    Canonical Pet Store example
+  version: '1.0'
+servers:
+  - url: '/api/v1'
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: catalog
+  - name: order
+  - name: media
+
+paths:  
+  '/categorys':
+    get:
+      tags:
+        - catalog
+      summary: getCategorys
+      description: |
+        List Categorys
+      operationId: getCategorys
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      tags:
+        - catalog
+      summary: createCategory
+      description: |
+        Create a Category
+      operationId: createCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/categorys/{id}':
+    get:
+      tags:
+        - catalog
+      summary: getCategory
+      description: |
+        Read the specified Category
+      operationId: getCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - catalog
+      summary: updateCategory
+      description: |
+        Update the specified Category
+      operationId: updateCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - catalog
+      summary: deleteCategory
+      description: |
+        Delete the specified Category
+      operationId: deleteCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/pets/{pet_id}/tags':
+    get:
+      tags:
+        - catalog
+      summary: getTagsForPet
+      description: |
+        List Tags
+      operationId: getTagsForPet
+      parameters:
+        - name: pet_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/pets/{pet_id}/tags/{id}/add':
+    post:
+      tags:
+        - catalog
+      summary: addTagToPet
+      description: |
+        Add Tag
+      operationId: addTagToPet
+      parameters:
+        - name: pet_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/pets/{pet_id}/tags/{id}/remove':
+    post:
+      tags:
+        - catalog
+      summary: removeTagFromPet
+      description: |
+        Remove Tag
+      operationId: removeTagFromPet
+      parameters:
+        - name: pet_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tags':
+    get:
+      tags:
+        - catalog
+      summary: getTags
+      description: |
+        List Tags
+      operationId: getTags
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      tags:
+        - catalog
+      summary: createTag
+      description: |
+        Create a Tag
+      operationId: createTag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/tags/{id}':
+    get:
+      tags:
+        - catalog
+      summary: getTag
+      description: |
+        Read the specified Tag
+      operationId: getTag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - catalog
+      summary: updateTag
+      description: |
+        Update the specified Tag
+      operationId: updateTag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - catalog
+      summary: deleteTag
+      description: |
+        Delete the specified Tag
+      operationId: deleteTag
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/pets':
+    get:
+      tags:
+        - catalog
+      summary: getPets
+      description: |
+        List Pets
+      operationId: getPets
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          schema:
+            title: GetPetsFilter
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PetStatus'
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      tags:
+        - catalog
+      summary: createPet
+      description: |
+        Create a Pet
+      operationId: createPet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/pets/search':
+    get:
+      tags:
+        - catalog
+      summary: searchPets
+      operationId: searchPets
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/PetStatus'
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/pets/{id}':
+    get:
+      tags:
+        - catalog
+      summary: getPet
+      description: |
+        Read the specified Pet
+      operationId: getPet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - catalog
+      summary: updatePet
+      description: |
+        Update the specified Pet
+      operationId: updatePet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - catalog
+      summary: deletePet
+      description: |
+        Delete the specified Pet
+      operationId: deletePet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/orders/{order_id}/orderitems':
+    get:
+      tags:
+        - order
+      summary: getOrderitems
+      description: |
+        List OrderItems
+      operationId: getOrderitems
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItemList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    post:
+      tags:
+        - order
+      summary: createOrderitem
+      description: |
+        Create a OrderItem
+      operationId: createOrderitem
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItem'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/orders/{order_id}/orderitems/{id}':
+    get:
+      tags:
+        - order
+      summary: getOrderitem
+      description: |
+        Read the specified OrderItem
+      operationId: getOrderitem
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    patch:
+      tags:
+        - order
+      summary: updateOrderitem
+      description: |
+        Update the specified OrderItem
+      operationId: updateOrderitem
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/OrderItem'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderItem'
+        default:
+          $ref: '#/components/responses/DefaultError'
+    delete:
+      tags:
+        - order
+      summary: deleteOrderitem
+      description: |
+        Delete the specified OrderItem
+      operationId: deleteOrderitem
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/orders':
+    get:
+      tags:
+        - order
+      summary: getOrders
+      description: |
+        List Orders
+      operationId: getOrders
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/count'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderList'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/orders/{id}':
+    get:
+      tags:
+        - order
+      summary: getOrder
+      description: |
+        Read the specified Order
+      operationId: getOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/orders/place':
+    post:
+      tags:
+        - order
+      summary: placeOrder
+      operationId: placeOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/orders/{order_id}/status':
+    patch:
+      tags:
+        - order
+      summary: updateOrderStatus
+      operationId: updateOrderStatus
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: UpdateOrderStatusRequest
+              required:
+                - status
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/OrderStatus'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/pets/media':
+    get:
+      tags:
+        - media
+      summary: listPetMedia
+      operationId: listPetMedia
+      parameters:
+        - name: pet_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PetMedia'
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/pets/media/download':
+    get:
+      tags:
+        - media
+      summary: downloadPetMedia
+      operationId: downloadPetMedia
+      parameters:
+        - name: pet_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: media_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        default:
+          $ref: '#/components/responses/DefaultError'
+  '/pets/media/upload':
+    post:
+      tags:
+        - media
+      summary: uploadPetMedia
+      operationId: uploadPetMedia
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              title: UploadPetMediaRequest
+              required:
+                - pet_id
+                - file
+                - media_type
+                - filename
+              type: object
+              properties:
+                pet_id:
+                  type: string
+                  maxLength: 255
+                file:
+                  type: string
+                  format: binary
+                  maxLength: 255
+                media_type:
+                  type: string
+                  maxLength: 255
+                filename:
+                  type: string
+                  maxLength: 255
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetMedia'
+        default:
+          $ref: '#/components/responses/DefaultError'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+
+  responses:
+    DefaultError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppError'
+
+  parameters:
+    cursor:
+      name: cursor
+      description: |
+        Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous response.
+      in: query
+      required: false
+      schema:
+        type: string
+    limit:
+      name: limit
+      description: |
+        The maximum number of items to return.
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+    count:
+      name: count
+      description: |
+        Returns the total number of items available.
+      in: query
+      required: false
+      schema:
+        type: boolean
+
+  schemas:
+    PetStatus:
+      type: string
+      enum:
+        - AVAILABLE
+        - PENDING
+        - SOLD
+
+    OrderStatus:
+      type: string
+      enum:
+        - PLACED
+        - APPROVED
+        - DELIVERED
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          maxLength: 255
+        city:
+          type: string
+          maxLength: 255
+        postal_code:
+          type: string
+          maxLength: 255
+
+    CategoryList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        next_cursor:
+          type: string
+          maxLength: 255
+        total_count:
+          type: integer
+          format: int64
+          minimum: 0
+
+    Category:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        name:
+          type: string
+          maxLength: 255
+
+    TagList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        next_cursor:
+          type: string
+          maxLength: 255
+        total_count:
+          type: integer
+          format: int64
+          minimum: 0
+
+    Tag:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        name:
+          type: string
+          maxLength: 255
+
+    PetList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pet'
+        next_cursor:
+          type: string
+          maxLength: 255
+        total_count:
+          type: integer
+          format: int64
+          minimum: 0
+
+    Pet:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/PetStatus'
+          default: AVAILABLE
+        category:
+          $ref: '#/components/schemas/Category'
+        address:
+          $ref: '#/components/schemas/Address'
+        metadata:
+          $ref: '#/components/schemas/Address'
+
+    OrderItemList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        next_cursor:
+          type: string
+          maxLength: 255
+        total_count:
+          type: integer
+          format: int64
+          minimum: 0
+
+    OrderItem:
+      required:
+        - id
+        - quantity
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        quantity:
+          type: integer
+          format: int32
+          minimum: 0
+        pet:
+          $ref: '#/components/schemas/Pet'
+
+    OrderList:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        next_cursor:
+          type: string
+          maxLength: 255
+        total_count:
+          type: integer
+          format: int64
+          minimum: 0
+
+    Order:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+          default: PLACED
+        shipping_address:
+          $ref: '#/components/schemas/Address'
+
+    PetMedia:
+      required:
+        - id
+        - petId
+        - mediaType
+        - filename
+        - storageKey
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          minimum: 0
+        pet_id:
+          type: integer
+          format: int64
+          writeOnly: true
+          minimum: 0
+        pet:
+          $ref: '#/components/schemas/Pet'
+          readOnly: true
+        media_type:
+          type: string
+          maxLength: 255
+        filename:
+          type: string
+          maxLength: 255
+        storage_key:
+          type: string
+          maxLength: 255
+
+    AppError:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          description: A identifier that categorizes the error
+          type: string
+        message:
+          description: A brief, human-readable message about the error
+          type: string
+        status:
+          description: The HTTP response code
+          type: integer
+          format: int32
+        path:
+          description: A URI that identifies the specific occurrence of the error
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          description: Detailed explanations of the error
+          type: array
+          items:
+            type: string

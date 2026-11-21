@@ -1,0 +1,25 @@
+title: "Scalar Matrix"
+version: "1.0"
+description: "Every built-in scalar in one generated model."
+servers: ["/api/v1"]
+
+type ScalarMatrix @namespace("Basics") {
+    intValue: Int
+    longValue: Long
+    floatValue: Float
+    doubleValue: Double
+    textValue: String
+    flagValue: Boolean
+    dateValue: Date
+    timestampValue: Datetime
+    jsonValue: Object
+    intValues: [Int]
+    longValues: [Long]
+    floatValues: [Float]
+    doubleValues: [Double]
+    textValues: [String]
+    flagValues: [Boolean]
+    dateValues: [Date]
+    timestampValues: [Datetime]
+    jsonValues: [Object]
+}

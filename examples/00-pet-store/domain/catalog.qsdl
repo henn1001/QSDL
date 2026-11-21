@@ -1,0 +1,22 @@
+import "common.qsdl"
+
+type Category @namespace("catalog") {
+  name: String!
+}
+
+type Tag @namespace("catalog") {
+  name: String!
+}
+
+type Pet extends Audit @namespace("catalog") {
+  name: String! @query
+  status: PetStatus @default("AVAILABLE") @queryList
+  category: Category
+  tags: [Tag]! @aggregation
+  address: Address
+  metadata: Address @opaque
+
+  extend api @generate("GET_ALL", "CREATE", "GET", "UPDATE", "DELETE") {
+    searchPets(status: PetStatus, name: String): [Pet] @path("pets/search") @method(GET) @pagination
+  }
+}

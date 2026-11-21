@@ -1,0 +1,7 @@
+{
+  "title": "No Database Smoke",
+  "group_id": "app",
+  "base_package": "app.nodb",
+  "artifact_id": "no-database-smoke",
+  "database": "NO"
+}

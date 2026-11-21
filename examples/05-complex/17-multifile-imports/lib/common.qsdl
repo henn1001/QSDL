@@ -1,0 +1,15 @@
+enum Visibility {
+    PUBLIC
+    PRIVATE
+    INTERNAL
+}
+
+base AuditFields {
+    createdAt: Datetime @readOnly
+    updatedAt: Datetime @readOnly
+}
+
+base Address {
+    city: String!
+    country: String!
+}

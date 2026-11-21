@@ -213,11 +213,11 @@ The **Spring Boot generator** (and other generators) support a `.qignore` file t
 #### Example .qignore
 
 ```
-# Protect all files in the config directory
-src/main/java/app/server/config/**
+# Protect all files in the shared config directory
+src/main/java/app/shared/config/**
 
 # Protect custom utility classes
-src/main/java/app/server/util/CustomHelper.java
+src/main/java/app/shared/util/CustomHelper.java
 
 # Protect test files
 src/test/**
@@ -251,8 +251,8 @@ The patterns follow **gitignore wildcard syntax**:
 3. **Create .qignore** in `./src/` with:
 
    ```
-   src/main/java/app/server/config/**
-   src/main/java/app/server/util/CustomService.java
+   src/main/java/app/shared/config/**
+   src/main/java/app/shared/util/CustomService.java
    ```
 
 4. **Regenerate** (these files will be skipped):
