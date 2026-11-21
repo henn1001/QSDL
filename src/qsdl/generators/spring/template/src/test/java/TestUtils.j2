@@ -174,7 +174,13 @@ public class TestUtils {
 
                 if (defaultValue != null) {
                     String[] values = defaultValue.value();
-                    args[i] = parseDefaultValue(values.length > 0 ? values[0] : "", param.getType());
+                    String value = values.length > 0 ? values[0] : "";
+
+                    if (value.isEmpty() && param.getType().isRecord()) {
+                        args[i] = createInstanceWithDefaults(param.getType());
+                    } else {
+                        args[i] = parseDefaultValue(value, param.getType());
+                    }
                 } else {
                     // For nested objects without @DefaultValue, try to recursively instantiate them
                     if (param.getType().isRecord()) {
