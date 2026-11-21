@@ -43,7 +43,7 @@ build-docker() (
 )
 
 release() {
-  bunx standard-version -a
+  npx --yes commit-and-tag-version@13.3.0 -a "$@"
 }
 
 clean() {
