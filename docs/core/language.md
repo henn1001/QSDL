@@ -533,7 +533,7 @@ type Project {
 **Usable directives**
 
 - `@namespace("...")`
-- `@generate("GET_ALL", "CREATE", "GET", "REPLACE", "UPDATE", "DELETE", "ADD", "REMOVE")`
+- `@generate("GET_ALL", "CREATE", "GET", "UPDATE", "DELETE", "ADD", "REMOVE")`
   (comma-separated list; controls which implicit CRUD operations to generate)
 - Any custom directive
 

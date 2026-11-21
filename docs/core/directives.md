@@ -153,7 +153,7 @@ retains its custom operations; use `@generate(...)` when selected automatic CRUD
 
 Control which implicit CRUD operations to generate for an object's custom API block.
 
-**Valid values:** `GET_ALL`, `CREATE`, `GET`, `REPLACE`, `UPDATE`, `DELETE`, `ADD`, `REMOVE`
+**Valid values:** `GET_ALL`, `CREATE`, `GET`, `UPDATE`, `DELETE`, `ADD`, `REMOVE`
 
 **Example:**
 
