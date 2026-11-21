@@ -75,7 +75,9 @@ class TestBaseDtoSplitBehavior:
         assert SpringTestUtils.file_exists(output, "src/main/java/app/api/general/contract/AuditedBaseRequest.java")
 
         # Verify Request DTO does not contain @readOnly fields
-        request_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/contract/AuditedBaseRequest.java")
+        request_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/api/general/contract/AuditedBaseRequest.java"
+        )
         assert "createdAt" not in request_content
         assert "createdBy" not in request_content
         assert "name" in request_content
@@ -116,7 +118,9 @@ class TestBaseDtoSplitBehavior:
         assert SpringTestUtils.file_exists(output, "src/main/java/app/api/general/contract/SecureBaseRequest.java")
 
         # Verify Request DTO contains @writeOnly field
-        request_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/contract/SecureBaseRequest.java")
+        request_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/api/general/contract/SecureBaseRequest.java"
+        )
         assert "password" in request_content
         assert "username" in request_content
 
@@ -155,7 +159,9 @@ class TestBaseDtoSplitBehavior:
         assert SpringTestUtils.file_exists(output, "src/main/java/app/api/general/contract/ComplexBaseRequest.java")
 
         # Verify Request DTO has @writeOnly but not @readOnly fields
-        request_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/contract/ComplexBaseRequest.java")
+        request_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/api/general/contract/ComplexBaseRequest.java"
+        )
         assert "password" in request_content
         assert "name" in request_content
         assert "createdAt" not in request_content
@@ -207,7 +213,9 @@ class TestBaseDtoSplitBehavior:
         assert "description" in request_content
 
         # Verify ExtendedEntity contains inherited @readOnly field
-        response_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/contract/ExtendedEntity.java")
+        response_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/api/general/contract/ExtendedEntity.java"
+        )
         assert "createdAt" in response_content
         assert "name" in response_content
 
@@ -242,7 +250,9 @@ class TestBaseDtoSplitBehavior:
         assert not SpringTestUtils.file_exists(output, "src/main/java/app/api/general/contract/PlainBase.java")
         assert not SpringTestUtils.file_exists(output, "src/main/java/app/api/general/contract/PlainBaseRequest.java")
         assert SpringTestUtils.file_exists(output, "src/main/java/app/api/general/contract/EnhancedBase.java")
-        assert not SpringTestUtils.file_exists(output, "src/main/java/app/api/general/contract/EnhancedBaseRequest.java")
+        assert not SpringTestUtils.file_exists(
+            output, "src/main/java/app/api/general/contract/EnhancedBaseRequest.java"
+        )
 
         # API should reference EnhancedBase directly (not EnhancedBaseRequest)
         api_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/web/DefaultApi.java")
@@ -288,7 +298,9 @@ class TestBaseDtoSplitBehavior:
         assert SpringTestUtils.file_exists(output, "src/main/java/app/api/general/contract/PersonRequest.java")
 
         # Verify Address Response contains @readOnly field
-        address_response_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/contract/Address.java")
+        address_response_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/api/general/contract/Address.java"
+        )
         assert "createdAt" in address_response_content
 
         # Verify AddressRequest excludes @readOnly field
@@ -300,7 +312,9 @@ class TestBaseDtoSplitBehavior:
         assert "city" in address_request_content
 
         # Verify PersonRequest references AddressRequest (not Address)
-        person_request_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/contract/PersonRequest.java")
+        person_request_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/api/general/contract/PersonRequest.java"
+        )
         assert "AddressRequest address" in person_request_content
         assert "name" in person_request_content
         assert "age" in person_request_content
@@ -356,7 +370,9 @@ class TestBaseDtoSplitBehavior:
         assert not SpringTestUtils.file_exists(output, "src/main/java/app/api/general/contract/PersonRequest.java")
 
         # Verify Address Response contains @readOnly field
-        address_response_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/contract/Address.java")
+        address_response_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/api/general/contract/Address.java"
+        )
         assert "createdAt" not in address_response_content
 
         # Verify Person Response references full Address type
@@ -420,7 +436,9 @@ class TestBaseDtoSplitBehavior:
         assert "city" in address_request_content
 
         # Verify PersonRequest references AddressRequest (not Address)
-        person_request_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/contract/PersonRequest.java")
+        person_request_content = SpringTestUtils.read_file(
+            output, "src/main/java/app/api/general/contract/PersonRequest.java"
+        )
         assert "AddressRequest address" in person_request_content
         assert "name" in person_request_content
         assert "age" in person_request_content

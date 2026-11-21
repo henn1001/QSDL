@@ -288,11 +288,12 @@ Any `GENERATOR` argument that looks like a path (contains a separator, ends in `
 ```python
 from qsdl.generators import Generator
 
+
 class MyGenerator(Generator):
     config_class = Config
 
-    def generate(self, schema: Schema, config: Config, output_path: Path | None) -> GeneratedFiles:
-        ...
+    def generate(self, schema: Schema, config: Config, output_path: Path | None) -> GeneratedFiles: ...
+
 
 generator = MyGenerator()
 ```

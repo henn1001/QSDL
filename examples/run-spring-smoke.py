@@ -49,8 +49,7 @@ def discover_cases(root: Path, log_root: Path) -> list[Case]:
     cases_root = root
     shared_config = root / "spring-smoke-config.json"
     schemas = sorted(
-        schema for schema in root.glob("*/**/schema.qsdl")
-        if not schema.is_relative_to(root / "00-pet-store")
+        schema for schema in root.glob("*/**/schema.qsdl") if not schema.is_relative_to(root / "00-pet-store")
     )
 
     cases = []

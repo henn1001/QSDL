@@ -10,7 +10,17 @@ class TestMain:
         """``python -m qsdl`` invokes the CLI and materializes its destination."""
         output = tmp_path / "srcgen"
         result = subprocess.run(
-            [sys.executable, "-m", "qsdl", "generate", "void", "-i", "examples/00-pet-store/domain/pet-store.qsdl", "-o", str(output)],
+            [
+                sys.executable,
+                "-m",
+                "qsdl",
+                "generate",
+                "void",
+                "-i",
+                "examples/00-pet-store/domain/pet-store.qsdl",
+                "-o",
+                str(output),
+            ],
             capture_output=True,
             text=True,
             check=False,

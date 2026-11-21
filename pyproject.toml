@@ -13,10 +13,10 @@ dependencies = [
   "jinja2==3.1.6",
   "pathspec==1.1.1",
   "plantuml==0.3.0",
-  "pyyaml==6.0.3",
+  "pyyaml==6.0.4",
   "stringcase==1.2.0",
   "textx==4.4.0",
-  "typer==0.27.2",
+  "typer==0.29.2",
 ]
 
 [dependency-groups]
@@ -26,8 +26,8 @@ dev = [
   "pytest-html==4.2.0",
   "pytest-order==1.5.0",
   "pytest-xdist==3.8.0",
-  "pytest==9.1.1",
-  "ruff==0.16.5",
+  "pytest==9.2.0",
+  "ruff==0.17.6",
 ]
 
 [project.scripts]
