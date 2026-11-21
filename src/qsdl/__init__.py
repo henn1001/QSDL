@@ -17,8 +17,9 @@
 A Schema-Definition-Language Generator inspired by GraphQL.
 """
 
+from importlib.metadata import version
 from pathlib import Path
 
-__version__ = "6.6.0"
+__version__ = version("QSDL")
 
 __folder__ = Path(__file__).parent

@@ -104,6 +104,8 @@ bash dev.sh build
 bash dev.sh clean
 ```
 
+Run `bash dev.sh build-docker` from a Git checkout to build the image. The helper builds the wheel before passing it to Docker, so the image preserves the Git-derived version without needing `.git`.
+
 `dev.sh lint` calls `ruff` directly. If `ruff` is not already on your `PATH`, activate the project environment first or use the `uv run ruff ...` commands above.
 
 ## Python style
@@ -139,7 +141,7 @@ fix(dsl): reject duplicate operation routes
 docs: clarify generator configuration
 ```
 
-QSDL follows [Semantic Versioning](https://semver.org/). Release automation uses the commit history to update the changelog and version metadata; contributors normally should not bump versions in feature or bug-fix commits.
+QSDL follows [Semantic Versioning](https://semver.org/). `bash dev.sh release` uses the commit history to update the changelog and create a `vX.Y.Z` tag. Builds derive their version from Git tags; there is no version field to bump.
 
 Before opening a pull request, confirm that:
 

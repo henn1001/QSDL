@@ -1,6 +1,6 @@
 [project]
 name = "QSDL"
-version = "6.6.0"
+dynamic = ["version"]
 description = "A Schema-Definition-Language Generator inspired by GraphQl."
 readme = "README.md"
 authors = [{ name = "henn1001", email = "henn1001@outlook.com" }]
@@ -58,5 +58,11 @@ extend-select = ["E", "F", "UP", "B", "SIM", "I", "ANN"]
 ignore = ["E501"]
 
 [build-system]
-requires = ["uv_build>=0.9.29,<0.10.0"]
-build-backend = "uv_build"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]

@@ -35,9 +35,12 @@ build() {
   uv build
 }
 
-build-docker() {
-  docker build -t qsdl .
-}
+build-docker() (
+  wheel_dir=$(mktemp -d) || exit
+  trap 'rm -rf "$wheel_dir"' EXIT
+  uv build --wheel --out-dir "$wheel_dir" &&
+    docker build --build-context "wheel=$wheel_dir" -t qsdl .
+)
 
 release() {
   bunx standard-version -a

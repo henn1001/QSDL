@@ -6,17 +6,14 @@ USER app
 
 WORKDIR /home/app
 
-COPY src ./src
+COPY --from=wheel / /tmp/qsdl-wheel/
 COPY examples ./examples
-COPY README.md .
-COPY pyproject.toml .
-COPY uv.lock .
 
 # force uv to place its symlinks here instead of /usr/local/bin
 ENV UV_TOOL_BIN_DIR=/home/app/.local/bin
 ENV PATH="/home/app/.local/bin:${PATH}"
 
-RUN uv tool install .
+RUN uv tool install /tmp/qsdl-wheel/*.whl
 
 WORKDIR /generated_content
 

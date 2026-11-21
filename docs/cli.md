@@ -149,7 +149,7 @@ qsdl list
 
 **`qsdl list`** — List available builtin generators.
 
-**`--version`** — Print the installed QSDL version and exit.
+**`--version`** — Print the installed QSDL version and exit. Builds from an exact release tag report the release number (for example, `6.6.0`). Builds from later commits report a development version with the commit distance and short hash (for example, `6.6.1.dev12+gd850e89e9`).
 
 **`--help`** — Show help text and exit.
 
