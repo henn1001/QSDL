@@ -18,9 +18,9 @@ from collections.abc import Mapping
 from pathlib import Path, PurePosixPath
 
 import flatten_json
-import stringcase
 import yaml
 
+import qsdl.casing as qfilter
 import qsdl.dsl.textx as xtx
 from qsdl import dsl
 from qsdl.artifacts import GeneratedFile, GeneratedFiles
@@ -43,7 +43,7 @@ def dump_to_yaml(obj: dsl.Base | dsl.Object, translate: bool) -> dict:
         if isinstance(field.value, dsl.Object | dsl.Base):
             data[field.name] = dump_to_yaml(field.value, translate)
         elif translate:
-            data[field.name] = stringcase.sentencecase(field.name)
+            data[field.name] = qfilter.sentencecase(field.name)
         else:
             data[field.name] = None
 
@@ -57,7 +57,7 @@ def dump_enum_to_yaml(enum: dsl.Enum, translate: bool) -> dict:
     for value in enum.values:
         if translate:
             tmp = value.replace("_", " ").lower()
-            data[value] = stringcase.capitalcase(tmp)
+            data[value] = qfilter.capitalcase(tmp)
         else:
             data[value] = None
 

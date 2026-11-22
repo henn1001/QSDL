@@ -18,8 +18,7 @@ from __future__ import annotations
 
 from typing import Self
 
-import stringcase
-
+import qsdl.casing as qfilter
 from qsdl import dsl
 
 from .. import models as spring
@@ -50,6 +49,6 @@ class EnumClass:
         if package_directive:
             enum.package.set_namespace(package_directive.value)
         elif (namespace := _ref.directive.namespace) and namespace.value:
-            enum.package.set_namespace(stringcase.lowercase(namespace.value))
+            enum.package.set_namespace(qfilter.lowercase(namespace.value))
 
         return enum

@@ -19,9 +19,9 @@ import re
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
 from qsdl import dsl, logger
+from qsdl.casing import pluralize
 from qsdl.dsl.directives import CONSUMES, FORCE_GENERATE, METHOD, NAMESPACE, PAGINATION, PATH, PRODUCES, READ_ONLY
 from qsdl.exceptions import QsdlException
-from qsdl.filter import pluralize
 
 from . import CrudGeneratorEnum as CrudEnum
 from .directive_parser import complete_response_headers

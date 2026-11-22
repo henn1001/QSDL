@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import Self
 
-import qsdl.filter as qfilter
+import qsdl.casing as qfilter
 from qsdl import dsl
 
 from .. import util

@@ -18,11 +18,9 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-import stringcase
-
+import qsdl.casing as qfilter
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
-import qsdl.filter as qfilter
 from qsdl import dsl
 from qsdl.dsl.directives import NAMESPACE, QUERY
 
@@ -146,7 +144,7 @@ def resolve_query_filter(operation: dsl.Operation) -> tuple[bool, str | None]:
         argument = operation.query_parameters[0]
         return True, custom_type(argument.value)
 
-    return True, stringcase.capitalcase(operation.name) + "Filter"
+    return True, qfilter.capitalcase(operation.name) + "Filter"
 
 
 def _is_inline_body_operation(operation: dsl.Operation) -> bool:
@@ -174,7 +172,7 @@ def resolve_request_body_dto(operation: dsl.Operation) -> tuple[bool, str | None
     """
     if not _is_inline_body_operation(operation):
         return False, None
-    return True, stringcase.capitalcase(operation.name) + "Request"
+    return True, qfilter.capitalcase(operation.name) + "Request"
 
 
 def _scalar_mapping(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> SpringScalarMapping | None:
@@ -623,7 +621,7 @@ def build_filter_models() -> list[spring.ModelClass]:
         if is_direct_query_filter(operation):
             continue
 
-        new_name = stringcase.capitalcase(operation.name) + "Filter"
+        new_name = qfilter.capitalcase(operation.name) + "Filter"
 
         # For CRUD operations, use domain_object's namespace/package; for custom ops, use parent API's
         namespace_source = operation.domain_object if operation.domain_object else operation.parent
@@ -681,7 +679,7 @@ def build_request_body_models() -> list[spring.ModelClass]:
         if not _is_inline_body_operation(operation):
             continue
 
-        new_name = stringcase.capitalcase(operation.name) + "Request"
+        new_name = qfilter.capitalcase(operation.name) + "Request"
 
         # Derive namespace and package from the same source as filter models
         namespace_source = operation.domain_object if operation.domain_object else operation.parent

@@ -19,8 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Self
 
-import stringcase
-
+import qsdl.casing as qfilter
 import qsdl.dsl.util as qutil
 from qsdl import dsl
 from qsdl.dsl.directives import ResponseHeader
@@ -137,7 +136,7 @@ class Operation:
             )
         ):
             self.uses_request_dto = True
-            self.request_dto_name = stringcase.pascalcase(_ref.name) + "Request"
+            self.request_dto_name = qfilter.pascalcase(_ref.name) + "Request"
 
         self._add_parameters(_ref)
         self._add_response(_ref)

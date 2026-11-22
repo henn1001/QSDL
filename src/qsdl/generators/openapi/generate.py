@@ -16,8 +16,7 @@
 
 from pathlib import Path
 
-import stringcase
-
+import qsdl.casing as qfilter
 import qsdl.dsl.textx as xtx
 from qsdl import dsl
 from qsdl.artifacts import GeneratedFiles
@@ -82,7 +81,7 @@ def parse_models(schema: dsl.Schema) -> list[ModelObject]:
         pageables[operation.value.name] = operation.value
 
     for entity in pageables.values():
-        model = get_paginated_object(schema, entity, stringcase.pascalcase(entity.name))
+        model = get_paginated_object(schema, entity, qfilter.pascalcase(entity.name))
 
         # find index and insert one before the object
         index = next(i for i, x in enumerate(models) if x.name == entity.name)

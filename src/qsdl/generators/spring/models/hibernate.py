@@ -16,7 +16,7 @@
 
 from __future__ import annotations
 
-import stringcase
+import qsdl.casing as qfilter
 
 from .. import models as spring
 from .. import util
@@ -38,8 +38,8 @@ class HibernateParentInfo:
           method_joined_id      = TicketIdAndId
           method_joined_uid      = TicketUidAndUid
         """
-        self.method_joined_id = stringcase.pascalcase(util.get_field_for(model, parent).name) + "IdAndId"
-        self.method_joined_uid = stringcase.pascalcase(util.get_field_for(model, parent).name) + "IdAndUid"
+        self.method_joined_id = qfilter.pascalcase(util.get_field_for(model, parent).name) + "IdAndId"
+        self.method_joined_uid = qfilter.pascalcase(util.get_field_for(model, parent).name) + "IdAndUid"
 
         self.find_by_parentid_and_id = "findBy"
         self.find_by_parentid_and_id += self.method_joined_id if util.Store.is_id_long else self.method_joined_uid
@@ -54,7 +54,7 @@ class HibernateModelInfo:
           method_joined_id      = ProjectId
           parameter_joined_id   = projectId
         """
-        self.method_joined_id = stringcase.pascalcase(model.name) + "Id"
-        self.parameter_joined_id = stringcase.camelcase(model.name) + "Id"
+        self.method_joined_id = qfilter.pascalcase(model.name) + "Id"
+        self.parameter_joined_id = qfilter.raw_camelcase(model.name) + "Id"
 
         self.find_by_id = "findById" if util.Store.is_id_long else "findByUid"

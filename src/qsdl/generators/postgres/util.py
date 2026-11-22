@@ -14,8 +14,8 @@
 
 """Generator Utility functions"""
 
+import qsdl.casing as qfilter
 import qsdl.dsl.util as qutil
-import qsdl.filter as qfilter
 from qsdl import dsl
 from qsdl.generators.directive_payloads import scalar_mapping
 

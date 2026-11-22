@@ -19,8 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Self
 
-import stringcase
-
+import qsdl.casing as qfilter
 import qsdl.dsl.util as qutil
 from qsdl import dsl
 
@@ -62,7 +61,7 @@ class ModelField:
         """Builds self from dsl.Field"""
 
         # rename to naming convention
-        self.name = stringcase.camelcase(_ref.name)
+        self.name = qfilter.raw_camelcase(_ref.name)
         self.json_key = _ref.name
         self.description = _ref.description
 
@@ -128,7 +127,7 @@ class ModelObject:
         """Builds self from dsl.Enum | dsl.Base | dsl.Object"""
 
         # rename to naming convention
-        self.name = stringcase.pascalcase(_ref.name)
+        self.name = qfilter.pascalcase(_ref.name)
 
         self.description = _ref.description
 

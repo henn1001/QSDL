@@ -19,10 +19,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Self
 
-import stringcase
-
+import qsdl.casing as qfilter
 import qsdl.dsl.util as qutil
-import qsdl.filter as qfilter
 from qsdl import dsl
 from qsdl.dsl.directives import AGGREGATION, COMPOSITION
 
@@ -118,8 +116,8 @@ class ModelField:
         self.is_aggregation = _ref.directive.is_aggregation
         self.is_relation = self.is_composition or self.is_aggregation
 
-        self.getter = "get" + stringcase.pascalcase(self.name)
-        self.setter = "set" + stringcase.pascalcase(self.name)
+        self.getter = "get" + qfilter.pascalcase(self.name)
+        self.setter = "set" + qfilter.pascalcase(self.name)
 
         self._add_constraints(_ref)
 
@@ -199,7 +197,7 @@ class ModelClass:
 
         # rename to naming convention
         self.name = _ref.name
-        self.namespace = stringcase.lowercase(qutil.render_namespace(_ref))
+        self.namespace = qfilter.lowercase(qutil.render_namespace(_ref))
 
         self.description = _ref.description
 
@@ -222,7 +220,7 @@ class ModelClass:
         if package_directive:
             self.package.set_namespace(package_directive.value)
         elif qutil.render_namespace(_ref):
-            self.package.set_namespace(stringcase.lowercase(qutil.render_namespace(_ref)))
+            self.package.set_namespace(qfilter.lowercase(qutil.render_namespace(_ref)))
 
         # add needed mappers
         nested_types = util.extract_fields_for_mapper(_ref)
@@ -283,7 +281,7 @@ class ModelClass:
 
         for dsl_field in dsl_fields:
             new_model_field = ModelField().build(dsl_field)
-            new_model_field.name = stringcase.camelcase(new_model_field.type)
+            new_model_field.name = qfilter.raw_camelcase(new_model_field.type)
             new_model_field.name += "s" if new_model_field.is_array else ""
 
             # add to both is probably not needed but a workaround for now
@@ -307,7 +305,7 @@ class ModelClass:
 
             # create a new field for self that represents the other side
             # of the reference
-            field_name = stringcase.camelcase(parent.name)
+            field_name = qfilter.raw_camelcase(parent.name)
             field_name += "s" if dsl_field.directive.is_aggregation else ""
             fk_field = dsl.Field(parent=_ref, name=field_name, value=parent)
 

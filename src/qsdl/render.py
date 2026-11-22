@@ -19,7 +19,7 @@ from pathlib import Path
 
 import jinja2
 
-import qsdl.filter as qfilter
+import qsdl.casing as qfilter
 
 
 def render_text(

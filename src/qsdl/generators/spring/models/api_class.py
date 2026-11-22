@@ -19,8 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Self
 
-import stringcase
-
+import qsdl.casing as qfilter
 import qsdl.dsl.util as qutil
 from qsdl import dsl
 from qsdl.dsl.directives import ResponseHeader
@@ -54,7 +53,7 @@ class Parameter:
     def build(self, _ref: dsl.Argument | ResponseHeader) -> Self:
         """Build argument or response header metadata."""
 
-        self.name = stringcase.camelcase(_ref.name)
+        self.name = qfilter.raw_camelcase(_ref.name)
         self.json_key = _ref.name
 
         self.type = util.custom_type(_ref.value)
@@ -162,7 +161,7 @@ class Operation:
 
         if _ref.value:
             new_param = Parameter()
-            new_param.name = stringcase.camelcase(_ref.value.name)
+            new_param.name = qfilter.raw_camelcase(_ref.value.name)
             new_param.json_key = _ref.value.name
             new_param.is_array = _ref.is_array
 
@@ -213,7 +212,7 @@ class ApiClass:
 
         # The api name equals the object name to unless it is not part of a object
         self.name = _ref.parent.name if isinstance(_ref.parent, dsl.Object) else "Default"
-        self.namespace = stringcase.lowercase(qutil.render_namespace(_ref))
+        self.namespace = qfilter.lowercase(qutil.render_namespace(_ref))
         self.description = _ref.description
 
         # allow to overwrite the controller name
@@ -241,7 +240,7 @@ class ApiClass:
             self.package.set_namespace(package_directive.value)
             self.package_priority = 3
         elif namespace and namespace.origin == "source" and namespace.value:
-            self.package.set_namespace(stringcase.lowercase(namespace.value))
+            self.package.set_namespace(qfilter.lowercase(namespace.value))
             self.package_priority = 2
         elif self.model:
             self.package = self.model.package
