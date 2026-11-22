@@ -15,6 +15,7 @@
 """Logging Module"""
 
 import logging
+from typing import ClassVar
 
 
 class CustomLogRecord(logging.LogRecord):
@@ -36,7 +37,7 @@ class CustomFormatter(logging.Formatter):
     log_format = "%(levelname)s %(name)s - %(message)s"
     date_format = "%Y-%m-%d %H:%M:%S"
 
-    FORMATS = {
+    FORMATS: ClassVar[dict[int, str]] = {
         logging.DEBUG: grey + log_format + reset,
         logging.INFO: grey + log_format + reset,
         logging.WARNING: yellow + log_format + reset,

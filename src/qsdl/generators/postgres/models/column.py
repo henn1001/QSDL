@@ -57,7 +57,7 @@ class Column:
         column.is_id = _ref.value.name == "ID"
         column.is_array = _ref.is_array
         column.is_required = _ref.is_required
-        column.is_unique = _ref.is_unique
+        column.is_unique = _ref.directive.is_unique
 
         # relations (only for Objects, not Bases - Bases are handled separately)
         if isinstance(_ref.value, dsl.Object):

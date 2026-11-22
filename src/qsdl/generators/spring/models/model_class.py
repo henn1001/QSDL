@@ -24,10 +24,11 @@ import stringcase
 import qsdl.dsl.util as qutil
 import qsdl.filter as qfilter
 from qsdl import dsl
+from qsdl.dsl.directives import AGGREGATION, COMPOSITION
 
 from .. import models as spring
 from .. import util
-from ..config import Directive
+from ..config import SPRING_PACKAGE
 
 
 @dataclass
@@ -97,14 +98,14 @@ class ModelField:
         self.is_array = _ref.is_array
 
         self.is_required = _ref.is_required
-        self.is_read_only = _ref.is_read_only
-        self.is_write_only = _ref.is_write_only
-        self.is_opaque = _ref.is_opaque
-        self.is_unique = _ref.is_unique
-        self.is_hidden = _ref.is_hidden
-        self.is_transient = _ref.is_transient
-        self.is_query = _ref.is_query
-        self.is_query_list = _ref.is_query_list
+        self.is_read_only = _ref.directive.is_read_only
+        self.is_write_only = _ref.directive.is_write_only
+        self.is_opaque = _ref.directive.is_opaque
+        self.is_unique = _ref.directive.is_unique
+        self.is_hidden = _ref.directive.is_hidden
+        self.is_transient = _ref.directive.is_transient
+        self.is_query = _ref.directive.is_query
+        self.is_query_list = _ref.directive.is_query_list
 
         self.is_enum = isinstance(_ref.value, dsl.Enum)
         self.is_base = isinstance(_ref.value, dsl.Base)
@@ -113,8 +114,8 @@ class ModelField:
         self.is_date = _ref.value.name in ["Date", "Datetime"]
 
         # relation model
-        self.is_composition = _ref.is_composition
-        self.is_aggregation = _ref.is_aggregation
+        self.is_composition = _ref.directive.is_composition
+        self.is_aggregation = _ref.directive.is_aggregation
         self.is_relation = self.is_composition or self.is_aggregation
 
         self.getter = "get" + stringcase.pascalcase(self.name)
@@ -126,36 +127,39 @@ class ModelField:
 
     def _add_constraints(self, _ref: dsl.Field) -> None:
         """Adds min max constraints"""
+        min_size = _ref.directive.min_size.value if _ref.directive.min_size is not None else None
+        max_size = _ref.directive.max_size.value if _ref.directive.max_size is not None else None
+        default = _ref.directive.default.value if _ref.directive.default is not None else None
 
         if self.type == "String":
-            self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
-            self.max_size = f"{_ref.max_size}" if _ref.max_size else "255"
+            self.min_size = f"{min_size}" if min_size else "0"
+            self.max_size = f"{max_size}" if max_size else "255"
 
         if self.type == "Integer":
-            self.min_size = f"{_ref.min_size}" if _ref.min_size else "0"
-            self.max_size = f"{_ref.max_size}" if _ref.max_size else "Integer.MAX_VALUE"
+            self.min_size = f"{min_size}" if min_size else "0"
+            self.max_size = f"{max_size}" if max_size else "Integer.MAX_VALUE"
 
         if self.type == "Long":
-            self.min_size = f"{_ref.min_size}L" if _ref.min_size else "0L"
-            self.max_size = f"{_ref.max_size}L" if _ref.max_size else "Long.MAX_VALUE"
+            self.min_size = f"{min_size}L" if min_size else "0L"
+            self.max_size = f"{max_size}L" if max_size else "Long.MAX_VALUE"
 
         # default value is a bit tricky
         if self.is_enum:
-            self.default = f"{self.type}.{_ref.default}" if _ref.default else None
+            self.default = f"{self.type}.{default}" if default else None
         elif self.type == "String":
-            self.default = f'"{_ref.default}"' if _ref.default else None
+            self.default = f'"{default}"' if default else None
         elif self.type == "Integer":
-            self.default = f"{_ref.default}" if _ref.default else None
+            self.default = f"{default}" if default else None
         elif self.type == "Long":
-            self.default = f"{_ref.default}l" if _ref.default else None
+            self.default = f"{default}l" if default else None
         elif self.type == "Float":
-            self.default = f"{_ref.default}f" if _ref.default else None
+            self.default = f"{default}f" if default else None
         elif self.type == "Double":
-            self.default = f"{_ref.default}d" if _ref.default else None
+            self.default = f"{default}d" if default else None
         elif self.type == "Boolean":
-            self.default = "true" if str(_ref.default).lower() == "true" else "false" if _ref.default else None
+            self.default = "true" if str(default).lower() == "true" else "false" if default else None
         else:
-            self.default = f"{_ref.default}" if _ref.default else None
+            self.default = f"{default}" if default else None
 
 
 @dataclass
@@ -195,7 +199,7 @@ class ModelClass:
 
         # rename to naming convention
         self.name = _ref.name
-        self.namespace = stringcase.lowercase(_ref.namespace)
+        self.namespace = stringcase.lowercase(qutil.render_namespace(_ref))
 
         self.description = _ref.description
 
@@ -213,12 +217,12 @@ class ModelClass:
         # handle package path and imports
         # Priority: @spring-package directive > namespace attribute
         self.package = spring.Package(util.Store.config)
-        package_directive = qutil.get_directive_of_name(Directive.PACKAGE, _ref)
+        package_directive = _ref.directives.get(SPRING_PACKAGE)
 
         if package_directive:
             self.package.set_namespace(package_directive.value)
-        elif _ref.namespace:
-            self.package.set_namespace(stringcase.lowercase(_ref.namespace))
+        elif qutil.render_namespace(_ref):
+            self.package.set_namespace(stringcase.lowercase(qutil.render_namespace(_ref)))
 
         # add needed mappers
         nested_types = util.extract_fields_for_mapper(_ref)
@@ -246,7 +250,7 @@ class ModelClass:
             return
 
         # filter only non relations
-        dsl_fields = [x for x in _ref.fields if not x.is_relation]
+        dsl_fields = [x for x in _ref.fields if not qutil.is_relation(x)]
 
         for dsl_field in dsl_fields:
             new_model_field = ModelField().build(dsl_field)
@@ -261,7 +265,7 @@ class ModelClass:
             return
 
         # filter only non relations
-        dsl_fields = [x for x in _ref.fields if not x.is_relation]
+        dsl_fields = [x for x in _ref.fields if not qutil.is_relation(x)]
 
         # Use the refactored extract_embedded_columns to handle all field processing
         model_entity_fields = util.extract_embedded_columns(_ref, fields=dsl_fields)
@@ -275,7 +279,7 @@ class ModelClass:
             return
 
         # filter only relations
-        dsl_fields = [x for x in _ref.fields if x.is_relation]
+        dsl_fields = [x for x in _ref.fields if qutil.is_relation(x)]
 
         for dsl_field in dsl_fields:
             new_model_field = ModelField().build(dsl_field)
@@ -304,12 +308,13 @@ class ModelClass:
             # create a new field for self that represents the other side
             # of the reference
             field_name = stringcase.camelcase(parent.name)
-            field_name += "s" if dsl_field.is_aggregation else ""
+            field_name += "s" if dsl_field.directive.is_aggregation else ""
             fk_field = dsl.Field(parent=_ref, name=field_name, value=parent)
 
-            fk_field.is_array = dsl_field.is_aggregation
-            fk_field.is_aggregation = dsl_field.is_aggregation
-            fk_field.is_composition = dsl_field.is_composition
+            fk_field.is_array = dsl_field.directive.is_aggregation
+            for spec in (AGGREGATION, COMPOSITION):
+                if dsl_field.directives.get(spec):
+                    fk_field.directives.attach_synthetic(spec, True)
 
             new_model_field = ModelField().build(fk_field)
             new_model_field.is_relation_owner = True

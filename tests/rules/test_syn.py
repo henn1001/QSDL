@@ -205,7 +205,7 @@ class TestSynNaming:
             }
         """)
         user = xtx.get_children_of_object(schema)[0]
-        assert user.namespace == "common2"
+        assert user.directive.namespace.value == "common2"
 
     @pytest.mark.parametrize(
         "namespace",

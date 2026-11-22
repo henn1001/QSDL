@@ -23,10 +23,11 @@ import stringcase
 
 import qsdl.dsl.util as qutil
 from qsdl import dsl
+from qsdl.dsl.directives import ResponseHeader
 
 from .. import models as spring
 from .. import util
-from ..config import Directive
+from ..config import SPRING_CONTROLLER, SPRING_PACKAGE
 
 
 @dataclass
@@ -50,8 +51,8 @@ class Parameter:
 
     has_modified_type: bool = False
 
-    def build(self, _ref: dsl.Argument) -> Self:
-        """Builds self from dsl.Argument"""
+    def build(self, _ref: dsl.Argument | ResponseHeader) -> Self:
+        """Build argument or response header metadata."""
 
         self.name = stringcase.camelcase(_ref.name)
         self.json_key = _ref.name
@@ -59,11 +60,12 @@ class Parameter:
         self.type = util.custom_type(_ref.value)
         self.is_array = _ref.is_array
 
-        self.is_required = _ref.is_required
-        self.is_path = _ref.is_path
-        self.is_query = _ref.is_query
-        self.is_header = _ref.is_header
-        self.is_body = _ref.is_body
+        if isinstance(_ref, dsl.Argument):
+            self.is_required = _ref.is_required
+            self.is_path = _ref.is_path
+            self.is_query = _ref.is_query
+            self.is_header = _ref.is_header
+            self.is_body = _ref.is_body
 
         self.is_base = isinstance(_ref.value, dsl.Base)
         self.is_object = isinstance(_ref.value, dsl.Object)
@@ -115,21 +117,21 @@ class Operation:
         """Builds self from dsl.Operation"""
 
         self.name = _ref.name
-        self.tag = _ref.parent.namespace
+        self.tag = qutil.render_namespace(_ref.parent)
         self.summary = _ref.summary
         self.description = _ref.description
 
-        self.path = _ref.path
-        self.method = _ref.method.lower()
+        self.path = _ref.directive.path.value
+        self.method = _ref.directive.method.value.lower()
 
         self.is_generated = _ref.is_generated
-        self.is_pageable = _ref.is_pageable
+        self.is_pageable = _ref.directive.is_pageable
 
         if _ref.domain_object and _ref.domain_parent:
             self.parent = util.get_parent_for(_ref.domain_object.name, _ref.domain_parent.name)
 
-        self.consumes = _ref.consumes
-        self.produces = _ref.produces
+        self.consumes = qutil.render_media_type(_ref.directive.consumes, applicable=bool(_ref.body_parameters))
+        self.produces = qutil.render_media_type(_ref.directive.produces, applicable=_ref.value is not None)
 
         self._add_parameters(_ref)
         self._add_response(_ref)
@@ -152,7 +154,7 @@ class Operation:
                 self.path_parameters.append(new_param)
             elif new_param.is_query or new_param.is_header:
                 self.query_parameters.append(new_param)
-            elif new_param.is_body and _ref.method != "DELETE":
+            elif new_param.is_body and _ref.directive.method.value != "DELETE":
                 self.body_parameters.append(new_param)
 
     def _add_response(self, _ref: dsl.Operation) -> None:
@@ -169,7 +171,7 @@ class Operation:
             new_param.is_base = isinstance(_ref.value, dsl.Base)
             new_param.is_object = isinstance(_ref.value, dsl.Object)
 
-            if _ref.is_pageable:
+            if _ref.directive.is_pageable:
                 new_param.name = "CursorPage"
                 new_param.json_key = "CursorPage"
                 new_param.type = f"CursorPage<{new_param.type}>"
@@ -180,10 +182,11 @@ class Operation:
     def _add_response_headers(self, _ref: dsl.Operation) -> None:
         """Creates and adds a response header to a Operation"""
 
-        for argument in _ref.response_headers:
-            new_param = Parameter().build(argument)
-
-            self.response_headers.append(new_param)
+        headers = _ref.directive.headers
+        if headers is None:
+            return
+        for header in headers.value:
+            self.response_headers.append(Parameter().build(header))
 
 
 @dataclass
@@ -210,11 +213,11 @@ class ApiClass:
 
         # The api name equals the object name to unless it is not part of a object
         self.name = _ref.parent.name if isinstance(_ref.parent, dsl.Object) else "Default"
-        self.namespace = stringcase.lowercase(_ref.namespace)
+        self.namespace = stringcase.lowercase(qutil.render_namespace(_ref))
         self.description = _ref.description
 
         # allow to overwrite the controller name
-        controller_dir = qutil.get_directive_of_name(Directive.CONTROLLER, _ref)
+        controller_dir = _ref.directives.get(SPRING_CONTROLLER)
         self.controller_target = controller_dir.value if controller_dir else None
         self.name = self.controller_target or self.name
 
@@ -231,14 +234,14 @@ class ApiClass:
         # over the owning Object. An inherited Object namespace is only an API
         # tag and must not displace an Object's explicit @spring-package.
         self.package = spring.Package(util.Store.config)
-        package_directive = qutil.get_directive_of_name(Directive.PACKAGE, _ref)
-        namespace_is_explicit = getattr(_ref, "namespace_is_explicit", bool(_ref.namespace))
+        package_directive = _ref.directives.get(SPRING_PACKAGE)
+        namespace = _ref.directive.namespace
 
         if package_directive:
             self.package.set_namespace(package_directive.value)
             self.package_priority = 3
-        elif namespace_is_explicit and _ref.namespace:
-            self.package.set_namespace(stringcase.lowercase(_ref.namespace))
+        elif namespace and namespace.origin == "source" and namespace.value:
+            self.package.set_namespace(stringcase.lowercase(namespace.value))
             self.package_priority = 2
         elif self.model:
             self.package = self.model.package

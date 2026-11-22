@@ -57,7 +57,7 @@ class TestSemRelationship:
         objects = xtx.get_children_of_object(schema)
         parent = next(o for o in objects if o.name == "Parent")
         children_field = next(f for f in parent.fields if f.name == "children")
-        assert children_field.is_composition is True
+        assert children_field.directive.is_composition
         assert children_field.is_array is True
         assert children_field.is_required is True
 
@@ -101,7 +101,7 @@ class TestSemRelationship:
         objects = xtx.get_children_of_object(schema)
         article = next(o for o in objects if o.name == "Article")
         tags_field = next(f for f in article.fields if f.name == "tags")
-        assert tags_field.is_aggregation is True
+        assert tags_field.directive.is_aggregation
         assert tags_field.is_array is True
         assert tags_field.is_required is True
 
@@ -240,7 +240,7 @@ class TestSemRelationship:
             }
         """)
         parent = next(entity for entity in xtx.get_children_of_object(schema) if entity.name == "Parent")
-        assert next(field for field in parent.fields if field.name == "children").is_composition is True
+        assert next(field for field in parent.fields if field.name == "children").directive.is_composition
 
     @pytest.mark.parametrize("relation", ["composition", "aggregation"])
     def test_SEM_707_duplicate_relation_negative(self, relation: str, parse: ParseFixture) -> None:

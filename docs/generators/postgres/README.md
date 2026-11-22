@@ -35,6 +35,18 @@ The generator creates a single SQL file (default: `V1_0_0__baseline.sql`) contai
 | `Object`    | JSONB                      |
 | `Enum`      | TEXT with check constraint |
 
+### Custom scalars with `@postgres(...)`
+
+On a `scalar` declaration, pass one non-empty quoted PostgreSQL type:
+
+```qsdl
+scalar Token @postgres("UUID")
+```
+
+Fields of this scalar use `UUID` for their SQL type. Use the table above
+for built-in scalars. When PostgreSQL is selected, QSDL rejects a missing,
+unquoted, or empty payload, or `@postgres` on a declaration other than a scalar.
+
 ## Relationship Handling
 
 ### Composition (`@composition`)

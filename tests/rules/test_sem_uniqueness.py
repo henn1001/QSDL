@@ -185,8 +185,8 @@ class TestSemUniqueness:
             }
         """)
         operations = xtx.get_children_of_operation(schema)
-        routes = [(operation.method, operation.path) for operation in operations]
-        assert [operation.path for operation in operations] == ["/items", "/items"]
+        routes = [(operation.directive.method.value, operation.directive.path.value) for operation in operations]
+        assert [operation.directive.path.value for operation in operations] == ["/items", "/items"]
         assert len(routes) == len(set(routes))
 
     def test_SEM_105_duplicate_normalized_routes_negative(

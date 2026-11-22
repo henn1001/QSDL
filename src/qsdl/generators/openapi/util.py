@@ -17,8 +17,9 @@
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
 from qsdl import dsl
+from qsdl.generators.directive_payloads import scalar_mapping
 
-from .config import Directive
+from .config import OPENAPI_SCALAR, OpenApiScalarMapping
 
 # the parsed schema definition.
 schema: dsl.Schema = None
@@ -54,19 +55,26 @@ custom_type_formats = {
 }
 
 
+def _scalar_mapping(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> OpenApiScalarMapping | None:
+    return scalar_mapping(entity, OPENAPI_SCALAR) if isinstance(entity, dsl.Scalar) else None
+
+
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converts builtin types to generator specific types."""
-    return qutil.map_custom_type(entity, custom_types, entity.name, Directive.TYPE, ["format", "pattern"], "type")
+    mapping = _scalar_mapping(entity)
+    return mapping.type if mapping else custom_types.get(entity.name, entity.name)
 
 
 def custom_type_format(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
     """Converts builtin types to generator specific types."""
-    return qutil.map_custom_type(entity, custom_type_formats, None, Directive.TYPE, ["format", "pattern"], "format")
+    mapping = _scalar_mapping(entity)
+    return mapping.format if mapping and mapping.format is not None else custom_type_formats.get(entity.name)
 
 
 def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
     """Converts builtin types to generator specific types."""
-    return qutil.map_custom_type(entity, {}, None, Directive.TYPE, ["format", "pattern"], "pattern")
+    mapping = _scalar_mapping(entity)
+    return mapping.pattern if mapping else None
 
 
 def is_supertype(entity: dsl.Base | dsl.Object) -> bool:
@@ -102,7 +110,7 @@ def is_nested(entity: dsl.Base | dsl.Object) -> bool:
 
     for itr in base_list + object_list:
         for field in itr.fields:
-            if field.value == entity and not field.is_relation:
+            if field.value == entity and not qutil.is_relation(field):
                 return True
 
     return False
@@ -156,7 +164,7 @@ def get_namespaces() -> list:
     namespaces = []
 
     for api in xtx.get_children_of_api(schema):
-        if api.namespace and api.namespace not in namespaces:
-            namespaces.append(api.namespace)
+        if (namespace := qutil.render_namespace(api)) and namespace not in namespaces:
+            namespaces.append(namespace)
 
     return namespaces

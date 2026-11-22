@@ -23,7 +23,7 @@ from qsdl.generators import Generator
 from qsdl.render import render_text
 
 from . import util
-from .config import PostgresConfig
+from .config import POSTGRES_SCALAR, PostgresConfig
 from .models import Table
 
 
@@ -60,6 +60,7 @@ class PostgresGenerator(Generator):
     """Generate artifacts for the postgres target."""
 
     config_class = PostgresConfig
+    directive_specs = (POSTGRES_SCALAR,)
 
     def generate(self, schema: Schema, config: PostgresConfig, output_path: Path | None = None) -> GeneratedFiles:
         """Generate PostgreSQL artifacts in memory."""

@@ -102,7 +102,7 @@ class TestSemArgument:
         """SEM-902: Argument may be required (! suffix)."""
         schema = parse("""
             extend api {
-                create(data: String!): String @path("items") @method("POST")
+                create(data: String!): String @path("items") @method(POST)
             }
         """)
         args = xtx.get_children_of_argument(schema)
@@ -206,7 +206,7 @@ class TestSemArgument:
         """SEM-905: Argument can be array type."""
         schema = parse("""
             extend api {
-                bulkCreate(items: [String]): [String] @path("items/bulk") @method("POST")
+                bulkCreate(items: [String]): [String] @path("items/bulk") @method(POST)
             }
         """)
         args = xtx.get_children_of_argument(schema)

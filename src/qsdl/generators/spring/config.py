@@ -18,7 +18,9 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import ClassVar
 
+from qsdl import dsl
 from qsdl.generators.base_config import BaseConfig
+from qsdl.generators.directive_payloads import decode_nonempty_string, decode_scalar_options, validate_nonempty_string
 
 
 class Database(StrEnum):
@@ -35,12 +37,25 @@ class IDTYPE(StrEnum):
     STRING = "STRING"
 
 
-class Directive(StrEnum):
-    """Available directives"""
+@dataclass(frozen=True, slots=True)
+class SpringScalarMapping:
+    """The mapped type and optional target-specific overrides."""
 
-    TYPE = "spring"
-    PACKAGE = "spring-package"
-    CONTROLLER = "spring-controller"
+    type: str
+    entity: str | None = None
+    pattern: str | None = None
+
+
+def _decode_mapping(raw: dsl.RawDirective) -> SpringScalarMapping:
+    type_name, options = decode_scalar_options(raw, ("entity", "pattern"))
+    return SpringScalarMapping(type_name, **options)
+
+
+SPRING_SCALAR = dsl.DirectiveSpec("spring", (dsl.Scalar,), _decode_mapping)
+SPRING_PACKAGE = dsl.DirectiveSpec(
+    "spring-package", (dsl.Base, dsl.Object, dsl.Enum, dsl.Api), decode_nonempty_string, validate_nonempty_string
+)
+SPRING_CONTROLLER = dsl.DirectiveSpec("spring-controller", (dsl.Api,), decode_nonempty_string, validate_nonempty_string)
 
 
 @dataclass

@@ -19,11 +19,12 @@ import re
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
 from qsdl import dsl, logger
+from qsdl.dsl.directives import CONSUMES, FORCE_GENERATE, METHOD, NAMESPACE, PAGINATION, PATH, PRODUCES, READ_ONLY
 from qsdl.exceptions import QsdlException
 from qsdl.filter import pluralize
 
 from . import CrudGeneratorEnum as CrudEnum
-from .directive_parser import parse_response_headers
+from .directive_parser import complete_response_headers
 
 log = logger.getLogger(__name__)
 
@@ -38,7 +39,7 @@ def id_builder(obj: dsl.Object) -> dsl.Field:
         dsl.Field: entity.dsl.Field
     """
     field = dsl.Field(parent=obj, name="id", value=dsl.Scalar(name="ID"))
-    field.is_read_only = True
+    field.directives.attach_synthetic(READ_ONLY, True)
     field.is_required = True
 
     return field
@@ -75,14 +76,14 @@ def name_builder(
 
 
 def path_builder(
-    entity: dsl.Field | dsl.Object,
+    entity: dsl.Object,
     parent_obj: dsl.Object | None = None,
     append_id: bool = False,
 ) -> str:
     """Creates and returns the path string for a operation.
 
     Args:
-        entity (dsl.Field | dsl.Object): Either entity.dsl.Object or entity.dsl.Field.
+        entity (dsl.Object): Object for which a CRUD route is generated.
         parent (dsl.Object, optional): The parent, entity.dsl.Object.
             Defaults to None.
         include_id (bool, optional): Enables the inclusion of the own ID.
@@ -91,25 +92,16 @@ def path_builder(
     Returns:
         str: The path string as used by OpenApi.
     """
-    if isinstance(entity, dsl.Object):
-        path = pluralize(entity.name)
+    path = pluralize(entity.name)
 
-        if not path.startswith("/"):
-            path = "/" + path
+    if not path.startswith("/"):
+        path = "/" + path
 
-        if append_id:
-            path = path + "/{id}"
+    if append_id:
+        path = path + "/{id}"
 
-        if parent_obj:
-            path = "/" + pluralize(parent_obj.name) + "/{" + parent_obj.name + "_id}" + path
-
-    elif isinstance(entity, dsl.Operation):
-        path = entity.path
-
-        if not path.startswith("/"):
-            path = "/" + path
-
-        path = path.removesuffix("/")
+    if parent_obj:
+        path = "/" + pluralize(parent_obj.name) + "/{" + parent_obj.name + "_id}" + path
 
     return path.lower()
 
@@ -128,7 +120,7 @@ def path_argument_builder(operation: dsl.Operation) -> list[dsl.Argument]:
     arguments = []
 
     regex = r"{(.+?)}+?"
-    matches = re.findall(regex, operation.path)
+    matches = re.findall(regex, operation.directive.path.value)
 
     for match in matches:
         argument = dsl.Argument(operation, match.lower(), dsl.Scalar(name="ID"))
@@ -157,7 +149,7 @@ def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[ds
     for field in query_fields:
         argument = dsl.Argument(operation, field.name, field.value)
         argument.is_query = True
-        argument.is_array = field.is_query_list
+        argument.is_array = field.directive.is_query_list
 
         arguments.append(argument)
 
@@ -213,7 +205,7 @@ def operation_builder(
     # api = obj.api
 
     # We need to set name later, so we'll set it to a temporary value first
-    operation = dsl.Operation(parent=obj.api, name="temp", path="temp")
+    operation = dsl.Operation(parent=obj.api, name="temp")
     operation.domain_object = obj
     operation.domain_parent = parent_obj
     operation.is_generated = True
@@ -224,10 +216,10 @@ def operation_builder(
 
         operation.name = name
         operation.value = obj
-        operation.path = path
-        operation.method = "GET"
+        operation.directives.attach_synthetic(PATH, path)
+        operation.directives.attach_synthetic(METHOD, "GET")
         operation.is_array = True
-        operation.is_pageable = True
+        operation.directives.attach_synthetic(PAGINATION, True)
 
         operation.summary = name
         operation.description = [f"List {pluralize(obj.name)}"]
@@ -243,8 +235,8 @@ def operation_builder(
 
         operation.name = name
         operation.value = obj
-        operation.path = path
-        operation.method = "POST"
+        operation.directives.attach_synthetic(PATH, path)
+        operation.directives.attach_synthetic(METHOD, "POST")
 
         operation.summary = name
         operation.description = [f"Create a {obj.name}"]
@@ -260,8 +252,8 @@ def operation_builder(
 
         operation.name = name
         operation.value = obj
-        operation.path = path
-        operation.method = "GET"
+        operation.directives.attach_synthetic(PATH, path)
+        operation.directives.attach_synthetic(METHOD, "GET")
 
         operation.summary = name
         operation.description = [f"Read the specified {obj.name}"]
@@ -277,8 +269,8 @@ def operation_builder(
 
         operation.name = name
         operation.value = obj
-        operation.path = path
-        operation.method = "PATCH"
+        operation.directives.attach_synthetic(PATH, path)
+        operation.directives.attach_synthetic(METHOD, "PATCH")
 
         operation.summary = name
         operation.description = [f"Update the specified {obj.name}"]
@@ -294,8 +286,8 @@ def operation_builder(
 
         operation.name = name
         operation.value = None
-        operation.path = path
-        operation.method = "DELETE"
+        operation.directives.attach_synthetic(PATH, path)
+        operation.directives.attach_synthetic(METHOD, "DELETE")
 
         operation.summary = name
         operation.description = [f"Delete the specified {obj.name}"]
@@ -311,8 +303,8 @@ def operation_builder(
 
         operation.name = name
         operation.value = None
-        operation.path = path
-        operation.method = "POST"
+        operation.directives.attach_synthetic(PATH, path)
+        operation.directives.attach_synthetic(METHOD, "POST")
 
         operation.summary = name
         operation.description = [f"Add {obj.name}"]
@@ -328,8 +320,8 @@ def operation_builder(
 
         operation.name = name
         operation.value = None
-        operation.path = path
-        operation.method = "POST"
+        operation.directives.attach_synthetic(PATH, path)
+        operation.directives.attach_synthetic(METHOD, "POST")
 
         operation.summary = name
         operation.description = [f"Remove {obj.name}"]
@@ -339,10 +331,7 @@ def operation_builder(
         operation.body_parameters = []
         operation.arguments = operation.path_parameters + operation.query_parameters + operation.body_parameters
 
-    # add produces/consumes
-    operation.produces = "application/json" if operation.value else None
-    operation.consumes = "application/json" if operation.body_parameters else None
-    operation.consumes = "application/merge-patch+json" if operation.method == "PATCH" else operation.consumes
+    complete_media_defaults(operation)
 
     return operation
 
@@ -385,14 +374,15 @@ def api_builder(
         ]
 
         # allow selective generation if requested
-        if obj.api and obj.api.generate:
-            methods = [x for x in methods if x in obj.api.generate]
+        if obj.api and (generate := obj.api.directive.generate) and generate.value:
+            methods = [method for method in methods if method in generate.value]
 
     # it is importent here to only create the api once because
     # we might loop multiple times over this object to add
     # aggregations and compositions
     if not obj.api:
-        obj.api = dsl.Api(parent=obj, namespace=obj.namespace)
+        obj.api = dsl.Api(parent=obj)
+        inherit_namespace(obj.api)
 
     for method in methods:
         operation = operation_builder(obj, parent_obj, duplicate, method)
@@ -417,7 +407,7 @@ def is_used(schema: dsl.Schema, entity: dsl.Base | dsl.Enum) -> bool:
 
     # handle @force-generate
     # we generate this regardless
-    is_force_used = qutil.get_directive_of_name("force-generate", entity)
+    is_force_used = entity.directive.is_force_generate
 
     if is_force_used:
         return True
@@ -426,10 +416,10 @@ def is_used(schema: dsl.Schema, entity: dsl.Base | dsl.Enum) -> bool:
     entity_list += xtx.get_children_of_operation(schema)
     entity_list += xtx.get_children_of_argument(schema)
 
-    # Response headers are derived from opaque directives and therefore are
-    # not part of the TextX containment graph.
+    # Attached response headers are not part of the textX containment graph.
     for operation in xtx.get_children_of_operation(schema):
-        entity_list.extend(operation.response_headers)
+        if headers := operation.directive.headers:
+            entity_list.extend(headers.value)
 
     # for objects, we first check all fields
     obj_list = xtx.get_children_of_object(schema)
@@ -478,7 +468,7 @@ def remove_ignored(schema: dsl.Schema) -> None:
     objects = xtx.get_children_of_object(schema)
 
     for entity in objects + bases:
-        for field in [x for x in entity.fields if x.is_ignored]:
+        for field in [x for x in entity.fields if x.directive.is_ignored]:
             entity.fields.remove(field)
             log.info(
                 "The field '%s' of '%s' was marked with @ignore and removed from generation.",
@@ -495,14 +485,14 @@ def inherit_force_generation(schema: dsl.Schema) -> None:
     """
     bases = xtx.get_children_of_base(schema)
 
-    forced_bases = [x for x in bases if qutil.get_directive_of_name("force-generate", x)]
+    forced_bases = [base for base in bases if base.directive.is_force_generate]
 
     def recurser(base: dsl.Base) -> None:
         matched_entity = [x.value for x in base.fields if isinstance(x.value, dsl.Base | dsl.Enum)]
 
         for entity in matched_entity:
-            if not qutil.get_directive_of_name("force-generate", entity):
-                entity.directives.append(dsl.Directive(entity, name="force-generate"))
+            if not entity.directive.is_force_generate:
+                entity.directives.attach_synthetic(FORCE_GENERATE, True)
 
             if isinstance(entity, dsl.Base):
                 recurser(entity)
@@ -535,8 +525,10 @@ def parse_objects(schema: dsl.Schema) -> None:
     # An explicit object API controls automatic CRUD generation. In particular,
     # an empty API intentionally suppresses all automatic CRUD for that object.
     # Objects without an API, or with @generate, proceed to api_builder.
-    objects = list(filter(lambda x: not x.api or x.api.generate, objects))
     for obj in objects:
+        if obj.api and (not (generate := obj.api.directive.generate) or not generate.value):
+            continue
+
         # aggregations
         agg_fields = qutil.get_aggregation(schema, obj)
         duplicate = len(agg_fields) > 1
@@ -570,26 +562,21 @@ def parse_operations(schema: dsl.Schema) -> None:
 
     # loop over user defined APIs
     for api in apis:
-        # Keep track of whether the namespace came from the API declaration.
-        # Object namespaces are inherited below for API tags, but should not
-        # override an Object's explicit Spring package.
-        api.namespace_is_explicit = bool(api.namespace)
-
-        # pass down namespace of object to api
-        if isinstance(api.parent, dsl.Object) and not api.namespace:
-            api.namespace = api.parent.namespace
+        inherit_namespace(api)
 
         # loop over operation per API
         for operation in api.operations:
             # assign get if no other method is specified
-            if not operation.method:
-                operation.method = "GET"
+            if operation.directive.method is None:
+                operation.directives.attach_synthetic(METHOD, "GET")
 
             # remove void return values
             if operation.value.name == "Void":
                 operation.value = None
 
-            operation.path = path_builder(operation)
+            path = operation.directive.path.value
+            path = path if path.startswith("/") else "/" + path
+            operation.directives._complete_source(PATH, path.removesuffix("/").lower())
 
             # fetch and add path parameters
             id_arguments = path_argument_builder(operation)
@@ -604,7 +591,7 @@ def parse_operations(schema: dsl.Schema) -> None:
                     operation.header_parameters.append(argument)
                 elif argument.is_query:
                     operation.query_parameters.append(argument)
-                elif operation.method == "GET":
+                elif operation.directive.method.value == "GET":
                     argument.is_query = True
                     operation.query_parameters.append(argument)
                 else:
@@ -613,13 +600,25 @@ def parse_operations(schema: dsl.Schema) -> None:
 
             operation.summary = operation.name
 
-            # add produces/consumes
-            if not operation.produces:
-                operation.produces = "application/json" if operation.value else None
+            complete_media_defaults(operation)
+            complete_response_headers(schema, operation)
 
-            if not operation.consumes:
-                operation.consumes = "application/json" if operation.body_parameters else None
 
-            # Parse @headers as a generic directive payload while preserving
-            # the argument-shaped response-header interface for generators.
-            operation.response_headers = parse_response_headers(schema, operation)
+def inherit_namespace(api: dsl.Api) -> None:
+    """Attach the owning object's namespace to an API that declares none."""
+    if (
+        api.directive.namespace is None
+        and isinstance(api.parent, dsl.Object)
+        and (namespace := api.parent.directive.namespace) is not None
+    ):
+        api.directives.attach_synthetic(NAMESPACE, namespace.value)
+
+
+def complete_media_defaults(operation: dsl.Operation) -> None:
+    """Attach default @produces and @consumes values that the source omitted."""
+    if operation.directive.produces is None and operation.value:
+        operation.directives.attach_synthetic(PRODUCES, "application/json")
+    if operation.directive.consumes is None and operation.body_parameters:
+        merge_patch = operation.is_generated and operation.directive.method.value == "PATCH"
+        media = "application/merge-patch+json" if merge_patch else "application/json"
+        operation.directives.attach_synthetic(CONSUMES, media)

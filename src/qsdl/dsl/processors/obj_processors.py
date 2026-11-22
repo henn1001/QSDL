@@ -17,7 +17,7 @@
 from qsdl import dsl
 
 from ..util import description_wrapper
-from .directive_parser import normalize_directive_value
+from .directive_parser import bind_directives
 
 
 def schema_processor(entity: dsl.Schema) -> None:
@@ -37,7 +37,7 @@ def scalar_processor(entity: dsl.Scalar) -> None:
     Args:
         entity (Scalar): The scalar object.
     """
-    _ = entity
+    bind_directives(entity)
 
 
 def enum_processor(entity: dsl.Enum) -> None:
@@ -47,6 +47,7 @@ def enum_processor(entity: dsl.Enum) -> None:
         entity (Enum): The enum object.
     """
 
+    bind_directives(entity)
     entity.description = description_wrapper(entity.description)
 
 
@@ -57,6 +58,7 @@ def base_processor(entity: dsl.Base) -> None:
         entity (Base): The base object.
     """
 
+    bind_directives(entity)
     entity.description = description_wrapper(entity.description)
 
 
@@ -67,6 +69,7 @@ def object_processor(entity: dsl.Object) -> None:
         entity (Object): The object object.
     """
 
+    bind_directives(entity)
     entity.description = description_wrapper(entity.description)
 
 
@@ -77,8 +80,8 @@ def field_processor(entity: dsl.Field) -> None:
         entity (Field): The field object.
     """
 
+    bind_directives(entity)
     entity.description = description_wrapper(entity.description)
-    entity.is_relation = entity.is_composition or entity.is_aggregation
 
 
 def api_processor(entity: dsl.Api) -> None:
@@ -88,6 +91,7 @@ def api_processor(entity: dsl.Api) -> None:
         entity (Api): The api object.
     """
 
+    bind_directives(entity)
     entity.description = description_wrapper(entity.description)
 
 
@@ -98,6 +102,7 @@ def operation_processor(entity: dsl.Operation) -> None:
         entity (Api): The operation object.
     """
 
+    bind_directives(entity)
     entity.description = description_wrapper(entity.description)
 
 
@@ -110,11 +115,6 @@ def argument_processor(entity: dsl.Argument) -> None:
     _ = entity
 
 
-def directive_processor(entity: dsl.Directive) -> None:
-    """Normalize a directive's opaque payload for existing consumers."""
-    entity.value = normalize_directive_value(entity.value)
-
-
 obj_processors = {
     "Schema": schema_processor,
     "Scalar": scalar_processor,
@@ -125,5 +125,4 @@ obj_processors = {
     "Object": object_processor,
     "Field": field_processor,
     "Argument": argument_processor,
-    "Directive": directive_processor,
 }

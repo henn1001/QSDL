@@ -17,12 +17,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from qsdl import dsl
+from qsdl.dsl.models.directive import DirectiveOwnerModel, Directives
+
+if TYPE_CHECKING:
+    from qsdl.dsl.directives import ApiDirectiveView
 
 
 @dataclass
-class Api:
+class Api(DirectiveOwnerModel):
     """textX Api class"""
 
     # required by textX
@@ -30,16 +35,18 @@ class Api:
 
     # defined in entity.tx
     description: list[str] = field(default_factory=list)
-    # Special directives
-    namespace: str | None = None
-    generate: list[str] = field(default_factory=list)
-    # Custom directives
-    directives: list[dsl.Directive] = field(default_factory=list)
+    directives: Directives = None
     operations: list[dsl.Operation] = field(default_factory=list)
 
     # addons
     has_generated: bool = False
-    namespace_is_explicit: bool = False
 
     # required by textX
     _tx_fqn: str = "entity.Api"
+
+    @property
+    def directive(self) -> ApiDirectiveView:
+        """Return typed access to this owner's core directives."""
+        from qsdl.dsl.directives import ApiDirectiveView
+
+        return ApiDirectiveView(self.directives)

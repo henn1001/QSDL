@@ -25,7 +25,7 @@ from qsdl.generators import Generator
 from qsdl.render import render_text
 
 from . import util
-from .config import IDTYPE, OpenApiConfig
+from .config import IDTYPE, OPENAPI_SCALAR, OpenApiConfig
 from .models import ApiObject, ModelObject
 
 
@@ -75,7 +75,7 @@ def parse_models(schema: dsl.Schema) -> list[ModelObject]:
     # scan for paginated responses
     # use a dict for efficiency to prevent duplicates
     pageables = {}
-    operations = [x for x in operations_list if x.is_pageable]
+    operations = [x for x in operations_list if x.directive.is_pageable]
 
     for operation in operations:
         # in theory we should only allow base or object here but this is already validated in model_validator.py
@@ -131,6 +131,7 @@ class OpenApiGenerator(Generator):
     """Generate artifacts for the openapi target."""
 
     config_class = OpenApiConfig
+    directive_specs = (OPENAPI_SCALAR,)
 
     def generate(self, schema: dsl.Schema, config: OpenApiConfig, output_path: Path | None = None) -> GeneratedFiles:
         """Generate OpenAPI artifacts in memory."""

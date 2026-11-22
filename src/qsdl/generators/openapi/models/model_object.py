@@ -21,6 +21,7 @@ from typing import Self
 
 import stringcase
 
+import qsdl.dsl.util as qutil
 from qsdl import dsl
 
 from .. import util
@@ -77,13 +78,13 @@ class ModelField:
 
         self.is_required = _ref.is_required
 
-        self.is_read_only = _ref.is_read_only
-        self.is_write_only = _ref.is_write_only
+        self.is_read_only = _ref.directive.is_read_only
+        self.is_write_only = _ref.directive.is_write_only
 
         # relation model
-        self.is_composition = _ref.is_composition
-        self.is_aggregation = _ref.is_aggregation
-        self.is_relation = _ref.is_relation
+        self.is_composition = _ref.directive.is_composition
+        self.is_aggregation = _ref.directive.is_aggregation
+        self.is_relation = qutil.is_relation(_ref)
 
         self._add_constraints(_ref)
 
@@ -91,16 +92,19 @@ class ModelField:
 
     def _add_constraints(self, _ref: dsl.Field) -> None:
         """Adds min max constraints and default"""
+        min_size = _ref.directive.min_size.value if _ref.directive.min_size is not None else None
+        max_size = _ref.directive.max_size.value if _ref.directive.max_size is not None else None
+        default = _ref.directive.default.value if _ref.directive.default is not None else None
 
         if self.type == "string" and self.format not in ["date", "date-time"]:
-            self.min_size = f"minLength: {_ref.min_size}" if _ref.min_size else None
-            self.max_size = f"maxLength: {_ref.max_size}" if _ref.max_size else "maxLength: 255"
+            self.min_size = f"minLength: {min_size}" if min_size else None
+            self.max_size = f"maxLength: {max_size}" if max_size else "maxLength: 255"
 
         if self.type in ["integer", "number"]:
-            self.min_size = f"minimum: {_ref.min_size}" if _ref.min_size else "minimum: 0"
-            self.max_size = f"maximum: {_ref.max_size}" if _ref.max_size else None
+            self.min_size = f"minimum: {min_size}" if min_size else "minimum: 0"
+            self.max_size = f"maximum: {max_size}" if max_size else None
 
-        self.default = f"default: {_ref.default}" if _ref.default else None
+        self.default = f"default: {default}" if default else None
 
 
 @dataclass
@@ -147,11 +151,11 @@ class ModelObject:
 
     def _add_attributes(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
         if not isinstance(_ref, dsl.Base | dsl.Object):
-            raise ValueError
+            raise TypeError("Only bases and objects have model fields")
 
         for entity_field in _ref.fields:
             # filter hidden relations
-            if not entity_field.is_relation and not entity_field.is_hidden:
+            if not qutil.is_relation(entity_field) and not entity_field.directive.is_hidden:
                 attribute = ModelField().build(entity_field)
                 self.attributes.append(attribute)
 

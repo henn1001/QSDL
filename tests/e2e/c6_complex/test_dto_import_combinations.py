@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 
@@ -9,7 +10,7 @@ from tests.e2e.base_e2e_test import BaseE2ETest
 class TestE2EDtoImportCombinations(BaseE2ETest):
     """Compile DTOs for mixed nested Base/Object and opaque-field combinations."""
 
-    CONFIG = {
+    CONFIG: ClassVar[dict[str, str]] = {
         "api_path": "app.server.{package}.api",
         "controller_path": "app.server.{package}.api",
         "domain_path": "app.server.{package}.domain",

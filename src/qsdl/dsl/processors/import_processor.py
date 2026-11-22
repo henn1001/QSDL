@@ -86,6 +86,7 @@ class CanonicalImportURI(PlainNameImportURI):
                 glob_args=self.glob_args,
                 encoding=encoding,
                 add_to_local_models=True,
+                # Imports use the same active directive specs as the invoking model.
                 model_params=model._tx_model_params,
             )
 

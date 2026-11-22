@@ -25,7 +25,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | SYN-006 | Field names            | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
 | SYN-007 | Operation names        | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
 | SYN-008 | Argument names         | Must use `camelCase` or `snake_case`                          | `validate_member_names` |
-| SYN-009 | Custom directive names | Must use `camelCase`, `snake_case`, or `kebab-case`           | `validate_member_names` |
+| SYN-009 | Directive names        | Must use `camelCase`, `snake_case`, or `kebab-case`           | Owner directive binding |
 | SYN-010 | Namespace values       | Must be one alphanumeric identifier beginning with a letter   | `validate_namespaces`   |
 
 ### Uniqueness Constraints
@@ -110,7 +110,7 @@ Rules are organized by category and may be referenced by their rule identifier (
 | SEM-801 | An Api may contain zero or more Operations                                    | Empty top-level APIs are no-ops; empty object APIs suppress automatic CRUD              |
 | SEM-802 | An Operation defines an HTTP endpoint (method, path, parameters, return type) | `name(args) : ReturnType`                                                               |
 | SEM-803 | A custom Operation must specify `@path(...)` to define the URI template       | Required; no default path is derived from the operation name                            |
-| SEM-804 | An Operation may specify `@method(...)` to define HTTP verb                   | Valid values: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`                                   |
+| SEM-804 | An Operation may specify `@method(...)` to define HTTP verb                   | Valid unquoted tokens: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`                                   |
 | SEM-805 | An Operation may be marked `@pagination` to indicate list pagination support  | Must return an Object or Base                                                           |
 | SEM-806 | An Operation may declare response headers via `@headers(...)`                 | Headers are metadata on the HTTP response                                               |
 | SEM-807 | An Api can be used **multiple times** in a schema                             | Multiple Api blocks define separate custom endpoints                                    |
@@ -147,9 +147,12 @@ Rules are organized by category and may be referenced by their rule identifier (
 
 | ID      | Rule                                                                                                                                     |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| LOG-201 | Directives are **generator-agnostic by default** (DSL core directives) or **generator-specific** (`@openapi(...)`, `@spring(...)`, etc.) |
-| LOG-202 | Custom directives (`@myDirective(...)`) are preserved in the model and available to generators                                           |
-| LOG-203 | Each directive name may occur at most once on an entity; duplicates are rejected with a semantic validation error                        |
+| LOG-201 | Core directives take effect on their supported declarations in any order. The selected generator can declare additional names and supported owners. |
+| LOG-202 | Source directives are retained in source order. Names not recognized on a declaration remain opaque, unless the selected generator declares the name but rejects the owner. |
+| LOG-203 | Each exact directive name may occur at most once per declaration. The semantic error points to the second occurrence. |
+| LOG-204 | Invalid payloads for recognized directives are semantic errors at the offending directive. Core flags reject parentheses, except for the presence-based `@force-generate`. |
+
+See [Inspect a completed schema](../guides/library-generation.md#inspect-a-completed-schema) for directive values and origins.
 
 ### Schema Header Ordering
 

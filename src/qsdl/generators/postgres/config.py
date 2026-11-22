@@ -15,15 +15,17 @@
 """Generator Configuration"""
 
 from dataclasses import dataclass
-from enum import StrEnum
 
+from qsdl import dsl
 from qsdl.generators.base_config import BaseConfig
+from qsdl.generators.directive_payloads import decode_nonempty_string, validate_nonempty_string
 
 
-class Directive(StrEnum):
-    """Available directives"""
+def _decode_postgres_scalar(raw: dsl.RawDirective) -> str:
+    return decode_nonempty_string(raw).strip()
 
-    TYPE = "postgres"
+
+POSTGRES_SCALAR = dsl.DirectiveSpec("postgres", (dsl.Scalar,), _decode_postgres_scalar, validate_nonempty_string)
 
 
 @dataclass

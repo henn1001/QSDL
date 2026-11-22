@@ -12,122 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Directive normalization, parsing, and structural validation."""
+"""Bind captured directives and resolve response header types."""
 
 import ast
-import re
-from dataclasses import dataclass
-from enum import Enum
-from typing import overload
+from collections.abc import Sequence
+from typing import Any, cast, get_args, overload
 
-from textx import get_location
+from textx import get_location, get_model
 from textx.exceptions import TextXSemanticError
 
 from qsdl import dsl
-
-_HTTP_HEADER_NAME = re.compile(r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*\Z")
-
-DirectiveOwner = dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object | dsl.Field | dsl.Api | dsl.Operation
-
-
-class _Presence(Enum):
-    """How a grammar-native directive is represented on its owner."""
-
-    TRUTHY = "truthy"
-    NOT_NONE = "not_none"
-
-
-@dataclass(frozen=True)
-class _GrammarDirective:
-    """Transitional definition for a directive parsed into a model attribute.
-
-    Once every directive is captured by ``entity.directives`` in the grammar,
-    this compatibility registry and its special-presence checks can be removed.
-    """
-
-    name: str
-    attribute: str
-    presence: _Presence = _Presence.TRUTHY
-
-    def is_present(self, owner: DirectiveOwner) -> bool:
-        value = getattr(owner, self.attribute)
-        return value is not None if self.presence is _Presence.NOT_NONE else bool(value)
-
-
-_GRAMMAR_DIRECTIVES: dict[type[object], tuple[_GrammarDirective, ...]] = {
-    dsl.Enum: (_GrammarDirective("namespace", "namespace", _Presence.NOT_NONE),),
-    dsl.Base: (_GrammarDirective("namespace", "namespace", _Presence.NOT_NONE),),
-    dsl.Object: (_GrammarDirective("namespace", "namespace", _Presence.NOT_NONE),),
-    dsl.Api: (
-        _GrammarDirective("namespace", "namespace", _Presence.NOT_NONE),
-        _GrammarDirective("generate", "generate"),
-    ),
-    dsl.Field: (
-        _GrammarDirective("queryList", "is_query_list"),
-        _GrammarDirective("query", "is_query"),
-        _GrammarDirective("readOnly", "is_read_only"),
-        _GrammarDirective("writeOnly", "is_write_only"),
-        _GrammarDirective("composition", "is_composition"),
-        _GrammarDirective("aggregation", "is_aggregation"),
-        _GrammarDirective("opaque", "is_opaque"),
-        _GrammarDirective("unique", "is_unique"),
-        _GrammarDirective("hidden", "is_hidden"),
-        _GrammarDirective("transient", "is_transient"),
-        _GrammarDirective("ignore", "is_ignored"),
-        _GrammarDirective("override", "is_override"),
-        _GrammarDirective("minSize", "min_size", _Presence.NOT_NONE),
-        _GrammarDirective("maxSize", "max_size", _Presence.NOT_NONE),
-        _GrammarDirective("default", "default", _Presence.NOT_NONE),
-    ),
-    dsl.Operation: (
-        _GrammarDirective("path", "path", _Presence.NOT_NONE),
-        _GrammarDirective("method", "method", _Presence.NOT_NONE),
-        _GrammarDirective("pagination", "is_pageable"),
-        _GrammarDirective("consumes", "consumes", _Presence.NOT_NONE),
-        _GrammarDirective("produces", "produces", _Presence.NOT_NONE),
-    ),
-}
-
-
-def _split_directive_value(value: str) -> list[str]:
-    """Split a directive payload on top-level commas."""
-    values = []
-    current = []
-    quote = False
-    escaped = False
-    depth = 0
-
-    for char in value:
-        if quote:
-            current.append(char)
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == '"':
-                quote = False
-            continue
-
-        if char == '"':
-            quote = True
-            current.append(char)
-        elif char in "[{(":
-            depth += 1
-            current.append(char)
-        elif char in "]})":
-            depth -= 1
-            current.append(char)
-        elif char == "," and depth == 0:
-            values.append("".join(current).strip())
-            current = []
-        else:
-            current.append(char)
-
-    if quote or depth != 0:
-        raise ValueError("unterminated quoted value or grouped directive value")
-
-    values.append("".join(current).strip())
-    return values
+from qsdl.dsl.directives import CORE_SPECS, DIRECTIVE_NAME, HEADERS, ResponseHeader, _HeaderDeclaration
+from qsdl.dsl.models.directive import DirectiveOwner, DirectiveSpec, RawDirective
 
 
 @overload
@@ -152,11 +48,6 @@ def normalize_directive_value(value: str | None) -> str | None:
         if isinstance(decoded, str):
             return decoded
     return value
-
-
-def _present_grammar_directive_names(owner: DirectiveOwner) -> set[str]:
-    """Return directives currently represented by grammar-populated attributes."""
-    return {definition.name for definition in _GRAMMAR_DIRECTIVES.get(type(owner), ()) if definition.is_present(owner)}
 
 
 def _directive_owner_label(owner: DirectiveOwner) -> str:
@@ -192,16 +83,84 @@ def _directive_owners(schema: dsl.Schema) -> list[DirectiveOwner]:
     ]
 
 
-def validate_directives(schema: dsl.Schema) -> None:
-    """Reject repeated directive names on the same model element."""
-    for owner in _directive_owners(schema):
-        seen_names = _present_grammar_directive_names(owner)
+def validate_directive_specs(specs: Sequence[DirectiveSpec[Any]]) -> dict[str, DirectiveSpec[Any]]:
+    """Validate external definitions and index them by exact name."""
+    if not isinstance(specs, Sequence):
+        raise TypeError("directive_specs must be a sequence of DirectiveSpec instances")
+    supported_owners = get_args(DirectiveOwner.__value__)
+    by_name = {}
+    for spec in specs:
+        if not isinstance(spec, DirectiveSpec):
+            raise TypeError("directive_specs must contain only DirectiveSpec instances")
+        if not isinstance(spec.name, str) or DIRECTIVE_NAME.fullmatch(spec.name) is None:
+            raise TypeError(f"invalid directive name: {spec.name!r}")
+        if spec.name in CORE_SPECS:
+            raise TypeError(f"directive @{spec.name} conflicts with a core directive")
+        if spec.name in by_name:
+            raise TypeError(f"duplicate directive spec @{spec.name}")
+        if (
+            not isinstance(spec.owners, tuple)
+            or not spec.owners
+            or any(owner not in supported_owners for owner in spec.owners)
+        ):
+            raise TypeError(f"directive @{spec.name} must declare supported QSDL owner classes")
+        if not callable(spec.decode) or (spec.validate_value is not None and not callable(spec.validate_value)):
+            raise TypeError(f"directive @{spec.name} must declare callable decoders and validators")
+        by_name[spec.name] = spec
+    return by_name
 
-        for directive in owner.directives:
-            if directive.name in seen_names:
-                msg = f"The {_directive_owner_label(owner)} specifies @{directive.name} more than once."
-                raise TextXSemanticError(msg, **get_location(directive))
-            seen_names.add(directive.name)
+
+def bind_directives(owner: DirectiveOwner) -> None:
+    """Decode and attach the complete directive list of a textX owner."""
+    active_specs = get_model(owner)._tx_model_params.get("directive_specs", {})
+    nodes = []
+    seen = set()
+    for capture in owner.directives:
+        location = get_location(capture)
+        name = capture.name
+        if name in seen:
+            msg = f"The {_directive_owner_label(owner)} specifies @{name} more than once."
+            raise TextXSemanticError(msg, **location)
+        seen.add(name)
+        if DIRECTIVE_NAME.fullmatch(name) is None:
+            msg = f"Directive name {name!r} must use camelCase, snake_case, or kebab-case."
+            raise TextXSemanticError(msg, **location)
+
+        raw = RawDirective(name, capture.has_parens, (capture.value or "") if capture.has_parens else None, location)
+        spec = CORE_SPECS.get(name)
+        if spec is not None and not isinstance(owner, spec.owners):
+            spec = None
+        if spec is None and name in active_specs:
+            spec = active_specs[name]
+            if not isinstance(owner, spec.owners):
+                msg = f"@{name} is not supported on {_directive_owner_label(owner)}."
+                raise TextXSemanticError(msg, **location)
+
+        if spec is None:
+            value = normalize_directive_value(raw.raw_value)
+        else:
+            try:
+                value = spec.decode(raw)
+                if spec is not HEADERS and spec.validate_value is not None:
+                    spec.validate_value(value)
+            except ValueError as exc:
+                msg = f"Invalid @{name} on {_directive_owner_label(owner)}: {exc}."
+                raise TextXSemanticError(msg, **location) from exc
+
+        nodes.append(
+            dsl.Directive(
+                owner,
+                name,
+                value,
+                spec,
+                location=location,
+                _raw=raw if spec is None else None,
+                _tx_position=capture._tx_position,
+                _tx_position_end=capture._tx_position_end,
+            )
+        )
+
+    owner.directives = dsl.Directives(owner, nodes)
 
 
 def _value_types(schema: dsl.Schema) -> dict[str, dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object]:
@@ -223,65 +182,21 @@ def _value_types(schema: dsl.Schema) -> dict[str, dsl.Scalar | dsl.Enum | dsl.Ba
     return types
 
 
-def parse_response_headers(schema: dsl.Schema, operation: dsl.Operation) -> list[dsl.Argument]:
-    """Parse the opaque ``@headers(...)`` directive for an operation.
-
-    Header declarations remain raw directive text in the grammar. This
-    function resolves them into the argument-shaped objects consumed by the
-    generators.
-    """
-    directives = [directive for directive in operation.directives if directive.name == "headers"]
-    if not directives:
-        return []
-
-    # Duplicate directive names are rejected centrally before operation parsing.
-    directive = directives[0]
-    if not directive.value:
-        msg = f"The Operation {operation.name} must specify at least one response header in @headers(...)."
-        raise TextXSemanticError(msg, **get_location(operation))
-
-    try:
-        declarations = _split_directive_value(directive.value)
-    except ValueError as exc:
-        msg = f"The response headers of Operation {operation.name} are malformed: {exc}."
-        raise TextXSemanticError(msg, **get_location(operation)) from exc
+def complete_response_headers(schema: dsl.Schema, operation: dsl.Operation) -> None:
+    """Resolve typed declarations after imported types have been merged."""
+    directive = operation.directives.get(HEADERS)
+    if directive is None:
+        return
 
     value_types = _value_types(schema)
     response_headers = []
-
-    for declaration in declarations:
-        if not declaration:
-            msg = f"The response headers of Operation {operation.name} contain an empty declaration."
-            raise TextXSemanticError(msg, **get_location(operation))
-
-        declaration = normalize_directive_value(declaration)
-        name, separator, value = declaration.partition(":")
-        name = name.strip()
-        value = value.strip()
-
-        if not separator or not name or not value:
-            msg = (
-                f"The response header declaration {declaration!r} of Operation {operation.name} must use "
-                "'name: Type' syntax."
-            )
-            raise TextXSemanticError(msg, **get_location(operation))
-
-        if _HTTP_HEADER_NAME.fullmatch(name) is None:
-            msg = f"The response header name {name!r} of Operation {operation.name} is invalid."
-            raise TextXSemanticError(msg, **get_location(operation))
-
-        is_array = value.startswith("[") or value.endswith("]")
-        if is_array:
-            if not (value.startswith("[") and value.endswith("]")):
-                msg = f"The response header declaration {declaration!r} of Operation {operation.name} is malformed."
-                raise TextXSemanticError(msg, **get_location(operation))
-            value = value[1:-1].strip()
-
-        value_type = value_types.get(value)
+    for declaration in cast(tuple[_HeaderDeclaration, ...], directive.value):
+        value_type = value_types.get(declaration.type_name)
         if value_type is None:
-            msg = f"The response header {name!r} of Operation {operation.name} references unknown type {value!r}."
-            raise TextXSemanticError(msg, **get_location(operation))
-
-        response_headers.append(dsl.Argument(operation, name, value_type, is_array=is_array))
-
-    return response_headers
+            msg = (
+                f"The response header {declaration.name!r} of Operation {operation.name} "
+                f"references unknown type {declaration.type_name!r}."
+            )
+            raise TextXSemanticError(msg, **directive.location)
+        response_headers.append(ResponseHeader(declaration.name, value_type, declaration.is_array))
+    operation.directives._complete_source(HEADERS, tuple(response_headers))

@@ -17,12 +17,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from qsdl import dsl
+from qsdl.dsl.models.directive import DirectiveOwnerModel, Directives
+
+if TYPE_CHECKING:
+    from qsdl.dsl.directives import FieldDirectiveView
 
 
 @dataclass
-class Field:
+class Field(DirectiveOwnerModel):
     """textX Field class"""
 
     # required by textX
@@ -38,27 +43,15 @@ class Field:
     description: list[str] = field(default_factory=list)
     is_array: bool = False
     is_required: bool = False
-    # Special directives
-    is_query: bool = False
-    is_query_list: bool = False
-    is_read_only: bool = False
-    is_write_only: bool = False
-    is_composition: bool = False
-    is_aggregation: bool = False
-    is_opaque: bool = False
-    is_unique: bool = False
-    is_hidden: bool = False
-    is_transient: bool = False
-    is_ignored: bool = False
-    is_override: bool = False
-    min_size: int | None = None
-    max_size: int | None = None
-    default: str | None = None
-    # Custom directives
-    directives: list[dsl.Directive] = field(default_factory=list)
-
-    # addons
-    is_relation: bool = False
+    # Source and synthetic directives, bound after parsing
+    directives: Directives = None
 
     # required by textX
     _tx_fqn: str = "entity.Field"
+
+    @property
+    def directive(self) -> FieldDirectiveView:
+        """Return typed access to this owner's core directives."""
+        from qsdl.dsl.directives import FieldDirectiveView
+
+        return FieldDirectiveView(self.directives)

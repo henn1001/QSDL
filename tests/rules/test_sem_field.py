@@ -162,8 +162,8 @@ class TestSemField:
         """)
         obj = xtx.get_children_of_object(schema)[0]
         fields = {f.name: f for f in obj.fields}
-        assert fields["createdAt"].is_read_only is True
-        assert fields["name"].is_read_only is False
+        assert fields["createdAt"].directive.is_read_only
+        assert not fields["name"].directive.is_read_only
 
     def test_SEM_605_field_writeOnly_positive(self, parse: ParseFixture) -> None:
         """SEM-605: A Field may be write-only (@writeOnly)."""
@@ -175,8 +175,8 @@ class TestSemField:
         """)
         obj = xtx.get_children_of_object(schema)[0]
         fields = {f.name: f for f in obj.fields}
-        assert fields["password"].is_write_only is True
-        assert fields["username"].is_write_only is False
+        assert fields["password"].directive.is_write_only
+        assert not fields["username"].directive.is_write_only
 
     def test_SEM_606_readOnly_writeOnly_conflict_negative(
         self, parse_expect_semantic_error: ParseExpectErrorFixture
@@ -200,7 +200,7 @@ class TestSemField:
         """)
         obj = xtx.get_children_of_object(schema)[0]
         field = next(f for f in obj.fields if f.name == "field")
-        assert field.is_override is True
+        assert field.directive.is_override
         assert field.value.name == "Long"
 
     def test_SEM_607_override_preserves_field_positive(self, parse: ParseFixture) -> None:
@@ -299,9 +299,9 @@ class TestSemField:
         """)
         searchable = xtx.get_children_of_object(schema)[0]
         fields = {field.name: field for field in searchable.fields}
-        assert fields["name"].is_query is True
-        assert fields["tags"].is_query_list is True
-        assert fields["status"].is_query is True
+        assert fields["name"].directive.is_query
+        assert fields["tags"].directive.is_query_list
+        assert fields["status"].directive.is_query
 
     @pytest.mark.parametrize("directive", ["query", "queryList"])
     @pytest.mark.parametrize(
@@ -338,7 +338,7 @@ class TestSemField:
         """)
         item = xtx.get_children_of_object(schema)[0]
         field = next(field for field in item.fields if field.name == "metadata")
-        assert field.is_opaque is True
+        assert field.directive.is_opaque
 
     def test_SEM_611_opaque_non_base_negative(self, parse: ParseFixture) -> None:
         """SEM-611: @opaque rejects a Scalar-valued field."""

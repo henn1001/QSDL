@@ -37,19 +37,19 @@ abstract class {{base.name}}{% if base.supertypes %} <extends {% for st in base.
 @startuml
 
 {% for object in xtx.get_children_of_type("Object", schema) %}
-{% if object.namespace %}
-namespace {{object.namespace}} #DDDDDD {
+{% if object.directive.namespace and object.directive.namespace.value %}
+namespace {{object.directive.namespace.value}} #DDDDDD {
 {% endif %}
 class {{object.name}} {% if object.supertypes %}<implements {% for st in object.supertypes %}{{st.name}}{{", " if not loop.last}}{% endfor %}>{% endif %} {
-    {% for field in util.get_fields_as_list(object) if not field.is_composition and not field.is_aggregation %}
+    {% for field in util.get_fields_as_list(object) if not field.directive.is_composition and not field.directive.is_aggregation %}
     {{field.name}}: {{"[" if field.is_array}}{{field.value.name}}{{"]" if field.is_array}}
     {% endfor %}
 
     {% for operation in object.api.operations %}
-    {method} {{operation.method | upper}} {{operation.name}}()
+    {method} {{operation.directive.method.value | upper}} {{operation.name}}()
     {% endfor %}
 }
-{% if object.namespace %}
+{% if object.directive.namespace and object.directive.namespace.value %}
 }
 {% endif %}
 
@@ -57,10 +57,10 @@ class {{object.name}} {% if object.supertypes %}<implements {% for st in object.
 
 {% for obj in xtx.get_children_of_type("Object", schema) %}
   {% for field in util.get_aggregation(obj) %}
-{{field.parent.namespace + "." if field.parent.namespace}}{{field.parent.name}} --o {{obj.namespace + "." if obj.namespace}}{{obj.name}}
+{{field.parent.directive.namespace.value + "." if field.parent.directive.namespace and field.parent.directive.namespace.value}}{{field.parent.name}} --o {{obj.directive.namespace.value + "." if obj.directive.namespace and obj.directive.namespace.value}}{{obj.name}}
   {% endfor %}
   {% for field in util.get_compositions(obj) %}
-{{field.parent.namespace + "." if field.parent.namespace}}{{field.parent.name}} --* {{obj.namespace + "." if obj.namespace}}{{obj.name}}
+{{field.parent.directive.namespace.value + "." if field.parent.directive.namespace and field.parent.directive.namespace.value}}{{field.parent.name}} --* {{obj.directive.namespace.value + "." if obj.directive.namespace and obj.directive.namespace.value}}{{obj.name}}
   {% endfor %}
 {% endfor %}
 

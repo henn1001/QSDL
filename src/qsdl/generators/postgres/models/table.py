@@ -48,7 +48,7 @@ class Table:
 
         for dsl_field in dsl_fields:
             # Skip fields that are transient - they should not be persisted to the DB
-            if dsl_field.is_transient:
+            if dsl_field.directive.is_transient:
                 continue
             # Handle arrays of Object types - either composition or aggregation
             if isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array:
@@ -61,19 +61,19 @@ class Table:
                 new_column.name = qfilter.snakecase(dsl_field.name).lower()
                 new_column.type = "JSONB"
                 new_column.is_required = dsl_field.is_required
-                new_column.is_unique = dsl_field.is_unique
+                new_column.is_unique = dsl_field.directive.is_unique
                 table.columns.append(new_column)
                 continue  # Skip join table creation
 
             # Handle Base types with new semantics
             if isinstance(dsl_field.value, dsl.Base):
-                if dsl_field.is_opaque:
+                if dsl_field.directive.is_opaque:
                     # @opaque = JSONB storage (FIXED SEMANTICS!)
                     new_column = Column()
                     new_column.name = qfilter.snakecase(dsl_field.name).lower()
                     new_column.type = "JSONB"
                     new_column.is_required = dsl_field.is_required
-                    new_column.is_unique = dsl_field.is_unique
+                    new_column.is_unique = dsl_field.directive.is_unique
                     table.columns.append(new_column)
                 else:
                     # DEFAULT = Flatten columns (NEW DEFAULT!)

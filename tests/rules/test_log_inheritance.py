@@ -101,7 +101,7 @@ class TestLogInheritance:
         fields = [field for field in obj.fields if field.name == "field"]
         assert len(fields) == 1
         assert fields[0].value.name == "Long"
-        assert fields[0].is_override is True
+        assert fields[0].directive.is_override
 
     def test_LOG_101_duplicate_supertype_positive(self, parse: ParseFixture) -> None:
         """LOG-101: Repeated inheritance of the same supertype does not duplicate fields."""
@@ -169,7 +169,7 @@ class TestLogInheritance:
         obj = xtx.get_children_of_object(schema)[0]
         field = next(f for f in obj.fields if f.name == "field")
         assert field.value.name == "Long"
-        assert field.is_override is True
+        assert field.directive.is_override
 
     def test_LOG_103_override_same_type_positive(self, parse: ParseFixture) -> None:
         """LOG-103: Override with same type is valid."""

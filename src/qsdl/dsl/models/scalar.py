@@ -16,20 +16,31 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from qsdl import dsl
+from qsdl.dsl.models.directive import DirectiveOwnerModel, Directives
+
+if TYPE_CHECKING:
+    from qsdl.dsl.directives import ScalarDirectiveView
 
 
 @dataclass
-class Scalar:
+class Scalar(DirectiveOwnerModel):
     """textX Scalar class"""
 
     # defined in entity.tx
     name: str
-    # Custom directives
-    directives: list[dsl.Directive] = field(default_factory=list)
+    directives: Directives = None
 
     # required by textX
     parent: dsl.Schema = None
     _tx_fqn: str = "entity.Scalar"
+
+    @property
+    def directive(self) -> ScalarDirectiveView:
+        """Return typed access to this owner's core directives."""
+        from qsdl.dsl.directives import ScalarDirectiveView
+
+        return ScalarDirectiveView(self.directives)

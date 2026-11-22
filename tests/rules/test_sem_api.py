@@ -44,7 +44,7 @@ class TestSemApi:
         """)
         apis = xtx.get_children_of_api(schema)
         assert len(apis) == 1
-        assert apis[0].namespace == "PublicApi"
+        assert apis[0].directive.namespace.value == "PublicApi"
         assert len(apis[0].operations) == 1
 
     def test_SEM_801_empty_top_level_api_positive(self, parse: ParseFixture) -> None:
@@ -84,7 +84,7 @@ class TestSemApi:
         operations = xtx.get_children_of_operation(schema)
         op = next(o for o in operations if o.name == "getUsers")
         assert op.name == "getUsers"
-        assert op.path == "/users"
+        assert op.directive.path.value == "/users"
         assert op.is_array is True
 
     def test_SEM_803_operation_path_positive(self, parse: ParseFixture) -> None:
@@ -96,7 +96,7 @@ class TestSemApi:
         """)
         operations = xtx.get_children_of_operation(schema)
         op = next(o for o in operations if o.name == "findByEmail")
-        assert op.path == "/users/find-by-email"
+        assert op.directive.path.value == "/users/find-by-email"
 
     def test_SEM_803_operation_without_path_negative(
         self, parse_expect_semantic_error: ParseExpectErrorFixture
@@ -112,11 +112,11 @@ class TestSemApi:
         """SEM-804: Operation may specify @method(GET)."""
         schema = parse("""
             extend api {
-                getItem: String @path("item") @method("GET")
+                getItem: String @path("item") @method(GET)
             }
         """)
         op = xtx.get_children_of_operation(schema)[0]
-        assert op.method == "GET"
+        assert op.directive.method.value == "GET"
 
     def test_SEM_804_operation_method_post_positive(self, parse: ParseFixture) -> None:
         """SEM-804: Operation may specify @method(POST)."""
@@ -127,7 +127,7 @@ class TestSemApi:
         """)
         operations = xtx.get_children_of_operation(schema)
         op = next(o for o in operations if o.name == "createItem")
-        assert op.method == "POST"
+        assert op.directive.method.value == "POST"
 
     def test_SEM_804_operation_method_put_positive(self, parse: ParseFixture) -> None:
         """SEM-804: Operation may specify @method(PUT)."""
@@ -138,7 +138,7 @@ class TestSemApi:
         """)
         operations = xtx.get_children_of_operation(schema)
         op = next(o for o in operations if o.name == "updateItem")
-        assert op.method == "PUT"
+        assert op.directive.method.value == "PUT"
 
     def test_SEM_804_operation_method_patch_positive(self, parse: ParseFixture) -> None:
         """SEM-804: Operation may specify @method(PATCH)."""
@@ -149,7 +149,7 @@ class TestSemApi:
         """)
         operations = xtx.get_children_of_operation(schema)
         op = next(o for o in operations if o.name == "patchItem")
-        assert op.method == "PATCH"
+        assert op.directive.method.value == "PATCH"
 
     def test_SEM_804_operation_method_delete_positive(self, parse: ParseFixture) -> None:
         """SEM-804: Operation may specify @method(DELETE)."""
@@ -160,7 +160,7 @@ class TestSemApi:
         """)
         operations = xtx.get_children_of_operation(schema)
         op = next(o for o in operations if o.name == "deleteItem")
-        assert op.method == "DELETE"
+        assert op.directive.method.value == "DELETE"
 
     def test_SEM_805_operation_pagination_positive(self, parse: ParseFixture) -> None:
         """SEM-805: Operation may be marked @pagination.
@@ -177,7 +177,7 @@ class TestSemApi:
         """)
         operations = xtx.get_children_of_operation(schema)
         op = next(o for o in operations if o.name == "listItems")
-        assert op.is_pageable is True
+        assert op.directive.is_pageable
 
     def test_SEM_805_operation_no_pagination_positive(self, parse: ParseFixture) -> None:
         """SEM-805: Operation without @pagination is not pageable."""
@@ -187,7 +187,7 @@ class TestSemApi:
             }
         """)
         op = xtx.get_children_of_operation(schema)[0]
-        assert op.is_pageable is False
+        assert not op.directive.is_pageable
 
     def test_SEM_806_response_headers_preserve_http_names(self, parse: ParseFixture) -> None:
         """SEM-806: Response headers may use hyphenated HTTP header names."""
@@ -200,9 +200,7 @@ class TestSemApi:
         operation = next(
             operation for operation in xtx.get_children_of_operation(schema) if operation.name == "listUsers"
         )
-        headers_directive = next(directive for directive in operation.directives if directive.name == "headers")
-        assert headers_directive.value == "X-Total-Count: Int, X-Page-Number: Int"
-        assert [(header.name, header.value.name, header.is_array) for header in operation.response_headers] == [
+        assert [(header.name, header.value.name, header.is_array) for header in operation.directive.headers.value] == [
             ("X-Total-Count", "Int", False),
             ("X-Page-Number", "Int", False),
         ]
@@ -266,8 +264,8 @@ class TestSemApi:
             }
         """)
         operations = xtx.get_children_of_operation(schema)
-        routes = [(operation.method, operation.path) for operation in operations]
-        assert [operation.path for operation in operations] == ["/items", "/items"]
+        routes = [(operation.directive.method.value, operation.directive.path.value) for operation in operations]
+        assert [operation.directive.path.value for operation in operations] == ["/items", "/items"]
         assert len(routes) == len(set(routes))
 
     def test_SEM_809_duplicate_routes_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:

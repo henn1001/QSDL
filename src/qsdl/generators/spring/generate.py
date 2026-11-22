@@ -21,16 +21,17 @@ import qsdl.dsl.textx as xtx
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
 from qsdl.generators import Generator
+from qsdl.generators.directive_payloads import embedded_scalar_mappings
 from qsdl.generators.openapi import generator as openapi_generator
 from qsdl.generators.openapi.config import IDTYPE as OpenApiIDType
-from qsdl.generators.openapi.config import OpenApiConfig
+from qsdl.generators.openapi.config import OPENAPI_SCALAR, OpenApiConfig
 from qsdl.generators.postgres import generator as postgres_generator
-from qsdl.generators.postgres.config import PostgresConfig
+from qsdl.generators.postgres.config import POSTGRES_SCALAR, PostgresConfig
 from qsdl.render import render_text
 
 from . import import_resolver as resolver
 from . import util
-from .config import IDTYPE, Database, SpringConfig
+from .config import IDTYPE, SPRING_CONTROLLER, SPRING_PACKAGE, SPRING_SCALAR, Database, SpringConfig
 from .models import ApiClass, EnumClass, ModelClass, Package
 
 
@@ -133,6 +134,7 @@ class SpringGenerator(Generator):
     """Generate artifacts for the spring target."""
 
     config_class = SpringConfig
+    directive_specs = (SPRING_CONTROLLER, SPRING_PACKAGE, SPRING_SCALAR)
 
     def generate(self, schema: Schema, config: SpringConfig, output_path: Path | None = None) -> GeneratedFiles:
         """Generate Spring, OpenAPI, and PostgreSQL artifacts in memory."""
@@ -348,13 +350,17 @@ class SpringGenerator(Generator):
         openapi_config = OpenApiConfig(id_type=OpenApiIDType(config.id_type.value))
         postgres_config = PostgresConfig(table_prefix=config.table_prefix)
 
-        files.extend(
-            openapi_generator.generate(schema, openapi_config, output_path),
-            prefix="src/main/resources",
-        )
-        files.extend(
-            postgres_generator.generate(schema, postgres_config, output_path),
-            prefix="src/main/resources/db/migration",
-        )
+        # Bundled artifacts still use their own valid mappings, while only
+        # Spring's specs bind to the schema for this generation request.
+        with embedded_scalar_mappings(schema, OPENAPI_SCALAR):
+            files.extend(
+                openapi_generator.generate(schema, openapi_config, output_path),
+                prefix="src/main/resources",
+            )
+        with embedded_scalar_mappings(schema, POSTGRES_SCALAR):
+            files.extend(
+                postgres_generator.generate(schema, postgres_config, output_path),
+                prefix="src/main/resources/db/migration",
+            )
 
         return files

@@ -33,7 +33,6 @@ class entity.Scalar  {
 class entity.Enum  {
   description : Description
   name : ID
-  namespace : STRING
   values : list[ID]
 }
 
@@ -41,14 +40,12 @@ class entity.Enum  {
 class entity.Base  {
   description : Description
   name : ID
-  namespace : STRING
 }
 
 
 class entity.Object  {
   description : Description
   name : ID
-  namespace : STRING
 }
 
 
@@ -57,28 +54,11 @@ class entity.Field  {
   name : ID
   is_array : optional<BOOL>
   is_required : optional<BOOL>
-  is_query_list : optional<BOOL>
-  is_query : optional<BOOL>
-  is_read_only : optional<BOOL>
-  is_write_only : optional<BOOL>
-  is_composition : optional<BOOL>
-  is_aggregation : optional<BOOL>
-  is_opaque : optional<BOOL>
-  is_unique : optional<BOOL>
-  is_hidden : optional<BOOL>
-  is_transient : optional<BOOL>
-  is_ignored : optional<BOOL>
-  is_override : optional<BOOL>
-  min_size : INT
-  max_size : INT
-  default : STRING
 }
 
 
 class entity.Api  {
   description : Description
-  namespace : STRING
-  generate : optional<list[STRING]>
 }
 
 
@@ -87,11 +67,6 @@ class entity.Operation  {
   name : ID
   is_array : optional<BOOL>
   is_required : optional<BOOL>
-  path : STRING
-  method : Method
-  is_pageable : optional<BOOL>
-  consumes : STRING
-  produces : STRING
 }
 
 
@@ -106,6 +81,7 @@ class entity.Argument  {
 
 class entity.Directive  {
   name : ID
+  has_parens : optional<BOOL>
   value : DirectiveValue
 }
 
@@ -142,12 +118,11 @@ entity.Argument -->  entity.ValueType: value
 legend
   Match rules:
   |= Name  |= Rule details |
-  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
-  | DirectiveValue | (\?:(\?:\"(\?:\\\\.\|[^\"\\\\])*\")\|[^)])+ |
   | Description |  |
-  | Method | GET\|POST\|PUT\|PATCH\|DELETE |
-  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
+  | DirectiveValue | (\?:\"(\?:\\\\.\|[^\"\\\\])*\"\|'(\?:\\\\.\|[^'\\\\])*'\|[^()\"'])+ |
+  | MultiLine | (\?ms)\\\"\{3\}(.+\?)\\\"\{3\} |
   | Comment | \\/\\/.*$ |
+  | SingleLine | \\\"([^\\\"\\n\\r]+\?)\\\" |
 end legend
 
 @enduml

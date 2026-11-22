@@ -20,12 +20,11 @@ from typing import Self
 
 import stringcase
 
-import qsdl.dsl.util as qutil
 from qsdl import dsl
 
 from .. import models as spring
 from .. import util
-from ..config import Directive
+from ..config import SPRING_PACKAGE
 
 
 class EnumClass:
@@ -47,10 +46,10 @@ class EnumClass:
         enum.name = _ref.name
         enum.constants.extend(_ref.values)
 
-        package_directive = qutil.get_directive_of_name(Directive.PACKAGE, _ref)
+        package_directive = _ref.directives.get(SPRING_PACKAGE)
         if package_directive:
             enum.package.set_namespace(package_directive.value)
-        elif _ref.namespace:
-            enum.package.set_namespace(stringcase.lowercase(_ref.namespace))
+        elif (namespace := _ref.directive.namespace) and namespace.value:
+            enum.package.set_namespace(stringcase.lowercase(namespace.value))
 
         return enum

@@ -26,7 +26,6 @@ Import:
 Scalar:
     'scalar' name=ID
 
-    // Custom directives
     directives*=Directive
 ;
 
@@ -34,10 +33,6 @@ Enum:
     description=Description?
     'enum' name=ID
 
-    // Special directives
-    ('@namespace(' namespace=STRING ')')?
-
-    // Custom directives
     directives*=Directive
 
     '{'
@@ -52,10 +47,6 @@ Base:
 
     ('extends' supertypes+=[Base][','])?
 
-    // Special directives
-    ('@namespace(' namespace=STRING ')')?
-
-    // Custom directives
     directives*=Directive
 
     '{'
@@ -70,10 +61,6 @@ Object:
 
     ('extends' supertypes+=[Base][','])?
 
-    // Special directives
-    ('@namespace(' namespace=STRING ')')?
-
-    // Custom directives
     directives*=Directive
 
     '{'
@@ -97,26 +84,6 @@ Field:
     (']')?
     (is_required?='!')?
 
-    // Special directives in any order
-    (
-        is_query_list?='@queryList'
-        is_query?='@query'
-        is_read_only?='@readOnly'
-        is_write_only?='@writeOnly'
-        is_composition?='@composition'
-        is_aggregation?='@aggregation'
-        is_opaque?='@opaque'
-        is_unique?='@unique'
-        is_hidden?='@hidden'
-        is_transient?='@transient'
-        is_ignored?='@ignore'
-        is_override?='@override'
-        ('@minSize(' min_size=INT ')')?
-        ('@maxSize(' max_size=INT ')')?
-        ('@default(' default=STRING ')')?
-    )#
-
-    // Custom directives
     directives*=Directive
 ;
 
@@ -125,13 +92,6 @@ Api :
 
     'extend' 'api'
 
-    // Special directives in any order
-    (
-        ('@namespace(' namespace=STRING ')')?
-        ('@generate(' generate*=STRING[','] ')')?
-    )#
-
-    // Custom directives
     directives*=Directive
 
     '{'
@@ -157,16 +117,6 @@ Operation:
     (']')?
     (is_required?='!')?
 
-    // Special directives in any order
-    (
-        ('@path(' path=STRING ')')?
-        ('@method(' method=Method ')')?
-        is_pageable?='@pagination'
-        ('@consumes(' consumes=STRING ')')?
-        ('@produces(' produces=STRING ')')?
-    )#
-
-    // Custom directives
     directives*=Directive
 ;
 
@@ -182,7 +132,7 @@ Argument:
     value=[ValueType]
     (']')?
 
-    // Special directives in any order
+    // Argument location and requiredness modifiers
     (
         (is_required?='!')?
         (is_query?='?')?
@@ -190,15 +140,11 @@ Argument:
     )#
 ;
 
-Method:
-    "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
-;
-
 Directive:
     '@'
     name=ID
-    // Directive payloads are interpreted during post-processing.
-    ('(' value=DirectiveValue? ')')?
+    // Owners bind these captures after reference resolution.
+    (&'(' has_parens?='(' value=DirectiveValue? ')')?
 ;
 
 Description:
@@ -222,5 +168,5 @@ ID:
 ;
 
 DirectiveValue:
-    /(?:(?:"(?:\\.|[^"\\])*")|[^)])+/
+    /(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^()"'])+/
 ;

@@ -1,3 +1,12 @@
+from pathlib import Path
+
+import pytest
+from textx.exceptions import TextXSemanticError
+
+from qsdl.dsl.textx import parse_schema
+from qsdl.generators.spring import generator
+from qsdl.generators.spring.config import SPRING_CONTROLLER, SPRING_PACKAGE
+
 from .spring_test_utils import SpringTestUtils
 
 
@@ -95,6 +104,11 @@ class TestSpringPackaging:
                 }
             }
 
+            type EmptyApi @namespace("ModelNamespace") @spring-package("owner") {
+                name: String!
+                extend api @namespace("") { emptyPing: Void @path("empty") }
+            }
+
             type PackageApi @namespace("ModelNamespace") @spring-package("model") {
                 name: String!
 
@@ -104,10 +118,23 @@ class TestSpringPackaging:
             }
         """
 
+        parsed = parse_schema(raw_schema=schema, directive_specs=generator.directive_specs)
+        apis = {obj.name: obj.api for obj in parsed.types}
+        for name, origin, value in (
+            ("Inherited", "synthetic", "InheritedNamespace"),
+            ("NamespaceApi", "source", "ApiNamespace"),
+            ("EmptyApi", "source", ""),
+        ):
+            api = apis[name]
+            node = api.directive.namespace
+            assert node.origin == origin and node.value == value
+            assert node.parent is api and (node.location is None) == (origin == "synthetic")
+
         files = SpringTestUtils.generate(schema)
 
         for package, name in (
             ("owner", "Inherited"),
+            ("owner", "EmptyApi"),
             ("apinamespace", "NamespaceApi"),
             ("api", "PackageApi"),
         ):
@@ -197,3 +224,93 @@ class TestSpringPackaging:
             "import app.api.owner.mapping.EpicMapper;",
             "import app.api.other.EpicService;",
         )
+
+
+def test_package_example_artifact_parity_under_reordering() -> None:
+    example = Path(__file__).resolve().parents[4] / "examples/04-apis/16-package-and-controller-directives/schema.qsdl"
+    raw = example.read_text(encoding="utf-8")
+    reordered = raw.replace(
+        '@namespace("Projects") @spring-package("project")',
+        '@spring-package("project") @namespace("Projects")',
+    ).replace(
+        '@namespace("Operations") @spring-package("operations") @spring-controller("Project")',
+        '@spring-controller("Project") @spring-package("operations") @namespace("Operations")',
+    )
+    assert reordered != raw
+    before, after = SpringTestUtils.generate(raw), SpringTestUtils.generate(reordered)
+    assert list(before) == list(after)
+    assert "projectHealth(@PathVariable" in after.text("src/main/java/app/api/project/web/ProjectApi.java")
+
+
+def test_spring_package_and_controller_activation() -> None:
+    raw = """
+        type Foo @spring-package("pkg") @namespace("Domain") @spring-pakage(unquoted) {
+            label: String @readOnly
+            extend api @spring-controller("Foo") {
+                run(): String @path("run") @headers(X-Token: String) @method(POST)
+            }
+        }
+    """
+    (plain,) = parse_schema(raw_schema=raw).types
+    assert plain.directives[0].spec is None
+    assert plain.directives.get(SPRING_PACKAGE) is None
+    assert plain.api.directives.get(SPRING_CONTROLLER) is None
+
+    (foo,) = parse_schema(raw_schema=raw, directive_specs=generator.directive_specs).types
+    assert foo.directives.get(SPRING_PACKAGE) is foo.directives[0]
+    assert foo.directives[0].value == "pkg"
+    assert foo.directives.by_name("spring-pakage").spec is None
+    assert foo.api.directives.get(SPRING_CONTROLLER) is foo.api.directives[0]
+    assert foo.api.directives[0].value == "Foo"
+
+
+@pytest.mark.parametrize(
+    ("raw", "name", "message"),
+    [
+        ("type Foo @spring-package {}", "spring-package", "Invalid @spring-package"),
+        ('type Foo @spring-package("") {}', "spring-package", "Invalid @spring-package"),
+        ("type Foo @spring-package(pkg) {}", "spring-package", "Invalid @spring-package"),
+        ('scalar Foo @spring-package("pkg")', "spring-package", "not supported"),
+        ("extend api @spring-controller(Foo) {}", "spring-controller", "Invalid @spring-controller"),
+        ('type Foo @spring-controller("Foo") {}', "spring-controller", "not supported"),
+    ],
+)
+def test_invalid_spring_directives_are_only_errors_with_spring(raw: str, name: str, message: str) -> None:
+    assert parse_schema(raw_schema=raw).types[0].directives.by_name(name).spec is None
+    with pytest.raises(TextXSemanticError, match=message) as error:
+        SpringTestUtils.generate(raw)
+    assert (error.value.line, error.value.col) == (1, raw.index(f"@{name}") + 1)
+
+
+def test_synthetic_operation_models_have_independent_package_nodes(monkeypatch: pytest.MonkeyPatch) -> None:
+    from qsdl import dsl
+    from qsdl.generators.spring.models import ModelClass
+
+    recipients = {}
+    build_model = ModelClass.build
+
+    def capture(model: ModelClass, ref: dsl.Base | dsl.Object) -> ModelClass:
+        recipients[ref.name] = ref
+        return build_model(model, ref)
+
+    monkeypatch.setattr(ModelClass, "build", capture)
+    schema = parse_schema(
+        raw_schema="""
+        extend api @spring-package("pkg") {
+            search(name: String?, description: String?): String @path("search")
+            run(label: String): String @path("run") @method(POST)
+        }
+        """,
+        directive_specs=generator.directive_specs,
+    )
+    files = generator.generate(schema, generator.config_class())
+    assert files.exists("src/main/java/app/api/pkg/contract/SearchFilter.java")
+    assert files.exists("src/main/java/app/api/pkg/contract/RunRequest.java")
+
+    original = schema.types[0].directives.get(SPRING_PACKAGE)
+    filter_ref, request_ref = (recipients[name] for name in ("SearchFilter", "RunRequest"))
+    for ref in (filter_ref, request_ref):
+        node = ref.directives.get(SPRING_PACKAGE)
+        assert node is ref.directives[0] and node is not original
+        assert node.origin == "synthetic" and node.parent is ref and node.value == original.value
+    assert filter_ref.directives[0] is not request_ref.directives[0]

@@ -21,10 +21,11 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass, is_dataclass
 from pathlib import Path
-from typing import get_type_hints
+from typing import Any, ClassVar, get_type_hints
 
 from qsdl.artifacts import GeneratedFiles
-from qsdl.dsl import Schema
+from qsdl.dsl import DirectiveSpec, Schema
+from qsdl.dsl.processors.directive_parser import validate_directive_specs
 from qsdl.exceptions import QsdlException
 from qsdl.generators.base_config import BaseConfig
 
@@ -37,6 +38,7 @@ class Generator(ABC):
     """Explicit generator plugin contract."""
 
     config_class: GeneratorConfigClass
+    directive_specs: ClassVar[tuple[DirectiveSpec[Any], ...]] = ()
 
     @abstractmethod
     def generate(self, schema: Schema, config: GeneratorConfig, output_path: Path | None) -> GeneratedFiles:
@@ -51,6 +53,9 @@ def validate_generator(plugin: Generator) -> None:
         and issubclass(plugin.config_class, BaseConfig)
     ):
         raise TypeError("generator config_class must be a BaseConfig dataclass")
+    if not isinstance(plugin.directive_specs, tuple):
+        raise TypeError("generator directive_specs must be a tuple")
+    validate_directive_specs(plugin.directive_specs)
     signature = inspect.signature(plugin.generate)
     if len(signature.parameters) != 3:
         raise TypeError("generator method must accept exactly schema, config, and output_path")
@@ -74,6 +79,11 @@ class GeneratorDefinition:
     def generator(self) -> GeneratorType:
         """Return the plugin generation method."""
         return self.plugin.generate
+
+    @property
+    def directive_specs(self) -> tuple[DirectiveSpec[Any], ...]:
+        """Return the plugin's opt-in directive definitions."""
+        return self.plugin.directive_specs
 
     @property
     def config_class(self) -> GeneratorConfigClass:

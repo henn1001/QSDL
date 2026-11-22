@@ -1,11 +1,24 @@
 # Directives
 
-This page documents **where directives can be applied** in QSDL and what they control.
+Directives annotate scalars, enums, bases, objects, fields, APIs, and operations.
 
 > Scope note
 >
 > This page does not attempt to fully document generator-specific behavior. Generator-specific directives/arguments
 > should be documented under `docs/generators/<name>/`.
+
+On the same declaration, core and custom directives can appear in any order.
+Each exact name can appear only once: QSDL reports a duplicate at the second
+occurrence. An invalid payload for a recognized directive is reported at that
+directive.
+
+Use `@name` or `@name(payload)`. A closing parenthesis inside a single- or
+double-quoted string is part of the string; unquoted nested parentheses are not
+supported. Core flags such as `@readOnly` must be bare. `@force-generate` is an
+exception: it is interpreted by presence, regardless of its payload.
+
+For Python model access and target-specific binding, see
+[Directive definitions](../generators/plugins.md#directive-definitions).
 
 ## General directives
 
@@ -54,7 +67,7 @@ enum FutureStatus @force-generate {
 }
 ```
 
-See `docs/generators/<name>/` for detailed generator-specific directive syntax.
+See [OpenAPI](../generators/openapi/README.md), [Spring](../generators/spring/README.md), and [PostgreSQL](../generators/postgres/README.md) for mapping syntax.
 
 ---
 
@@ -100,6 +113,9 @@ type User {
     // Independent references; delete user → keep teams
     team_memberships: [Team]! @aggregation
 }
+
+type Project { name: String }
+type Team { name: String }
 ```
 
 ### Constraint and semantic modifiers
@@ -141,7 +157,7 @@ type Project extends AuditFields {
 
 ## Api directives
 
-Api blocks support `@namespace` (see [Cross-cutting directives](#cross-cutting-directives)).
+Api blocks support `@namespace` (see [General directives](#general-directives)).
 
 An API block may be empty. An empty top-level `extend api {}` is a valid no-op and produces no endpoints. An empty
 object-level `extend api {}` explicitly suppresses automatic CRUD generation for that object. A non-empty object API
@@ -153,7 +169,7 @@ retains its custom operations; use `@generate(...)` when selected automatic CRUD
 
 Control which implicit CRUD operations to generate for an object's custom API block.
 
-**Valid values:** `GET_ALL`, `CREATE`, `GET`, `UPDATE`, `DELETE`, `ADD`, `REMOVE`
+**Valid quoted values:** `GET_ALL`, `CREATE`, `GET`, `UPDATE`, `DELETE`, `ADD`, `REMOVE`. An empty `@generate()` requests none.
 
 **Example:**
 
@@ -163,7 +179,7 @@ type Project {
 
     extend api @generate("GET_ALL", "GET", "UPDATE") {
         // Implicit DELETE is skipped due to @generate
-        archive(id: Long!): Project @path("projects/{id}/archive") @method(PATCH)
+        archive(): Project @path("projects/{id}/archive") @method(PATCH)
     }
 }
 ```
@@ -184,7 +200,7 @@ Operation directives specify how endpoints are exposed and behave.
 
 | Directive                   | Purpose                                                         |
 | --------------------------- | --------------------------------------------------------------- |
-| `@method(HTTP_METHOD)`      | HTTP method (GET, POST, PUT, PATCH, DELETE); defaults to GET.   |
+| `@method(HTTP_METHOD)`      | Unquoted `GET`, `POST`, `PUT`, `PATCH`, or `DELETE`; default `GET`. |
 | `@pagination`               | Convert response into a pageable object.                        |
 | `@consumes(String)`         | Override the media type consumed (e.g., `multipart/form-data`). |
 | `@produces(String)`         | Override the media type produced.                               |
@@ -193,6 +209,11 @@ Operation directives specify how endpoints are exposed and behave.
 **Example:**
 
 ```qsdl
+type Item {
+    name: String
+    extend api {}
+}
+
 extend api {
     "Retrieve an item by ID."
     getItem(): Item @path("items/{id}") @method(GET)

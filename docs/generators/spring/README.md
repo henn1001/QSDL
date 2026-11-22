@@ -172,7 +172,7 @@ QSDL scalars are mapped to Java types as follows:
 
 ### Custom Scalars
 
-Define custom scalar types using the `@spring` directive. The directive accepts up to three comma-separated values:
+On a `scalar` declaration, pass one quoted string to `@spring` with a non-empty Java type and up to two options:
 
 ```qsdl
 scalar UUID @spring("UUID")
@@ -182,13 +182,11 @@ scalar BigInt @spring("String, entity: java.math.BigInteger, pattern: ^-?[0-9]{1
 scalar Decimal @spring("String, entity: java.math.BigDecimal, pattern: ^(-)?[0-9][0-9]*(?:.[0-9]{1,18})?$")
 ```
 
-The three optional fields are:
-
-- **type** (first position, or unnamed): Java type for DTOs/API layer.
-- **entity**: Java type for JPA entity layer (if different from API type).
-- **pattern**: Regex validation pattern for the field.
-
-**Important:** Parsing is done by splitting on `", "` (comma + space). Ensure you include the space after commas in your regex patterns.
+The first segment is the Java type used in DTOs and APIs. Add
+`entity: JavaType` to override the JPA entity type or `pattern: regex` to
+validate the field. Separate segments with a comma and a space (`, `). Omit
+the space within regex quantifiers, as in `{1,38}`, so the comma stays in the
+pattern. Empty option values, unknown keys, and repeated keys are errors.
 
 ### Type Override Examples
 
@@ -300,11 +298,15 @@ public class UserController {
 
 ## Generator-Specific Directives
 
-The Spring generator recognizes four custom directives for fine-tuning code generation:
+Spring validates the following directives when it is selected; for other targets they stay opaque. The bundled OpenAPI and Flyway artifacts still honor valid `@openapi` and `@postgres` scalar mappings.
+
+In Python, inspect the namespace with `api.directive.namespace`. An inherited
+namespace node has `origin == "synthetic"` and does not override the object's
+`@spring-package`.
 
 ### `@spring(...)`
 
-Maps a scalar type to a Java type. Accepts up to three comma-separated fields:
+Maps a scalar to Java types. See [Custom scalars](#custom-scalars) for the payload rules.
 
 **Syntax:**
 
@@ -321,7 +323,7 @@ scalar Money @spring("BigDecimal, entity: java.math.BigDecimal, pattern: ^\\d+(\
 
 ### `@spring-package`
 
-Assigns a custom package namespace for code generation. It has priority over `@namespace` and the `package_placeholder_fallback` for the declaration where it appears:
+Assigns a Java package on a `base`, `type`, `enum`, or `extend api`. The payload must be a single non-empty quoted string. It takes priority over `@namespace` and `package_placeholder_fallback` on the same declaration.
 
 **Syntax:**
 
@@ -339,12 +341,10 @@ type User @spring-package("user") {
 // With the default base package: app/api/user/web/UserController.java
 ```
 
-When applied to a top-level `extend api`, it groups custom operations into a dedicated controller:
-
 For an API, package selection follows this order:
 
 1. `@spring-package` on the API.
-2. `@namespace` on the API.
+2. A non-empty `@namespace` declared on the API, not an inherited namespace.
 3. `@spring-package` or `@namespace` on its owning object.
 4. `package_placeholder_fallback`.
 
@@ -358,7 +358,7 @@ extend api @spring-package("user") {
 
 ### `@spring-controller`
 
-Moves custom API operations into a different controller (by type name). Useful when multiple custom endpoints logically belong to the same domain entity:
+On `extend api`, pass a single non-empty quoted type name to move custom operations into that type's controller.
 
 **Syntax:**
 

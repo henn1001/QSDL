@@ -95,7 +95,7 @@ class TestSemEnum:
         """)
         enums = xtx.get_children_of_enum(schema)
         status_enum = next(e for e in enums if e.name == "Status")
-        assert status_enum.namespace == "ComExampleDomain"
+        assert status_enum.directive.namespace.value == "ComExampleDomain"
 
     def test_SEM_303_enum_without_namespace_positive(self, parse: ParseFixture) -> None:
         """SEM-303: Enum without namespace is valid (optional)."""
@@ -110,4 +110,4 @@ class TestSemEnum:
         """)
         enums = xtx.get_children_of_enum(schema)
         status_enum = next(e for e in enums if e.name == "Status")
-        assert status_enum.namespace is None or status_enum.namespace == ""
+        assert status_enum.directive.namespace is None

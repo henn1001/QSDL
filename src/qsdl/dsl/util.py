@@ -24,23 +24,6 @@ from qsdl import dsl, logger
 
 log = logger.getLogger(__name__)
 
-ValueType = dsl.Scalar | dsl.Base | dsl.Api | dsl.Object | dsl.Field | dsl.Operation
-
-
-def get_directive_of_name(name: str, entity: ValueType) -> dsl.Directive | None:
-    """Returns the first directive with a given name if available.
-
-    Args:
-        name (str): The name of the directive
-        entity (Union[dsl.Scalar, dsl.Base, dsl.Api, dsl.Object, dsl.Field, dsl.Operation]): The entity which contains directives.
-
-    Returns:
-        dsl.Directive: Either the directive or None
-    """
-    match = [x for x in entity.directives if x.name == name]
-
-    return match[0] if match else None
-
 
 def description_wrapper(raw_string: str) -> list[str]:
     """Formats a multiline string if needed"""
@@ -88,81 +71,16 @@ def description_wrapper(raw_string: str) -> list[str]:
     return strings
 
 
-def map_custom_type(  # pylint: disable=too-many-arguments
-    entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object,
-    mapping: dict[str, str | None],
-    default: str,
-    directive: str,
-    args: list[str],
-    arg_picker: str = "type",
-) -> str | None:
-    """
-    Generic converter for custom mappings.
-
-    Args:
-        entity: The entity object to map.
-        mapping: The dict that contains the mapping between builtin types and custom types of a generator.
-        override_index: Index of the override to fetch from get_type_override.
-
-    Returns:
-        The mapped value or the entity name if no mapping exists.
-    """
-    name = entity.name
-    override = None
-
-    if isinstance(entity, dsl.Scalar):
-        override = get_type_override(entity, directive, args).get(arg_picker)
-
-    return override if override else mapping.get(name, default)
-
-
-def get_type_override(
-    entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object,
-    directive: str,
-    keys: list[str],
-) -> dict[str, str]:
-    """
-    Checks and returns custom scalar overrides.
-
-    Args:
-        entity: The scalar object.
-
-    Returns:
-        A tuple containing the type, format, and pattern overrides.
-    """
-    ret = {"type": None}
-
-    # Check and fetch the openapi directive
-    custom_directive = get_directive_of_name(directive, entity)
-
-    if custom_directive and ", " in custom_directive.value:
-        # Split multiple values
-        splits = [x.strip() for x in custom_directive.value.split(", ")]
-
-        # First value is always without key accessor
-        ret["type"] = splits[0]
-
-        # Check for other keys dynamically
-        for key in keys or []:
-            ret[key] = next((x.replace(f"{key}:", "").strip() for x in splits if x.startswith(f"{key}:")), None)
-
-    elif custom_directive:
-        # Only the first value is present
-        ret["type"] = custom_directive.value.strip()
-
-    return ret
-
-
 def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
     """Return all Fields who are using this dsl.Object as composition."""
     fields = get_parents(schema, obj)
-    return [x for x in fields if x.is_composition and isinstance(x.value, dsl.Object)]
+    return [x for x in fields if x.directive.is_composition and isinstance(x.value, dsl.Object)]
 
 
 def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
     """Return all Fields who are using this dsl.Object as aggregation."""
     fields = get_parents(schema, obj)
-    return [x for x in fields if x.is_aggregation and isinstance(x.value, dsl.Object)]
+    return [x for x in fields if x.directive.is_aggregation and isinstance(x.value, dsl.Object)]
 
 
 def get_parents(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
@@ -172,8 +90,8 @@ def get_parents(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
 
 
 def get_query_fields(obj: dsl.Object) -> list[dsl.Field]:
-    """Returns a list of all fields with either is_query or is_query_list."""
-    return [x for x in obj.fields if x.is_query or x.is_query_list]
+    """Return fields marked @query or @queryList."""
+    return [x for x in obj.fields if x.directive.is_query or x.directive.is_query_list]
 
 
 def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
@@ -192,7 +110,7 @@ def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
         return entity.fields
 
     fields_by_name: dict[str, dsl.Field] = {}
-    override_names = {field.name for field in entity.fields if field.is_override}
+    override_names = {field.name for field in entity.fields if field.directive.is_override}
 
     def raise_redefinition(duplicate: dsl.Field, conflicting: dsl.Field) -> None:
         if conflicting.parent is entity:
@@ -231,7 +149,7 @@ def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
     for field in entity.fields:
         duplicate = fields_by_name.get(field.name)
 
-        if duplicate is not None and not field.is_override:
+        if duplicate is not None and not field.directive.is_override:
             raise_redefinition(duplicate, field)
 
         fields_by_name[field.name] = field
@@ -261,7 +179,10 @@ def get_composition_fields(schema: dsl.Schema, obj_name: str) -> list[dsl.Field]
     return [
         x
         for x in fields
-        if isinstance(x.parent, dsl.Object) and x.value.name == obj_name and x.is_array and not x.is_aggregation
+        if isinstance(x.parent, dsl.Object)
+        and x.value.name == obj_name
+        and x.is_array
+        and not x.directive.is_aggregation
     ]
 
 
@@ -295,25 +216,25 @@ def traverse_fields(
         # Check if any field has @readOnly
         has_readonly = traverse_fields(
             entity,
-            lambda f: f.is_read_only,
+            lambda f: f.directive.is_read_only,
             include_nested=True
         )
 
         # Check if any non-relation field has @writeOnly
         has_writeonly = traverse_fields(
             entity,
-            lambda f: f.is_write_only,
+            lambda f: f.directive.is_write_only,
             skip_relations=True
         )
     """
     for dsl_field in entity.fields:
-        if skip_relations and dsl_field.is_relation:
+        if skip_relations and is_relation(dsl_field):
             continue
-        if skip_hidden and dsl_field.is_hidden:
+        if skip_hidden and dsl_field.directive.is_hidden:
             continue
-        if skip_transient and dsl_field.is_transient:
+        if skip_transient and dsl_field.directive.is_transient:
             continue
-        if skip_ignored and dsl_field.is_ignored:
+        if skip_ignored and dsl_field.directive.is_ignored:
             continue
 
         if predicate(dsl_field):
@@ -329,3 +250,27 @@ def traverse_fields(
             return True
 
     return False
+
+
+def is_relation(field: dsl.Field) -> bool:
+    """Return whether the field declares composition or aggregation."""
+    return field.directive.is_composition or field.directive.is_aggregation
+
+
+def render_namespace(owner: dsl.Base | dsl.Enum | dsl.Object | dsl.Api) -> str | None:
+    """Keep the historical namespace fallback for rendering an empty API annotation."""
+    namespace = owner.directive.namespace
+    if (
+        isinstance(owner, dsl.Api)
+        and isinstance(owner.parent, dsl.Object)
+        and (namespace is None or not namespace.value)
+    ):
+        namespace = owner.parent.directive.namespace
+    return namespace.value if namespace else None
+
+
+def render_media_type(node: dsl.Directive[str] | None, *, applicable: bool) -> str | None:
+    """Use JSON for an explicit empty media type where a body is present."""
+    if node is None:
+        return None
+    return node.value or ("application/json" if applicable else None)

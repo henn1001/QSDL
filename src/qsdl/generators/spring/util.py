@@ -16,15 +16,18 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 import stringcase
 
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
 import qsdl.filter as qfilter
 from qsdl import dsl
+from qsdl.dsl.directives import NAMESPACE, QUERY
 
 from . import models as spring
-from .config import Directive, SpringConfig
+from .config import SPRING_PACKAGE, SPRING_SCALAR, SpringConfig, SpringScalarMapping
 
 
 class Store:
@@ -32,11 +35,11 @@ class Store:
 
     schema: dsl.Schema = None
     config: SpringConfig = None
-    models: list[spring.ModelClass] = []
-    apis: list[spring.ApiClass] = []
-    enums: list[spring.EnumClass] = []
+    models: ClassVar[list[spring.ModelClass]] = []
+    apis: ClassVar[list[spring.ApiClass]] = []
+    enums: ClassVar[list[spring.EnumClass]] = []
     package: spring.Package = None
-    packages: list[spring.Package] = []
+    packages: ClassVar[list[spring.Package]] = []
     is_id_long: bool = True
 
 
@@ -156,7 +159,7 @@ def _is_inline_body_operation(operation: dsl.Operation) -> bool:
     """
     if not operation.body_parameters:
         return False
-    if operation.method and operation.method.upper() in ("GET", "DELETE"):
+    if operation.directive.method and operation.directive.method.value in ("GET", "DELETE"):
         return False
 
     return not (
@@ -174,19 +177,27 @@ def resolve_request_body_dto(operation: dsl.Operation) -> tuple[bool, str | None
     return True, stringcase.capitalcase(operation.name) + "Request"
 
 
+def _scalar_mapping(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> SpringScalarMapping | None:
+    directive = entity.directives.get(SPRING_SCALAR) if isinstance(entity, dsl.Scalar) else None
+    return directive.value if directive is not None else None
+
+
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converts builtin types to generator specific types."""
-    return qutil.map_custom_type(entity, custom_types, entity.name, Directive.TYPE, ["entity", "pattern"], "type")
+    mapping = _scalar_mapping(entity)
+    return mapping.type if mapping else custom_types.get(entity.name, entity.name)
 
 
-def custom_type_entity(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
-    """Converts builtin types to generator specific types."""
-    return qutil.map_custom_type(entity, {}, None, Directive.TYPE, ["entity", "pattern"], "entity")
+def custom_type_entity(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
+    """Return the scalar's explicit Java persistence type, if specified."""
+    mapping = _scalar_mapping(entity)
+    return mapping.entity if mapping else None
 
 
 def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
     """Converts builtin types to generator specific types."""
-    return qutil.map_custom_type(entity, {}, None, Directive.TYPE, ["entity", "pattern"], "pattern")
+    mapping = _scalar_mapping(entity)
+    return mapping.pattern if mapping else None
 
 
 def has(
@@ -246,25 +257,25 @@ def has(
             if (
                 has_required_ignore_internal
                 and field.name != "id"
-                and not field.is_composition
-                and not field.is_aggregation
+                and not field.directive.is_composition
+                and not field.directive.is_aggregation
                 and field.is_required
             ):
                 ret = True
                 break
 
             # checks if the Object is aggregated somewhere
-            if is_aggregated and field.is_aggregation:
+            if is_aggregated and field.directive.is_aggregation:
                 ret = True
                 break
 
             # checks if the Object has a relation
-            if has_relation and (field.is_composition or field.is_aggregation):
+            if has_relation and (field.directive.is_composition or field.directive.is_aggregation):
                 ret = True
                 break
 
             # checks if there is a query attribute
-            if has_query and (field.is_query or field.is_query_list):
+            if has_query and (field.directive.is_query or field.directive.is_query_list):
                 ret = True
                 break
 
@@ -513,7 +524,7 @@ def get_parent_fields(obj_name: str, filter_relations: bool = True) -> list[dsl.
 
     fields = [x for x in fields if isinstance(x.parent, dsl.Object) and x.value.name == obj_name]
 
-    fields = [x for x in fields if x.is_relation] if filter_relations else fields
+    fields = [x for x in fields if qutil.is_relation(x)] if filter_relations else fields
 
     return fields
 
@@ -539,10 +550,10 @@ def extract_embedded_columns(
 
     for dsl_field in dsl_fields:
         # Skip transient fields entirely - they are not part of the DB/entity model
-        if dsl_field.is_transient:
+        if dsl_field.directive.is_transient:
             continue
 
-        if isinstance(dsl_field.value, dsl.Base) and not (dsl_field.is_array or dsl_field.is_opaque):
+        if isinstance(dsl_field.value, dsl.Base) and not (dsl_field.is_array or dsl_field.directive.is_opaque):
             # Flatten Base types - recursively process nested Base fields
             embedded_prefix = prefix + qfilter.snakecase(dsl_field.name).lower() + "_"
             embedded_dto_path = dto_path + java_identifier(dsl_field.name) + "."
@@ -574,18 +585,18 @@ def extract_fields_for_mapper(ref: dsl.Base | dsl.Object) -> list[dsl.Field]:
 
     for field in ref.fields:
         # Skip transient fields entirely - they are not part of the DB/entity model
-        if field.is_transient:
+        if field.directive.is_transient:
             continue
 
         if isinstance(field.value, dsl.Base):
-            if field.is_opaque:
+            if field.directive.is_opaque:
                 # Opaque base types need mappers for Request/Response conversion
                 nested_objects.append(field)
             else:
                 # Non-opaque base types are flattened, recurse into them
                 extracted = extract_fields_for_mapper(field.value)
                 nested_objects.extend(extracted)
-        if isinstance(field.value, dsl.Object) and not field.is_relation:
+        if isinstance(field.value, dsl.Object) and not qutil.is_relation(field):
             nested_objects.append(field)
 
     return nested_objects
@@ -616,19 +627,21 @@ def build_filter_models() -> list[spring.ModelClass]:
 
         # For CRUD operations, use domain_object's namespace/package; for custom ops, use parent API's
         namespace_source = operation.domain_object if operation.domain_object else operation.parent
-        filter_namespace = getattr(namespace_source, "namespace", None)
+        filter_namespace = qutil.render_namespace(namespace_source)
 
         # Create a dsl.Base for this filter
         filter_base = dsl.Base(
             parent=Store.schema,
             name=new_name,
-            namespace=filter_namespace,
         )
 
+        if filter_namespace is not None:
+            filter_base.directives.attach_synthetic(NAMESPACE, filter_namespace)
+
         # Copy @spring-package directive from source if present (takes priority over namespace)
-        spring_package_directive = qutil.get_directive_of_name(Directive.PACKAGE, namespace_source)
-        if spring_package_directive:
-            filter_base.directives = [spring_package_directive]
+        package_directive = namespace_source.directives.get(SPRING_PACKAGE)
+        if package_directive is not None:
+            filter_base.directives.attach_synthetic(SPRING_PACKAGE, package_directive.value)
 
         # Convert query arguments to fields
         for argument in operation.query_parameters:
@@ -638,12 +651,11 @@ def build_filter_models() -> list[spring.ModelClass]:
                 value=argument.value,
                 is_array=argument.is_array,
                 is_required=argument.is_required,
-                is_query=True,
             )
+            field.directives.attach_synthetic(QUERY, True)
             filter_base.fields.append(field)
 
         # Build ModelClass from the filter base
-        # The namespace was already set on filter_base and will be picked up by build()
         filter_model = spring.ModelClass().build(filter_base)
         filter_model.is_query_filter = True
         filter_model.has_request = False
@@ -673,18 +685,20 @@ def build_request_body_models() -> list[spring.ModelClass]:
 
         # Derive namespace and package from the same source as filter models
         namespace_source = operation.domain_object if operation.domain_object else operation.parent
-        request_namespace = getattr(namespace_source, "namespace", None)
+        request_namespace = qutil.render_namespace(namespace_source)
 
         request_base = dsl.Base(
             parent=Store.schema,
             name=new_name,
-            namespace=request_namespace,
         )
 
+        if request_namespace is not None:
+            request_base.directives.attach_synthetic(NAMESPACE, request_namespace)
+
         # Copy @spring-package directive if present (same logic as filter models)
-        spring_package_directive = qutil.get_directive_of_name(Directive.PACKAGE, namespace_source)
-        if spring_package_directive:
-            request_base.directives = [spring_package_directive]
+        package_directive = namespace_source.directives.get(SPRING_PACKAGE)
+        if package_directive is not None:
+            request_base.directives.attach_synthetic(SPRING_PACKAGE, package_directive.value)
 
         # Convert body arguments to fields on the synthetic base
         for argument in operation.body_parameters:
@@ -715,7 +729,7 @@ def needs_separate_request_response(ref: dsl.Base | dsl.Object) -> bool:
     """
     return qutil.traverse_fields(
         ref,
-        predicate=lambda f: f.is_read_only or f.is_write_only or isinstance(f.value, dsl.Object),
+        predicate=lambda f: f.directive.is_read_only or f.directive.is_write_only or isinstance(f.value, dsl.Object),
         include_nested=True,
         skip_relations=True,
         skip_hidden=True,
@@ -813,7 +827,7 @@ def collect_nested_request_types(
     Only adds types that have fields requiring the type to be used in requests.
     """
     for field in entity.fields:
-        if field.is_relation or field.is_hidden or field.is_read_only:
+        if qutil.is_relation(field) or field.directive.is_hidden or field.directive.is_read_only:
             continue
 
         if isinstance(field.value, (dsl.Base, dsl.Object)) and needs_split.get(field.value.name, False):
@@ -831,7 +845,7 @@ def collect_nested_response_types(
     Only adds types that have fields requiring the type to be used in responses.
     """
     for field in entity.fields:
-        if field.is_relation or field.is_hidden or field.is_write_only:
+        if qutil.is_relation(field) or field.directive.is_hidden or field.directive.is_write_only:
             continue
 
         if isinstance(field.value, (dsl.Base, dsl.Object)) and needs_split.get(field.value.name, False):

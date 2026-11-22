@@ -17,8 +17,9 @@
 import qsdl.dsl.util as qutil
 import qsdl.filter as qfilter
 from qsdl import dsl
+from qsdl.generators.directive_payloads import scalar_mapping
 
-from .config import Directive, PostgresConfig
+from .config import POSTGRES_SCALAR, PostgresConfig
 from .models import Column, Table
 
 
@@ -45,7 +46,8 @@ custom_types = {
 
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converts builtin types to generator specific types."""
-    return qutil.map_custom_type(entity, custom_types, entity.name, Directive.TYPE, [], "type")
+    mapping = scalar_mapping(entity, POSTGRES_SCALAR) if isinstance(entity, dsl.Scalar) else None
+    return mapping if mapping is not None else custom_types.get(entity.name, entity.name)
 
 
 def T_PREFIX() -> str:
@@ -59,7 +61,7 @@ def build_jointables(table: Table) -> list[Table]:
 
     for dsl_field in table._ref.fields:
         # Only Object type arrays create join tables (Base types are always JSONB)
-        if not (isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array and dsl_field.is_aggregation):
+        if not (isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array and dsl_field.directive.is_aggregation):
             continue
 
         source_table_name = table.name
@@ -146,7 +148,7 @@ def extract_embedded_columns(ref: dsl.Base, prefix: str = "") -> list[Column]:
     columns = []
     for field in ref.fields:
         # Skip fields that are transient - these should not be persisted to the DB
-        if field.is_transient:
+        if field.directive.is_transient:
             continue
 
         if isinstance(field.value, dsl.Base):

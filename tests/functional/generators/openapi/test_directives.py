@@ -166,3 +166,16 @@ def test_namespace_tags_and_custom_path_methods_are_rendered() -> None:
     assert openapi["paths"]["/lookup"]["get"]["tags"] == ["PublicApi"]
     assert openapi["paths"]["/lookup"]["post"]["operationId"] == "create"
     assert openapi["paths"]["/lookup"]["post"]["tags"] == ["PublicApi"]
+
+
+def test_reordered_custom_operation_directives_are_equivalent() -> None:
+    directives = ('@path("run")', "@headers(X-Token: String)", "@method(POST)")
+    left, right = [
+        generate_openapi(f"extend api {{ run(): String {' '.join(order)} }}")
+        for order in (directives, directives[::-1])
+    ]
+    assert left == right
+    (method,) = left["paths"]["/run"]
+    assert method == "post"
+    headers = left["paths"]["/run"]["post"]["responses"]["200"]["headers"]
+    assert headers["X-Token"]["schema"] == {"type": "string"}

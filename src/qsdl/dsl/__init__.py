@@ -17,7 +17,7 @@
 from qsdl.dsl.models.api import Api
 from qsdl.dsl.models.argument import Argument
 from qsdl.dsl.models.base import Base
-from qsdl.dsl.models.directive import Directive
+from qsdl.dsl.models.directive import Directive, Directives, DirectiveSpec, RawDirective
 from qsdl.dsl.models.enum import Enum
 from qsdl.dsl.models.field import Field
 from qsdl.dsl.models.object import Object
@@ -30,10 +30,13 @@ __all__ = [
     "Argument",
     "Base",
     "Directive",
+    "DirectiveSpec",
+    "Directives",
     "Enum",
     "Field",
     "Object",
     "Operation",
+    "RawDirective",
     "Scalar",
     "Schema",
 ]
@@ -49,7 +52,6 @@ def all_dsl_models():  # noqa: ANN202
         Api,
         Argument,
         Base,
-        Directive,
         Enum,
         Field,
         Object,

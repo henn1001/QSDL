@@ -34,6 +34,21 @@ The generator creates a single `openapi.yaml` file containing:
 | `Datetime`  | string            | date-time                                |
 | `Object`    | object            | —                                        |
 
+### Custom scalars with `@openapi(...)`
+
+On a `scalar` declaration, pass a single non-empty quoted string with the
+OpenAPI type first and optional `format: value` and `pattern: value` segments:
+
+```qsdl
+scalar Token @openapi("string, format: uuid")
+scalar Label @openapi("string, pattern: ^[A-Z]{1,38}$")
+```
+
+Separate segments with a comma and a space (`, `). A comma without a space,
+such as the one in `{1,38}`, stays in the pattern. Options must have non-empty
+values; unknown and duplicate keys are errors when OpenAPI is selected. The
+built-in type and format mappings still apply when not overridden.
+
 ## Default CRUD Operations
 
 Each `type` in your schema automatically generates standard CRUD endpoints (unless overridden with `extend api { ... }`):
@@ -140,7 +155,7 @@ QSDL directives influence OpenAPI output:
 | `@hidden`         | Field     | Field is completely excluded from OpenAPI output.                                             |
 | `@namespace(...)` | Enum, Base, Object, Api | Declarations and generated operations use the namespace for grouping in OpenAPI UI where applicable. |
 | `@pagination`     | Operation | Operation response is wrapped in a list model with `items`, `next_cursor`, and `total_count`. |
-| `@method(...)`    | Operation | Specifies HTTP method (GET, POST, PUT, PATCH, DELETE, etc.). Defaults to GET.                 |
+| `@method(...)`    | Operation | Accepts unquoted `GET`, `POST`, `PUT`, `PATCH`, or `DELETE`. Defaults to `GET`.                 |
 | `@path(...)`      | Operation | Specifies the endpoint path. Can include path parameters like `{id}`.                         |
 
 ## Pagination

@@ -14,7 +14,9 @@
 
 """Core generation"""
 
+from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 import textx.model
 from textx import metamodel_from_file
@@ -22,6 +24,7 @@ from textx.export import PlantUmlRenderer, metamodel_export
 from textx.metamodel import TextXMetaModel
 
 from qsdl import __folder__, dsl, logger
+from qsdl.dsl.processors.directive_parser import _directive_owners, validate_directive_specs
 from qsdl.dsl.processors.import_processor import CanonicalImportURI, merge_imported_types
 from qsdl.dsl.processors.model_processor import model_post_processor, model_processor
 from qsdl.dsl.processors.obj_processors import obj_processors
@@ -84,6 +87,7 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     # these allow us to hook into the model and object creation
     metamodel.register_model_processor(model_processor)
     metamodel.register_obj_processors(obj_processors)
+    metamodel.model_param_defs.add("directive_specs", "Active generator directive specifications by name")
 
     # register scope provider to allow multi-schema-files
     metamodel.register_scope_providers({"*.*": CanonicalImportURI()})
@@ -95,7 +99,12 @@ def get_metamodel(print_uml: bool = False) -> TextXMetaModel:
     return metamodel
 
 
-def parse_schema(input_path: Path | None = None, raw_schema: str | None = None) -> dsl.Schema:
+def parse_schema(
+    input_path: Path | None = None,
+    raw_schema: str | None = None,
+    *,
+    directive_specs: Sequence[dsl.DirectiveSpec[Any]] = (),
+) -> dsl.Schema:
     """Builds and returns the DSL model as python object graph.
 
     Expects either input_path or raw_schema.
@@ -103,6 +112,7 @@ def parse_schema(input_path: Path | None = None, raw_schema: str | None = None) 
     Args:
         input_path (Path, optional): Path to the schema file.
         raw_schema (str, optional): The schema definition as string.
+        directive_specs: Optional generator definitions active for this parse and its imports.
 
     Returns:
         schema (Schema): The parsed schema definition.
@@ -111,19 +121,19 @@ def parse_schema(input_path: Path | None = None, raw_schema: str | None = None) 
     if not input_path and not raw_schema:
         raise QsdlException("please provide either raw_schema or input_path")
 
-    # export model with plantuml
+    active_specs = validate_directive_specs(directive_specs)
     log.info("loading metamodel...")
     metamodel = get_metamodel()
 
     log.info("generating schema...")
     if input_path:
-        schema: dsl.Schema = metamodel.model_from_file(input_path)
+        schema: dsl.Schema = metamodel.model_from_file(input_path, directive_specs=active_specs)
     elif 'import "' in raw_schema:
         raise QsdlException("import statements in raw_schema are not supported")
     else:
         # model_from_str does not seem to support the scope provider system
         # no support for multi-schema-files
-        schema: dsl.Schema = metamodel.model_from_str(raw_schema)
+        schema: dsl.Schema = metamodel.model_from_str(raw_schema, directive_specs=active_specs)
 
     # Merge each imported physical file once and reject circular import graphs.
     merge_imported_types(schema)
@@ -151,9 +161,9 @@ def get_children_of_base(schema: dsl.Schema) -> list[dsl.Base]:
     return textx.model.get_children_of_type("Base", schema)
 
 
-def get_children_of_directive(schema: dsl.Schema) -> list[dsl.Directive]:
-    """Proxy method for typing support"""
-    return textx.model.get_children_of_type("Directive", schema)
+def get_children_of_directive(schema: dsl.Schema) -> list[dsl.Directive[Any]]:
+    """Return attached directives across every owner in the schema."""
+    return [node for owner in _directive_owners(schema) for node in owner.directives]
 
 
 def get_children_of_enum(schema: dsl.Schema) -> list[dsl.Enum]:

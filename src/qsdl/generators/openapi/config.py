@@ -16,8 +16,11 @@
 
 from dataclasses import dataclass
 from enum import StrEnum
+from typing import ClassVar
 
+from qsdl import dsl
 from qsdl.generators.base_config import BaseConfig
+from qsdl.generators.directive_payloads import decode_scalar_options
 
 
 class IDTYPE(StrEnum):
@@ -27,10 +30,21 @@ class IDTYPE(StrEnum):
     STRING = "STRING"
 
 
-class Directive(StrEnum):
-    """Available directives"""
+@dataclass(frozen=True, slots=True)
+class OpenApiScalarMapping:
+    """The mapped type and optional target-specific overrides."""
 
-    TYPE = "openapi"
+    type: str
+    format: str | None = None
+    pattern: str | None = None
+
+
+def _decode_mapping(raw: dsl.RawDirective) -> OpenApiScalarMapping:
+    type_name, options = decode_scalar_options(raw, ("format", "pattern"))
+    return OpenApiScalarMapping(type_name, **options)
+
+
+OPENAPI_SCALAR = dsl.DirectiveSpec("openapi", (dsl.Scalar,), _decode_mapping)
 
 
 @dataclass
@@ -41,4 +55,4 @@ class OpenApiConfig(BaseConfig):
     id_type: IDTYPE = IDTYPE.LONG
 
     # used for dactite enum casting
-    _dactive_casts = [IDTYPE]
+    _dactive_casts: ClassVar[list[type]] = [IDTYPE]

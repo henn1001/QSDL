@@ -47,10 +47,48 @@ The loader validates the contract when it loads the plugin:
 - `generate` accepts exactly `schema`, `config`, and `output_path` parameters.
 - The `config` annotation is exactly `config_class`.
 - The return annotation is `GeneratedFiles`.
+- Optional `directive_specs` is a tuple of valid directive definitions.
 
 `output_path` is the requested destination for the current invocation. A generator normally returns artifacts rather than writing files directly. QSDL validates the returned collection and writes it using its normal output and ignore-file policy. A generator that needs to inspect existing destination files may use `output_path`; the i18n generator is an example.
 
 Do not store a per-invocation config or schema on the generator instance. Builtin generator instances are shared registry entries, so request data belongs in `generate` arguments or local variables.
+
+## Directive definitions
+
+A generator can declare `directive_specs`, a tuple of `DirectiveSpec` objects.
+Each definition supplies an exact name, a non-empty tuple of supported QSDL owner
+classes, a decoder, and optionally a typed value validator. A definition name
+must follow the [directive naming rules](../core/rules.md#identifiers--naming-conventions) and
+must not duplicate another definition or any core directive name.
+
+For example, add this to the greeting plugin to accept `@plugin-label("text")`
+on scalar declarations:
+
+```python
+from qsdl.dsl import DirectiveSpec, Scalar
+from qsdl.dsl.directives import decode_string
+
+LABEL = DirectiveSpec("plugin-label", (Scalar,), decode_string)
+GreetingGenerator.directive_specs = (LABEL,)
+```
+
+In `generate`, read the typed node with `scalar.directives.get(LABEL)`.
+Read core values through `owner.directive`: flags return a `bool` (`field.directive.is_read_only`), other directives return a node or `None`. For example, an
+operation's `operation.directive.path.value` is its normalized route, and
+`operation.directive.method.origin` distinguishes an explicit method from a
+synthetic default. See [Inspect a completed schema](../guides/library-generation.md#inspect-a-completed-schema).
+
+Use the same definition object for declaration and lookup. The decoder receives a
+`RawDirective` with the name, parentheses presence, raw text, and location;
+raise `ValueError` for invalid payloads. The optional validator receives the
+decoded value and can reject it by raising `ValueError`. Use immutable values
+for compound payloads.
+
+QSDL binds these definitions before generation, in the root schema and imports.
+A malformed payload or unsupported owner raises a semantic error at the
+directive. Other generators leave the name opaque unless they declare their own
+definition for it. If you invoke a generator directly, activate its definitions
+with [`parse_schema(..., directive_specs=...)`](../guides/library-generation.md#invoke-a-generator-directly).
 
 ## File and package plugins
 

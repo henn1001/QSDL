@@ -14,9 +14,11 @@
 
 """QSDL - Generator Base Config"""
 
+from typing import ClassVar
+
 
 class BaseConfig:
     """The Base Configclass for generators"""
 
     # used for dactite enum casting
-    _dactive_casts: list = []
+    _dactive_casts: ClassVar[list[type]] = []

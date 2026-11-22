@@ -21,7 +21,9 @@ from typing import Self
 
 import stringcase
 
+import qsdl.dsl.util as qutil
 from qsdl import dsl
+from qsdl.dsl.directives import ResponseHeader
 
 from .. import util
 
@@ -49,8 +51,8 @@ class Parameter:
     format: str = None
     pattern: str = None
 
-    def build(self, _ref: dsl.Argument) -> Self:
-        """Builds self from dsl.Argument"""
+    def build(self, _ref: dsl.Argument | ResponseHeader) -> Self:
+        """Build argument or response header metadata."""
 
         self.name = _ref.name
         self.json_key = _ref.name
@@ -60,12 +62,13 @@ class Parameter:
         self.pattern = util.custom_type_pattern(_ref.value)
 
         self.is_array = _ref.is_array
-        self.is_required = _ref.is_required
+        if isinstance(_ref, dsl.Argument):
+            self.is_required = _ref.is_required
 
-        self.is_path = _ref.is_path
-        self.is_query = _ref.is_query
-        self.is_header = _ref.is_header
-        self.is_body = _ref.is_body
+            self.is_path = _ref.is_path
+            self.is_query = _ref.is_query
+            self.is_header = _ref.is_header
+            self.is_body = _ref.is_body
 
         if isinstance(_ref.value, dsl.Enum | dsl.Base | dsl.Object):
             self.ref = f"#/components/schemas/{self.type}"
@@ -109,27 +112,26 @@ class Operation:
         """Builds self from dsl.Operation"""
 
         self.name = _ref.name
-        self.tag = _ref.parent.namespace
+        self.tag = qutil.render_namespace(_ref.parent)
         self.summary = _ref.summary
         self.description = _ref.description
-        self.path = _ref.path
-        self.method = _ref.method.lower()
+        self.path = _ref.directive.path.value
+        self.method = _ref.directive.method.value.lower()
         self.is_generated = _ref.is_generated
-        self.is_pageable = _ref.is_pageable
+        self.is_pageable = _ref.directive.is_pageable
 
         # special for aggregations
         # we want to move them to the parent namespace
         if _ref.is_aggregated:
-            self.tag = _ref.domain_parent.namespace
+            self.tag = qutil.render_namespace(_ref.domain_parent)
 
-        self.consumes = _ref.consumes
-        self.produces = _ref.produces
+        self.consumes = qutil.render_media_type(_ref.directive.consumes, applicable=bool(_ref.body_parameters))
+        self.produces = qutil.render_media_type(_ref.directive.produces, applicable=_ref.value is not None)
 
         # Detect inline body parameters that require a named request DTO
         if (
             _ref.body_parameters
-            and _ref.method
-            and _ref.method.upper() not in ("GET", "DELETE")
+            and _ref.directive.method.value.upper() not in ("GET", "DELETE")
             and not (
                 len(_ref.body_parameters) == 1 and isinstance(_ref.body_parameters[0].value, (dsl.Base, dsl.Object))
             )
@@ -159,7 +161,7 @@ class Operation:
             elif new_param.is_header:
                 self.header_parameters.append(new_param)
                 self.parameters.append(new_param)
-            elif new_param.is_body and _ref.method != "DELETE":
+            elif new_param.is_body and _ref.directive.method.value != "DELETE":
                 self.body_parameters.append(new_param)
 
     def _add_response(self, _ref: dsl.Operation) -> None:
@@ -174,7 +176,7 @@ class Operation:
             new_param.type = util.custom_type(_ref.value)
             new_param.format = util.custom_type_format(_ref.value)
 
-            if _ref.is_pageable:
+            if _ref.directive.is_pageable:
                 new_param.name += "List"
                 new_param.json_key += "List"
                 new_param.type += "List"
@@ -188,10 +190,11 @@ class Operation:
     def _add_response_headers(self, _ref: dsl.Operation) -> None:
         """Creates and adds a response header to a Operation"""
 
-        for argument in _ref.response_headers:
-            new_param = Parameter().build(argument)
-
-            self.response_headers.append(new_param)
+        headers = _ref.directive.headers
+        if headers is None:
+            return
+        for header in headers.value:
+            self.response_headers.append(Parameter().build(header))
 
 
 @dataclass
@@ -208,7 +211,7 @@ class ApiObject:
         """Builds self from dsl.Api"""
 
         self.name = _ref.parent.name if isinstance(_ref.parent, dsl.Object) else "Default"
-        self.tag = _ref.namespace
+        self.tag = qutil.render_namespace(_ref)
         self.description = _ref.description
 
         self._add_operations(_ref.operations)
