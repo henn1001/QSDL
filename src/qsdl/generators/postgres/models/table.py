@@ -39,7 +39,7 @@ class Table:
     def __post_init__(self) -> None:
         self.name = util.T_PREFIX() + qfilter.snakecase(self.source.name).lower()
 
-        for dsl_field in self.source.fields:
+        for dsl_field in self.source.generation_fields:
             if dsl_field.directive.is_transient:
                 continue
 

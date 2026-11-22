@@ -215,7 +215,7 @@ class TestSemField:
             }
         """)
         obj = xtx.get_children_of_object(schema)[0]
-        field_names = [f.name for f in obj.fields]
+        field_names = [f.name for f in obj.effective_fields]
         assert "name" in field_names
         assert "value" in field_names
         value_field = next(f for f in obj.fields if f.name == "value")
@@ -302,6 +302,23 @@ class TestSemField:
         assert fields["name"].directive.is_query
         assert fields["tags"].directive.is_query_list
         assert fields["status"].directive.is_query
+
+    def test_crud_uses_inherited_queries_before_ignore_filtering(self, parse: ParseFixture) -> None:
+        """CRUD query metadata uses effective rather than declaration or generation fields."""
+        schema = parse("""
+            base Filters {
+                term: String @query
+                tags: [Int] @queryList @ignore
+            }
+            type Item extends Filters { name: String }
+        """)
+        (item,) = xtx.get_children_of_object(schema)
+        listing = next(operation for operation in item.api.operations if operation.name == "getItems")
+        assert [(arg.name, arg.value.name, arg.is_array) for arg in listing.query_parameters] == [
+            ("term", "String", False),
+            ("tags", "Int", True),
+        ]
+        assert [field.name for field in item.generation_fields] == ["id", "term", "name"]
 
     @pytest.mark.parametrize("directive", ["query", "queryList"])
     @pytest.mark.parametrize(

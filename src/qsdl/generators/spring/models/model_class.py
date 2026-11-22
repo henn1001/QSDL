@@ -140,16 +140,19 @@ class ModelClass:
         parent_fields = util.get_parent_fields(source.name)
         self.is_aggregated = any(field.directive.is_aggregation for field in parent_fields)
         self.has_required = any(
-            field.is_required and field.name != "id" and not qutil.is_relation(field) for field in source.fields
+            field.is_required and field.name != "id" and not qutil.is_relation(field)
+            for field in source.generation_fields
         )
-        self.has_query = any(field.directive.is_query or field.directive.is_query_list for field in source.fields)
+        self.has_query = any(
+            field.directive.is_query or field.directive.is_query_list for field in source.generation_fields
+        )
 
         mappers = {}
         for nested_field in util.extract_fields_for_mapper(source):
             mappers.setdefault(nested_field.value.name, nested_field.value)
         self.mappers = list(mappers.values())
 
-        fields = [field for field in source.fields if not qutil.is_relation(field)]
+        fields = [field for field in source.generation_fields if not qutil.is_relation(field)]
         self.fields = [ModelField(field) for field in fields]
         self.entity_fields = util.extract_embedded_columns(fields)
 
@@ -181,7 +184,7 @@ class ModelClass:
         return [field for field in self.fields if not field.is_relation and not field.source.directive.is_hidden]
 
     def _add_relations(self) -> None:
-        for source in self.source.fields:
+        for source in self.source.generation_fields:
             if not qutil.is_relation(source):
                 continue
             name = qfilter.raw_camelcase(util.custom_type(source.value)) + ("s" if source.is_array else "")

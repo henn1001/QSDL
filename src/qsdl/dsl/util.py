@@ -14,15 +14,10 @@
 
 """QSDL Utility functions"""
 
-from collections.abc import Callable
-
-from textx import get_location
-from textx.exceptions import TextXSemanticError
+from collections.abc import Callable, Iterable, Iterator
 
 import qsdl.dsl.textx as xtx
-from qsdl import dsl, logger
-
-log = logger.getLogger(__name__)
+from qsdl import dsl
 
 
 def description_wrapper(raw_string: str) -> list[str]:
@@ -71,118 +66,41 @@ def description_wrapper(raw_string: str) -> list[str]:
     return strings
 
 
-def get_compositions(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
-    """Return all Fields who are using this dsl.Object as composition."""
-    fields = get_parents(schema, obj)
-    return [x for x in fields if x.directive.is_composition and isinstance(x.value, dsl.Object)]
+def iter_object_fields(schema: dsl.Schema, *, include_ignored: bool = False) -> Iterator[dsl.Field]:
+    """Yield each Object's fields in order, using the generation view unless requested otherwise."""
+    for obj in xtx.get_children_of_object(schema):
+        yield from obj.effective_fields if include_ignored else obj.generation_fields
 
 
-def get_aggregation(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
-    """Return all Fields who are using this dsl.Object as aggregation."""
-    fields = get_parents(schema, obj)
-    return [x for x in fields if x.directive.is_aggregation and isinstance(x.value, dsl.Object)]
+def get_compositions(schema: dsl.Schema, obj: dsl.Object, *, include_ignored: bool = False) -> list[dsl.Field]:
+    """Return composition fields referencing the given Object."""
+    return [
+        field
+        for field in iter_object_fields(schema, include_ignored=include_ignored)
+        if field.value is obj and field.directive.is_composition
+    ]
 
 
-def get_parents(schema: dsl.Schema, obj: dsl.Object) -> list[dsl.Field]:
-    """Returns all Fields whose value is this dsl.Object."""
-    fields = xtx.get_children_of_field(schema)
-    return [x for x in fields if x.value == obj]
+def get_aggregation(schema: dsl.Schema, obj: dsl.Object, *, include_ignored: bool = False) -> list[dsl.Field]:
+    """Return aggregation fields referencing the given Object."""
+    return [
+        field
+        for field in iter_object_fields(schema, include_ignored=include_ignored)
+        if field.value is obj and field.directive.is_aggregation
+    ]
 
 
-def get_query_fields(obj: dsl.Object) -> list[dsl.Field]:
-    """Return fields marked @query or @queryList."""
-    return [x for x in obj.fields if x.directive.is_query or x.directive.is_query_list]
-
-
-def get_all_fields_as_list(entity: dsl.Object | dsl.Base) -> list[dsl.Field]:
-    """Returns all fields ob a object including its supertype as list.
-
-    Fields that are redefined in a child, overwrite the parent definition.
-
-    Args:
-        entity (object): entity.dsl.Object
-
-    Returns:
-        list: [entity.dsl.Field]
-    """
-    # skip already flattened entities
-    if entity.flattened:
-        return entity.fields
-
-    fields_by_name: dict[str, dsl.Field] = {}
-    override_names = {field.name for field in entity.fields if field.directive.is_override}
-
-    def raise_redefinition(duplicate: dsl.Field, conflicting: dsl.Field) -> None:
-        if conflicting.parent is entity:
-            log.error(
-                "The inherited field '%s' of '%s' was redefined and replaced by '%s'.",
-                duplicate.name,
-                duplicate.parent.name,
-                entity.name,
-            )
-        else:
-            log.error(
-                "The field '%s' is inherited by '%s' from both '%s' and '%s' without an explicit @override.",
-                duplicate.name,
-                entity.name,
-                duplicate.parent.name,
-                conflicting.parent.name,
-            )
-        raise TextXSemanticError(
-            "Field redefinition without @override is not allowed.",
-            **get_location(conflicting),
-        )
-
-    for supertype in entity.supertypes:
-        for inherited_field in get_all_fields_as_list(supertype):
-            duplicate = fields_by_name.get(inherited_field.name)
-
-            # A declaration reached repeatedly through a diamond is unambiguous.
-            if duplicate is inherited_field:
-                continue
-            if duplicate is not None and inherited_field.name not in override_names:
-                raise_redefinition(duplicate, inherited_field)
-
-            # Keep the first parent declaration until a local override replaces it.
-            fields_by_name.setdefault(inherited_field.name, inherited_field)
-
-    for field in entity.fields:
-        duplicate = fields_by_name.get(field.name)
-
-        if duplicate is not None and not field.directive.is_override:
-            raise_redefinition(duplicate, field)
-
-        fields_by_name[field.name] = field
-
-        if duplicate is not None and duplicate.value != field.value:
-            log.warning(
-                "The inherited field '%s' of '%s' was redefined with a different type by '%s'.",
-                duplicate.name,
-                duplicate.parent.name,
-                entity.name,
-            )
-
-    return list(fields_by_name.values())
+def get_query_fields(fields: Iterable[dsl.Field]) -> list[dsl.Field]:
+    """Return fields marked @query or @queryList from the caller's field view."""
+    return [x for x in fields if x.directive.is_query or x.directive.is_query_list]
 
 
 def get_composition_fields(schema: dsl.Schema, obj_name: str) -> list[dsl.Field]:
-    """Returns all Fields whose value is this Object.
-
-    Args:
-        obj_name (str): The Object which value the fields should have.
-        filter_relations (bool, optional): Include only relation fields. Defaults to True.
-
-    Returns:
-        list[dsl.Field]: The list of Fields.
-    """
-    fields = xtx.get_children_of_field(schema)
+    """Return visible Object array fields referencing the named Object, except aggregations."""
     return [
         x
-        for x in fields
-        if isinstance(x.parent, dsl.Object)
-        and x.value.name == obj_name
-        and x.is_array
-        and not x.directive.is_aggregation
+        for x in iter_object_fields(schema)
+        if x.value.name == obj_name and x.is_array and not x.directive.is_aggregation
     ]
 
 
@@ -227,20 +145,16 @@ def traverse_fields(
             skip_relations=True
         )
     """
-    for dsl_field in entity.fields:
+    fields = entity.generation_fields if skip_ignored else entity.effective_fields
+    for dsl_field in fields:
         if skip_relations and is_relation(dsl_field):
             continue
         if skip_hidden and dsl_field.directive.is_hidden:
             continue
         if skip_transient and dsl_field.directive.is_transient:
             continue
-        if skip_ignored and dsl_field.directive.is_ignored:
-            continue
-
         if predicate(dsl_field):
             return True
-
-        # TODO: consider inheritance
 
         if (
             include_nested

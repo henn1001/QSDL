@@ -405,6 +405,44 @@ def test_force_generation_attaches_recipient_nodes() -> None:
         assert (node.location is None) == (node.origin == "synthetic")
 
 
+@pytest.mark.parametrize("forced", [False, True])
+def test_value_reference_cycle_retains_types_and_propagates_force(forced: bool) -> None:
+    annotation = "@force-generate(source annotation)" if forced else ""
+    schema = xtx.parse_schema(
+        raw_schema=f"""
+        base A {annotation} {{ partner: B }}
+        base B {{ peer: A marker: Marker @ignore }}
+        enum Marker {{ READY }}
+        enum Unused {{ UNUSED }}
+        type Root {{ entry: A entryAgain: B }}
+        """
+    )
+    by_name = {entity.name: entity for entity in schema.types}
+    assert "Unused" not in by_name
+    a, b, marker = (by_name[name] for name in ("A", "B", "Marker"))
+    assert a.effective_fields[0].value is b
+    assert b.effective_fields[0].value is a
+    assert b.effective_fields[1].value is marker
+    assert [field.name for field in b.generation_fields] == ["peer"]
+    for owner, origin in [(a, "source"), (b, "synthetic"), (marker, "synthetic")]:
+        if forced:
+            (node,) = owner.directives
+            assert node is owner.directives.get(FORCE_GENERATE) is owner.directives.by_name("force-generate")
+            assert owner.directive.is_force_generate
+            assert node.origin == origin and node.parent is owner
+            assert (node.location is not None) == (origin == "source")
+        else:
+            assert not owner.directives
+
+
+def test_object_ignored_field_keeps_referenced_enum() -> None:
+    schema = xtx.parse_schema(raw_schema="enum Status { READY } type Item { status: Status @ignore }")
+    (status,) = xtx.get_children_of_enum(schema)
+    (item,) = xtx.get_children_of_object(schema)
+    assert item.effective_fields[1].value is status
+    assert [field.name for field in item.generation_fields] == ["id"]
+
+
 def test_synthetic_attachment_validation() -> None:
     scalar = dsl.Scalar("Token")
     with pytest.raises(TypeError, match="not supported"):
@@ -428,7 +466,12 @@ def test_generated_crud_uses_owned_synthetic_nodes() -> None:
     assert api.directive.namespace.parent is api
     assert api.directive.namespace.origin == "synthetic"
     assert item.directive.namespace.origin == "source"
-    id_field, label = item.fields
+    id_field, label = item.effective_fields
+    assert item.generation_fields[0] is id_field
+    assert item.fields == [label]
+    assert id_field.parent is item
+    assert id_field.value.name == "ID"
+    assert id_field.is_required
     assert id_field.directive.is_read_only
     assert id_field.directives.get(READ_ONLY).origin == "synthetic"
     assert not label.directive.is_read_only

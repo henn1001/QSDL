@@ -39,7 +39,7 @@ def dump_to_yaml(obj: dsl.Base | dsl.Object, translate: bool) -> dict:
 
     data["__"] = obj.name if translate else None
 
-    for field in obj.fields:
+    for field in obj.generation_fields:
         if isinstance(field.value, dsl.Object | dsl.Base):
             data[field.name] = dump_to_yaml(field.value, translate)
         elif translate:

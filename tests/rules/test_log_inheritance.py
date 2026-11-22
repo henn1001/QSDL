@@ -20,6 +20,9 @@ Rules covered:
 - LOG-103: @override replaces an inherited field; changed value types are allowed with a warning
 """
 
+import pytest
+from textx.exceptions import TextXSemanticError
+
 import qsdl.dsl.textx as xtx
 
 from .conftest import ParseExpectErrorFixture, ParseFixture
@@ -43,11 +46,11 @@ class TestLogInheritance:
             }
         """)
         obj = xtx.get_children_of_object(schema)[0]
-        field_names = [f.name for f in obj.fields]
-        assert "createdAt" in field_names
-        assert "updatedAt" in field_names
-        assert "uuid" in field_names
-        assert "name" in field_names
+        assert [f.name for f in obj.fields] == ["name"]
+        assert [f.name for f in obj.effective_fields] == ["id", "createdAt", "updatedAt", "uuid", "name"]
+        created = obj.effective_fields[1]
+        assert created is obj.supertypes[0].fields[0]
+        assert created.parent is obj.supertypes[0]
 
     def test_LOG_101_deep_inheritance_flattened_positive(self, parse: ParseFixture) -> None:
         """LOG-101: Deep inheritance chain flattens all fields."""
@@ -63,10 +66,10 @@ class TestLogInheritance:
             }
         """)
         obj = xtx.get_children_of_object(schema)[0]
-        field_names = [f.name for f in obj.fields]
-        assert "grandField" in field_names
-        assert "parentField" in field_names
-        assert "childField" in field_names
+        assert [f.name for f in obj.effective_fields] == ["id", "grandField", "parentField", "childField"]
+        (parent,) = obj.supertypes
+        assert [f.name for f in parent.fields] == ["parentField"]
+        assert [f.name for f in parent.effective_fields] == ["grandField", "parentField"]
 
     def test_LOG_101_multiple_inheritance_conflict_negative(
         self, parse_expect_semantic_error: ParseExpectErrorFixture
@@ -117,10 +120,7 @@ class TestLogInheritance:
             }
         """)
         obj = xtx.get_children_of_object(schema)[0]
-        field_names = [f.name for f in obj.fields]
-        assert field_names.count("sharedField") == 1
-        assert "combinedField" in field_names
-        assert "childField" in field_names
+        assert [f.name for f in obj.effective_fields] == ["id", "sharedField", "combinedField", "childField"]
 
     def test_LOG_101_diamond_inheritance_positive(self, parse: ParseFixture) -> None:
         """LOG-101: Diamond inheritance includes shared fields only once."""
@@ -139,11 +139,9 @@ class TestLogInheritance:
             }
         """)
         obj = xtx.get_children_of_object(schema)[0]
-        field_names = [f.name for f in obj.fields]
-        assert field_names.count("rootField") == 1
-        assert "leftField" in field_names
-        assert "rightField" in field_names
-        assert "childField" in field_names
+        assert [f.name for f in obj.effective_fields] == ["id", "rootField", "leftField", "rightField", "childField"]
+        root = obj.supertypes[0].supertypes[0]
+        assert obj.effective_fields[1] is root.fields[0]
 
     def test_LOG_102_override_required_negative(self, parse_expect_semantic_error: ParseExpectErrorFixture) -> None:
         """LOG-102: Redefining inherited field without @override is rejected."""
@@ -185,7 +183,9 @@ class TestLogInheritance:
         field = next(f for f in obj.fields if f.name == "field")
         assert field.value.name == "String"
 
-    def test_LOG_103_override_changed_type_positive(self, parse: ParseFixture) -> None:
+    def test_LOG_103_override_changed_type_positive(
+        self, parse: ParseFixture, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """LOG-103: Override can change value type with a warning during model processing."""
         schema = parse("""
             base Parent {
@@ -196,5 +196,36 @@ class TestLogInheritance:
             }
         """)
         obj = xtx.get_children_of_object(schema)[0]
-        field = next(f for f in obj.fields if f.name == "field")
-        assert field.value.name == "Long"
+        assert obj.effective_fields[1] is obj.fields[0]
+        assert obj.effective_fields[1].value.name == "Long"
+        assert sum("was redefined with a different type by 'Child'" in msg for msg in caplog.messages) == 1
+
+    def test_cycle_reached_from_object(self, parse: ParseFixture) -> None:
+        """Report the circular extends chain before inspecting inherited fields."""
+        with pytest.raises(TextXSemanticError, match="Circular inheritance.*Left -> Right -> Left") as error:
+            parse("type Entry extends Left {}\nbase Left extends Right {}\nbase Right extends Left {}")
+        assert error.value.line == 2
+        assert error.value.col == 1
+
+    def test_ignored_override(self, parse: ParseFixture) -> None:
+        """Ignore filtering does not restore the replaced parent field."""
+        schema = parse("""
+            base Named {
+                label: String
+                owner: String
+            }
+            type Item extends Named {
+                label: String @override @ignore
+                note: String
+            }
+        """)
+        (item,) = xtx.get_children_of_object(schema)
+        label, note = item.fields
+        (parent,) = item.supertypes
+        assert parent.fields[0].parent is parent
+        assert label.parent is item
+        assert [f.name for f in item.effective_fields] == ["id", "label", "owner", "note"]
+        assert item.effective_fields[1] is label
+        assert [f.name for f in item.generation_fields] == ["id", "owner", "note"]
+        assert item.generation_fields[-1] is note
+        assert [f.name for f in xtx.get_children_of_field(schema)] == ["label", "note"]

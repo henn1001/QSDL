@@ -53,6 +53,16 @@ The loader validates the contract when it loads the plugin:
 
 Do not store a per-invocation config or schema on the generator instance. Builtin generator instances are shared registry entries, so request data belongs in `generate` arguments or local variables.
 
+## Read model fields
+
+Plugins that used `Base.fields` or `Object.fields` for rendering should switch
+to `generation_fields`. `.fields` now contains only source declarations,
+including `@ignore` fields; it no longer includes inherited fields or generated
+IDs. `generation_fields` includes resolved inherited fields and the generated
+Object ID, excluding `@ignore` fields. Use `effective_fields` when you need the
+same resolved fields before ignore filtering. See the
+[library example](../guides/library-generation.md#choose-a-field-view).
+
 ## Directive definitions
 
 A generator can declare `directive_specs`, a tuple of `DirectiveSpec` objects.

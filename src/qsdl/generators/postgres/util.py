@@ -59,7 +59,7 @@ def build_jointables(table: Table) -> list[JoinTable]:
 
     return_tables = []
 
-    for dsl_field in table.source.fields:
+    for dsl_field in table.source.generation_fields:
         # Only Object type arrays create join tables (Base types are always JSONB)
         if not (isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array and dsl_field.directive.is_aggregation):
             continue
@@ -130,7 +130,7 @@ def extract_embedded_columns(ref: dsl.Base, prefix: str = "") -> list[Column]:
     Base types with @opaque are stored as JSONB and don't reach this function.
     """
     columns = []
-    for field in ref.fields:
+    for field in ref.generation_fields:
         # Skip fields that are transient - these should not be persisted to the DB
         if field.directive.is_transient:
             continue

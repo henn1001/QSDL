@@ -61,7 +61,7 @@ class TestLogImport:
         assert obj.name == "User"
         assert len(obj.supertypes) == 1
         assert obj.supertypes[0].name == "Auditable"
-        field_names = [f.name for f in obj.fields]
+        field_names = [f.name for f in obj.effective_fields]
         assert "createdAt" in field_names
         assert "name" in field_names
 
@@ -126,7 +126,7 @@ class TestLogImport:
         bases = {base.name for base in xtx.get_children_of_base(schema)}
         assert {"Common", "Nested"}.issubset(bases)
         user = xtx.get_children_of_object(schema)[0]
-        assert {field.name for field in user.fields} >= {"commonValue", "nestedValue", "name"}
+        assert {field.name for field in user.effective_fields} >= {"commonValue", "nestedValue", "name"}
 
     def test_LOG_401_shared_import_positive(self, qsdl_file: QsdlFileFixture) -> None:
         """LOG-401: A shared transitive import is merged once."""

@@ -37,6 +37,21 @@ def test_i18n_builds_in_memory_with_single_file_layout() -> None:
     assert "OPEN:" in content
 
 
+def test_i18n_includes_inheritance_but_omits_ignored_overrides() -> None:
+    files = build(
+        generator_name="i18n",
+        raw_schema="""
+        base Details { label: String visible: String }
+        type Item extends Details { label: String @override @ignore note: String }
+        """,
+    )
+    content = files.text("en.yaml")
+    assert "domain.Item:\n" in content
+    assert "\n  visible:" in content
+    assert "\n  note:" in content
+    assert "\n  label:" not in content
+
+
 def test_i18n_builds_split_files_for_each_locale() -> None:
     files = build(
         generator_name="i18n",
@@ -96,6 +111,72 @@ def test_i18n_builds_do_not_leak_locale_configuration() -> None:
 def test_i18n_validates_translation_paths_as_artifact_paths() -> None:
     with pytest.raises(ValueError, match=r"artifact path cannot contain '\.\.'"):
         build(generator_name="i18n", raw_schema=SCHEMA, config={"locale": "../en"})
+
+
+def test_plantuml_renders_shared_diamond_field_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(plantuml.PlantUML, "processes", lambda *_: b"png")
+    files = build(
+        generator_name="plantuml",
+        raw_schema="""
+        base Root { label: String }
+        base Left extends Root { first: Int }
+        base Right extends Root { second: Int }
+        type Diamond extends Left, Right { note: String }
+        """,
+    )
+    fields = files.text("plantuml.md").split("class Diamond ", 1)[1].split("{\n", 1)[1].split("\n\n", 1)[0]
+    assert fields.splitlines() == [
+        "    label: String",
+        "    first: Int",
+        "    second: Int",
+        "    id: ID",
+        "    note: String",
+    ]
+
+
+def test_plantuml_does_not_restore_ignored_override(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(plantuml.PlantUML, "processes", lambda *_: b"png")
+    files = build(
+        generator_name="plantuml",
+        raw_schema="""
+        base Named @force-generate { label: String keep: String }
+        type Item extends Named { label: Int @override @ignore note: String }
+        """,
+    )
+    base, item = files.text("plantuml.md").split("class Item ", 1)
+    assert "label: String" in base
+    fields = item.split("{\n", 1)[1].split("\n\n", 1)[0]
+    assert fields.splitlines() == ["    keep: String", "    id: ID", "    note: String"]
+
+
+@pytest.mark.parametrize(
+    ("source", "expected_fields"),
+    [
+        (
+            """
+            base Details { hidden: String @ignore visible: String }
+            type Item extends Details { note: String }
+            """,
+            ["visible: String", "id: ID", "note: String"],
+        ),
+        (
+            """
+            base Left { label: String first: Int }
+            base Right { label: Int second: Int }
+            type Item extends Left, Right { label: Long @override note: String }
+            """,
+            ["label: Long", "first: Int", "second: Int", "id: ID", "note: String"],
+        ),
+    ],
+    ids=["ignored-field-from-unused-base", "override-replaces-distinct-candidates"],
+)
+def test_plantuml_renders_resolved_fields(
+    monkeypatch: pytest.MonkeyPatch, source: str, expected_fields: list[str]
+) -> None:
+    monkeypatch.setattr(plantuml.PlantUML, "processes", lambda *_: b"png")
+    markdown = build(generator_name="plantuml", raw_schema=source).text("plantuml.md")
+    fields = markdown.split("class Item ", 1)[1].split("{\n", 1)[1].split("\n\n", 1)[0]
+    assert [line.strip() for line in fields.splitlines()] == expected_fields
 
 
 def test_plantuml_returns_markdown_and_exact_png_bytes(monkeypatch: pytest.MonkeyPatch) -> None:

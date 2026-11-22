@@ -15,6 +15,10 @@
 """Model domain parser"""
 
 import re
+from collections.abc import Iterator
+
+from textx import get_location
+from textx.exceptions import TextXSemanticError
 
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
@@ -27,6 +31,72 @@ from . import CrudGeneratorEnum as CrudEnum
 from .directive_parser import complete_response_headers
 
 log = logger.getLogger(__name__)
+
+
+def resolve_fields(schema: dsl.Schema) -> None:
+    """Resolve the extends graph parent-first, without changing declaration containment."""
+    resolved: set[int] = set()
+    for entity in schema.types:
+        if not isinstance(entity, dsl.Base | dsl.Object) or id(entity) in resolved:
+            continue
+        stack: list[tuple[dsl.Base | dsl.Object, Iterator[dsl.Base]]] = [(entity, iter(entity.supertypes))]
+        active = {id(entity): 0}
+        while stack:
+            current, parents = stack[-1]
+            parent = next(parents, None)
+            if parent is None:
+                current._resolved_fields = _merge_fields(current)
+                resolved.add(id(current))
+                del active[id(current)]
+                stack.pop()
+            elif id(parent) in active:
+                cycle = [node.name for node, _ in stack[active[id(parent)] :]] + [parent.name]
+                msg = f"Circular inheritance detected in Base supertypes: {' -> '.join(cycle)}"
+                raise TextXSemanticError(msg, **get_location(parent))
+            elif id(parent) not in resolved:
+                active[id(parent)] = len(stack)
+                stack.append((parent, iter(parent.supertypes)))
+
+
+def _merge_fields(entity: dsl.Base | dsl.Object) -> tuple[dsl.Field, ...]:
+    inherited: dict[str, list[dsl.Field]] = {}
+    overrides = {field.name for field in entity.fields if field.directive.is_override}
+    for parent in entity.supertypes:
+        for field in parent.effective_fields:
+            candidates = inherited.setdefault(field.name, [])
+            if any(field is candidate for candidate in candidates):
+                continue
+            if candidates and field.name not in overrides:
+                _raise_field_redefinition(entity, candidates[0], field)
+            candidates.append(field)
+
+    fields = {name: candidates[0] for name, candidates in inherited.items()}
+    for field in entity.fields:
+        duplicate = fields.get(field.name)
+        if duplicate is not None and not field.directive.is_override:
+            _raise_field_redefinition(entity, duplicate, field)
+        fields[field.name] = field
+
+        changed = next((other for other in inherited.get(field.name, ()) if other.value is not field.value), None)
+        if changed is not None:
+            log.warning(
+                "The inherited field '%s' of '%s' was redefined with a different type by '%s'.",
+                changed.name,
+                changed.parent.name,
+                entity.name,
+            )
+    return tuple(fields.values())
+
+
+def _raise_field_redefinition(entity: dsl.Base | dsl.Object, first: dsl.Field, other: dsl.Field) -> None:
+    log.error(
+        "The field '%s' of '%s' conflicts with a declaration in '%s' while resolving '%s'.",
+        first.name,
+        first.parent.name,
+        other.parent.name,
+        entity.name,
+    )
+    raise TextXSemanticError("Field redefinition without @override is not allowed.", **get_location(other))
 
 
 def id_builder(obj: dsl.Object) -> dsl.Field:
@@ -144,7 +214,7 @@ def query_argument_builder(operation: dsl.Operation, obj: dsl.Object) -> list[ds
     """
     arguments = []
 
-    query_fields = qutil.get_query_fields(obj)
+    query_fields = qutil.get_query_fields(obj.effective_fields)
 
     for field in query_fields:
         argument = dsl.Argument(operation, field.name, field.value)
@@ -393,134 +463,60 @@ def api_builder(
     return obj
 
 
-def is_used(schema: dsl.Schema, entity: dsl.Base | dsl.Enum) -> bool:
-    """Checks if the provided dsl.Base or dsl.Enum is used anywhere.
+def retain_used_types(schema: dsl.Schema) -> None:
+    """Retain Base and Enum types reachable by value before @ignore filtering."""
+    pending: list[tuple[dsl.Base | dsl.Enum, bool]] = []
 
-    Args:
-        schema (dsl.Schema): The QSDL schema model.
-        entity (dsl.Base | dsl.Enum): Either entity.Base or entity.dsl.Enum.
+    def enqueue(value: dsl.Scalar | dsl.Object | dsl.Base | dsl.Enum | None, forced: bool = False) -> None:
+        if isinstance(value, dsl.Base | dsl.Enum):
+            pending.append((value, forced))
 
-    Returns:
-        bool: True when used.
-    """
-    entity_list = []
+    for entity in schema.types:
+        if isinstance(entity, dsl.Base | dsl.Enum) and entity.directive.is_force_generate:
+            enqueue(entity, forced=True)
+        elif isinstance(entity, dsl.Object):
+            for field in entity.effective_fields:
+                enqueue(field.value)
 
-    # handle @force-generate
-    # we generate this regardless
-    is_force_used = entity.directive.is_force_generate
-
-    if is_force_used:
-        return True
-
-    # we can safely check the direct usage for api operations
-    entity_list += xtx.get_children_of_operation(schema)
-    entity_list += xtx.get_children_of_argument(schema)
-
-    # Attached response headers are not part of the textX containment graph.
     for operation in xtx.get_children_of_operation(schema):
+        enqueue(operation.value)
+        for argument in operation.arguments:
+            enqueue(argument.value)
         if headers := operation.directive.headers:
-            entity_list.extend(headers.value)
+            for header in headers.value:
+                enqueue(header.value)
 
-    # for objects, we first check all fields
-    obj_list = xtx.get_children_of_object(schema)
-
-    for obj in obj_list:
-        entity_list += obj.fields
-
-    for itr in entity_list:
-        if itr.value == entity:
-            return True
-
-        # for nested entities, we extend the base.fields to the list
-        # Note: we modify the list we are iterating on purpose
-        if itr.value and isinstance(itr.value, dsl.Base):
-            entity_list.extend(itr.value.fields)
-
-    return False
-
-
-def remove_unused(schema: dsl.Schema) -> None:
-    """Get rid of all dangling Base and Enum entities.
-
-    Args:
-        schema (dsl.Schema): The QSDL schema model.
-    """
-    bases = xtx.get_children_of_base(schema)
-    enums = xtx.get_children_of_enum(schema)
-
-    for entity in bases + enums:
-        used = is_used(schema, entity)
-
-        if not used:
-            schema.types.remove(entity)
-
-    enums = xtx.get_children_of_enum(schema)
-
-
-def remove_ignored(schema: dsl.Schema) -> None:
-    """Get rid of all fields marked with the @ignore directive.
-
-    Args:
-        schema (dsl.Schema): The QSDL schema model.
-    """
-
-    bases = xtx.get_children_of_base(schema)
-    objects = xtx.get_children_of_object(schema)
-
-    for entity in objects + bases:
-        for field in [x for x in entity.fields if x.directive.is_ignored]:
-            entity.fields.remove(field)
-            log.info(
-                "The field '%s' of '%s' was marked with @ignore and removed from generation.",
-                field.name,
-                entity.name,
-            )
-
-
-def inherit_force_generation(schema: dsl.Schema) -> None:
-    """Inherits the force-generate directive to all childs
-
-    Args:
-        schema (dsl.Schema): The QSDL schema model.
-    """
-    bases = xtx.get_children_of_base(schema)
-
-    forced_bases = [base for base in bases if base.directive.is_force_generate]
-
-    def recurser(base: dsl.Base) -> None:
-        matched_entity = [x.value for x in base.fields if isinstance(x.value, dsl.Base | dsl.Enum)]
-
-        for entity in matched_entity:
+    reachable: set[int] = set()
+    forced_reachable: set[int] = set()
+    while pending:
+        entity, forced = pending.pop()
+        key = id(entity)
+        if key in forced_reachable or (not forced and key in reachable):
+            continue
+        reachable.add(key)
+        # A Base already expanded in ordinary mode may still need to propagate force.
+        if forced:
+            forced_reachable.add(key)
             if not entity.directive.is_force_generate:
                 entity.directives.attach_synthetic(FORCE_GENERATE, True)
+        if isinstance(entity, dsl.Base):
+            for field in entity.effective_fields:
+                enqueue(field.value, forced)
 
-            if isinstance(entity, dsl.Base):
-                recurser(entity)
-
-    for base in forced_bases:
-        recurser(base)
+    schema.types[:] = [
+        entity for entity in schema.types if not isinstance(entity, dsl.Base | dsl.Enum) or id(entity) in reachable
+    ]
 
 
-def parse_objects(schema: dsl.Schema) -> None:
-    """Completes the parsed QSDL schema by creating Operations for each dsl.Object.
+def add_object_ids(schema: dsl.Schema) -> None:
+    """Prepend synthetic IDs to the effective fields, outside declaration containment."""
+    for obj in xtx.get_children_of_object(schema):
+        obj._resolved_fields = (id_builder(obj), *obj.effective_fields)
 
-    Needs to be called before parse_operations.
 
-    Args:
-        schema (dsl.Schema): The QSDL schema model.
-    """
+def generate_crud(schema: dsl.Schema) -> None:
+    """Add automatic CRUD and relationship operations after completing explicit APIs."""
     objects = xtx.get_children_of_object(schema)
-    bases = xtx.get_children_of_base(schema)
-
-    # inherit all fields of parent objects
-    for entity in bases + objects:
-        entity.fields = qutil.get_all_fields_as_list(entity)
-        entity.flattened = True
-
-    # add id fields for all objects
-    for obj in objects:
-        id_field = id_builder(obj)
-        obj.fields.insert(0, id_field)
 
     # An explicit object API controls automatic CRUD generation. In particular,
     # an empty API intentionally suppresses all automatic CRUD for that object.
@@ -530,19 +526,18 @@ def parse_objects(schema: dsl.Schema) -> None:
             continue
 
         # aggregations
-        agg_fields = qutil.get_aggregation(schema, obj)
-        duplicate = len(agg_fields) > 1
+        agg_fields = qutil.get_aggregation(schema, obj, include_ignored=True)
 
         # build aggregations
         for field in agg_fields:
             obj = api_builder(obj, field.parent, True, True)
 
         # compositions
-        comp_fields = qutil.get_compositions(schema, obj)
+        comp_fields = qutil.get_compositions(schema, obj, include_ignored=True)
         duplicate = len(comp_fields) > 1
 
         # build compositions
-        for field in qutil.get_compositions(schema, obj):
+        for field in comp_fields:
             obj = api_builder(obj, field.parent, False, duplicate)
 
         # build root objects
@@ -550,14 +545,8 @@ def parse_objects(schema: dsl.Schema) -> None:
             obj = api_builder(obj)
 
 
-def parse_operations(schema: dsl.Schema) -> None:
-    """Completes the parsed QSDL schema by adding default and missing information to Apis.
-
-    Needs to be called before parse_objects.
-
-    Args:
-        schema (dsl.Schema): The QSDL schema model.
-    """
+def complete_operations(schema: dsl.Schema) -> None:
+    """Complete the routes, arguments, and typed metadata of declared operations."""
     apis = xtx.get_children_of_api(schema)
 
     # loop over user defined APIs

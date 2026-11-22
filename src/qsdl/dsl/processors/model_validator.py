@@ -22,7 +22,6 @@ from textx import get_location
 from textx.exceptions import TextXSemanticError
 
 import qsdl.dsl.textx as xtx
-import qsdl.dsl.util as qutil
 from qsdl import dsl
 
 _PASCAL_CASE_NAME = re.compile(r"[A-Z][A-Za-z0-9]*")
@@ -51,7 +50,7 @@ def _get_location(entity: object, schema: dsl.Schema) -> dict[str, object]:
     return get_location(entity)
 
 
-def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
+def validate_declarations(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
     """Check for logical input errors and provide better error messages.
 
     Args:
@@ -66,11 +65,8 @@ def validate(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> N
     validate_namespaces(schema)
     validate_member_names(schema)
     validate_enum_values(schema)
-    validate_reserved_words(schema)
-    validate_arguments(schema, metamodel)
     validate_custom_operations_path(schema, metamodel)
     validate_field_directives(schema, metamodel)
-    validate_no_circular_supertypes(schema, metamodel)
 
 
 def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -210,8 +206,7 @@ def validate_reserved_words(schema: dsl.Schema) -> None:
     first_entity = None
 
     for entity in xtx.get_children_of_object(schema):
-        fields = qutil.get_all_fields_as_list(entity)
-        match = [x for x in fields if x.name.lower() in ["id", "uid", "iv"]]
+        match = [field for field in entity.effective_fields if field.name.lower() in {"id", "uid", "iv"}]
 
         if match:
             msg = f"The Object {entity.name} uses a reserved word {', '.join([f'"{x.name}"' for x in match])}."
@@ -256,7 +251,7 @@ def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaM
 
             # validate that Base types used as query parameters only contain scalar fields
             if (argument.is_query or operation.directive.method is None) and isinstance(argument.value, dsl.Base):
-                for field in qutil.get_all_fields_as_list(argument.value):
+                for field in argument.value.effective_fields:
                     if isinstance(field.value, dsl.Object | dsl.Base):
                         msg = (
                             f"The Base type {argument.value.name} used as query parameter in operation {operation.name} "
@@ -371,7 +366,7 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
                 raise TextXSemanticError(msg, **get_location(field))
 
             # verify that the relation is not self referencing
-            if field.value == entity:
+            if field.value is entity:
                 msg = f"The Field {field.name} for {field.parent.name} references itself."
                 raise TextXSemanticError(msg, **get_location(field))
 
@@ -422,22 +417,3 @@ def validate_operations(schema: dsl.Schema) -> None:
         ):
             msg = f"The Operation {operation.name} needs to return a 'type' or 'base' when @pagination is used."
             raise TextXSemanticError(msg, **_get_location(operation, schema))
-
-
-def validate_no_circular_supertypes(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
-    """Detects and prevents circular inheritance in supertypes for Base entities."""
-    _ = metamodel
-
-    def dfs(entity: dsl.Base | dsl.Object, path: list[dsl.Base | dsl.Object]) -> None:
-        if entity in path:
-            cycle = " -> ".join([b.name for b in path + [entity]])
-            msg = f"Circular inheritance detected in Base supertypes: {cycle}"
-            raise TextXSemanticError(msg, **get_location(entity))
-        for supertype in entity.supertypes:
-            dfs(supertype, path + [entity])
-
-    bases = xtx.get_children_of_base(schema)
-    objects = xtx.get_children_of_object(schema)
-
-    for entity in bases + objects:
-        dfs(entity, [])

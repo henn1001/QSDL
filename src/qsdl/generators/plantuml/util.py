@@ -17,22 +17,13 @@
 from qsdl import dsl
 
 
-def diagram_fields(entity: dsl.Base | dsl.Object) -> list[dsl.Field]:
-    """Keep inherited fields first in diagrams, ahead of synthetic object IDs."""
-    fields = []
+def diagram_fields(entity: dsl.Base | dsl.Object) -> tuple[dsl.Field, ...]:
+    """Render generation fields, keeping inherited slots ahead of the Object ID."""
+    fields = entity.generation_fields
+    if not isinstance(entity, dsl.Object) or not entity.supertypes or not fields or fields[0].name != "id":
+        return fields
 
-    # Support multiple supertypes
-    for supertype in entity.supertypes:
-        super_fields = diagram_fields(supertype)
-        fields.extend(super_fields)
-
-    # Add own fields, overriding inherited ones if needed
-    for field in entity.fields:
-        duplicate = [x for x in fields if hasattr(x, "name") and x.name == getattr(field, "name", None)]
-        if not duplicate:
-            fields.append(field)
-        else:
-            index = fields.index(duplicate[0])
-            fields[index] = field
-
-    return fields
+    synthetic_id, *members = fields
+    inherited_names = {field.name for parent in entity.supertypes for field in parent.effective_fields}
+    position = next((i for i, field in enumerate(members) if field.name not in inherited_names), len(members))
+    return (*members[:position], synthetic_id, *members[position:])

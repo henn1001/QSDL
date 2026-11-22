@@ -44,10 +44,20 @@ class Base(DirectiveOwnerModel):
     fields: list[dsl.Field] = field(default_factory=list)
 
     # addons
-    flattened: bool = False
+    _resolved_fields: tuple[dsl.Field, ...] | None = field(default=None, init=False, repr=False, compare=False)
 
     # required by textX
     _tx_fqn: str = "entity.Base"
+
+    @property
+    def effective_fields(self) -> tuple[dsl.Field, ...]:
+        """Return ordered inherited and local fields, including any generated ID."""
+        return tuple(self.fields) if self._resolved_fields is None else self._resolved_fields
+
+    @property
+    def generation_fields(self) -> tuple[dsl.Field, ...]:
+        """Return effective fields that are not marked @ignore."""
+        return tuple(member for member in self.effective_fields if not member.directive.is_ignored)
 
     @property
     def directive(self) -> BaseDirectiveView:

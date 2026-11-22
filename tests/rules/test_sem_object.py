@@ -96,7 +96,7 @@ class TestSemObject:
             }
         """)
         obj = xtx.get_children_of_object(schema)[0]
-        field_names = [f.name for f in obj.fields]
+        field_names = [f.name for f in obj.effective_fields]
         assert "createdAt" in field_names
         assert "updatedAt" in field_names
         assert "name" in field_names

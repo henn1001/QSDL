@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import ClassVar
 
 import qsdl.casing as qfilter
@@ -319,12 +320,14 @@ def get_parent_fields(obj_name: str) -> list[dsl.Field]:
     """Find relation fields on objects that reference the named object."""
     return [
         field
-        for field in xtx.get_children_of_field(Store.schema)
+        for field in qutil.iter_object_fields(Store.schema)
         if isinstance(field.parent, dsl.Object) and field.value.name == obj_name and qutil.is_relation(field)
     ]
 
 
-def extract_embedded_columns(fields: list[dsl.Field], prefix: str = "", dto_path: str = "") -> list[spring.ModelField]:
+def extract_embedded_columns(
+    fields: Sequence[dsl.Field], prefix: str = "", dto_path: str = ""
+) -> list[spring.ModelField]:
     """Flatten non-opaque base fields into Java entity fields."""
     model_fields = []
 
@@ -335,7 +338,9 @@ def extract_embedded_columns(fields: list[dsl.Field], prefix: str = "", dto_path
         if isinstance(field.value, dsl.Base) and not (field.is_array or field.directive.is_opaque):
             embedded_prefix = prefix + qfilter.snakecase(field.name).lower() + "_"
             embedded_dto_path = dto_path + java_identifier(field.name) + "."
-            model_fields.extend(extract_embedded_columns(field.value.fields, embedded_prefix, embedded_dto_path))
+            model_fields.extend(
+                extract_embedded_columns(field.value.generation_fields, embedded_prefix, embedded_dto_path)
+            )
         elif prefix:
             name = qfilter.camelcase(prefix + qfilter.snakecase(field.name).lower())
             path = dto_path + java_identifier(field.name)
@@ -350,7 +355,7 @@ def extract_fields_for_mapper(ref: dsl.Base | dsl.Object) -> list[dsl.Field]:
     """Extracts all fields (including nested ones) that are either a Object or a opaqued Base"""
     nested_objects = []
 
-    for field in ref.fields:
+    for field in ref.generation_fields:
         # Skip transient fields entirely - they are not part of the DB/entity model
         if field.directive.is_transient:
             continue
@@ -520,7 +525,7 @@ def collect_nested_request_types(
     Recursively collect nested Base/Object types that would need Request DTOs.
     Only adds types that have fields requiring the type to be used in requests.
     """
-    for field in entity.fields:
+    for field in entity.generation_fields:
         if qutil.is_relation(field) or field.directive.is_hidden or field.directive.is_read_only:
             continue
 
@@ -538,7 +543,7 @@ def collect_nested_response_types(
     Recursively collect nested Base/Object types that would need Response DTOs.
     Only adds types that have fields requiring the type to be used in responses.
     """
-    for field in entity.fields:
+    for field in entity.generation_fields:
         if qutil.is_relation(field) or field.directive.is_hidden or field.directive.is_write_only:
             continue
 

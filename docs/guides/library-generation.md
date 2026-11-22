@@ -96,6 +96,36 @@ assert run.directive.method.origin == "synthetic"
 
 See [Directive definitions](../generators/plugins.md#directive-definitions) for typed lookups.
 
+### Choose a field view
+
+**Python API compatibility break:** `Base.fields` and `Object.fields` now
+contain only source declarations, including fields marked `@ignore`. Use
+`effective_fields` to inspect inherited fields and generated IDs before ignore
+filtering. Use `generation_fields` to render fields after filtering. Both views
+are ordered tuples and refer to the original declaration nodes for source fields.
+
+```python
+from qsdl.dsl.textx import get_children_of_object, parse_schema
+
+schema = parse_schema(
+    raw_schema="""
+base Named { label: String }
+type Item extends Named {
+    notes: String @ignore
+    count: Int
+}
+"""
+)
+(item,) = get_children_of_object(schema)
+assert [field.name for field in item.fields] == ["notes", "count"]
+assert [field.name for field in item.effective_fields] == ["id", "label", "notes", "count"]
+assert [field.name for field in item.generation_fields] == ["id", "label", "count"]
+assert item.effective_fields[1].parent is item.supertypes[0]
+```
+
+If an override is marked `@ignore`, the generation view omits that field; it
+does not fall back to the inherited declaration.
+
 ## Materialize output
 
 Use `DirectoryWriter` to write an in-memory result below a chosen root:

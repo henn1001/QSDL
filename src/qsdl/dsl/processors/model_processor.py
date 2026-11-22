@@ -39,9 +39,7 @@ def model_processor(schema: dsl.Schema, metamodel: TextXMetaModel) -> None:
 
 
 def model_post_processor(schema: dsl.Schema, metamodel: TextXMetaModel) -> None:
-    """Callable that should be called after the schema has been generated and merged.
-
-    We use this to validate and complete the schema.
+    """Validate and complete the merged schema.
 
     Args:
         schema (dsl.Schema): The QSDL schema model.
@@ -53,21 +51,22 @@ def model_post_processor(schema: dsl.Schema, metamodel: TextXMetaModel) -> None:
 
     log.info("running schema validation...")
 
-    # run post validation
-    validator.validate(schema, metamodel)
+    # Order matters: each stage consumes the model prepared by earlier stages.
+    # Resolve inheritance before field-dependent checks, and check reserved names
+    # before adding synthetic IDs so those checks see only user declarations.
+    validator.validate_declarations(schema, metamodel)
+    parser.resolve_fields(schema)
+    validator.validate_reserved_words(schema)
+    validator.validate_arguments(schema, metamodel)
 
-    # adds missing domain related information to all custom operations
-    # it is important that this is done before parsing the objects
-    parser.parse_operations(schema)
+    # Complete declared operations before CRUD adds its own. CRUD discovery
+    # uses the resolved fields rather than just the fields declared locally.
+    parser.complete_operations(schema)
+    parser.add_object_ids(schema)
+    parser.generate_crud(schema)
 
-    # creates and adds operations for domain objects to the schema
-    parser.parse_objects(schema)
+    # Type retention needs references from both declared and generated operations.
+    parser.retain_used_types(schema)
 
-    # remove unused entities
-    # it is important that this is done after parsing all objects
-    parser.inherit_force_generation(schema)
-    parser.remove_unused(schema)
-    parser.remove_ignored(schema)
-
-    # validate operation uniqueness
+    # Check uniqueness across both operation sets, including collisions between them.
     validator.validate_operations(schema)

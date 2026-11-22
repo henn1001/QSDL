@@ -82,7 +82,7 @@ class ModelObject:
         else:
             self.attributes = [
                 ModelField(source)
-                for source in self.source.fields
+                for source in self.source.generation_fields
                 if not qutil.is_relation(source) and not source.directive.is_hidden
             ]
 
