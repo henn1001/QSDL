@@ -4,7 +4,6 @@
 package app.shared.web;
 
 import app.shared.config.AppConfiguration.OpenApiDocument;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,14 +35,5 @@ public class HomeController {
     @RequestMapping("/api")
     public String index() {
         return "redirect:/api/swagger-ui/index.html";
-    }
-
-    @RequestMapping(value = {"/", "/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}"})
-    public String getIndex(HttpServletRequest request) {
-        // This is very important so our routing is handled by the frontend
-        // '/' - matches root
-        // '/{x:[\\w\\-]+}' - matches everything up to the second /.
-        // '/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}' - matches everything that doesn't start with api.
-        return "/index.html";
     }
 }

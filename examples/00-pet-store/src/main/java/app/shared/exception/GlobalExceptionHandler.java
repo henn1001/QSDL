@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
@@ -118,6 +119,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     return str;
                 })
                 .collect(java.util.stream.Collectors.joining("."));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(
+            NoResourceFoundException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        return buildResponseEntity(
+                ErrorCode.NOT_FOUND.toAppError(ex.getMessage()), ((ServletWebRequest) request).getRequest());
     }
 
     /**

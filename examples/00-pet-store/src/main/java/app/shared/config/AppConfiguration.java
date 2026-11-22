@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.springdoc.core.configuration.SpringDocConfiguration;
 import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springdoc.core.providers.ObjectMapperProvider;
@@ -34,8 +35,12 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.util.ServletRequestPathUtils;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.yaml.YAMLMapper;
@@ -97,6 +102,31 @@ public class AppConfiguration {
             @Override
             public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
                 converters.addFirst(jsonMergePatchConverter);
+            }
+
+            @Override
+            public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+                String apiBase = "/api/v1".replaceAll("/+$", "");
+                var frontendRoute = Pattern.compile("/(?:.*/)?[\\w-]+");
+                resolvers.addFirst((request, response, handler, exception) -> {
+                    if (!(exception instanceof NoResourceFoundException)
+                            || !("GET".equals(request.getMethod()) || "HEAD".equals(request.getMethod()))) {
+                        return null;
+                    }
+
+                    String path = ServletRequestPathUtils.getCachedPathValue(request);
+                    if (path.equals("/api")
+                            || path.startsWith("/api/")
+                            || path.equals(apiBase)
+                            || path.startsWith(apiBase + "/")) {
+                        return null;
+                    }
+
+                    // Only fall back on route-shaped resource misses, never on missing files such as main.js.
+                    return path.equals("/") || frontendRoute.matcher(path).matches()
+                            ? new ModelAndView("forward:/index.html")
+                            : null;
+                });
             }
         };
     }

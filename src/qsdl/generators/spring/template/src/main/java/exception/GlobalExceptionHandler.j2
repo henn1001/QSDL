@@ -99,6 +99,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .collect(java.util.stream.Collectors.joining("."));
     }
 
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(
+            NoResourceFoundException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        return buildResponseEntity(
+                ErrorCode.NOT_FOUND.toAppError(ex.getMessage()), ((ServletWebRequest) request).getRequest());
+    }
+
     /**
      * Handles standard Spring MVC Exceptions.
      */

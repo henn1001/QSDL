@@ -5,7 +5,6 @@ spring.config.import: optional:file:./application-properties.yaml
 server.port: 8080
 spring.jpa.open-in-view: false
 spring.threads.virtual.enabled: true
-spring.mvc.pathmatch.matching-strategy: ant_path_matcher
 
 ### Monitoring service
 management.server.port: 8081

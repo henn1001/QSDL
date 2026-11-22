@@ -66,6 +66,31 @@ public class AppConfiguration {
             public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
                 converters.addFirst(jsonMergePatchConverter);
             }
+
+            @Override
+            public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+                String apiBase = "{{basePath}}".replaceAll("/+$", "");
+                var frontendRoute = Pattern.compile("/(?:.*/)?[\\w-]+");
+                resolvers.addFirst((request, response, handler, exception) -> {
+                    if (!(exception instanceof NoResourceFoundException)
+                            || !("GET".equals(request.getMethod()) || "HEAD".equals(request.getMethod()))) {
+                        return null;
+                    }
+
+                    String path = ServletRequestPathUtils.getCachedPathValue(request);
+                    if (path.equals("/api")
+                            || path.startsWith("/api/")
+                            || path.equals(apiBase)
+                            || path.startsWith(apiBase + "/")) {
+                        return null;
+                    }
+
+                    // Only fall back on route-shaped resource misses, never on missing files such as main.js.
+                    return path.equals("/") || frontendRoute.matcher(path).matches()
+                            ? new ModelAndView("forward:/index.html")
+                            : null;
+                });
+            }
         };
     }
 
