@@ -25,31 +25,16 @@ from qsdl.render import render_text
 
 from . import util
 from .config import IDTYPE, OPENAPI_SCALAR, OpenApiConfig
-from .models import ApiObject, ModelObject
+from .models import ModelObject, Operation
 
 
-def parse_apis(schema: dsl.Schema) -> list[ApiObject]:
-    """Parse QSDL schema into custom API model.
-
-    Args:
-        schema (Schema): The QSDL schema model.
-
-    Returns:
-        list[Api]: A list of custom API models.
-    """
-    apis = []
-
-    api_list = xtx.get_children_of_api(schema)
-
-    for api in api_list:
-        # we can skip empty apis
-        if not api.operations:
-            continue
-
-        api_class = ApiObject().build(api)
-        apis.append(api_class)
-
-    return apis
+def parse_operations(schema: dsl.Schema) -> list[Operation]:
+    """Project operations in API order, sorted by path within each API."""
+    return [
+        operation
+        for api in xtx.get_children_of_api(schema)
+        for operation in sorted(map(Operation, api.operations), key=lambda operation: operation.path)
+    ]
 
 
 def parse_models(schema: dsl.Schema) -> list[ModelObject]:
@@ -60,25 +45,16 @@ def parse_models(schema: dsl.Schema) -> list[ModelObject]:
     Returns:
         list[Model]: The parsed models.
     """
-    models = []
+    declarations = (
+        xtx.get_children_of_enum(schema) + xtx.get_children_of_base(schema) + xtx.get_children_of_object(schema)
+    )
+    models = [ModelObject(declaration) for declaration in declarations]
 
-    enum_list = xtx.get_children_of_enum(schema)
-    base_list = xtx.get_children_of_base(schema)
-    object_list = xtx.get_children_of_object(schema)
-    operations_list = xtx.get_children_of_operation(schema)
-
-    for obj in enum_list + base_list + object_list:
-        model = ModelObject().build(obj)
-        models.append(model)
-
-    # scan for paginated responses
-    # use a dict for efficiency to prevent duplicates
-    pageables = {}
-    operations = [x for x in operations_list if x.directive.is_pageable]
-
-    for operation in operations:
-        # in theory we should only allow base or object here but this is already validated in model_validator.py
-        pageables[operation.value.name] = operation.value
+    pageables = {
+        operation.value.name: operation.value
+        for operation in xtx.get_children_of_operation(schema)
+        if operation.directive.is_pageable
+    }
 
     for entity in pageables.values():
         model = get_paginated_object(schema, entity, qfilter.pascalcase(entity.name))
@@ -120,10 +96,7 @@ def get_paginated_object(schema: dsl.Schema, obj: dsl.Object, model_name: str) -
     count_field = dsl.Field(parent=new_object, name="total_count", value=long_scalar)
     new_object.fields.append(count_field)
 
-    # init the new model class
-    model = ModelObject().build(new_object)
-
-    return model
+    return ModelObject(new_object)
 
 
 class OpenApiGenerator(Generator):
@@ -153,15 +126,11 @@ class OpenApiGenerator(Generator):
 
         template_path = Path(__file__).parent / "template" / "openapi.j2"
 
-        # parse schema into OpenApi custom models
-        apis = parse_apis(schema)
-        models = parse_models(schema)
-
         # build the render arguments
         context = {
             "schema": schema,
-            "apis": apis,
-            "models": models,
+            "operations": parse_operations(schema),
+            "models": parse_models(schema),
             "util": util,
             "config": config,
         }

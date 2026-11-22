@@ -3,14 +3,14 @@
  */
 package {{enum.package.enum}};
 
-public enum {{enum.name}} {
-    {% for value in enum.constants %}
+public enum {{enum.source.name}} {
+    {% for value in enum.source.values %}
     {{value}}{% if not loop.last %},{% else %};{% endif %}
 
     {% endfor %}
 
     public static boolean hasValue(String value) {
-        for ({{enum.name}} e : {{enum.name}}.values()) {
+        for ({{enum.source.name}} e : {{enum.source.name}}.values()) {
             if (e.name().equals(value)) return true;
         }
         return false;

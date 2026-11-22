@@ -283,17 +283,16 @@ def test_invalid_spring_directives_are_only_errors_with_spring(raw: str, name: s
 
 
 def test_synthetic_operation_models_have_independent_package_nodes(monkeypatch: pytest.MonkeyPatch) -> None:
-    from qsdl import dsl
     from qsdl.generators.spring.models import ModelClass
 
     recipients = {}
-    build_model = ModelClass.build
+    initialize = ModelClass.__post_init__
 
-    def capture(model: ModelClass, ref: dsl.Base | dsl.Object) -> ModelClass:
-        recipients[ref.name] = ref
-        return build_model(model, ref)
+    def capture(model: ModelClass) -> None:
+        recipients[model.name] = model.source
+        initialize(model)
 
-    monkeypatch.setattr(ModelClass, "build", capture)
+    monkeypatch.setattr(ModelClass, "__post_init__", capture)
     schema = parse_schema(
         raw_schema="""
         extend api @spring-package("pkg") {

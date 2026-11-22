@@ -43,7 +43,7 @@ class {{model.name}}ServiceTest {
         {% endif %}
         service = new {{model.name}}Service({% for parent in model.parents %}{{parent.model.name|lower}}Repository, {% endfor %}repository, mapper);
     }
-{% for operation in api.operations if operation.is_generated %}
+{% for operation in api.operations if operation.source.is_generated %}
 
     {% if operation.parent %}
     {% set p_model = operation.parent.model %}
@@ -54,12 +54,12 @@ class {{model.name}}ServiceTest {
     {% set p_m_entity_type = p_model.name + "Entity" %}
     {% set p_m_entity_var = p_model.name | lower + "Entity" %}
     {% endif %}
-    {% if operation.method == "get" and operation.is_pageable %}
+    {% if operation.method == "get" and operation.source.directive.is_pageable %}
     {# 
     ########################################################################################
     #}
     @Test
-    void when{{operation.name|pascal}}_thenOk() throws Exception {
+    void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         List<{{m_entity_type}}> {{m_entity_var}}List = TestUtils.getRandom({{m_entity_type}}.class, 5);
@@ -76,9 +76,9 @@ class {{model.name}}ServiceTest {
 
         // When
         {% if operation.parent %}
-        CursorPage<{{m_response_type}}> response = service.{{operation.name}}(one, {% if operation.uses_filter %}null, {% endif %}new CursorPageable(null, 5, true));
+        CursorPage<{{m_response_type}}> response = service.{{operation.source.name}}(one, {% if operation.filter_name %}null, {% endif %}new CursorPageable(null, 5, true));
         {% else %}
-        CursorPage<{{m_response_type}}> response = service.{{operation.name}}({% if operation.uses_filter %}null, {% endif %}new CursorPageable(null, 5, true));
+        CursorPage<{{m_response_type}}> response = service.{{operation.source.name}}({% if operation.filter_name %}null, {% endif %}new CursorPageable(null, 5, true));
         {% endif %}
 
         // Then
@@ -90,12 +90,12 @@ class {{model.name}}ServiceTest {
                 new JSONArray(JsonUtil.toString(response.items())),
                 false);
     }
-    {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
+    {% elif operation.method == "post" and ( operation.source.directive.path.value.endswith('/add') or operation.source.directive.path.value.endswith('/remove') ) %}
     {# 
     ########################################################################################
     #}
     @Test
-    void when{{operation.name|pascal}}_thenOk() throws Exception {
+    void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
@@ -104,8 +104,8 @@ class {{model.name}}ServiceTest {
         when({{p_m_var}}Repository.{{hibernate.find_by_id}}(eq(testParent.{{getId}})))
                 .thenReturn(Optional.of(testParent));
 
-        {% if operation.path.endswith('/remove') %}
-        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+        {% if operation.source.directive.path.value.endswith('/remove') %}
+        when(repository.{{p_hibernate.find_by_parent_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
                 .thenReturn(Optional.of({{m_entity_var}}));
         {% else %}
         when(repository.{{hibernate.find_by_id}}(eq({{m_entity_var}}.{{getId}})))
@@ -116,7 +116,7 @@ class {{model.name}}ServiceTest {
                 .thenReturn(null);
 
         // When
-        service.{{operation.name}}(testParent.{{getId}}, {{m_entity_var}}.{{getId}});
+        service.{{operation.source.name}}(testParent.{{getId}}, {{m_entity_var}}.{{getId}});
 
         // Then
 
@@ -126,7 +126,7 @@ class {{model.name}}ServiceTest {
     ########################################################################################
     #}
     @Test
-    void when{{operation.name|pascal}}_thenOk() throws Exception {
+    void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
@@ -143,7 +143,7 @@ class {{model.name}}ServiceTest {
                 .thenReturn({{m_entity_var}});
 
         // When
-        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_var}}Request);
+        {{m_response_type}} response = service.{{operation.source.name}}({{ "one, " if operation.parent }}{{m_var}}Request);
 
         // Then
         JSONAssert.assertEquals(
@@ -156,7 +156,7 @@ class {{model.name}}ServiceTest {
     ########################################################################################
     #}
     @Test
-    void when{{operation.name|pascal}}_thenOk() throws Exception {
+    void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
@@ -167,7 +167,7 @@ class {{model.name}}ServiceTest {
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
 
-        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+        when(repository.{{p_hibernate.find_by_parent_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
                 .thenReturn(Optional.of({{m_entity_var}}));
         {% else %}
 
@@ -176,7 +176,7 @@ class {{model.name}}ServiceTest {
         {% endif %}
 
         // When
-        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
+        {{m_response_type}} response = service.{{operation.source.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
 
         // Then
         JSONAssert.assertEquals(
@@ -186,7 +186,7 @@ class {{model.name}}ServiceTest {
     }
 
     @Test
-    public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
+    public void when{{operation.source.name|pascal}}WithInvalidId_thenError() throws Exception {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
@@ -196,7 +196,7 @@ class {{model.name}}ServiceTest {
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
 
-        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+        when(repository.{{p_hibernate.find_by_parent_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
                 .thenReturn(Optional.ofNullable(null));
         {% else %}
 
@@ -207,7 +207,7 @@ class {{model.name}}ServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
+                    service.{{operation.source.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
                 });
 
         // Then
@@ -221,7 +221,7 @@ class {{model.name}}ServiceTest {
     ########################################################################################
     #}
     @Test
-    void when{{operation.name|pascal}}_thenOk() throws Exception {
+    void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
@@ -232,7 +232,7 @@ class {{model.name}}ServiceTest {
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
 
-        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+        when(repository.{{p_hibernate.find_by_parent_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
                 .thenReturn(Optional.of({{m_entity_var}}));
         {% else %}
 
@@ -244,7 +244,7 @@ class {{model.name}}ServiceTest {
                 .thenReturn({{m_entity_var}});
 
         // When
-        {{m_response_type}} response = service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request);
+        {{m_response_type}} response = service.{{operation.source.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request);
 
         // Then
         {{m_response_type}} {{m_var}}Response = mapper.toResponse({{m_entity_var}});
@@ -255,7 +255,7 @@ class {{model.name}}ServiceTest {
     }
 
     @Test
-    public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
+    public void when{{operation.source.name|pascal}}WithInvalidId_thenError() throws Exception {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
@@ -266,7 +266,7 @@ class {{model.name}}ServiceTest {
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
 
-        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+        when(repository.{{p_hibernate.find_by_parent_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
                 .thenReturn(Optional.ofNullable(null));
         {% else %}
 
@@ -277,7 +277,7 @@ class {{model.name}}ServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request);
+                    service.{{operation.source.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}}, {{m_var}}Request);
                 });
 
         // Then
@@ -291,7 +291,7 @@ class {{model.name}}ServiceTest {
     ########################################################################################
     #}
     @Test
-    void when{{operation.name|pascal}}_thenOk() throws Exception {
+    void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
@@ -301,7 +301,7 @@ class {{model.name}}ServiceTest {
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
 
-        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+        when(repository.{{p_hibernate.find_by_parent_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
                 .thenReturn(Optional.of({{m_entity_var}}));
         {% else %}
 
@@ -310,11 +310,11 @@ class {{model.name}}ServiceTest {
         {% endif %}
 
         // When & Then
-        service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
+        service.{{operation.source.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
     }
 
     @Test
-    public void when{{operation.name|pascal}}WithInvalidId_thenError() throws Exception {
+    public void when{{operation.source.name|pascal}}WithInvalidId_thenError() throws Exception {
 
         // Given
         {{m_entity_type}} {{m_entity_var}} = TestUtils.getRandom({{m_entity_type}}.class);
@@ -324,7 +324,7 @@ class {{model.name}}ServiceTest {
         when({{p_m_var}}Repository.{{ p_m_hibernate.find_by_id }}(eq(one)))
                 .thenReturn(Optional.of(testParent));
 
-        when(repository.{{p_hibernate.find_by_parentid_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
+        when(repository.{{p_hibernate.find_by_parent_and_id}}(eq(testParent.getId()), eq({{m_entity_var}}.{{getId}})))
                 .thenReturn(Optional.ofNullable(null));
         {% else %}
 
@@ -335,7 +335,7 @@ class {{model.name}}ServiceTest {
         // When
         AppException thrown = assertThrows(AppException.class,
                 () -> {
-                    service.{{operation.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
+                    service.{{operation.source.name}}({{ "one, " if operation.parent }}{{m_entity_var}}.{{getId}});
                 });
 
         // Then

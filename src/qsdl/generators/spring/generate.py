@@ -53,7 +53,7 @@ def parse_apis(schema: Schema) -> list[ApiClass]:
         if not api.operations:
             continue
 
-        api_class = ApiClass().build(api)
+        api_class = ApiClass(api)
         apis.append(api_class)
 
     apis = util.sort_api_controller(apis)
@@ -75,14 +75,11 @@ def parse_models(schema: Schema) -> list[ModelClass]:
     obj_list = xtx.get_children_of_object(schema)
 
     for entity in base_list + obj_list:
-        new_model = ModelClass().build(entity)
+        new_model = ModelClass(entity)
         models.append(new_model)
 
     # add domain parents for each model
     util.add_parents_to_model(models)
-
-    # add hibernate related info to model and fields
-    util.add_hibernate_info(models)
 
     # build models from operations query parameters
     filter_models = util.build_filter_models()
@@ -108,10 +105,15 @@ def parse_enums(schema: Schema) -> list[EnumClass]:
     dsl_enums = xtx.get_children_of_enum(schema)
 
     for dsl_enum in dsl_enums:
-        enum = EnumClass.from_ref(dsl_enum)
+        enum = EnumClass(dsl_enum)
         enums.append(enum)
 
     return enums
+
+
+def _java_package_path(package: str) -> str:
+    """Convert a dotted Java package to a relative file path."""
+    return package.replace(".", "/")
 
 
 def _add_rendered(
@@ -159,7 +161,6 @@ class SpringGenerator(Generator):
         util.Store.enums = []
         util.Store.packages = []
         util.Store.package = package = Package(config)
-        util.Store.is_id_long = id_type == "Long"
         util.custom_types["ID"] = id_type
 
         # parse models and apis
@@ -173,60 +174,50 @@ class SpringGenerator(Generator):
         # resolve all dynamic imports
         resolver.resolve_dynamic_imports()
 
-        # enable slashing
-        package.slashed = True
-
         # loop and generate domain files
         api_files = []
 
         for api in util.Store.apis:
-            api.package.slashed = True
-
             # fmt: off
-            api_files.append(("src/main/java/api/Api.j2", f"src/main/java/{api.package.api}/{api.name}Api.java", api))
-            api_files.append(("src/main/java/api/Controller.j2", f"src/main/java/{api.package.controller}/{api.name}Controller.java", api))
+            api_files.append(("src/main/java/api/Api.j2", f"src/main/java/{_java_package_path(api.package.api)}/{api.name}Api.java", api))
+            api_files.append(("src/main/java/api/Controller.j2", f"src/main/java/{_java_package_path(api.package.controller)}/{api.name}Controller.java", api))
 
-            if api.model and api.has_generated:
-                api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{api.package.service}/{api.name}Service.java", api))
-                api_files.append(("src/test/java/api/DControllerTest.j2", f"src/test/java/{api.package.controller}/{api.name}ControllerTest.java", api))
+            if api.model and api.source.has_generated:
+                api_files.append(("src/main/java/service/Service.j2", f"src/main/java/{_java_package_path(api.package.service)}/{api.name}Service.java", api))
+                api_files.append(("src/test/java/api/DControllerTest.j2", f"src/test/java/{_java_package_path(api.package.controller)}/{api.name}ControllerTest.java", api))
 
                 if config.database == Database.HIBERNATE:
-                    api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{api.package.service}/{api.name}ServiceTest.java", api))
+                    api_files.append(("src/test/java/service/ServiceTest.j2", f"src/test/java/{_java_package_path(api.package.service)}/{api.name}ServiceTest.java", api))
             # fmt: on
-            api.package.slashed = False
 
         # loop and generate model files
         model_files = []
 
         for model in util.Store.models:
-            model.package.slashed = True
             # fmt: off
             if model.is_query_filter:
-                model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
+                model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{_java_package_path(model.package.domain)}/{model.name}.java", model))
             elif model.has_request:
-                model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{model.package.domain}/{model.name}Request.java", model))
+                model_files.append(("src/main/java/domain/Request.j2", f"src/main/java/{_java_package_path(model.package.domain)}/{model.name}Request.java", model))
             if model.has_response and not model.is_query_filter:
-                model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{model.package.domain}/{model.name}.java", model))
+                model_files.append(("src/main/java/domain/Response.j2", f"src/main/java/{_java_package_path(model.package.domain)}/{model.name}.java", model))
 
             if model.is_object:
-                model_files.append(("src/main/java/domain/Mapper.j2", f"src/main/java/{model.package.mapper}/{model.name}Mapper.java", model))
+                model_files.append(("src/main/java/domain/Mapper.j2", f"src/main/java/{_java_package_path(model.package.mapper)}/{model.name}Mapper.java", model))
 
             if config.database == Database.HIBERNATE and model.is_object:
-                model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{model.package.entity}/{model.name}Entity.java", model))
-                model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{model.package.repository}/{model.name}Repository.java", model))
-                model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{model.package.repository}/{model.name}RepositoryTest.java", model))
+                model_files.append(("src/main/java/domain/Entity.j2", f"src/main/java/{_java_package_path(model.package.entity)}/{model.name}Entity.java", model))
+                model_files.append(("src/main/java/repository/Repository.j2", f"src/main/java/{_java_package_path(model.package.repository)}/{model.name}Repository.java", model))
+                model_files.append(("src/test/java/repository/RepositoryTest.j2", f"src/test/java/{_java_package_path(model.package.repository)}/{model.name}RepositoryTest.java", model))
             # fmt: on
-            model.package.slashed = False
 
         # loop and generate enum files
         enum_files = []
 
         for enum in util.Store.enums:
-            enum.package.slashed = True
             # fmt: off
-            enum_files.append(("src/main/java/constant/Enum.j2", f"src/main/java/{enum.package.enum}/{enum.name}.java", enum))
+            enum_files.append(("src/main/java/constant/Enum.j2", f"src/main/java/{_java_package_path(enum.package.enum)}/{enum.source.name}.java", enum))
             # fmt: on
-            enum.package.slashed = False
 
         # fmt: off
         supporting_files = [
@@ -246,52 +237,49 @@ class SpringGenerator(Generator):
             ("src/main/resources/public/index.j2", "src/main/resources/public/index.html"),
             ("src/main/resources/public/error/404.j2", "src/main/resources/public/error/404.html"),
             # main
-            ("src/main/java/SpringBootApp.j2", f"src/main/java/{package.base}/SpringBootApp.java"),
-            ("src/test/java/TestUtils.j2", f"src/test/java/{package.base}/TestUtils.java"),
-            ("src/test/java/TestConfiguration.j2", f"src/test/java/{package.base}/TestConfiguration.java"),
+            ("src/main/java/SpringBootApp.j2", f"src/main/java/{_java_package_path(package.base)}/SpringBootApp.java"),
+            ("src/test/java/TestUtils.j2", f"src/test/java/{_java_package_path(package.base)}/TestUtils.java"),
+            ("src/test/java/TestConfiguration.j2", f"src/test/java/{_java_package_path(package.base)}/TestConfiguration.java"),
             # config
-            ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{package.config}/AppConfiguration.java"),
-            ("src/main/java/config/AppProperties.j2", f"src/main/java/{package.config}/AppProperties.java"),
+            ("src/main/java/config/AppConfiguration.j2", f"src/main/java/{_java_package_path(package.config)}/AppConfiguration.java"),
+            ("src/main/java/config/AppProperties.j2", f"src/main/java/{_java_package_path(package.config)}/AppProperties.java"),
             # constants
-            ("src/main/java/constant/ErrorCode.j2", f"src/main/java/{package.enum}/ErrorCode.java"),
-            ("src/main/java/constant/Constant.j2", f"src/main/java/{package.enum}/Constant.java"),
+            ("src/main/java/constant/ErrorCode.j2", f"src/main/java/{_java_package_path(package.enum)}/ErrorCode.java"),
+            ("src/main/java/constant/Constant.j2", f"src/main/java/{_java_package_path(package.enum)}/Constant.java"),
             # api
-            ("src/main/java/api/BaseController.j2", f"src/main/java/{package.shared_controller}/BaseController.java"),
-            ("src/main/java/api/HomeController.j2", f"src/main/java/{package.shared_controller}/HomeController.java"),
+            ("src/main/java/api/BaseController.j2", f"src/main/java/{_java_package_path(package.shared_controller)}/BaseController.java"),
+            ("src/main/java/api/HomeController.j2", f"src/main/java/{_java_package_path(package.shared_controller)}/HomeController.java"),
             # util
-            ("src/main/java/util/JsonUtil.j2", f"src/main/java/{package.util}/JsonUtil.java"),
-            ("src/main/java/util/JsonMergePatchConverter.j2", f"src/main/java/{package.util}/JsonMergePatchConverter.java"),
-            ("src/main/java/util/JsonMergePatchUtil.j2", f"src/main/java/{package.util}/JsonMergePatchUtil.java"),
-            ("src/main/java/util/ObjectNodeConverter.j2", f"src/main/java/{package.util}/ObjectNodeConverter.java"),
-            ("src/main/java/util/ObjectNodeListConverter.j2", f"src/main/java/{package.util}/ObjectNodeListConverter.java"),
-            ("src/main/java/util/TimeUtil.j2", f"src/main/java/{package.util}/TimeUtil.java"),
-            ("src/main/java/util/Validator.j2", f"src/main/java/{package.util}/Validator.java"),
-            ("src/main/java/util/IdGenerator.j2", f"src/main/java/{package.util}/IdGenerator.java"),
-            ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{package.util}/PredicateBuilder.java"),
-            ("src/main/java/util/WorkLoopOrchestrator.j2", f"src/main/java/{package.util}/WorkLoopOrchestrator.java"),
+            ("src/main/java/util/JsonUtil.j2", f"src/main/java/{_java_package_path(package.util)}/JsonUtil.java"),
+            ("src/main/java/util/JsonMergePatchConverter.j2", f"src/main/java/{_java_package_path(package.util)}/JsonMergePatchConverter.java"),
+            ("src/main/java/util/JsonMergePatchUtil.j2", f"src/main/java/{_java_package_path(package.util)}/JsonMergePatchUtil.java"),
+            ("src/main/java/util/ObjectNodeConverter.j2", f"src/main/java/{_java_package_path(package.util)}/ObjectNodeConverter.java"),
+            ("src/main/java/util/ObjectNodeListConverter.j2", f"src/main/java/{_java_package_path(package.util)}/ObjectNodeListConverter.java"),
+            ("src/main/java/util/TimeUtil.j2", f"src/main/java/{_java_package_path(package.util)}/TimeUtil.java"),
+            ("src/main/java/util/Validator.j2", f"src/main/java/{_java_package_path(package.util)}/Validator.java"),
+            ("src/main/java/util/IdGenerator.j2", f"src/main/java/{_java_package_path(package.util)}/IdGenerator.java"),
+            ("src/main/java/util/PredicateBuilder.j2", f"src/main/java/{_java_package_path(package.util)}/PredicateBuilder.java"),
+            ("src/main/java/util/WorkLoopOrchestrator.j2", f"src/main/java/{_java_package_path(package.util)}/WorkLoopOrchestrator.java"),
             # exception
-            ("src/main/java/exception/AppException.j2", f"src/main/java/{package.exception}/AppException.java"),
-            ("src/main/java/exception/AppExceptionUtil.j2", f"src/main/java/{package.exception}/AppExceptionUtil.java"),
-            ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{package.exception}/GlobalExceptionHandler.java"),
+            ("src/main/java/exception/AppException.j2", f"src/main/java/{_java_package_path(package.exception)}/AppException.java"),
+            ("src/main/java/exception/AppExceptionUtil.j2", f"src/main/java/{_java_package_path(package.exception)}/AppExceptionUtil.java"),
+            ("src/main/java/exception/GlobalExceptionHandler.j2", f"src/main/java/{_java_package_path(package.exception)}/GlobalExceptionHandler.java"),
             # model
-            ("src/main/java/model/AppError.j2", f"src/main/java/{package.model}/AppError.java"),
-            ("src/main/java/model/CursorPageable.j2", f"src/main/java/{package.model}/CursorPageable.java"),
-            ("src/main/java/model/CursorPage.j2", f"src/main/java/{package.model}/CursorPage.java"),
+            ("src/main/java/model/AppError.j2", f"src/main/java/{_java_package_path(package.model)}/AppError.java"),
+            ("src/main/java/model/CursorPageable.j2", f"src/main/java/{_java_package_path(package.model)}/CursorPageable.java"),
+            ("src/main/java/model/CursorPage.j2", f"src/main/java/{_java_package_path(package.model)}/CursorPage.java"),
         ]
         # fmt: on
 
         if config.database == "HIBERNATE":
             # fmt: off
-            supporting_files.append(("src/main/java/model/AbstractEntity.j2", f"src/main/java/{package.model}/AbstractEntity.java"))
-            supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{package.shared_repository}/AbstractRepository.java"))
-            supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{package.shared_repository}/BaseRepository.java"))
-            supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{package.shared_repository}/BaseRepositoryImpl.java"))
-            supporting_files.append(("src/test/java/AbstractDataJpaTest.j2", f"src/test/java/{package.base}/AbstractDataJpaTest.java"))
-            supporting_files.append(("src/test/java/AbstractIntegrationTest.j2", f"src/test/java/{package.base}/AbstractIntegrationTest.java"))
+            supporting_files.append(("src/main/java/model/AbstractEntity.j2", f"src/main/java/{_java_package_path(package.model)}/AbstractEntity.java"))
+            supporting_files.append(("src/main/java/repository/AbstractRepository.j2", f"src/main/java/{_java_package_path(package.shared_repository)}/AbstractRepository.java"))
+            supporting_files.append(("src/main/java/repository/BaseRepository.j2", f"src/main/java/{_java_package_path(package.shared_repository)}/BaseRepository.java"))
+            supporting_files.append(("src/main/java/repository/BaseRepositoryImpl.j2", f"src/main/java/{_java_package_path(package.shared_repository)}/BaseRepositoryImpl.java"))
+            supporting_files.append(("src/test/java/AbstractDataJpaTest.j2", f"src/test/java/{_java_package_path(package.base)}/AbstractDataJpaTest.java"))
+            supporting_files.append(("src/test/java/AbstractIntegrationTest.j2", f"src/test/java/{_java_package_path(package.base)}/AbstractIntegrationTest.java"))
             # fmt: on
-
-        # enable dotting
-        package.slashed = False
 
         # build the render arguments
         context = {

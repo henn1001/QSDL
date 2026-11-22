@@ -21,103 +21,91 @@ from dataclasses import dataclass
 from .. import SpringConfig
 
 
-@dataclass
+@dataclass(frozen=True)
 class Package:
-    """Parsed spring package paths"""
+    """Dotted Java package names derived from the Spring configuration."""
 
     _config: SpringConfig
-
-    _namespace: str = ""
-    slashed: bool = False
+    namespace: str = ""
 
     def __post_init__(self) -> None:
-        self._namespace = self._config.package_placeholder_fallback
+        if not self.namespace:
+            object.__setattr__(self, "namespace", self._config.package_placeholder_fallback)
 
-    def __prepare(self, string: str) -> str:
-        ret = string
-
-        # format
-        ret = ret.replace("{package}", self._namespace)
-        ret = ret.replace(".", "/") if self.slashed else ret.replace("/", ".")
-
-        return ret
-
-    def set_namespace(self, namespace: str) -> None:
-        """Sets the namespace for this package"""
-        self._namespace = namespace if namespace else self._namespace
+    def _prepare(self, path: str) -> str:
+        return path.replace("{package}", self.namespace).replace("/", ".")
 
     @property
     def base(self) -> str:
-        """Property helper method"""
-        ret = self._config.base_package
-        return ret.replace(".", "/") if self.slashed else ret.replace("/", ".")
+        """Root Java package."""
+        return self._config.base_package.replace("/", ".")
 
     @property
     def api(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.api_path)
+        return self._prepare(self._config.api_path)
 
     @property
     def controller(self) -> str:
         """Package for domain API controllers."""
-        return self.__prepare(self._config.controller_path)
+        return self._prepare(self._config.controller_path)
 
     @property
     def shared_controller(self) -> str:
         """Package for shared controller support classes."""
-        return self.__prepare(self._config.shared_controller_path)
+        return self._prepare(self._config.shared_controller_path)
 
     @property
     def domain(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.domain_path)
+        return self._prepare(self._config.domain_path)
 
     @property
     def entity(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.entity_path)
+        return self._prepare(self._config.entity_path)
 
     @property
     def mapper(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.mapper_path)
+        return self._prepare(self._config.mapper_path)
 
     @property
     def enum(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.enum_path)
+        return self._prepare(self._config.enum_path)
 
     @property
     def repository(self) -> str:
         """Package for domain repositories."""
-        return self.__prepare(self._config.repository_path)
+        return self._prepare(self._config.repository_path)
 
     @property
     def shared_repository(self) -> str:
         """Package for shared repository support classes."""
-        return self.__prepare(self._config.shared_repository_path)
+        return self._prepare(self._config.shared_repository_path)
 
     @property
     def service(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.service_path)
+        return self._prepare(self._config.service_path)
 
     @property
     def model(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.model_path)
+        return self._prepare(self._config.model_path)
 
     @property
     def config(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.config_path)
+        return self._prepare(self._config.config_path)
 
     @property
     def exception(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.exception_path)
+        return self._prepare(self._config.exception_path)
 
     @property
     def util(self) -> str:
         """Property helper method"""
-        return self.__prepare(self._config.util_path)
+        return self._prepare(self._config.util_path)

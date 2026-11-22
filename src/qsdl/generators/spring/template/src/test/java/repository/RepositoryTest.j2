@@ -29,11 +29,11 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
         {% endfor %}
         for ({{model.name}}Entity testData : testDatas) {
         {% for field in model.fields if field.is_relation %}
-            {% if field.is_array and field.is_composition %}
+            {% if field.source.is_array and field.source.directive.is_composition %}
             testData.addTo{{field.type}}s(TestUtils.getRandomEntityWithNullId({{field.type}}Entity.class));
-            {% elif field.is_array and field.is_aggregation and field.is_relation_owner %}
+            {% elif field.source.is_array and field.source.directive.is_aggregation and field.foreign_key %}
             testData.addTo{{field.type}}s({{field.type|lower}});
-            {% elif field.is_composition %}
+            {% elif field.source.directive.is_composition %}
             testData.set{{field.type}}({{field.type|lower}});
             {% endif %}
         {% endfor %}
@@ -88,7 +88,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
         List<{{model.name}}Entity> testData = prepareData(5);
 
         BooleanBuilder predicate = new BooleanBuilder();
-        {% for field in model.fields if field.is_query %}
+        {% for field in model.fields if field.source.directive.is_query %}
         predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.eq(testData.get(0).{{ "get" + field.name|pascal + "()" }}));
         {% endfor %}
 
@@ -99,7 +99,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
         {% if model.has_query %}
         assertEquals(
                 testData.stream()
-                        {% for field in model.fields if field.is_query %}
+                        {% for field in model.fields if field.source.directive.is_query %}
                         .filter(d -> d.get{{field.name|pascal}}().equals(testData.get(0).get{{field.name|pascal}}()))
                         {% endfor %}
                         .count(),
@@ -141,7 +141,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
         // Given
         {{model.name}}Entity testData = prepareData(5).get(0);
-        {% if parent.field.is_aggregation %}
+        {% if parent.field.source.directive.is_aggregation %}
         {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}s().toArray(new {{parent.model.name}}Entity[0])[0];
         {% else %}
         {{parent.model.name}}Entity parent = testData.get{{parent.model.name}}();
@@ -149,8 +149,8 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
 
         BooleanExpression expression = Q{{model.name}}Entity.{{model.name|camel}}Entity.{{parent.predicate}}.id.eq(parent.getId());
         BooleanBuilder predicate = new BooleanBuilder(expression);
-        {% for field in model.fields if field.is_query or field.is_query_list %}
-        {% if field.is_query_list %}
+        {% for field in model.fields if field.source.directive.is_query or field.source.directive.is_query_list %}
+        {% if field.source.directive.is_query_list %}
         if (!testData.{{ "get" + field.name|pascal + "()" }}.isEmpty()) {
             predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{field.name}}.contains(testData.{{ "get" + field.name|pascal + "()" }}));
         }
@@ -170,7 +170,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
     public void whenFindAllBy{{parent.model.name}}_thenPaginate() throws Exception {
 
         // Given
-        {% if parent.field.is_aggregation %}
+        {% if parent.field.source.directive.is_aggregation %}
         Long parentId = prepareData(5)
                 .get(0)
                 .get{{parent.model.name}}s()
@@ -203,7 +203,7 @@ class {{model.name}}RepositoryTest extends AbstractDataJpaTest {
     {% endfor %}
     {% if model.is_aggregated %}
 
-        {% for parent in model.parents if parent.field.is_aggregation %}
+        {% for parent in model.parents if parent.field.source.directive.is_aggregation %}
     @Test
     public void whenUnlinkFromLinked{{parent.model.name}}_thenStillExist() throws Exception {
 

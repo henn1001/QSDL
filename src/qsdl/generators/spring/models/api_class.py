@@ -12,17 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Spring Generator Api class"""
+"""Spring controller and operation models."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Self
 
 import qsdl.casing as qfilter
 import qsdl.dsl.util as qutil
 from qsdl import dsl
-from qsdl.dsl.directives import ResponseHeader
 
 from .. import models as spring
 from .. import util
@@ -31,227 +29,106 @@ from ..config import SPRING_CONTROLLER, SPRING_PACKAGE
 
 @dataclass
 class Parameter:
-    """Method parameters and return value."""
+    """Java projection of an operation argument."""
 
-    name: str = None
-    json_key: str = None
+    source: dsl.Argument = field(repr=False, compare=False)
+    name: str = field(init=False)
+    type: str = field(init=False)
 
-    type: str = None
-    is_array: bool = False
+    def __post_init__(self) -> None:
+        self.name = qfilter.raw_camelcase(self.source.name)
+        self.type = util.argument_type(self.source)
 
-    is_required: bool = False
-    is_query: bool = False
-    is_path: bool = False
-    is_header: bool = False
-    is_body: bool = False
-
-    is_base: bool = False
-    is_object: bool = False
-
-    has_modified_type: bool = False
-
-    def build(self, _ref: dsl.Argument | ResponseHeader) -> Self:
-        """Build argument or response header metadata."""
-
-        self.name = qfilter.raw_camelcase(_ref.name)
-        self.json_key = _ref.name
-
-        self.type = util.custom_type(_ref.value)
-        self.is_array = _ref.is_array
-
-        if isinstance(_ref, dsl.Argument):
-            self.is_required = _ref.is_required
-            self.is_path = _ref.is_path
-            self.is_query = _ref.is_query
-            self.is_header = _ref.is_header
-            self.is_body = _ref.is_body
-
-        self.is_base = isinstance(_ref.value, dsl.Base)
-        self.is_object = isinstance(_ref.value, dsl.Object)
-
-        # Append Request suffix for body parameters (Base/Object types)
-        if self.is_body and (self.is_base or self.is_object):
-            self.has_modified_type = util.needs_separate_request_response(_ref.value)
-            self.type = f"{self.type}Request" if self.has_modified_type else self.type
-
-        return self
+    @property
+    def is_model(self) -> bool:
+        """Whether the parameter references a schema base or object."""
+        return isinstance(self.source.value, dsl.Base | dsl.Object)
 
 
 @dataclass
 class Operation:
-    """The Operation/Methods for a Api"""
+    """Java projection of a schema operation."""
 
-    name: str = None
-    tag: str = None
-    summary: str = None
-    description: list[str] = field(default_factory=list)
+    source: dsl.Operation = field(repr=False, compare=False)
+    method: str = field(init=False)
+    parent: spring.Parent | None = field(init=False, default=None)
+    path_parameters: list[Parameter] = field(init=False, default_factory=list)
+    body_parameters: list[Parameter] = field(init=False, default_factory=list)
+    response_type: str = field(init=False)
+    consumes: str | None = field(init=False)
+    produces: str | None = field(init=False)
+    filter_name: str | None = field(init=False)
+    request_dto_name: str | None = field(init=False)
 
-    path: str = None
-    method: str = None
+    def __post_init__(self) -> None:
+        source = self.source
+        directive = source.directive
+        self.method = directive.method.value.lower()
 
-    is_generated: bool = False
-    is_pageable: bool = False
+        if source.domain_object and source.domain_parent:
+            self.parent = util.get_parent_for(source.domain_object.name, source.domain_parent.name)
 
-    parent: spring.Parent = None
+        self.consumes = qutil.render_media_type(directive.consumes, applicable=bool(source.body_parameters))
+        self.produces = qutil.render_media_type(directive.produces, applicable=source.value is not None)
 
-    parameters: list[Parameter] = field(default_factory=list)
-    path_parameters: list[Parameter] = field(default_factory=list)
-    query_parameters: list[Parameter] = field(default_factory=list)
-    header_parameters: list[Parameter] = field(default_factory=list)
-    body_parameters: list[Parameter] = field(default_factory=list)
+        self.path_parameters = [Parameter(argument) for argument in source.path_parameters]
+        if self.method != "delete":
+            self.body_parameters = [Parameter(argument) for argument in source.body_parameters]
 
-    response: Parameter = None
-    response_headers: list[Parameter] = field(default_factory=list)
+        if source.value is None:
+            self.response_type = "Void"
+        else:
+            value_type = util.custom_type(source.value)
+            if directive.is_pageable:
+                self.response_type = f"CursorPage<{value_type}>"
+            elif source.is_array:
+                self.response_type = f"List<{value_type}>"
+            else:
+                self.response_type = value_type
 
-    consumes: str = None
-    produces: str = None
-
-    uses_filter: bool = False
-    filter_name: str | None = None
-
-    uses_request_dto: bool = False
-    request_dto_name: str | None = None
-
-    def build(self, _ref: dsl.Operation) -> Self:
-        """Builds self from dsl.Operation"""
-
-        self.name = _ref.name
-        self.tag = qutil.render_namespace(_ref.parent)
-        self.summary = _ref.summary
-        self.description = _ref.description
-
-        self.path = _ref.directive.path.value
-        self.method = _ref.directive.method.value.lower()
-
-        self.is_generated = _ref.is_generated
-        self.is_pageable = _ref.directive.is_pageable
-
-        if _ref.domain_object and _ref.domain_parent:
-            self.parent = util.get_parent_for(_ref.domain_object.name, _ref.domain_parent.name)
-
-        self.consumes = qutil.render_media_type(_ref.directive.consumes, applicable=bool(_ref.body_parameters))
-        self.produces = qutil.render_media_type(_ref.directive.produces, applicable=_ref.value is not None)
-
-        self._add_parameters(_ref)
-        self._add_response(_ref)
-        self._add_response_headers(_ref)
-
-        self.uses_filter, self.filter_name = util.resolve_query_filter(_ref)
-        self.uses_request_dto, self.request_dto_name = util.resolve_request_body_dto(_ref)
-
-        return self
-
-    def _add_parameters(self, _ref: dsl.Operation) -> None:
-        """Creates and adds all parameters to a Operation"""
-
-        for argument in _ref.arguments:
-            new_param = Parameter().build(argument)
-
-            self.parameters.append(new_param)
-
-            if new_param.is_path:
-                self.path_parameters.append(new_param)
-            elif new_param.is_query or new_param.is_header:
-                self.query_parameters.append(new_param)
-            elif new_param.is_body and _ref.directive.method.value != "DELETE":
-                self.body_parameters.append(new_param)
-
-    def _add_response(self, _ref: dsl.Operation) -> None:
-        """Creates and adds a response parameter to a Operation"""
-
-        if _ref.value:
-            new_param = Parameter()
-            new_param.name = qfilter.raw_camelcase(_ref.value.name)
-            new_param.json_key = _ref.value.name
-            new_param.is_array = _ref.is_array
-
-            new_param.type = util.custom_type(_ref.value)
-
-            new_param.is_base = isinstance(_ref.value, dsl.Base)
-            new_param.is_object = isinstance(_ref.value, dsl.Object)
-
-            if _ref.directive.is_pageable:
-                new_param.name = "CursorPage"
-                new_param.json_key = "CursorPage"
-                new_param.type = f"CursorPage<{new_param.type}>"
-                new_param.is_array = False
-
-            self.response = new_param
-
-    def _add_response_headers(self, _ref: dsl.Operation) -> None:
-        """Creates and adds a response header to a Operation"""
-
-        headers = _ref.directive.headers
-        if headers is None:
-            return
-        for header in headers.value:
-            self.response_headers.append(Parameter().build(header))
+        self.filter_name = util.resolve_query_filter(source)
+        self.request_dto_name = util.resolve_request_body_dto(source)
 
 
 @dataclass
 class ApiClass:
-    """The Java Model for the Controller and Service Class"""
+    """Controller and service model, including operations merged from other APIs."""
 
-    name: str = None
-    namespace: str = None
-    description: list[str] = field(default_factory=list)
+    source: dsl.Api = field(repr=False, compare=False)
+    name: str = field(init=False)
+    model: spring.ModelClass | None = field(init=False, default=None)
+    operations: list[Operation] = field(init=False)
+    package_priority: int = field(init=False, default=0)
+    package: spring.Package = field(init=False)
 
-    model: spring.ModelClass = None
+    def __post_init__(self) -> None:
+        source = self.source
+        owner = source.parent
+        self.name = self.controller_target or (owner.name if isinstance(owner, dsl.Object) else "Default")
 
-    operations: list[Operation] = field(default_factory=list)
+        if isinstance(owner, dsl.Object):
+            self.model = util.get_model_for(owner.name)
 
-    # addons
-    has_generated: bool = False
-    controller_target: str | None = None
-    package_priority: int = 0
+        self.operations = [Operation(operation) for operation in source.operations]
 
-    package: spring.Package = None
-
-    def build(self, _ref: dsl.Api) -> Self:
-        """Builds self from dsl.Api"""
-
-        # The api name equals the object name to unless it is not part of a object
-        self.name = _ref.parent.name if isinstance(_ref.parent, dsl.Object) else "Default"
-        self.namespace = qfilter.lowercase(qutil.render_namespace(_ref))
-        self.description = _ref.description
-
-        # allow to overwrite the controller name
-        controller_dir = _ref.directives.get(SPRING_CONTROLLER)
-        self.controller_target = controller_dir.value if controller_dir else None
-        self.name = self.controller_target or self.name
-
-        # add model
-        if isinstance(_ref.parent, dsl.Object):
-            self.model = util.get_model_for(_ref.parent.name)
-
-        # add methods
-        self._add_operations(_ref)
-
-        self.has_generated = _ref.has_generated
-
-        # Handle package path and imports. API-local directives take priority
-        # over the owning Object. An inherited Object namespace is only an API
-        # tag and must not displace an Object's explicit @spring-package.
-        self.package = spring.Package(util.Store.config)
-        package_directive = _ref.directives.get(SPRING_PACKAGE)
-        namespace = _ref.directive.namespace
-
+        # API-local directives take priority over the owning Object. An inherited
+        # namespace is only an API tag and cannot override an Object's @spring-package.
+        package_directive = source.directives.get(SPRING_PACKAGE)
+        namespace = source.directive.namespace
         if package_directive:
-            self.package.set_namespace(package_directive.value)
+            self.package = spring.Package(util.Store.config, package_directive.value)
             self.package_priority = 3
         elif namespace and namespace.origin == "source" and namespace.value:
-            self.package.set_namespace(qfilter.lowercase(namespace.value))
+            self.package = spring.Package(util.Store.config, qfilter.lowercase(namespace.value))
             self.package_priority = 2
         elif self.model:
             self.package = self.model.package
             self.package_priority = 1
+        else:
+            self.package = spring.Package(util.Store.config)
 
-        return self
-
-    def _add_operations(self, _ref: dsl.Api) -> None:
-        """Creates and adds all Operations to a ApiClass"""
-
-        for operation in _ref.operations:
-            new_operation = Operation().build(operation)
-
-            self.operations.append(new_operation)
+    @property
+    def controller_target(self) -> str | None:
+        """The explicitly targeted controller, if any."""
+        directive = self.source.directives.get(SPRING_CONTROLLER)
+        return directive.value if directive else None

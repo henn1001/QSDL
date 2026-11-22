@@ -12,33 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Spring Generator Parent class"""
+"""Spring parent relation model."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Self
+from dataclasses import InitVar, dataclass, field
 
 from .. import models as spring
 from .. import util
+from ..config import IDTYPE, Database
 
 
 @dataclass
 class Parent:
-    """Contains the spring.ModelClass and specifies the relation type"""
+    """A parent model, its relation field, and the inverse field on the child."""
 
-    model: spring.ModelClass = None
-    field: spring.ModelField = None
-    hibernate: spring.HibernateParentInfo = None
-    predicate: str = None
+    model: spring.ModelClass = field(repr=False, compare=False)
+    child: InitVar[spring.ModelClass]
+    child_field: spring.ModelField = field(init=False, repr=False, compare=False)
+    hibernate: spring.HibernateParentInfo | None = field(init=False, default=None)
+    field: spring.ModelField = field(init=False)
 
-    def build(self, parent: spring.ModelClass, child: spring.ModelClass) -> Self:
-        """Builds self from Parent and Child spring.ModelClass"""
+    def __post_init__(self, child: spring.ModelClass) -> None:
+        self.field = util.get_field_for(self.model, child)
+        self.child_field = util.get_field_for(child, self.model)
+        if util.Store.config.database == Database.HIBERNATE:
+            self.hibernate = spring.HibernateParentInfo(self.child_field, util.Store.config.id_type == IDTYPE.LONG)
 
-        self.model = parent
-        self.field = util.get_field_for(parent, child)
-
-        child_field = util.get_field_for(child, parent)
-        self.predicate = child_field.name + ".any()" if child_field.is_array else child_field.name
-
-        return self
+    @property
+    def predicate(self) -> str:
+        """QueryDSL path to the parent, through a collection when necessary."""
+        suffix = ".any()" if self.child_field.source.is_array else ""
+        return f"{self.child_field.name}{suffix}"

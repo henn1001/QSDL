@@ -24,18 +24,18 @@ from qsdl.render import render_text
 
 from . import util
 from .config import POSTGRES_SCALAR, PostgresConfig
-from .models import Table
+from .models import JoinTable, Table
 
 
-def parse_models(schema: Schema) -> list[Table]:
+def parse_models(schema: Schema) -> list[Table | JoinTable]:
     """Parse QSDL schema into custom models.
 
     Args:
         schema (Schema): The QSDL schema model.
     Returns:
-        list[Table]: The parsed models.
+        The parsed tables and synthetic join tables.
     """
-    models = []
+    models: list[Table | JoinTable] = []
 
     obj_list = xtx.get_children_of_object(schema)
     # NOTE: With new semantics, Base types are NEVER separate tables
@@ -43,7 +43,7 @@ def parse_models(schema: Schema) -> list[Table]:
     # Only Object types get their own tables
 
     for obj in obj_list:
-        new_model = Table.from_ref(obj)
+        new_model = Table(obj)
         models.append(new_model)
 
         # Handle composition relationships: add foreign keys for parent references

@@ -21,25 +21,25 @@ class {{model.name}}ControllerTest {
     MockMvc mockMvc;
 
     static {{id_type}} one = {{ "1L" if id_type == "Long" else '"1"' }};
-{% for operation in api.operations if operation.is_generated %}
+{% for operation in api.operations if operation.source.is_generated %}
 
-    {% if operation.method == "get" and operation.is_pageable %}
+    {% if operation.method == "get" and operation.source.directive.is_pageable %}
     {# 
     ########################################################################################
     #}
     @Test
-    public void when{{operation.name|pascal}}_thenOk() throws Exception {
+    public void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
         CursorPage<{{model.name}}> ret = new CursorPage<{{model.name}}>(Arrays.asList(responseDto), null, null);
 
-        when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
+        when(service.{{operation.source.name}}({{macro.paramsCallServiceMocked(operation)}}))
                 .thenReturn(ret);
 
         // When
-        String response = mockMvc.perform(get(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
+        String response = mockMvc.perform(get(basePath + "{{ operation.source.directive.path.value | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -51,17 +51,17 @@ class {{model.name}}ControllerTest {
                 new JSONObject(response),
                 false);
     }
-    {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
+    {% elif operation.method == "post" and ( operation.source.directive.path.value.endswith('/add') or operation.source.directive.path.value.endswith('/remove') ) %}
     {# 
     ########################################################################################
     #}
     @Test
-    public void when{{operation.name|pascal}}_thenOk() throws Exception {
+    public void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
 
         // When
-        mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
+        mockMvc.perform(post(basePath + "{{ operation.source.directive.path.value | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
                 .andExpect(status().isOk());
 
         // Then
@@ -72,17 +72,17 @@ class {{model.name}}ControllerTest {
     ########################################################################################
     #}
     @Test
-    public void when{{operation.name|pascal}}_thenOk() throws Exception {
+    public void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
+        when(service.{{operation.source.name}}({{macro.paramsCallServiceMocked(operation)}}))
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+        String response = mockMvc.perform(post(basePath + "{{ operation.source.directive.path.value | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
                         .content(JsonUtil.toString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -98,16 +98,16 @@ class {{model.name}}ControllerTest {
     }
 
     @Test
-    public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
+    public void when{{operation.source.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
         // Given
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name}}({{macro.paramsCallServiceMocked(operation)}}))
+        when(service.{{operation.source.name}}({{macro.paramsCallServiceMocked(operation)}}))
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(post(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+        String response = mockMvc.perform(post(basePath + "{{ operation.source.directive.path.value | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
                 .content("{{ "{}" if model.has_required else "" }}")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -126,16 +126,16 @@ class {{model.name}}ControllerTest {
     ########################################################################################
     #}
     @Test
-    public void when{{operation.name|pascal}}_thenOk() throws Exception {
+    public void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}))
+        when(service.{{operation.source.name}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}))
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(get(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
+        String response = mockMvc.perform(get(basePath + "{{ operation.source.directive.path.value | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -152,20 +152,20 @@ class {{model.name}}ControllerTest {
     ########################################################################################
     #}
     @Test
-    public void when{{operation.name|pascal}}_thenOk() throws Exception {
+    public void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
         {{model.name}}Request requestDto = TestUtils.getRandom({{model.name}}Request.class);
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name | replace("update", "get")}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}))
+        when(service.{{operation.source.name | replace("update", "get")}}({{ "eq(one), eq(one)" if operation.parent else "eq(one)" }}))
                 .thenReturn(responseDto);
 
-        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}))
+        when(service.{{operation.source.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}))
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(patch(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+        String response = mockMvc.perform(patch(basePath + "{{ operation.source.directive.path.value | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
                         .content(JsonUtil.toString(requestDto))
                         .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isOk())
@@ -181,16 +181,16 @@ class {{model.name}}ControllerTest {
     }
 
     @Test
-    public void when{{operation.name|pascal}}WithInvalidPayload_thenError() throws Exception {
+    public void when{{operation.source.name|pascal}}WithInvalidPayload_thenError() throws Exception {
 
         // Given
         {{model.name}} responseDto = TestUtils.getRandom({{model.name}}.class);
 
-        when(service.{{operation.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}))
+        when(service.{{operation.source.name}}({{ "eq(one), eq(one), any()" if operation.parent else "eq(one), any()" }}))
                 .thenReturn(responseDto);
 
         // When
-        String response = mockMvc.perform(patch(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
+        String response = mockMvc.perform(patch(basePath + "{{ operation.source.directive.path.value | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}")
                 .content("{{ "{}" if model.has_required else "" }}")
                 .contentType(MediaTypeExtension.APPLICATION_MERGE_PATCH))
                 .andExpect(status().isBadRequest())
@@ -209,12 +209,12 @@ class {{model.name}}ControllerTest {
     ########################################################################################
     #}
     @Test
-    public void when{{operation.name|pascal}}_thenOk() throws Exception {
+    public void when{{operation.source.name|pascal}}_thenOk() throws Exception {
 
         // Given
 
         // When
-        mockMvc.perform(delete(basePath + "{{ operation.path | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
+        mockMvc.perform(delete(basePath + "{{ operation.source.directive.path.value | regex_replace("\{[a-zA-Z0-9_-]+\}", "1") }}"))
                 .andExpect(status().isOk());
 
         // Then

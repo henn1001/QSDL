@@ -77,45 +77,6 @@ def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -
     return mapping.pattern if mapping else None
 
 
-def is_supertype(entity: dsl.Base | dsl.Object) -> bool:
-    """Checks if the Base or Object is used somewhere as a supertype.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    base_list = xtx.get_children_of_base(schema)
-    object_list = xtx.get_children_of_object(schema)
-
-    for itr in base_list + object_list:
-        supertypes = itr.supertypes
-        if supertypes and entity in supertypes:
-            return True
-    return False
-
-
-def is_nested(entity: dsl.Base | dsl.Object) -> bool:
-    """Checks if the provided Base or Object is nested into another Base or Object.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: [description]
-    """
-    base_list = xtx.get_children_of_base(schema)
-    object_list = xtx.get_children_of_object(schema)
-
-    for itr in base_list + object_list:
-        for field in itr.fields:
-            if field.value == entity and not qutil.is_relation(field):
-                return True
-
-    return False
-
-
 def get_enum_values(entity: dsl.Enum) -> list[dsl.Enum]:
     """Returns all enum values.
 

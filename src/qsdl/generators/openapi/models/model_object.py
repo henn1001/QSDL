@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Spring Generator Model class"""
+"""OpenAPI schema component models."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Self
 
 import qsdl.casing as qfilter
 import qsdl.dsl.util as qutil
@@ -28,72 +27,31 @@ from .. import util
 
 @dataclass
 class ModelField:
-    """The field of a Schema Model"""
+    """OpenAPI schema metadata for a DSL field."""
 
-    name: str = None
-    json_key: str = None
-    description: list[str] = field(default_factory=list)
+    source: dsl.Field = field(repr=False, compare=False)
+    name: str = field(init=False)
+    type: str = field(init=False)
+    ref: str | None = field(init=False, default=None)
+    format: str | None = field(init=False)
+    pattern: str | None = field(init=False)
+    min_size: str | None = field(init=False, default=None)
+    max_size: str | None = field(init=False, default=None)
+    default: str | None = field(init=False)
 
-    type: str = None
-    is_array: bool = False
+    def __post_init__(self) -> None:
+        source = self.source
+        self.name = qfilter.raw_camelcase(source.name)
+        self.type = util.custom_type(source.value)
+        self.format = util.custom_type_format(source.value)
+        self.pattern = util.custom_type_pattern(source.value)
+        if isinstance(source.value, dsl.Enum | dsl.Base | dsl.Object):
+            self.ref = f"#/components/schemas/{self.type}"
 
-    is_required: bool = False
-    is_read_only: bool = False
-    is_write_only: bool = False
-
-    is_enum: bool = False
-    is_base: bool = False
-    is_object: bool = False
-    is_id: bool = False
-
-    is_composition: bool = False
-    is_aggregation: bool = False
-    is_relation: bool = False
-
-    # addon
-    format: str = None
-    pattern: str = None
-    min_size: str = None
-    max_size: str = None
-    default: str = None
-
-    def build(self, _ref: dsl.Field) -> Self:
-        """Builds self from dsl.Field"""
-
-        # rename to naming convention
-        self.name = qfilter.raw_camelcase(_ref.name)
-        self.json_key = _ref.name
-        self.description = _ref.description
-
-        self.type = util.custom_type(_ref.value)
-        self.format = util.custom_type_format(_ref.value)
-        self.pattern = util.custom_type_pattern(_ref.value)
-
-        self.is_array = _ref.is_array
-        self.is_enum = isinstance(_ref.value, dsl.Enum)
-        self.is_base = isinstance(_ref.value, dsl.Base)
-        self.is_object = isinstance(_ref.value, dsl.Object)
-        self.is_id = _ref.value.name == "ID"
-
-        self.is_required = _ref.is_required
-
-        self.is_read_only = _ref.directive.is_read_only
-        self.is_write_only = _ref.directive.is_write_only
-
-        # relation model
-        self.is_composition = _ref.directive.is_composition
-        self.is_aggregation = _ref.directive.is_aggregation
-        self.is_relation = qutil.is_relation(_ref)
-
-        self._add_constraints(_ref)
-
-        return self
-
-    def _add_constraints(self, _ref: dsl.Field) -> None:
-        """Adds min max constraints and default"""
-        min_size = _ref.directive.min_size.value if _ref.directive.min_size is not None else None
-        max_size = _ref.directive.max_size.value if _ref.directive.max_size is not None else None
-        default = _ref.directive.default.value if _ref.directive.default is not None else None
+        directive = source.directive
+        min_size = directive.min_size.value if directive.min_size is not None else None
+        max_size = directive.max_size.value if directive.max_size is not None else None
+        default = directive.default.value if directive.default is not None else None
 
         if self.type == "string" and self.format not in ["date", "date-time"]:
             self.min_size = f"minLength: {min_size}" if min_size else None
@@ -108,62 +66,27 @@ class ModelField:
 
 @dataclass
 class ModelObject:
-    """The Schema Model for the Openapi schema"""
+    """An OpenAPI schema component backed by a DSL declaration."""
 
-    # computed attributes
-    name: str = None
-    description: list[str] = field(default_factory=list)
-    is_enum: bool = False
-    is_base: bool = False
-    is_object: bool = False
-    attributes: list[ModelField] = field(default_factory=list)
-    constants: list[str] = field(default_factory=list)
+    source: dsl.Enum | dsl.Base | dsl.Object = field(repr=False, compare=False)
+    name: str = field(init=False)
+    is_enum: bool = field(init=False)
+    attributes: list[ModelField] = field(init=False, default_factory=list)
+    constants: list[str] = field(init=False, default_factory=list)
 
-    # addons
-    is_supertype: bool = False
-    is_nested: bool = False
-
-    def build(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> Self:
-        """Builds self from dsl.Enum | dsl.Base | dsl.Object"""
-
-        # rename to naming convention
-        self.name = qfilter.pascalcase(_ref.name)
-
-        self.description = _ref.description
-
-        # identify type
-        self.is_enum = isinstance(_ref, dsl.Enum)
-        self.is_base = isinstance(_ref, dsl.Base)
-        self.is_object = isinstance(_ref, dsl.Object)
-
-        # attributes
-        if not self.is_enum:
-            self._add_attributes(_ref)
+    def __post_init__(self) -> None:
+        self.name = qfilter.pascalcase(self.source.name)
+        self.is_enum = isinstance(self.source, dsl.Enum)
+        if isinstance(self.source, dsl.Enum):
+            self.constants = util.get_enum_values(self.source)
         else:
-            self.constants = util.get_enum_values(_ref)
+            self.attributes = [
+                ModelField(source)
+                for source in self.source.fields
+                if not qutil.is_relation(source) and not source.directive.is_hidden
+            ]
 
-        # addons
-        self.is_supertype = util.is_supertype(_ref) if self.is_base else False
-        self.is_nested = util.is_nested(_ref)
-
-        return self
-
-    def _add_attributes(self, _ref: dsl.Enum | dsl.Base | dsl.Object) -> None:
-        if not isinstance(_ref, dsl.Base | dsl.Object):
-            raise TypeError("Only bases and objects have model fields")
-
-        for entity_field in _ref.fields:
-            # filter hidden relations
-            if not qutil.is_relation(entity_field) and not entity_field.directive.is_hidden:
-                attribute = ModelField().build(entity_field)
-                self.attributes.append(attribute)
-
-    def get_required(self) -> list[ModelField]:
-        """Returns a list of required attributes."""
-        required: list[ModelField] = []
-
-        for attribute in self.attributes:
-            if attribute.is_required:
-                required.append(attribute)
-
-        return required
+    @property
+    def required_fields(self) -> list[ModelField]:
+        """Return the required attributes."""
+        return [attribute for attribute in self.attributes if attribute.source.is_required]

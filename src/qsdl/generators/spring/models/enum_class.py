@@ -12,43 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generator class"""
+"""Spring enum model."""
 
 from __future__ import annotations
 
-from typing import Self
+from dataclasses import dataclass, field
 
-import qsdl.casing as qfilter
 from qsdl import dsl
 
 from .. import models as spring
 from .. import util
-from ..config import SPRING_PACKAGE
 
 
+@dataclass(eq=False)
 class EnumClass:
-    """The Java Model for the Domain Class Object"""
+    """The generated Java enum and its package."""
 
-    def __init__(self) -> None:
-        self._ref: dsl.Enum
+    source: dsl.Enum = field(repr=False, compare=False)
+    package: spring.Package = field(init=False)
 
-        self.name: str
-        self.constants: list[str] = []
-
-        self.package: spring.Package = spring.Package(util.Store.config)
-
-    @staticmethod
-    def from_ref(_ref: dsl.Enum) -> Self:
-        """Rebuilds the enum class from a new reference"""
-        enum = EnumClass()
-        enum._ref = _ref
-        enum.name = _ref.name
-        enum.constants.extend(_ref.values)
-
-        package_directive = _ref.directives.get(SPRING_PACKAGE)
-        if package_directive:
-            enum.package.set_namespace(package_directive.value)
-        elif (namespace := _ref.directive.namespace) and namespace.value:
-            enum.package.set_namespace(qfilter.lowercase(namespace.value))
-
-        return enum
+    def __post_init__(self) -> None:
+        self.package = spring.Package(util.Store.config, util.package_namespace(self.source))

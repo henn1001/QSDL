@@ -14,10 +14,10 @@
 
 """Generator Models"""
 
-from .api_object import ApiObject
+from .api_object import Operation
 from .model_object import ModelObject
 
 __all__ = [
-    "ApiObject",
     "ModelObject",
+    "Operation",
 ]

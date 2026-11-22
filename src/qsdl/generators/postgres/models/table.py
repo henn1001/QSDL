@@ -12,91 +12,61 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generator class"""
+"""PostgreSQL table models."""
 
 from __future__ import annotations
 
-from typing import Self
+from dataclasses import dataclass, field
+from typing import ClassVar
 
 import qsdl.casing as qfilter
 from qsdl import dsl
 
 from .. import util
-from . import Column
+from .column import Column, ForeignKeyColumn
 
 
+@dataclass
 class Table:
-    """The table of a Database Entity"""
+    """A table backed by a DSL object."""
 
-    def __init__(self) -> None:
-        self._ref: dsl.Object | dsl.Base
+    source: dsl.Object
+    name: str = field(init=False)
+    columns: list[Column | ForeignKeyColumn] = field(default_factory=list, init=False)
+    constraints: list[str] = field(default_factory=list, init=False)
+    is_jointable: ClassVar[bool] = False
 
-        self.name: str
-        self.is_jointable: bool = False
+    def __post_init__(self) -> None:
+        self.name = util.T_PREFIX() + qfilter.snakecase(self.source.name).lower()
 
-        self.columns: list[Column] = []
-        self.constraints: list[str] = []
-
-    @staticmethod
-    def from_ref(_ref: dsl.Object | dsl.Base) -> Self:
-        """Rebuilds the table from a new reference"""
-        table = Table()
-        table._ref = _ref
-        table.name = util.T_PREFIX() + qfilter.snakecase(_ref.name).lower()
-
-        dsl_fields = [x for x in table._ref.fields]
-
-        for dsl_field in dsl_fields:
-            # Skip fields that are transient - they should not be persisted to the DB
+        for dsl_field in self.source.fields:
             if dsl_field.directive.is_transient:
                 continue
-            # Handle arrays of Object types - either composition or aggregation
-            if isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array:
-                # handled later
+
+            value = dsl_field.value
+            if isinstance(value, dsl.Object) and dsl_field.is_array:
+                # Relationships backed by arrays are handled separately.
                 continue
 
-            # Handle arrays of Base types - ALWAYS JSONB (value objects)
-            if isinstance(dsl_field.value, dsl.Base) and dsl_field.is_array:
-                new_column = Column()
-                new_column.name = qfilter.snakecase(dsl_field.name).lower()
-                new_column.type = "JSONB"
-                new_column.is_required = dsl_field.is_required
-                new_column.is_unique = dsl_field.directive.is_unique
-                table.columns.append(new_column)
-                continue  # Skip join table creation
+            if isinstance(value, dsl.Base) and not (dsl_field.is_array or dsl_field.directive.is_opaque):
+                prefix = qfilter.snakecase(dsl_field.name).lower() + "_"
+                self.columns.extend(util.extract_embedded_columns(value, prefix))
+                continue
 
-            # Handle Base types with new semantics
-            if isinstance(dsl_field.value, dsl.Base):
-                if dsl_field.directive.is_opaque:
-                    # @opaque = JSONB storage (FIXED SEMANTICS!)
-                    new_column = Column()
-                    new_column.name = qfilter.snakecase(dsl_field.name).lower()
-                    new_column.type = "JSONB"
-                    new_column.is_required = dsl_field.is_required
-                    new_column.is_unique = dsl_field.directive.is_unique
-                    table.columns.append(new_column)
-                else:
-                    # DEFAULT = Flatten columns (NEW DEFAULT!)
-                    embedded_prefix = qfilter.snakecase(dsl_field.name).lower() + "_"
-                    table.columns.extend(util.extract_embedded_columns(dsl_field.value, embedded_prefix))
-                continue  # Skip rest of logic for Base types
+            column = Column(dsl_field)
+            self.columns.append(column)
 
-            # Normal column creation for non-Base types
-            new_column = Column.from_ref(dsl_field)
-            table.columns.append(new_column)
-
-            # one to one object relation (only for Objects now)
-            if isinstance(dsl_field.value, dsl.Object):
-                ref_table_name = util.T_PREFIX() + qfilter.snakecase(dsl_field.value.name).lower()
+            if isinstance(value, dsl.Object):
+                ref_table_name = util.T_PREFIX() + qfilter.snakecase(value.name).lower()
                 field_name = qfilter.snakecase(dsl_field.name).lower()
+                self.constraints.append(util.build_fk_constraint(self.name, field_name, column.name, ref_table_name))
 
-                table.constraints.extend(
-                    [
-                        util.build_fk_constraint(table.name, field_name, new_column.name, ref_table_name),
-                    ]
-                )
 
-                # Ensure the foreign key column is unique
-                # new_column.is_unique = True # i think this is wrong
+@dataclass
+class JoinTable:
+    """A synthetic table for an aggregation relationship."""
 
-        return table
+    name: str
+    columns: tuple[ForeignKeyColumn, ForeignKeyColumn]
+    constraints: ClassVar[tuple[()]] = ()
+    is_jointable: ClassVar[bool] = True

@@ -32,9 +32,8 @@ tags:
 {% endfor %}
 {% endif %}
 
-paths: {%+ if not apis %}{}{% endif %} 
-{% for api in apis %}
-{% for operation in api.operations %}
+paths: {%+ if not operations %}{}{% endif %}{{ ' ' }}
+{% for operation in operations %}
   {% if util.is_path_unique(operation.path) %}
   '{{ operation.path }}':
   {% endif %}
@@ -43,15 +42,15 @@ paths: {%+ if not apis %}{}{% endif %}
       tags:
         - {{ operation.tag }}
   {% endif %}
-      summary: {{ operation.summary }}
-    {% if operation.description %}
+      summary: {{ operation.source.summary }}
+    {% if operation.source.description %}
       description: |
-      {% for line in operation.description %}
+      {% for line in operation.source.description %}
         {{ line }}
       {% endfor %}
     {% endif %}
-      operationId: {{ operation.name }}
-  {% if operation.parameters or operation.is_pageable %}
+      operationId: {{ operation.source.name }}
+  {% if operation.parameters or operation.source.directive.is_pageable %}
       parameters:
         {{ macro.get_parameters(operation) | indent(6) | trim }}
   {% endif %}
@@ -70,7 +69,6 @@ paths: {%+ if not apis %}{}{% endif %}
       {% endif %}
         default:
           $ref: '#/components/responses/DefaultError'
-{% endfor %}
 {% endfor %}
 
 components:
@@ -119,9 +117,9 @@ components:
 {% for model in models %}
   {% if model.is_enum %}
     {{ model.name }}:
-    {% if model.description %}
+    {% if model.source.description %}
       description: |
-      {% for line in model.description %}
+      {% for line in model.source.description %}
         {{ line }}
       {% endfor %}
     {% endif %}
@@ -133,15 +131,16 @@ components:
 
   {% else %}
     {{ model.name }}:
-    {% if model.description %}
+    {% if model.source.description %}
       description: |
-      {% for line in model.description %}
+      {% for line in model.source.description %}
         {{ line }}
       {% endfor %}
     {% endif %}
-    {% if model.get_required() %}
+    {% set required_fields = model.required_fields %}
+    {% if required_fields %}
       required:
-      {% for field in model.get_required() %}
+      {% for field in required_fields %}
         - {{field.name}}
       {% endfor %}
     {% endif %}

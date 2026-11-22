@@ -1,31 +1,25 @@
 {% macro get_parameters(operation) %}
-{% set parameters = operation.path_parameters if operation.is_generated and operation.is_pageable else operation.parameters  %}
+{% set parameters = operation.path_parameters if operation.source.is_generated and operation.source.directive.is_pageable else operation.parameters  %}
 {% for parameter in parameters %}
-  - name: {{ parameter.name }}
-  {% if parameter.description %}
-    description: |
-    {% for line in parameter.description %}
-      {{ line }}
-    {% endfor %}
-  {% endif %}
-    in: {{ "query" if parameter.is_query else "header" if parameter.is_header else "path" }}
-    required: {{ parameter.is_required | lower }}
+  - name: {{ parameter.source.name }}
+    in: {{ "query" if parameter.source.is_query else "header" if parameter.source.is_header else "path" }}
+    required: {{ parameter.source.is_required | lower }}
     schema:
       {{ get_ref_type_format(parameter) | indent(4) | trim }}
 {% endfor %}
-{% if operation.is_generated and operation.is_pageable and operation.query_parameters %}
+{% if operation.source.is_generated and operation.source.directive.is_pageable and operation.query_parameters %}
   - name: filter
     in: query
     required: false
     schema:
-      title: {{ operation.name | capital }}Filter
+      title: {{ operation.source.name | capital }}Filter
       type: object
   {% if operation.query_parameters %}
       properties:
         {{ get_requestFilter(operation) | indent(6) | trim }}
   {% endif %}
 {% endif %}
-{% if operation.is_pageable %}
+{% if operation.source.directive.is_pageable %}
   - $ref: '#/components/parameters/cursor'
   - $ref: '#/components/parameters/limit'
   - $ref: '#/components/parameters/count'
@@ -35,14 +29,8 @@
 
 {% macro get_requestFilter(operation) %}
 {% for parameter in operation.query_parameters %}
-  {{ parameter.json_key }}:
-  {% if parameter.description %}
-    description: |
-    {% for line in parameter.description %}
-      {{ line }}
-    {% endfor %}
-  {% endif %}
-  {% if parameter.is_array %}
+  {{ parameter.source.name }}:
+  {% if parameter.source.is_array %}
     type: array
     items:
       {{ get_parameter_type(parameter) | indent(4) | trim }}
@@ -67,8 +55,8 @@
 
 {% macro get_requestBodyProperties(operation) %}
 {% for parameter in operation.body_parameters %}
-  {{ parameter.json_key }}:
-  {% if parameter.is_array %}
+  {{ parameter.source.name }}:
+  {% if parameter.source.is_array %}
     type: array
     items:
       {{ get_parameter_type(parameter) | indent(4) | trim }}
@@ -96,13 +84,13 @@
   content:
     {{ operation.consumes }}:
       schema:
-{% if operation.uses_request_dto %}
+{% if operation.request_dto_name %}
         title: {{operation.request_dto_name}}
-  {% set required_body = operation.body_parameters | selectattr("is_required") | list %}
+  {% set required_body = operation.body_parameters | selectattr("source.is_required") | list %}
   {% if required_body %}
         required:
     {% for param in required_body %}
-          - {{param.json_key}}
+          - {{param.source.name}}
     {% endfor %}
   {% endif %}
         type: object
@@ -112,11 +100,11 @@
   {% set ns = namespace(var=true) %}
   {% for parameter in operation.body_parameters %}
     {% if parameter.is_ref_body %}
-        {% if parameter.is_array %}
+        {% if parameter.source.is_array %}
         type: array
         items:
         {% endif %}
-        {{ "     " if parameter.is_array }}$ref: '{{parameter.ref}}'
+        {{ "     " if parameter.source.is_array }}$ref: '{{parameter.ref}}'
     {% elif operation.body_parameters|length == 1 and parameter.type == "object" %}
         type: object
     {% else %}
@@ -126,7 +114,7 @@
         properties:
         {% set ns.var = false %}
       {% endif %}
-          {{ parameter.name }}:
+          {{ parameter.source.name }}:
             {{ get_ref_type_format(parameter) | indent(10) | trim }}
     {% endif %}
   {% endfor %}
@@ -139,31 +127,31 @@
   content:
     {{ operation.produces }}:
       schema:
-        {{ get_ref_type_format(parameter) | indent(6) | trim }}
+        {{ get_ref_type_format(parameter, parameter.source.is_array and not operation.source.directive.is_pageable) | indent(6) | trim }}
 {% endmacro %}
 
 
 {% macro get_response_headers(operation) %}
   headers:
   {% for parameter in operation.response_headers %}
-    {{ parameter.name }}:
+    {{ parameter.source.name }}:
       schema:
         {{ get_ref_type_format(parameter) | indent(6) | trim }}
   {% endfor %}
 {% endmacro %}
 
 
-{% macro get_ref_type_format(parameter) %}
-{% if parameter.is_array %}
+{% macro get_ref_type_format(parameter, is_array=parameter.source.is_array) %}
+{% if is_array %}
   type: array
   items:
 {% endif %}
 {% if parameter.ref %}
-  {{ "  " if parameter.is_array }}$ref: '{{parameter.ref}}'
+  {{ "  " if is_array }}$ref: '{{parameter.ref}}'
 {% else %}
-  {{ "  " if parameter.is_array }}type: {{parameter.type}}
+  {{ "  " if is_array }}type: {{parameter.type}}
   {% if parameter.format %}
-  {{ "  " if parameter.is_array }}format: {{parameter.format}}
+  {{ "  " if is_array }}format: {{parameter.format}}
   {% endif %}
 {% endif %}
 {% endmacro %}
@@ -171,14 +159,14 @@
 
 {% macro get_schema(type) %}
 {% for field in type.attributes %}
-  {{ field.json_key }}:
-  {% if field.description %}
+  {{ field.source.name }}:
+  {% if field.source.description %}
     description: |
-    {% for line in field.description %}
+    {% for line in field.source.description %}
       {{ line }}
     {% endfor %}
   {% endif %}
-  {% if field.is_array %}
+  {% if field.source.is_array %}
     type: array
     items:
       {{ get_parameter_type(field) | indent(4) | trim }}
@@ -201,10 +189,8 @@
 {% endmacro %}
 
 
-{% macro get_parameter_type(field, response=false) %}
-{% if field.is_object or field.is_base or field.is_enum %}
-  $ref: '#/components/schemas/{{ field.type }}'
-{% elif field.ref %}
+{% macro get_parameter_type(field) %}
+{% if field.ref %}
   $ref: '{{ field.ref }}'
 {% else %}
   type: {{ field.type }}
@@ -219,10 +205,12 @@
 {% if field.pattern %}
   pattern: '{{field.pattern}}'
 {% endif %}
-{% if field.is_read_only %}
+{% if field.source.directive is defined %}
+  {% if field.source.directive.is_read_only %}
   readOnly: true
-{% elif field.is_write_only %}
+  {% elif field.source.directive.is_write_only %}
   writeOnly: true
+  {% endif %}
 {% endif %}
 {% endmacro %}
 

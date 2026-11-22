@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generator class"""
+"""PostgreSQL column models."""
 
 from __future__ import annotations
 
-from typing import Self
+from dataclasses import InitVar, dataclass, field
+from typing import ClassVar
 
 import qsdl.casing as qfilter
 from qsdl import dsl
@@ -24,59 +25,68 @@ from qsdl import dsl
 from .. import util
 
 
-def T_PREFIX() -> str:
-    return util.Store.config.table_prefix.lower()
-
-
+@dataclass
 class Column:
-    """The column of a table"""
+    """A SQL column backed by a DSL field."""
 
-    def __init__(self) -> None:
-        self._ref: dsl.Field
+    source: dsl.Field
+    prefix: InitVar[str] = ""
+    name: str = field(init=False)
+    type: str = field(init=False)
 
-        self.name: str
-        self.type: str
-        self.enum: str
+    def __post_init__(self, prefix: str) -> None:
+        value = self.source.value
+        self.name = prefix + qfilter.snakecase(self.source.name).lower()
+        if isinstance(value, dsl.Object):
+            self.name += f"_{value.name.lower()}_id"
+            self.type = "BIGINT"
+        elif isinstance(value, dsl.Enum):
+            self.type = "TEXT"
+        elif isinstance(value, dsl.Base):
+            self.type = "JSONB"
+        else:
+            self.type = util.custom_type(value)
 
-        self.is_id: bool = False
-        self.is_array: bool = False
-        self.is_required: bool = False
-        self.is_unique: bool = False
+    @property
+    def is_id(self) -> bool:
+        value = self.source.value
+        return not isinstance(value, dsl.Base) and value.name == "ID"
 
-    @staticmethod
-    def from_ref(_ref: dsl.Field, prefix: str = "") -> Self:
-        """Rebuilds the column from a new reference"""
-        column = Column()
-        column._ref = _ref
+    @property
+    def is_array(self) -> bool:
+        # JSONB stores arrays natively.
+        return (
+            self.source.is_array and not isinstance(self.source.value, dsl.Base) and self.source.value.name != "Object"
+        )
 
-        column.name = prefix + qfilter.snakecase(_ref.name).lower()
-        column.type = util.custom_type(_ref.value)
+    @property
+    def is_required(self) -> bool:
+        return self.source.is_required
 
-        column.enum = ""
+    @property
+    def is_unique(self) -> bool:
+        return self.source.directive.is_unique
 
-        column.is_id = _ref.value.name == "ID"
-        column.is_array = _ref.is_array
-        column.is_required = _ref.is_required
-        column.is_unique = _ref.directive.is_unique
+    @property
+    def enum(self) -> str:
+        value = self.source.value
+        if not isinstance(value, dsl.Enum):
+            return ""
 
-        # relations (only for Objects, not Bases - Bases are handled separately)
-        if isinstance(_ref.value, dsl.Object):
-            column.name += f"_{_ref.value.name.lower()}_id"
-            column.type = "BIGINT"
+        values = ", ".join(f"'{x}'" for x in value.values)
+        if self.source.is_array:
+            return f" check ({self.name} is null or array_length({self.name}, 1) = 0 or {self.name} <@ ARRAY[{values}])"
+        return f" check ({self.name} in ({values}))"
 
-        # Enum handling
-        if isinstance(_ref.value, dsl.Enum):
-            column.type = "TEXT"
-            values = (", ").join([f"'{x}'" for x in _ref.value.values])
 
-            if column.is_array:
-                column.enum = f" check ({column.name} is null or array_length({column.name}, 1) = 0 or {column.name} <@ ARRAY[{values}])"
-            else:
-                column.enum = f" check ({column.name} in ({values}))"
+@dataclass
+class ForeignKeyColumn:
+    """A synthetic column for a join table or a reverse composition reference."""
 
-        # Special handling for Object scalar type arrays: JSONB can natively store arrays
-        if _ref.value.name == "Object" and column.is_array:
-            # Don't add [] suffix - JSONB natively handles arrays
-            column.is_array = False
-
-        return column
+    name: str
+    is_required: bool = False
+    type: ClassVar[str] = "BIGINT"
+    is_id: ClassVar[bool] = False
+    is_array: ClassVar[bool] = False
+    is_unique: ClassVar[bool] = False
+    enum: ClassVar[str] = ""

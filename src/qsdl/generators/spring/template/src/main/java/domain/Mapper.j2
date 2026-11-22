@@ -13,7 +13,7 @@ package {{model.package.mapper}};
     {%- endif -%})
 public interface {{model.name}}Mapper {
 
-    {% for field in model.fields if field.is_write_only %}
+    {% for field in model.fields if field.source.directive.is_write_only %}
     @Mapping(target = "{{field.name}}", ignore = true)
     {% endfor %}
     {{model.name}}Request toRequest({{model.name}} dto);
@@ -25,7 +25,7 @@ public interface {{model.name}}Mapper {
     {# Explicitly ignore transient fields on the DTO when mapping from the Entity -> DTO
        model.fields contains transient fields (these are API-visible but not persisted)
     #}
-    {% for field in model.fields if field.is_transient %}
+    {% for field in model.fields if field.source.directive.is_transient %}
     @Mapping(target = "{{field.name}}", ignore = true)
     {% endfor %}
     {% for field in model.entity_fields %}
@@ -37,7 +37,7 @@ public interface {{model.name}}Mapper {
 
     @Mapping(target = "uid", ignore = true)
     {% for field in model.entity_fields %}
-        {% if field.is_read_only or field.is_relation or field.is_hidden %}
+        {% if field.source.directive.is_read_only or field.is_relation or field.source.directive.is_hidden %}
     @Mapping(target = "{{field.name}}", ignore = true)
         {% elif field.dto_nested_path %}
     @Mapping(target = "{{field.name}}", source = "{{field.dto_nested_path}}")

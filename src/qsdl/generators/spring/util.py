@@ -28,6 +28,13 @@ from . import models as spring
 from .config import SPRING_PACKAGE, SPRING_SCALAR, SpringConfig, SpringScalarMapping
 
 
+def package_namespace(source: dsl.Base | dsl.Object | dsl.Enum) -> str:
+    """Resolve the package placeholder for a domain type."""
+    if directive := source.directives.get(SPRING_PACKAGE):
+        return directive.value
+    return qfilter.lowercase(qutil.render_namespace(source) or "")
+
+
 class Store:
     """Parsed data storage class"""
 
@@ -38,7 +45,6 @@ class Store:
     enums: ClassVar[list[spring.EnumClass]] = []
     package: spring.Package = None
     packages: ClassVar[list[spring.Package]] = []
-    is_id_long: bool = True
 
 
 custom_types = {
@@ -58,7 +64,7 @@ custom_types = {
 
 # Java keywords and reserved literals cannot be used for generated fields.
 # Keep the mapping local to the Spring generator; the original QSDL name remains
-# available as ModelField.json_key for JSON and database mappings.
+# available on each field's schema source for JSON and database mappings.
 JAVA_RESERVED_IDENTIFIERS = frozenset(
     {
         "abstract",
@@ -136,15 +142,14 @@ def is_direct_query_filter(operation: dsl.Operation) -> bool:
     return isinstance(argument.value, (dsl.Base, dsl.Object))
 
 
-def resolve_query_filter(operation: dsl.Operation) -> tuple[bool, str | None]:
+def resolve_query_filter(operation: dsl.Operation) -> str | None:
     if not operation.query_parameters:
-        return False, None
+        return None
 
     if is_direct_query_filter(operation):
-        argument = operation.query_parameters[0]
-        return True, custom_type(argument.value)
+        return custom_type(operation.query_parameters[0].value)
 
-    return True, qfilter.capitalcase(operation.name) + "Filter"
+    return qfilter.capitalcase(operation.name) + "Filter"
 
 
 def _is_inline_body_operation(operation: dsl.Operation) -> bool:
@@ -165,14 +170,20 @@ def _is_inline_body_operation(operation: dsl.Operation) -> bool:
     )
 
 
-def resolve_request_body_dto(operation: dsl.Operation) -> tuple[bool, str | None]:
-    """Returns (uses_dto, dto_name) for an operation's inline body parameters.
-
-    Mirrors resolve_query_filter for write operations.
-    """
+def resolve_request_body_dto(operation: dsl.Operation) -> str | None:
+    """Return the generated DTO name for inline request body parameters, if any."""
     if not _is_inline_body_operation(operation):
-        return False, None
-    return True, qfilter.capitalcase(operation.name) + "Request"
+        return None
+    return qfilter.capitalcase(operation.name) + "Request"
+
+
+def argument_type(argument: dsl.Argument) -> str:
+    """Resolve a Java argument type, including request-specific DTO naming."""
+    value = argument.value
+    name = custom_type(value)
+    if argument.is_body and isinstance(value, dsl.Base | dsl.Object) and needs_separate_request_response(value):
+        return f"{name}Request"
+    return name
 
 
 def _scalar_mapping(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> SpringScalarMapping | None:
@@ -198,159 +209,19 @@ def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -
     return mapping.pattern if mapping else None
 
 
-def has(
-    entity: dsl.Base | dsl.Object,
-    has_type: list | None = None,
-    has_list: bool = False,
-    has_model: bool = False,
-    has_required: bool = False,
-    has_required_ignore_internal: bool = False,
-    is_aggregated: bool = False,
-    has_relation: bool = False,
-    has_query: bool = False,
-    has_enum: bool = False,
-) -> bool:
-    """Checks if the Base or Object has various attributes.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-        has_type (list, optional): [description]. Defaults to None.
-        has_list (bool, optional): [description]. Defaults to False.
-        has_model (bool, optional): [description]. Defaults to False.
-        has_required (bool, optional): [description]. Defaults to False.
-        is_aggregated (bool, optional): [description]. Defaults to False.
-        has_relation (bool, optional): [description]. Defaults to False.
-        has_enum (bool, optional): [description]. Defaults to False.
-
-    Returns:
-        bool:  Returns True on detection.
-    """
-    ret = False
-
-    if isinstance(entity, dsl.Base | dsl.Object):
-        # for the aggregation check - we want to search the parent fields
-        fields = entity.fields if not is_aggregated else get_parent_fields(entity.name)
-
-        for field in fields:
-            # checks for scalar types
-            if has_type and field.value.name in has_type:
-                ret = True
-                break
-
-            # check for lists
-            if has_list and field.is_array:
-                ret = True
-                break
-
-            # check for base and object references
-            if has_model and isinstance(field.value, dsl.Base | dsl.Object):
-                ret = True
-                break
-
-            # checks if there is a required attribute
-            if has_required and field.is_required:
-                ret = True
-                break
-
-            if (
-                has_required_ignore_internal
-                and field.name != "id"
-                and not field.directive.is_composition
-                and not field.directive.is_aggregation
-                and field.is_required
-            ):
-                ret = True
-                break
-
-            # checks if the Object is aggregated somewhere
-            if is_aggregated and field.directive.is_aggregation:
-                ret = True
-                break
-
-            # checks if the Object has a relation
-            if has_relation and (field.directive.is_composition or field.directive.is_aggregation):
-                ret = True
-                break
-
-            # checks if there is a query attribute
-            if has_query and (field.directive.is_query or field.directive.is_query_list):
-                ret = True
-                break
-
-            # checks if there is a query attribute
-            if has_enum and isinstance(field.value, dsl.Enum):
-                ret = True
-                break
-
-    return ret
-
-
-def is_supertype(entity: dsl.Base | dsl.Object) -> bool:
-    """Checks if the Base or Object is used somewhere as a supertype.
-
-    Args:
-        entity (Union[Base, Object]): Either entity.Base or entity.Object.
-
-    Returns:
-        bool: Returns True on detection.
-    """
-    base_list = xtx.get_children_of_base(Store.schema)
-    object_list = xtx.get_children_of_object(Store.schema)
-
-    for itr in base_list + object_list:
-        supertypes = itr.supertypes
-        if supertypes and entity in supertypes:
-            return True
-    return False
-
-
 def add_parents_to_model(models: list[spring.ModelClass]) -> None:
-    """Add all Models who are a domain parent to a Model.
-
-    Args:
-        models (list[spring.ModelClass]): The list of all available models.
-    """
+    """Link parent models after all models have been constructed."""
     for model in models:
         if not model.is_object:
             continue
 
-        parents = []
-        parent_names = []
-
-        parent_fields = get_parent_fields(model.name)
-        parent_objects = [x.parent for x in parent_fields]
-
-        for obj in parent_objects:
-            # search in provided models list for a match to the current obj and filter duplicates
-            result = [x for x in models if x.name == obj.name and x.name not in parent_names]
-            _ = [parent_names.append(x.name) for x in result]
-
-            result = [spring.Parent().build(x, model) for x in result]
-
-            parents.extend(result)
-
-        model.parents = parents
-
-
-def add_hibernate_info(models: list[spring.ModelClass]) -> None:
-    """Add hibernate related info to model and fields"""
-    if Store.config.database != "HIBERNATE":
-        return
-
-    for model in models:
-        if not model.is_object:
-            continue
-
-        model_info = spring.HibernateModelInfo(model)
-        model.hibernate = model_info
-
-        for field in model.fields:
-            field_info = spring.HibernateFieldInfo(field)
-            field.hibernate = field_info
-
-        for parent in model.parents:
-            parent_info = spring.HibernateParentInfo(model, parent.model)
-            parent.hibernate = parent_info
+        parent_names = set()
+        for field in get_parent_fields(model.name):
+            name = field.parent.name
+            if name in parent_names:
+                continue
+            parent_names.add(name)
+            model.parents.extend(spring.Parent(parent, model) for parent in models if parent.name == name)
 
 
 def add_request_info(models: list[spring.ModelClass]) -> None:
@@ -381,8 +252,8 @@ def _apis_can_merge(first: spring.ApiClass, second: spring.ApiClass) -> bool:
         return True
 
     return (
-        first.has_generated
-        or second.has_generated
+        first.source.has_generated
+        or second.source.has_generated
         or first.controller_target is not None
         or second.controller_target is not None
     )
@@ -392,8 +263,8 @@ def _prefer_api(first: spring.ApiClass, second: spring.ApiClass) -> spring.ApiCl
     """Select the package/controller metadata to retain when APIs merge."""
     # A generated API owns the controller for its Object. This keeps
     # @spring-controller customizations in the Object's package.
-    if first.has_generated != second.has_generated:
-        return first if first.has_generated else second
+    if first.source.has_generated != second.source.has_generated:
+        return first if first.source.has_generated else second
 
     # @spring-controller targets an existing Object controller, even when that
     # Object has no generated CRUD operations.
@@ -442,23 +313,9 @@ def sort_api_controller(api_list: list[spring.ApiClass]) -> list[spring.ApiClass
     return api_store
 
 
-def get_model_for(obj_name: dsl.Object.name) -> spring.ModelClass:
-    """Returns the spring.ModelClass for a given Object name.
-
-    Args:
-        obj_name (dsl.Object.name): Name of dsl.Object
-
-    Returns:
-        spring.ModelClass: The matching spring.ModelClass
-    """
-    ret = None
-
-    for model in Store.models:
-        if obj_name == model.name:
-            ret = model
-            break
-
-    return ret
+def get_model_for(obj_name: str) -> spring.ModelClass | None:
+    """Return the generated model for a schema type name."""
+    return next((model for model in Store.models if model.name == obj_name), None)
 
 
 def request_type_name(ref: dsl.Base | dsl.Object | str) -> str:
@@ -468,111 +325,45 @@ def request_type_name(ref: dsl.Base | dsl.Object | str) -> str:
     return f"{name}Request" if model and model.has_request else name
 
 
-def get_parent_for(obj_name: dsl.Object.name, parent_name: dsl.Object.name) -> spring.Parent:
-    """Returns the spring.Parent object for the given child - parent Object names.
-
-    Args:
-        obj_name (dsl.Object.name): Name of dsl.Object
-
-    Returns:
-        spring.ModelClass: The matching spring.ModelClass
-    """
-    ret = None
-
-    for model in Store.models:
-        if obj_name == model.name:
-            for parent in model.parents:
-                if parent_name == parent.model.name:
-                    ret = parent
-    return ret
+def get_parent_for(obj_name: str, parent_name: str) -> spring.Parent | None:
+    """Find a parent's relation metadata for a child model."""
+    if model := get_model_for(obj_name):
+        return next((parent for parent in model.parents if parent.model.name == parent_name), None)
+    return None
 
 
 def get_field_for(model: spring.ModelClass, target: spring.ModelClass) -> spring.ModelField:
-    """Returns the spring.ModelField with the type of target for the given spring.ModelClass.
-
-    Args:
-        model (spring.ModelClass): The spring.ModelClass where to search.
-        target (spring.ModelClass): The spring.ModelClass type to search for.
-
-    Returns:
-        spring.ModelField: The matching spring.ModelField
-    """
-    ret = None
-
-    for model_field in model.fields:
-        if model_field.type == target.name:
-            ret = model_field
-
-    return ret
+    """Return the last matching relation field, as used by repository lookups."""
+    return next(field for field in reversed(model.fields) if field.type == target.name)
 
 
-def get_parent_fields(obj_name: str, filter_relations: bool = True) -> list[dsl.Field]:
-    """Returns all Objects whos Field value is this Object.
-
-    Args:
-        obj_name (str): The Object which value the fields should have.
-        filter_relations (bool, optional): Include only relation fields. Defaults to True.
-
-    Returns:
-        list[dsl.Field]: The list of Fields.
-    """
-    fields = []
-
-    fields = xtx.get_children_of_field(Store.schema)
-
-    fields = [x for x in fields if isinstance(x.parent, dsl.Object) and x.value.name == obj_name]
-
-    fields = [x for x in fields if qutil.is_relation(x)] if filter_relations else fields
-
-    return fields
+def get_parent_fields(obj_name: str) -> list[dsl.Field]:
+    """Find relation fields on objects that reference the named object."""
+    return [
+        field
+        for field in xtx.get_children_of_field(Store.schema)
+        if isinstance(field.parent, dsl.Object) and field.value.name == obj_name and qutil.is_relation(field)
+    ]
 
 
-def extract_embedded_columns(
-    ref: dsl.Base | dsl.Object, prefix: str = "", dto_path: str = "", fields: list[dsl.Field] | None = None
-) -> list[spring.ModelField]:
-    """Recursively flattens Base type fields into columns with prefixes.
-
-    Args:
-        ref: The Base or Object reference to process
-        prefix: Snake_case prefix for entity column names (e.g., "a_field_")
-        dto_path: Nested DTO path for mapping (e.g., "aField.")
-        fields: Optional pre-filtered list of fields to process
-
-    Note: This function is only called for Base types WITHOUT @opaque directive.
-    Base types with @opaque are stored as JSONB and don't reach this function.
-    """
+def extract_embedded_columns(fields: list[dsl.Field], prefix: str = "", dto_path: str = "") -> list[spring.ModelField]:
+    """Flatten non-opaque base fields into Java entity fields."""
     model_fields = []
 
-    # Use provided fields if available, otherwise use ref.fields
-    dsl_fields = fields if fields is not None else ref.fields
-
-    for dsl_field in dsl_fields:
-        # Skip transient fields entirely - they are not part of the DB/entity model
-        if dsl_field.directive.is_transient:
+    for field in fields:
+        if field.directive.is_transient:
             continue
 
-        if isinstance(dsl_field.value, dsl.Base) and not (dsl_field.is_array or dsl_field.directive.is_opaque):
-            # Flatten Base types - recursively process nested Base fields
-            embedded_prefix = prefix + qfilter.snakecase(dsl_field.name).lower() + "_"
-            embedded_dto_path = dto_path + java_identifier(dsl_field.name) + "."
-            embedded_fields = extract_embedded_columns(dsl_field.value, embedded_prefix, embedded_dto_path)
-            model_fields.extend(embedded_fields)
+        if isinstance(field.value, dsl.Base) and not (field.is_array or field.directive.is_opaque):
+            embedded_prefix = prefix + qfilter.snakecase(field.name).lower() + "_"
+            embedded_dto_path = dto_path + java_identifier(field.name) + "."
+            model_fields.extend(extract_embedded_columns(field.value.fields, embedded_prefix, embedded_dto_path))
+        elif prefix:
+            name = qfilter.camelcase(prefix + qfilter.snakecase(field.name).lower())
+            path = dto_path + java_identifier(field.name)
+            model_fields.append(spring.ModelField(field, java_name=name, dto_nested_path=path))
         else:
-            # Handle regular fields (non-Base types or Base types that are arrays/opaque)
-            new_field = spring.ModelField().build(dsl_field)
-
-            # Apply prefix to names if we're in a nested context
-            if prefix:
-                prefixed_snake = prefix + qfilter.snakecase(dsl_field.name).lower()
-                new_field.name = qfilter.camelcase(prefixed_snake)
-                new_field.json_key = prefixed_snake
-                new_field.is_name_escaped = False
-                # Set the nested DTO path (remove trailing dot). The prefix
-                # makes the flattened name non-reserved in normal cases; use
-                # the already escaped field name for the final path segment.
-                new_field.dto_nested_path = dto_path + java_identifier(dsl_field.name)
-
-            model_fields.append(new_field)
+            model_fields.append(spring.ModelField(field))
 
     return model_fields
 
@@ -654,10 +445,7 @@ def build_filter_models() -> list[spring.ModelClass]:
             filter_base.fields.append(field)
 
         # Build ModelClass from the filter base
-        filter_model = spring.ModelClass().build(filter_base)
-        filter_model.is_query_filter = True
-        filter_model.has_request = False
-        filter_models.append(filter_model)
+        filter_models.append(spring.ModelClass(filter_base, is_query_filter=True, has_request=False))
 
     return filter_models
 
@@ -709,11 +497,8 @@ def build_request_body_models() -> list[spring.ModelClass]:
             )
             request_base.fields.append(request_field)
 
-        request_model = spring.ModelClass().build(request_base)
-        # has_request=False: avoids generating "{Name}Request.java" via Request.j2
-        # (the "Request" suffix is already in model.name; Response.j2 produces the right file)
-        request_model.has_request = False
-        request_models.append(request_model)
+        # Response.j2 produces the file because the model name already ends in "Request".
+        request_models.append(spring.ModelClass(request_base, has_request=False))
 
     return request_models
 

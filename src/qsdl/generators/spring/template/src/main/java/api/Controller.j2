@@ -10,7 +10,7 @@ package {{api.package.controller}};
 @Controller
 @AllArgsConstructor
 public class {{api.name}}Controller extends BaseController implements {{api.name}}Api {
-{% if api.has_generated %}
+{% if api.source.has_generated %}
 
     final {{api.name}}Service {{api.name|lower}}Service;
     final {{api.name}}Mapper {{api.name|lower}}Mapper;
@@ -18,20 +18,20 @@ public class {{api.name}}Controller extends BaseController implements {{api.name
 {% for operation in api.operations %}
 
     @Override
-    public ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsController(operation)}}) {
-    {% if operation.is_generated and operation.response %}
+    public ResponseEntity<{{operation.response_type}}> {{operation.source.name}}({{macro.paramsController(operation)}}) {
+    {% if operation.source.is_generated and operation.source.value %}
         {% if operation.method in ["post"] %}
         {% elif operation.method == "patch" %}
-        {{macro.get_response(operation)}} current = {{api.name|lower}}Service.{{operation.name | replace('update', 'get')}}({{macro.paramsCallServiceGetter(operation)}});
+        {{operation.response_type}} current = {{api.name|lower}}Service.{{operation.source.name | replace('update', 'get')}}({{macro.paramsCallServiceGetter(operation)}});
         {{operation.body_parameters[0].type}} target = {{api.name|lower}}Mapper.toRequest(current);
         {{operation.body_parameters[0].type}} request = JsonMergePatchUtil.apply(patch, target);
 
         Validator.validate(request);
         {% endif %}
-        {{macro.get_response(operation)}} response = {{api.name|lower}}Service.{{operation.name}}({{macro.paramsCallService(operation)}});
+        {{operation.response_type}} response = {{api.name|lower}}Service.{{operation.source.name}}({{macro.paramsCallService(operation)}});
         return new ResponseEntity<>(response, HttpStatus.OK);
-    {% elif operation.is_generated %}
-        {{api.name|lower}}Service.{{operation.name}}({{macro.paramsCallService(operation)}});
+    {% elif operation.source.is_generated %}
+        {{api.name|lower}}Service.{{operation.source.name}}({{macro.paramsCallService(operation)}});
         return new ResponseEntity<>(HttpStatus.OK);
     {% else %}
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);

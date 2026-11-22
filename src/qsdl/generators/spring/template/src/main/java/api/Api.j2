@@ -13,18 +13,18 @@ public interface {{api.name}}Api {
 {% for operation in api.operations %}
 
     /**
-     * {{operation.method|upper}} {{operation.path}}{% if operation.summary %} : {{operation.summary + "\n"}}{% endif %}
-    {% if operation.description %}
+     * {{operation.method|upper}} {{operation.source.directive.path.value}}{% if operation.source.summary %} : {{operation.source.summary + "\n"}}{% endif %}
+    {% if operation.source.description %}
      *
-        {% for line in operation.description %}
+        {% for line in operation.source.description %}
      * {{line}}
         {% endfor %}
     {% endif %}
      */
-    @{{operation.method|capitalize}}Mapping(value = "{{operation.path}}"
+    @{{operation.method|capitalize}}Mapping(value = "{{operation.source.directive.path.value}}"
     {%- if operation.produces %}, produces = {{ "{\"" + operation.produces + "\"}"}}{% endif %}
     {%- if operation.consumes %}, consumes = {{ "{\"" + operation.consumes + "\"}"}}{% endif %})
-    default ResponseEntity<{{macro.get_response(operation)}}> {{operation.name}}({{macro.paramsApi(operation)}}) {
+    default ResponseEntity<{{operation.response_type}}> {{operation.source.name}}({{macro.paramsApi(operation)}}) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 {% endfor %}}

@@ -14,10 +14,7 @@
 
 """Generator Models"""
 
-from .column import Column
-from .table import Table
+from .column import Column, ForeignKeyColumn
+from .table import JoinTable, Table
 
-__all__ = [
-    "Column",
-    "Table",
-]
+__all__ = ["Column", "ForeignKeyColumn", "JoinTable", "Table"]

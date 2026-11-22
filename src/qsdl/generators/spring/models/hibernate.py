@@ -12,49 +12,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Spring Generator Api class"""
+"""Spring Data repository names."""
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 import qsdl.casing as qfilter
+from qsdl import dsl
 
 from .. import models as spring
-from .. import util
 
 
-class HibernateFieldInfo:
-    """Custom dataclass"""
-
-    def __init__(self, field: spring.ModelField) -> None:
-        pass
-
-
+@dataclass(frozen=True, eq=False)
 class HibernateParentInfo:
-    """Custom dataclass"""
+    """Repository lookups through the child's field pointing to its parent."""
 
-    def __init__(self, model: spring.ModelClass, parent: spring.ModelClass) -> None:
-        """
-        Example:
-          method_joined_id      = TicketIdAndId
-          method_joined_uid      = TicketUidAndUid
-        """
-        self.method_joined_id = qfilter.pascalcase(util.get_field_for(model, parent).name) + "IdAndId"
-        self.method_joined_uid = qfilter.pascalcase(util.get_field_for(model, parent).name) + "IdAndUid"
+    source: spring.ModelField = field(repr=False, compare=False)
+    is_id_long: bool
 
-        self.find_by_parentid_and_id = "findBy"
-        self.find_by_parentid_and_id += self.method_joined_id if util.Store.is_id_long else self.method_joined_uid
+    @property
+    def find_by_parent_id_and_id(self) -> str:
+        return f"findBy{qfilter.pascalcase(self.source.name)}IdAndId"
+
+    @property
+    def find_by_parent_id_and_uid(self) -> str:
+        return f"findBy{qfilter.pascalcase(self.source.name)}IdAndUid"
+
+    @property
+    def find_by_parent_and_id(self) -> str:
+        return self.find_by_parent_id_and_id if self.is_id_long else self.find_by_parent_id_and_uid
 
 
+@dataclass(frozen=True, eq=False)
 class HibernateModelInfo:
-    """Custom dataclass"""
+    """Repository lookup and parameter names for an object."""
 
-    def __init__(self, model: spring.ModelClass) -> None:
-        """
-        Example:
-          method_joined_id      = ProjectId
-          parameter_joined_id   = projectId
-        """
-        self.method_joined_id = qfilter.pascalcase(model.name) + "Id"
-        self.parameter_joined_id = qfilter.raw_camelcase(model.name) + "Id"
+    source: dsl.Object = field(repr=False, compare=False)
+    is_id_long: bool
 
-        self.find_by_id = "findById" if util.Store.is_id_long else "findByUid"
+    @property
+    def parameter_joined_id(self) -> str:
+        return qfilter.raw_camelcase(self.source.name) + "Id"
+
+    @property
+    def find_by_id(self) -> str:
+        return "findById" if self.is_id_long else "findByUid"

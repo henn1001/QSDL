@@ -65,6 +65,7 @@ class TestBaseDtoSplitBehavior:
         
         extend api {
             createAudited(data: AuditedBase): AuditedBase @path("audited") @method(POST)
+            createMany(data: [AuditedBase]): [AuditedBase] @path("audited/batch") @method(POST)
         }
         """
 
@@ -93,6 +94,12 @@ class TestBaseDtoSplitBehavior:
         api_content = SpringTestUtils.read_file(output, "src/main/java/app/api/general/web/DefaultApi.java")
         assert "ResponseEntity<AuditedBase> createAudited" in api_content
         assert "AuditedBaseRequest data" in api_content
+        assert "ResponseEntity<List<AuditedBase>> createMany(@RequestBody List<@Valid AuditedBaseRequest> data)" in (
+            api_content
+        )
+
+        controller = SpringTestUtils.read_file(output, "src/main/java/app/api/general/web/DefaultController.java")
+        assert "ResponseEntity<List<AuditedBase>> createMany(List<AuditedBaseRequest> data)" in controller
 
     def test_base_with_writeonly_splits(self) -> None:
         """Base type with @writeOnly fields should generate both Request and Response DTOs."""

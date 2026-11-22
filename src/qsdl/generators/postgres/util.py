@@ -20,7 +20,7 @@ from qsdl import dsl
 from qsdl.generators.directive_payloads import scalar_mapping
 
 from .config import POSTGRES_SCALAR, PostgresConfig
-from .models import Column, Table
+from .models import Column, ForeignKeyColumn, JoinTable, Table
 
 
 class Store:
@@ -54,38 +54,25 @@ def T_PREFIX() -> str:
     return Store.config.table_prefix.lower()
 
 
-def build_jointables(table: Table) -> list[Table]:
+def build_jointables(table: Table) -> list[JoinTable]:
     """Creates all jointables for many to many relations (aggregation)"""
 
     return_tables = []
 
-    for dsl_field in table._ref.fields:
+    for dsl_field in table.source.fields:
         # Only Object type arrays create join tables (Base types are always JSONB)
         if not (isinstance(dsl_field.value, dsl.Object) and dsl_field.is_array and dsl_field.directive.is_aggregation):
             continue
 
         source_table_name = table.name
-        qfilter.snakecase(dsl_field.name).lower()
         ref_table_name = T_PREFIX() + qfilter.snakecase(dsl_field.value.name).lower()
 
-        name_left = table._ref.name.lower()
+        name_left = table.source.name.lower()
         name_right = qfilter.snakecase(dsl_field.value.name).lower()
 
-        new_table = Table()
-        new_table.name = f"{source_table_name}_to_{ref_table_name}"
-        new_table.is_jointable = True
-
-        # new table has two columns, one for each side of the relation
-        column_a = Column()
-        column_a.name = f"{name_left}_id"
-        column_a.type = "BIGINT"
-        column_a.is_required = True
-        column_b = Column()
-        column_b.name = f"{name_right}_id"
-        column_b.type = "BIGINT"
-        column_b.is_required = True
-
-        new_table.columns.extend([column_a, column_b])
+        column_a = ForeignKeyColumn(f"{name_left}_id", is_required=True)
+        column_b = ForeignKeyColumn(f"{name_right}_id", is_required=True)
+        new_table = JoinTable(f"{source_table_name}_to_{ref_table_name}", (column_a, column_b))
 
         # add the foreign key constraints
         table.constraints.extend(
@@ -111,7 +98,7 @@ def build_composition_fks(table: Table) -> None:
         table: The child table to add foreign keys to
     """
     # Find all composition fields that reference this Object
-    dsl_fields = qutil.get_composition_fields(Store.schema, table._ref.name)
+    dsl_fields = qutil.get_composition_fields(Store.schema, table.source.name)
 
     for dsl_field in dsl_fields:
         # field.parent is the parent Object that has the composition
@@ -120,10 +107,7 @@ def build_composition_fks(table: Table) -> None:
         field_name = f"{qfilter.snakecase(dsl_field.name)}_{parent_obj.name}".lower()
 
         # Add foreign key column to this (child) table pointing to parent
-        fk_column = Column()
-        fk_column.name = f"{field_name}_id".lower()
-        fk_column.type = "BIGINT"
-        # fk_column.is_required = True  # Compositions typically require the parent - breaks with two parents
+        fk_column = ForeignKeyColumn(f"{field_name}_id")
         table.columns.append(fk_column)
 
         # Add foreign key constraint
@@ -156,5 +140,5 @@ def extract_embedded_columns(ref: dsl.Base, prefix: str = "") -> list[Column]:
             nested_prefix = prefix + qfilter.snakecase(field.name).lower() + "_"
             columns.extend(extract_embedded_columns(field.value, nested_prefix))
         else:
-            columns.append(Column.from_ref(field, prefix))
+            columns.append(Column(field, prefix))
     return columns

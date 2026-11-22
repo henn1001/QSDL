@@ -31,7 +31,7 @@ public class {{api.name}}Service {
 {% for parent in model.parents %}
 
     {{model.name}}Entity fetch{{model.name}}From{{parent.model.name}}FromDb(Long {{ parent.model.hibernate.parameter_joined_id }}, {{id_type}} id) throws AppException {
-        return {{model.name|lower}}Repository.{{ parent.hibernate.find_by_parentid_and_id }}({{ parent.model.hibernate.parameter_joined_id }}, id)
+        return {{model.name|lower}}Repository.{{ parent.hibernate.find_by_parent_and_id }}({{ parent.model.hibernate.parameter_joined_id }}, id)
                 .orElseThrow(() -> AppExceptionUtil.entityNotFound({{model.name}}.class, id));
     }
 
@@ -41,14 +41,14 @@ public class {{api.name}}Service {
     }
 {% endfor %}
 {% endif %}
-{% for operation in api.operations if operation.is_generated %}
+{% for operation in api.operations if operation.source.is_generated %}
 
     {% if operation.method == "get" %}
     @Transactional(readOnly = true)
     {% else %}
     @Transactional
     {% endif %}
-    public {{macro.get_response(operation)}} {{operation.name}}({{macro.paramsService(operation)}}) throws AppException {
+    public {{operation.response_type}} {{operation.source.name}}({{macro.paramsService(operation)}}) throws AppException {
 
     {% if database == "HIBERNATE" %}
     {{- opr_macro.logic(operation) -}}

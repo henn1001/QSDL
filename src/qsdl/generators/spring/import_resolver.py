@@ -27,15 +27,15 @@ def resolve_dynamic_imports() -> None:
     namespaced_packages = {}
 
     for model in util.Store.models:
-        if model.package._namespace not in namespaced_packages:
-            namespaced_packages[model.package._namespace] = model.package
+        if model.package.namespace not in namespaced_packages:
+            namespaced_packages[model.package.namespace] = model.package
 
     util.Store.packages = list(namespaced_packages.values())
 
 
 def _get_enum_package(enum_name: str) -> str:
     """Return the generated package for an enum referenced by a model."""
-    enum = next((enum for enum in util.Store.enums if enum.name == enum_name), None)
+    enum = next((enum for enum in util.Store.enums if enum.source.name == enum_name), None)
     return enum.package.enum if enum else util.Store.package.enum
 
 
@@ -47,24 +47,18 @@ def _get_operation_type_imports(api_class: spring.ApiClass | None) -> list[str]:
     imports = set()
 
     for op in api_class.operations:
-        if op.response and (op.response.is_object or op.response.is_base):
-            # Pageable responses are represented as CursorPage<T> in the Java
-            # model, while the referenced model is still tracked by the
-            # response flags. Resolve the inner type before looking it up.
-            response_type = op.response.type
-            if response_type.startswith("CursorPage<") and response_type.endswith(">"):
-                response_type = response_type[len("CursorPage<") : -1]
-
+        source = op.source
+        if isinstance(source.value, dsl.Base | dsl.Object):
+            response_type = util.custom_type(source.value)
             model = util.get_model_for(response_type)
             if model:
                 imports.add(f"import {model.package.domain}.{response_type};")
 
-        for param in op.parameters:
-            if (param.is_object or param.is_base) and param.is_body:
-                name = param.type.removesuffix("Request") if param.has_modified_type else param.type
-                model = util.get_model_for(name)
+        for argument in source.arguments:
+            if argument.is_body and isinstance(argument.value, dsl.Base | dsl.Object):
+                model = util.get_model_for(util.custom_type(argument.value))
                 if model:
-                    imports.add(f"import {model.package.domain}.{param.type};")
+                    imports.add(f"import {model.package.domain}.{util.argument_type(argument)};")
 
     return list(imports)
 
@@ -75,7 +69,7 @@ def _get_filter_imports(api_class: spring.ApiClass | None) -> list[str]:
 
     imports = set()
     for op in api_class.operations:
-        if not op.uses_filter:
+        if not op.filter_name:
             continue
         model = util.get_model_for(op.filter_name)
         if model:
@@ -91,7 +85,7 @@ def _get_request_dto_imports(api_class: spring.ApiClass | None) -> list[str]:
 
     imports = set()
     for op in api_class.operations:
-        if not op.uses_request_dto:
+        if not op.request_dto_name:
             continue
         model = util.get_model_for(op.request_dto_name)
         if model:
@@ -133,7 +127,7 @@ def _get_entity_imports(model_class: spring.ModelClass | None) -> list[str]:
 
     for field in model_class.entity_fields:
         if field.type == "ObjectNode":
-            converter = "ObjectNodeListConverter" if field.is_array else "ObjectNodeConverter"
+            converter = "ObjectNodeListConverter" if field.source.is_array else "ObjectNodeConverter"
             imports.add(f"import {util.Store.package.util}.{converter};")
         if field.is_enum:
             imports.add(f"import {_get_enum_package(field.type)}.{field.type};")
@@ -158,7 +152,7 @@ def _get_request_imports(model_class: spring.ModelClass | None) -> list[str]:
     for field in model_class.fields:
         if field.is_enum:
             imports.add(f"import {_get_enum_package(field.type)}.{field.type};")
-        elif (field.is_object or field.is_base) and not field.is_relation and not field.is_read_only:
+        elif (field.is_object or field.is_base) and not field.is_relation and not field.source.directive.is_read_only:
             nested = util.get_model_for(field.type)
             if nested and nested.package.domain != model_class.package.domain:
                 nested_name = f"{nested.name}Request" if field.nested_type_has_request else nested.name
@@ -176,7 +170,7 @@ def _get_response_imports(model_class: spring.ModelClass | None) -> list[str]:
     for field in model_class.fields:
         if field.is_enum:
             imports.add(f"import {_get_enum_package(field.type)}.{field.type};")
-        elif (field.is_object or field.is_base) and not field.is_relation and not field.is_write_only:
+        elif (field.is_object or field.is_base) and not field.is_relation and not field.source.directive.is_write_only:
             nested = util.get_model_for(field.type)
             if nested and nested.package.domain != model_class.package.domain:
                 imports.add(f"import {nested.package.domain}.{nested.name};")
@@ -280,7 +274,7 @@ def generate_imports_for_template(
                     f"import {api_class.model.package.mapper}.{api_class.model.name}Mapper;",
                     f"import {api_class.package.service}.{api_class.name}Service;",
                 ]
-                if api_class and api_class.has_generated
+                if api_class and api_class.source.has_generated
                 else []
             ),
             f"import {util.Store.package.shared_controller}.BaseController;",

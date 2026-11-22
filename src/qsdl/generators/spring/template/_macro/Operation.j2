@@ -7,7 +7,7 @@
     {% set p_m_hibernate = operation.parent.model.hibernate %}
     {% set p_model_entity = p_model.name | lower + "Entity" %}
     {% endif %}
-    {% if operation.method == "get" and operation.is_pageable %}
+    {% if operation.method == "get" and operation.source.directive.is_pageable %}
         {# 
          ########################################################################################
             Get all entities.
@@ -17,14 +17,14 @@
         // should be optimized with something like getReferenceById
         var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-        {% if operation.uses_filter %}
+        {% if operation.filter_name %}
         var predicate = PredicateBuilder.build(filter, {{model.name}}Entity.class);
         {% else %}
         var predicate = PredicateBuilder.build({{model.name}}Entity.class);
         {% endif %}
         predicate.and(Q{{model.name}}Entity.{{model.name|camel}}Entity.{{operation.parent.predicate}}.id.eq({{p_model_entity}}.getId()));
         {% else %}
-        {% if operation.uses_filter %}
+        {% if operation.filter_name %}
         var predicate = PredicateBuilder.build(filter, {{model.name}}Entity.class);
         {% else %}
         var predicate = PredicateBuilder.build({{model.name}}Entity.class);
@@ -37,7 +37,7 @@
         var {{model_dto}}Dtos = {{model_dto}}Entities.stream().map({{model_dto}}Mapper::toResponse).toList();
 
         return new CursorPage<>({{model_dto}}Dtos, cursorPage.nextCursor(), cursorPage.totalCount());
-    {% elif operation.method == "post" and ( operation.path.endswith('/add') or operation.path.endswith('/remove') ) %}
+    {% elif operation.method == "post" and ( operation.source.directive.path.value.endswith('/add') or operation.source.directive.path.value.endswith('/remove') ) %}
         {# 
          ########################################################################################
             Create a entity.
@@ -45,7 +45,7 @@
         // get and confirm existence
         var {{p_model_entity}} = fetch{{p_model.name}}FromDb({{p_m_hibernate.parameter_joined_id}});
 
-        {% if operation.path.endswith('/add') %}
+        {% if operation.source.directive.path.value.endswith('/add') %}
         var {{model_entity}} = fetch{{model.name}}FromDb(id);
 
         if ({{model_entity}}.{{p_model.name|lower}}s.contains({{p_model_entity}})) {
@@ -53,7 +53,7 @@
         }
 
         {{model_entity}}.addTo{{ p_model.name }}s({{p_model_entity}});
-        {% elif operation.path.endswith('/remove') %}
+        {% elif operation.source.directive.path.value.endswith('/remove') %}
         var {{model_entity}} = fetch{{model.name}}From{{p_model.name}}FromDb({{p_model_entity}}.getId(), id);
 
         {{model_entity}}.removeFrom{{ p_model.name }}s({{p_model_entity}});

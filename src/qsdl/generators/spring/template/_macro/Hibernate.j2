@@ -2,28 +2,29 @@
     Returns a class identifier.
 #}
 {% macro attribute_annotation(field) -%}
+    {% set directive = field.source.directive %}
     {#
         Serialization for objects
     #}
     {% if field.type == "ObjectNode" %}
-        {% if field.is_array %}
+        {% if field.source.is_array %}
     @Convert(converter = ObjectNodeListConverter.class)
         {% else %}
     @Convert(converter = ObjectNodeConverter.class)
         {% endif %}
     @JdbcTypeCode(SqlTypes.JSON)
-    {% elif field.is_array and not field.is_object and not field.is_base %}
+    {% elif field.source.is_array and not field.is_object and not field.is_base %}
     @JdbcTypeCode(SqlTypes.ARRAY)
     {% endif %}
     {#
         Preserve the original QSDL column name when the Java field had to be
         escaped because it is a Java keyword.
     #}
-    {% if field.is_name_escaped and field.is_unique %}
-    @Column(name = "{{field.json_key|snake}}", unique = true)
+    {% if field.is_name_escaped and directive.is_unique %}
+    @Column(name = "{{field.source.name|snake}}", unique = true)
     {% elif field.is_name_escaped %}
-    @Column(name = "{{field.json_key|snake}}")
-    {% elif field.is_unique %}
+    @Column(name = "{{field.source.name|snake}}")
+    {% elif directive.is_unique %}
     @Column(unique = true)
     {% endif %}
     {#
@@ -35,46 +36,46 @@
     {#
         Relations
     #}
-    {% if field.is_relation and not field.is_relation_owner %}
+    {% if field.is_relation and not field.foreign_key %}
             {# 
                 the parent side of the relation.
             #}
-            {% if field.is_aggregation and field.is_array %}
+            {% if directive.is_aggregation and field.source.is_array %}
     @ManyToMany(mappedBy = "{{model.name|lower}}s", fetch = FetchType.LAZY)
-            {% elif field.is_aggregation and not field.is_array %}
+            {% elif directive.is_aggregation and not field.source.is_array %}
     @OneToMany(mappedBy = "{{model.name|lower}}s", fetch = FetchType.LAZY)
-            {% elif field.is_composition and field.is_array %}
+            {% elif directive.is_composition and field.source.is_array %}
     @OneToMany(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-            {% elif field.is_composition and not field.is_array %}
+            {% elif directive.is_composition and not field.source.is_array %}
     @OneToOne(mappedBy = "{{model.name|lower}}", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
             {% endif %}
-    {% elif field.is_relation and field.is_relation_owner %}
+    {% elif field.is_relation and field.foreign_key %}
             {#
                 The child/owning side of the relation.
             #}
-            {% if field.is_aggregation and field.foreign_key_is_array %}
+            {% if directive.is_aggregation and field.foreign_key.is_array %}
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "{{table_prefix}}{{field.type|lower}}_to_{{table_prefix}}{{model.name|lower}}", joinColumns = @JoinColumn(name = "{{model.name|lower}}_id"), inverseJoinColumns = @JoinColumn(name = "{{field.type|lower}}_id"))
-            {% elif field.is_aggregation and not field.foreign_key_is_array %}
+            {% elif directive.is_aggregation and not field.foreign_key.is_array %}
     @ManyToOne(fetch = FetchType.LAZY) aaaaaaaaaa
     @JoinColumn(name = "{{field.type|lower}}_id")
-            {% elif field.is_composition and field.foreign_key_is_array %}
+            {% elif directive.is_composition and field.foreign_key.is_array %}
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "{{field.foreign_key_name}}_{{field.type|lower}}_id")
-            {% elif field.is_composition and not field.foreign_key_is_array %}
+    @JoinColumn(name = "{{field.foreign_key.name}}_{{field.type|lower}}_id")
+            {% elif directive.is_composition and not field.foreign_key.is_array %}
     @OneToOne(fetch = FetchType.LAZY) aaaaaaaaaa
     @JoinColumn(name = "{{field.type|lower}}_id")
             {% endif %}
     {#
         Nested Objects
     #}
-    {% elif field.is_array and field.is_object %}
+    {% elif field.source.is_array and field.is_object %}
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "{{field.name|snake}}_{{model.name|snake}}_id")
-    {% elif not field.is_array and field.is_object %}
+    {% elif not field.source.is_array and field.is_object %}
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "{{field.name|snake}}_{{field.type|snake}}_id")
-    {% elif (field.is_array or field.is_opaque) and field.is_base %}
+    {% elif (field.source.is_array or directive.is_opaque) and field.is_base %}
     @JdbcTypeCode(SqlTypes.JSON)
     {% endif %}
 {% endmacro %}

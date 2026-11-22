@@ -1,40 +1,26 @@
-{%- macro get_response(operation) -%}
-
-    {%- if operation.response -%}
-        {%- if operation.response.is_array -%}
-            List<{{operation.response.type}}>
-        {%- else -%}
-            {{operation.response.type}}
-        {%- endif %}
-    {%- else -%}
-        Void
-    {%- endif -%}
-
-{%- endmacro %}
-
 {%- macro paramsApi(operation) -%}
 
     {%- for parameter in operation.path_parameters -%}
-        @PathVariable("{{parameter.json_key}}") {{ param_helper(parameter) }}
-        {%- if not loop.last or operation.uses_filter or operation.is_pageable or operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
+        @PathVariable("{{parameter.source.name}}") {{ param_helper(parameter) }}
+        {%- if not loop.last or operation.filter_name or operation.source.directive.is_pageable or operation.request_dto_name or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endfor %}
 
-    {%- if operation.uses_filter -%}
+    {%- if operation.filter_name -%}
             @Valid {{operation.filter_name}} filter
-        {%- if operation.is_pageable or operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if operation.source.directive.is_pageable or operation.request_dto_name or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endif -%}
 
-    {%- if operation.is_pageable -%}
+    {%- if operation.source.directive.is_pageable -%}
             CursorPageable pageable
-        {%- if operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if operation.request_dto_name or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endif -%}
 
-    {%- if operation.uses_request_dto -%}
+    {%- if operation.request_dto_name -%}
             @Valid @RequestBody {{operation.request_dto_name}} request
     {%- elif operation.body_parameters and operation.method == "patch" -%}
             @RequestBody JsonMergePatch patch
     {%- elif operation.body_parameters -%}
-            {% if (operation.body_parameters[0].is_base or operation.body_parameters[0].is_object) and not operation.body_parameters[0].is_array %}@Valid {% endif %}@RequestBody {{ param_helper(operation.body_parameters[0], true) }}
+            {% if operation.body_parameters[0].is_model and not operation.body_parameters[0].source.is_array %}@Valid {% endif %}@RequestBody {{ param_helper(operation.body_parameters[0], true) }}
     {%- endif -%}
 
 {%- endmacro %}
@@ -43,20 +29,20 @@
 
     {%- for parameter in operation.path_parameters -%}
         {{ param_helper(parameter) }}
-        {%- if not loop.last or operation.uses_filter or operation.is_pageable or operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if not loop.last or operation.filter_name or operation.source.directive.is_pageable or operation.request_dto_name or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endfor %}
 
-    {%- if operation.uses_filter -%}
+    {%- if operation.filter_name -%}
             {{operation.filter_name}} filter
-        {%- if operation.is_pageable or operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if operation.source.directive.is_pageable or operation.request_dto_name or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endif -%}
 
-    {%- if operation.is_pageable -%}
+    {%- if operation.source.directive.is_pageable -%}
             CursorPageable pageable
-        {%- if operation.uses_request_dto or operation.body_parameters -%}{{", "}}{% endif -%}
+        {%- if operation.request_dto_name or operation.body_parameters -%}{{", "}}{% endif -%}
     {%- endif -%}
 
-    {%- if operation.uses_request_dto -%}
+    {%- if operation.request_dto_name -%}
             {{operation.request_dto_name}} request
     {%- elif operation.body_parameters and operation.method == "patch" -%}
             JsonMergePatch patch
@@ -73,15 +59,15 @@
         {%- set _ = params.append(param_helper(parameter)) -%}
     {%- endfor -%}
 
-    {%- if operation.uses_filter -%}
+    {%- if operation.filter_name -%}
         {%- set _ = params.append(operation.filter_name + " filter") -%}
     {%- endif -%}
 
-    {%- if operation.is_pageable -%}
+    {%- if operation.source.directive.is_pageable -%}
         {%- set _ = params.append("CursorPageable pageable") -%}
     {%- endif -%}
 
-    {%- if operation.uses_request_dto -%}
+    {%- if operation.request_dto_name -%}
         {%- set _ = params.append(operation.request_dto_name + " request") -%}
     {%- elif operation.body_parameters -%}
         {%- set _ = params.append(param_helper(operation.body_parameters[0])) -%}
@@ -97,15 +83,15 @@
         {%- set _ = params.append(parameter.name) -%}
     {%- endfor -%}
 
-    {%- if operation.uses_filter -%}
+    {%- if operation.filter_name -%}
         {%- set _ = params.append("filter") -%}
     {%- endif -%}
 
-    {%- if operation.is_pageable -%}
+    {%- if operation.source.directive.is_pageable -%}
         {%- set _ = params.append("pageable") -%}
     {%- endif -%}
 
-    {%- if operation.uses_request_dto -%}
+    {%- if operation.request_dto_name -%}
         {%- set _ = params.append("request") -%}
     {%- elif operation.body_parameters and operation.method == "patch" -%}
         {%- set _ = params.append("request") -%}
@@ -123,7 +109,7 @@
         {%- set _ = params.append(parameter.name) -%}
     {%- endfor -%}
 
-    {%- if operation.is_pageable -%}
+    {%- if operation.source.directive.is_pageable -%}
         {%- set _ = params.append("pageable") -%}
     {%- endif -%}
 
@@ -137,15 +123,15 @@
         {%- set _ = params.append("any()") -%}
     {%- endfor -%}
 
-    {%- if operation.uses_filter -%}
+    {%- if operation.filter_name -%}
         {%- set _ = params.append("any()") -%}
     {%- endif -%}
 
-    {%- if operation.is_pageable -%}
+    {%- if operation.source.directive.is_pageable -%}
         {%- set _ = params.append("any()") -%}
     {%- endif -%}
 
-    {%- if operation.uses_request_dto or operation.body_parameters -%}
+    {%- if operation.request_dto_name or operation.body_parameters -%}
         {%- set _ = params.append("any()") -%}
     {%- endif -%}
 
@@ -154,8 +140,8 @@
 
 {%- macro param_helper(parameter, validate_items=false) -%}
 
-    {%- if parameter.is_array -%}
-        List<{{ "@Valid " if validate_items and (parameter.is_base or parameter.is_object) else "" }}{{parameter.type}}> {{parameter.name}}
+    {%- if parameter.source.is_array -%}
+        List<{{ "@Valid " if validate_items and parameter.is_model else "" }}{{parameter.type}}> {{parameter.name}}
     {%- else -%}
         {{parameter.type}} {{parameter.name}}
     {%- endif %}

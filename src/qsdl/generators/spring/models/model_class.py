@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Spring Generator Model class"""
+"""Spring domain model and field projections."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Self
+from dataclasses import InitVar, dataclass, field
 
 import qsdl.casing as qfilter
 import qsdl.dsl.util as qutil
@@ -26,108 +25,62 @@ from qsdl.dsl.directives import AGGREGATION, COMPOSITION
 
 from .. import models as spring
 from .. import util
-from ..config import SPRING_PACKAGE
+from ..config import IDTYPE, Database
 
 
 @dataclass
 class ModelField:
-    """The field of a Java Model"""
+    """A schema field projected into a Java DTO or Hibernate entity."""
 
-    name: str = None
-    json_key: str = None
-    is_name_escaped: bool = False
-    description: list[str] = field(default_factory=list)
+    source: dsl.Field = field(repr=False, compare=False)
+    java_name: InitVar[str | None] = None
+    dto_nested_path: str | None = None
+    foreign_key: dsl.Field | None = field(default=None, repr=False, compare=False)
 
-    type: str = None
-    entity_type: str = None
-    pattern: str = None
-    is_array: bool = False
+    name: str = field(init=False)
+    type: str = field(init=False)
+    entity_type: str = field(init=False)
+    pattern: str | None = field(init=False)
+    min_size: str | None = field(init=False, default=None)
+    max_size: str | None = field(init=False, default=None)
+    default: str | None = field(init=False)
+    nested_type_has_request: bool = field(init=False, default=False)
 
-    is_required: bool = False
-    is_read_only: bool = False
-    is_write_only: bool = False
-    is_opaque: bool = False
-    is_unique: bool = False
-    is_hidden: bool = False
-    is_transient: bool = False
-    is_query: bool = False
-    is_query_list: bool = False
+    def __post_init__(self, java_name: str | None) -> None:
+        self.name = java_name if java_name is not None else util.java_identifier(self.source.name)
+        self.type = util.custom_type(self.source.value)
+        self.entity_type = util.custom_type_entity(self.source.value) or self.type
+        self.pattern = util.custom_type_pattern(self.source.value)
+        self._add_constraints()
 
-    is_enum: bool = False
-    is_base: bool = False
-    is_object: bool = False
-    is_id: bool = False
-    is_date: bool = False
+    @property
+    def is_name_escaped(self) -> bool:
+        """Whether the original name required escaping rather than only casing."""
+        name = self.source.name
+        return self.dto_nested_path is None and util.java_identifier(name) != qfilter.camelcase(name)
 
-    nested_type_has_request: bool = False
+    @property
+    def is_enum(self) -> bool:
+        return isinstance(self.source.value, dsl.Enum)
 
-    is_composition: bool = False
-    is_aggregation: bool = False
-    is_relation: bool = False
-    is_relation_owner: bool = False
-    foreign_key_name: str = None
-    foreign_key_is_array: bool = False
+    @property
+    def is_base(self) -> bool:
+        return isinstance(self.source.value, dsl.Base)
 
-    hibernate: spring.HibernateFieldInfo = None
+    @property
+    def is_object(self) -> bool:
+        return isinstance(self.source.value, dsl.Object)
 
-    getter: str = None
-    setter: str = None
+    @property
+    def is_relation(self) -> bool:
+        return qutil.is_relation(self.source)
 
-    min_size: str = None
-    max_size: str = None
-    default: str = None
-
-    dto_nested_path: str = None  # Nested path for DTO mapping (e.g., "aField.intField")
-
-    def build(self, _ref: dsl.Field) -> Self:
-        """Init our dataclass by reading information from _ref"""
-
-        # Rename to the target language's naming convention while retaining the
-        # original name for JSON and database mappings.
-        source_name = qfilter.camelcase(_ref.name)
-        self.name = util.java_identifier(_ref.name)
-        self.json_key = _ref.name
-        self.is_name_escaped = self.name != source_name
-        self.description = _ref.description
-
-        self.type = util.custom_type(_ref.value)
-        self.entity_type = util.custom_type_entity(_ref.value) or self.type
-        self.pattern = util.custom_type_pattern(_ref.value)
-        self.is_array = _ref.is_array
-
-        self.is_required = _ref.is_required
-        self.is_read_only = _ref.directive.is_read_only
-        self.is_write_only = _ref.directive.is_write_only
-        self.is_opaque = _ref.directive.is_opaque
-        self.is_unique = _ref.directive.is_unique
-        self.is_hidden = _ref.directive.is_hidden
-        self.is_transient = _ref.directive.is_transient
-        self.is_query = _ref.directive.is_query
-        self.is_query_list = _ref.directive.is_query_list
-
-        self.is_enum = isinstance(_ref.value, dsl.Enum)
-        self.is_base = isinstance(_ref.value, dsl.Base)
-        self.is_object = isinstance(_ref.value, dsl.Object)
-        self.is_id = _ref.value.name == "ID"
-        self.is_date = _ref.value.name in ["Date", "Datetime"]
-
-        # relation model
-        self.is_composition = _ref.directive.is_composition
-        self.is_aggregation = _ref.directive.is_aggregation
-        self.is_relation = self.is_composition or self.is_aggregation
-
-        self.getter = "get" + qfilter.pascalcase(self.name)
-        self.setter = "set" + qfilter.pascalcase(self.name)
-
-        self._add_constraints(_ref)
-
-        return self
-
-    def _add_constraints(self, _ref: dsl.Field) -> None:
+    def _add_constraints(self) -> None:
         """Adds min max constraints"""
-        min_size = _ref.directive.min_size.value if _ref.directive.min_size is not None else None
-        max_size = _ref.directive.max_size.value if _ref.directive.max_size is not None else None
-        default = _ref.directive.default.value if _ref.directive.default is not None else None
+        directive = self.source.directive
+        min_size = directive.min_size.value if directive.min_size is not None else None
+        max_size = directive.max_size.value if directive.max_size is not None else None
+        default = directive.default.value if directive.default is not None else None
 
         if self.type == "String":
             self.min_size = f"{min_size}" if min_size else "0"
@@ -162,166 +115,92 @@ class ModelField:
 
 @dataclass
 class ModelClass:
-    """The Java Model for the Domain Class Object"""
+    """A Java domain model projected from a schema base or object."""
 
-    name: str = None
-    namespace: str = None
-    description: list[str] = field(default_factory=list)
-
-    is_base: bool = False
-    is_object: bool = False
-
-    fields: list[ModelField] = field(default_factory=list)
-    entity_fields: list[ModelField] = field(default_factory=list)
-    constants: list[str] = field(default_factory=list)
-
-    # addons
-    is_supertype: bool = False
-    is_aggregated: bool = False
-    has_relation: bool = False
-    has_required: bool = False
-    has_query: bool = False
+    source: dsl.Base | dsl.Object = field(repr=False, compare=False)
     is_query_filter: bool = False
     has_request: bool = True
-    has_response: bool = True
+    has_response: bool = field(init=False, default=True)
 
-    package: spring.Package = None
+    fields: list[ModelField] = field(init=False)
+    entity_fields: list[ModelField] = field(init=False)
+    is_aggregated: bool = field(init=False)
+    has_required: bool = field(init=False)
+    has_query: bool = field(init=False)
 
-    hibernate: spring.HibernateModelInfo = None
+    package: spring.Package = field(init=False)
+    hibernate: spring.HibernateModelInfo | None = field(init=False, default=None)
+    parents: list[spring.Parent] = field(init=False, default_factory=list)
+    mappers: list[dsl.Base | dsl.Object] = field(init=False)
 
-    parents: list[spring.Parent] = field(default_factory=list)
-    mappers: list[dsl.Base | dsl.Object] = field(default_factory=list)
+    def __post_init__(self) -> None:
+        source = self.source
+        self.package = spring.Package(util.Store.config, util.package_namespace(source))
 
-    def build(self, _ref: dsl.Base | dsl.Object) -> Self:
-        """Init our dataclass by reading information from _ref"""
+        parent_fields = util.get_parent_fields(source.name)
+        self.is_aggregated = any(field.directive.is_aggregation for field in parent_fields)
+        self.has_required = any(
+            field.is_required and field.name != "id" and not qutil.is_relation(field) for field in source.fields
+        )
+        self.has_query = any(field.directive.is_query or field.directive.is_query_list for field in source.fields)
 
-        # rename to naming convention
-        self.name = _ref.name
-        self.namespace = qfilter.lowercase(qutil.render_namespace(_ref))
+        mappers = {}
+        for nested_field in util.extract_fields_for_mapper(source):
+            mappers.setdefault(nested_field.value.name, nested_field.value)
+        self.mappers = list(mappers.values())
 
-        self.description = _ref.description
+        fields = [field for field in source.fields if not qutil.is_relation(field)]
+        self.fields = [ModelField(field) for field in fields]
+        self.entity_fields = util.extract_embedded_columns(fields)
 
-        # identify type
-        self.is_base = isinstance(_ref, dsl.Base)
-        self.is_object = isinstance(_ref, dsl.Object)
+        if isinstance(source, dsl.Object):
+            if util.Store.config.database == Database.HIBERNATE:
+                self.hibernate = spring.HibernateModelInfo(source, util.Store.config.id_type == IDTYPE.LONG)
+            self._add_relations()
+            self._add_foreign_keys(parent_fields)
 
-        # addons
-        self.is_supertype = util.is_supertype(_ref) if self.is_base else False
-        self.is_aggregated = util.has(_ref, is_aggregated=True)
-        self.has_relation = util.has(_ref, has_relation=True)
-        self.has_required = util.has(_ref, has_required_ignore_internal=True)
-        self.has_query = util.has(_ref, has_query=True)
+    @property
+    def name(self) -> str:
+        return self.source.name
 
-        # handle package path and imports
-        # Priority: @spring-package directive > namespace attribute
-        self.package = spring.Package(util.Store.config)
-        package_directive = _ref.directives.get(SPRING_PACKAGE)
+    @property
+    def is_object(self) -> bool:
+        return isinstance(self.source, dsl.Object)
 
-        if package_directive:
-            self.package.set_namespace(package_directive.value)
-        elif qutil.render_namespace(_ref):
-            self.package.set_namespace(qfilter.lowercase(qutil.render_namespace(_ref)))
+    @property
+    def request_fields(self) -> list[ModelField]:
+        """Fields rendered in a request record."""
+        return [field for field in self._dto_fields() if not field.source.directive.is_read_only]
 
-        # add needed mappers
-        nested_types = util.extract_fields_for_mapper(_ref)
-        self.mappers = []
-        mapper_names = set()
-        for nested_type in nested_types:
-            if isinstance(nested_type.value, dsl.Enum | dsl.Scalar) or nested_type.value.name in mapper_names:
+    @property
+    def response_fields(self) -> list[ModelField]:
+        """Fields rendered in a response record."""
+        return [field for field in self._dto_fields() if not field.source.directive.is_write_only]
+
+    def _dto_fields(self) -> list[ModelField]:
+        return [field for field in self.fields if not field.is_relation and not field.source.directive.is_hidden]
+
+    def _add_relations(self) -> None:
+        for source in self.source.fields:
+            if not qutil.is_relation(source):
                 continue
-            self.mappers.append(nested_type.value)
-            mapper_names.add(nested_type.value.name)
+            name = qfilter.raw_camelcase(util.custom_type(source.value)) + ("s" if source.is_array else "")
+            field = ModelField(source, java_name=name)
+            self.fields.append(field)
+            self.entity_fields.append(field)
 
-        # add attributes
-        self._add_fields(_ref)
-        self._add_entity_fields(_ref)
-        self._add_relations(_ref)
-        self._add_foreign_keys(_ref)
+    def _add_foreign_keys(self, parent_fields: list[dsl.Field]) -> None:
+        for source in parent_fields:
+            parent = source.parent
+            is_aggregation = source.directive.is_aggregation
+            name = qfilter.raw_camelcase(parent.name) + ("s" if is_aggregation else "")
 
-        return self
-
-    def _add_fields(self, _ref: dsl.Base | dsl.Object) -> None:
-        """Creates and adds all visible attributes to a ModelClass"""
-
-        # filter on base and object
-        if not ((self.is_base and isinstance(_ref, dsl.Base)) or (self.is_object and isinstance(_ref, dsl.Object))):
-            return
-
-        # filter only non relations
-        dsl_fields = [x for x in _ref.fields if not qutil.is_relation(x)]
-
-        for dsl_field in dsl_fields:
-            new_model_field = ModelField().build(dsl_field)
-
-            self.fields.append(new_model_field)
-
-    def _add_entity_fields(self, _ref: dsl.Base | dsl.Object) -> None:
-        """Creates and adds all visible attributes to a ModelClass"""
-
-        # filter on base and object
-        if not ((self.is_base and isinstance(_ref, dsl.Base)) or (self.is_object and isinstance(_ref, dsl.Object))):
-            return
-
-        # filter only non relations
-        dsl_fields = [x for x in _ref.fields if not qutil.is_relation(x)]
-
-        # Use the refactored extract_embedded_columns to handle all field processing
-        model_entity_fields = util.extract_embedded_columns(_ref, fields=dsl_fields)
-        self.entity_fields.extend(model_entity_fields)
-
-    def _add_relations(self, _ref: dsl.Base | dsl.Object) -> None:
-        """Creates and adds all explicit relation attributes to a ModelClass"""
-
-        # filter on object
-        if not self.is_object:
-            return
-
-        # filter only relations
-        dsl_fields = [x for x in _ref.fields if qutil.is_relation(x)]
-
-        for dsl_field in dsl_fields:
-            new_model_field = ModelField().build(dsl_field)
-            new_model_field.name = qfilter.raw_camelcase(new_model_field.type)
-            new_model_field.name += "s" if new_model_field.is_array else ""
-
-            # add to both is probably not needed but a workaround for now
-            self.fields.append(new_model_field)
-            self.entity_fields.append(new_model_field)
-
-    def _add_foreign_keys(self, _ref: dsl.Base | dsl.Object) -> None:
-        """Creates and adds all implicit relation attributes to a ModelClass"""
-
-        # filter on object
-        if not self.is_object:
-            return
-
-        # get the fields of all parents that
-        # use self as aggregation or composition
-        # TODO: add nested Objects
-        dsl_fields = util.get_parent_fields(self.name)
-
-        for dsl_field in dsl_fields:
-            parent = dsl_field.parent
-
-            # create a new field for self that represents the other side
-            # of the reference
-            field_name = qfilter.raw_camelcase(parent.name)
-            field_name += "s" if dsl_field.directive.is_aggregation else ""
-            fk_field = dsl.Field(parent=_ref, name=field_name, value=parent)
-
-            fk_field.is_array = dsl_field.directive.is_aggregation
+            # The synthetic field is the child/owning side of the relation.
+            inverse = dsl.Field(parent=self.source, name=name, value=parent, is_array=is_aggregation)
             for spec in (AGGREGATION, COMPOSITION):
-                if dsl_field.directives.get(spec):
-                    fk_field.directives.attach_synthetic(spec, True)
+                if source.directives.get(spec):
+                    inverse.directives.attach_synthetic(spec, True)
 
-            new_model_field = ModelField().build(fk_field)
-            new_model_field.is_relation_owner = True
-            new_model_field.foreign_key_name = dsl_field.name
-            new_model_field.foreign_key_is_array = dsl_field.is_array
-
-            # add to both is probably not needed but a workaround for now
-            self.fields.append(new_model_field)
-            self.entity_fields.append(new_model_field)
-
-            # update relation flag because these do not get picked up by the util method
-            self.has_relation = True
+            field = ModelField(inverse, foreign_key=source)
+            self.fields.append(field)
+            self.entity_fields.append(field)
