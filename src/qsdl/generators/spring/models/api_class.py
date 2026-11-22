@@ -68,8 +68,7 @@ class Operation:
         if source.domain_object and source.domain_parent:
             self.parent = util.get_parent_for(source.domain_object.name, source.domain_parent.name)
 
-        self.consumes = qutil.render_media_type(directive.consumes, applicable=bool(source.body_parameters))
-        self.produces = qutil.render_media_type(directive.produces, applicable=source.value is not None)
+        self.consumes, self.produces = qutil.operation_media_types(source)
 
         self.path_parameters = [Parameter(argument) for argument in source.path_parameters]
         if self.method != "delete":

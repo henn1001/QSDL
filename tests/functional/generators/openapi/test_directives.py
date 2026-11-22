@@ -157,10 +157,15 @@ def test_namespace_tags_and_custom_path_methods_are_rendered() -> None:
             lookup: String @path("lookup")
             create: String @path("lookup") @method(POST)
         }
+
+        extend api @namespace("PublicApi") {
+            status: String @path("status")
+        }
     """
 
     openapi = generate_openapi(schema)
 
+    assert sorted(tag["name"] for tag in openapi["tags"]) == ["Domain", "PublicApi"]
     assert openapi["paths"]["/users"]["get"]["tags"] == ["Domain"]
     assert openapi["paths"]["/lookup"]["get"]["operationId"] == "lookup"
     assert openapi["paths"]["/lookup"]["get"]["tags"] == ["PublicApi"]

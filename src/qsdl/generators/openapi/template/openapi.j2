@@ -25,9 +25,9 @@ servers:
 {% endif %}
 security:
   - ApiKeyAuth: []
-{% if util.get_namespaces() %}
+{% if namespaces %}
 tags:
-{% for namespace in util.get_namespaces() %}
+{% for namespace in namespaces %}
   - name: {{ namespace }}
 {% endfor %}
 {% endif %}

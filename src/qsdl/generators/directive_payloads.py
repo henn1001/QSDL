@@ -20,7 +20,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Any, cast
 
-from qsdl.dsl import DirectiveSpec, RawDirective, Scalar, Schema
+from qsdl.dsl import Base, DirectiveSpec, Enum, Object, RawDirective, Scalar, Schema
 from qsdl.dsl.directives import decode_string
 from qsdl.dsl.processors.directive_parser import normalize_directive_value
 from qsdl.dsl.textx import get_children_of_scalar
@@ -93,10 +93,12 @@ def embedded_scalar_mappings[T](schema: Schema, spec: DirectiveSpec[T]) -> Itera
         _EMBEDDED_MAPPINGS.reset(token)
 
 
-def scalar_mapping[T](scalar: Scalar, spec: DirectiveSpec[T]) -> T | None:
-    """Read a bound mapping, with an explicit embedded-render fallback."""
-    node = scalar.directives.get(spec)
+def scalar_mapping[T](entity: Scalar | Enum | Base | Object, spec: DirectiveSpec[T]) -> T | None:
+    """Read a scalar's bound mapping, with an explicit embedded-render fallback."""
+    if not isinstance(entity, Scalar):
+        return None
+    node = entity.directives.get(spec)
     if node is not None:
         return node.value
     embedded = _EMBEDDED_MAPPINGS.get()
-    return cast("T | None", embedded[1].get(id(scalar))) if embedded and embedded[0] is spec else None
+    return cast("T | None", embedded[1].get(id(entity))) if embedded and embedded[0] is spec else None

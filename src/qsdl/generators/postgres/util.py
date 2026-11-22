@@ -46,7 +46,7 @@ custom_types = {
 
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converts builtin types to generator specific types."""
-    mapping = scalar_mapping(entity, POSTGRES_SCALAR) if isinstance(entity, dsl.Scalar) else None
+    mapping = scalar_mapping(entity, POSTGRES_SCALAR)
     return mapping if mapping is not None else custom_types.get(entity.name, entity.name)
 
 

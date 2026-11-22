@@ -269,7 +269,25 @@ def render_namespace(owner: dsl.Base | dsl.Enum | dsl.Object | dsl.Api) -> str |
     return namespace.value if namespace else None
 
 
-def render_media_type(node: dsl.Directive[str] | None, *, applicable: bool) -> str | None:
+def has_inline_request_body(operation: dsl.Operation) -> bool:
+    """Whether a write operation needs an inline schema rather than a direct model reference."""
+    body = operation.body_parameters
+    method = operation.directive.method
+    if not body or (method is not None and method.value in ("GET", "DELETE")):
+        return False
+    return not (len(body) == 1 and isinstance(body[0].value, dsl.Base | dsl.Object))
+
+
+def operation_media_types(operation: dsl.Operation) -> tuple[str | None, str | None]:
+    """Return the rendered request and response media types, respectively."""
+    directive = operation.directive
+    return (
+        _render_media_type(directive.consumes, applicable=bool(operation.body_parameters)),
+        _render_media_type(directive.produces, applicable=operation.value is not None),
+    )
+
+
+def _render_media_type(node: dsl.Directive[str] | None, *, applicable: bool) -> str | None:
     """Use JSON for an explicit empty media type where a body is present."""
     if node is None:
         return None

@@ -72,16 +72,9 @@ class Operation:
         self.tag = qutil.render_namespace(source.domain_parent if source.is_aggregated else source.parent)
         self.path = directive.path.value
         self.method = directive.method.value.lower()
-        self.consumes = qutil.render_media_type(directive.consumes, applicable=bool(source.body_parameters))
-        self.produces = qutil.render_media_type(directive.produces, applicable=source.value is not None)
+        self.consumes, self.produces = qutil.operation_media_types(source)
 
-        if (
-            source.body_parameters
-            and self.method not in ("get", "delete")
-            and not (
-                len(source.body_parameters) == 1 and isinstance(source.body_parameters[0].value, dsl.Base | dsl.Object)
-            )
-        ):
+        if qutil.has_inline_request_body(source):
             self.request_dto_name = qfilter.pascalcase(source.name) + "Request"
 
         self.parameters = [Parameter(arg) for arg in source.arguments if arg.is_path or arg.is_query or arg.is_header]

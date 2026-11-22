@@ -23,7 +23,7 @@ import yaml
 import qsdl.casing as qfilter
 import qsdl.dsl.textx as xtx
 from qsdl import dsl
-from qsdl.artifacts import GeneratedFile, GeneratedFiles
+from qsdl.artifacts import GeneratedFile, GeneratedFiles, normalize_artifact_path
 from qsdl.generators import Generator
 
 from .config import I18nConfig
@@ -91,11 +91,6 @@ def merge_yaml(base_dict: dict | None, new_dict: dict, remove_unused_keys: bool)
     return ret_dict
 
 
-def _validated_path(path: PurePosixPath) -> PurePosixPath:
-    """Validate a logical artifact path using the artifact contract."""
-    return GeneratedFile(path, "").path
-
-
 def _output_operations(schema: dsl.Schema, config: I18nConfig) -> list[YamlOperation]:
     """Describe the logical YAML writes for a generation request."""
     objects = xtx.get_children_of_object(schema) if config.object else []
@@ -116,10 +111,10 @@ def _output_operations(schema: dsl.Schema, config: I18nConfig) -> list[YamlOpera
 
         if config.split_files:
             for entity in objects + bases + enums:
-                output_path = _validated_path(locale_folder / f"{entity.name}.{config.file_extension}")
+                output_path = normalize_artifact_path(locale_folder / f"{entity.name}.{config.file_extension}")
                 operations.append((output_path, locale, (entity,), "", False, False))
         elif config.single_file:
-            output_path = _validated_path(PurePosixPath(f"{locale}.{config.file_extension}"))
+            output_path = normalize_artifact_path(PurePosixPath(f"{locale}.{config.file_extension}"))
             if objects or bases:
                 operations.append(
                     (output_path, locale, tuple(objects + bases), config.single_file_name + ".", True, True)
@@ -128,10 +123,14 @@ def _output_operations(schema: dsl.Schema, config: I18nConfig) -> list[YamlOpera
                 operations.append((output_path, locale, tuple(enums), config.single_file_enum_name + ".", True, True))
         else:
             if objects or bases:
-                output_path = _validated_path(locale_folder / f"{config.single_file_name}.{config.file_extension}")
+                output_path = normalize_artifact_path(
+                    locale_folder / f"{config.single_file_name}.{config.file_extension}"
+                )
                 operations.append((output_path, locale, tuple(objects + bases), "", True, True))
             if enums:
-                output_path = _validated_path(locale_folder / f"{config.single_file_enum_name}.{config.file_extension}")
+                output_path = normalize_artifact_path(
+                    locale_folder / f"{config.single_file_enum_name}.{config.file_extension}"
+                )
                 operations.append((output_path, locale, tuple(enums), "", True, True))
 
     return operations
@@ -209,7 +208,7 @@ def _generate_files(
 
 def _destination_for(root: Path, path: PurePosixPath, resolved_root: Path) -> Path:
     """Safely map a validated logical path below a directory root."""
-    path = _validated_path(path)
+    path = normalize_artifact_path(path)
     destination = root.joinpath(*path.parts)
     resolved_destination = destination.resolve(strict=False)
     if not resolved_destination.is_relative_to(resolved_root):

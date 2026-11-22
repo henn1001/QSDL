@@ -21,6 +21,7 @@ import textx.model
 
 from qsdl.artifacts import GeneratedFiles
 from qsdl.dsl import Schema
+from qsdl.dsl.util import get_aggregation, get_compositions
 from qsdl.generators import Generator
 from qsdl.render import render_text
 
@@ -63,13 +64,13 @@ class PlantUmlGenerator(Generator):
         """Generate PlantUML Markdown and PNG artifacts in memory."""
         template_path = Path(__file__).parent / "template" / "uml.j2"
 
-        util.schema = schema
-
         # build the render arguments
         context = {
             "schema": schema,
             "xtx": textx.model,
-            "util": util,
+            "diagram_fields": util.diagram_fields,
+            "get_aggregation": get_aggregation,
+            "get_compositions": get_compositions,
             "config": config,
         }
 

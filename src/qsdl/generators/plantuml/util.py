@@ -14,65 +14,16 @@
 
 """Generator Utility functions"""
 
-import qsdl.dsl.textx as xtx
 from qsdl import dsl
 
-# the parsed schema definition.
-schema: dsl.Schema = None
 
-
-def get_compositions(obj: object) -> list:
-    """Return all Objects who are using this Object as composition.
-
-    Args:
-        obj (object): entity.Object
-
-    Returns:
-        list: [entity.Object]
-    """
-    comp_fields = []
-
-    fields = xtx.get_children_of_field(schema)
-    parents = list(filter(lambda x: x.value == obj, fields))
-
-    comp_fields = list(filter(lambda x: x.directive.is_composition and isinstance(x.value, dsl.Object), parents))
-
-    return comp_fields
-
-
-def get_aggregation(obj: object) -> list:
-    """Return all Objects who are using this Object as aggregation.
-
-    Args:
-        obj (object): entity.Object
-
-    Returns:
-        list: [entity.Object]
-    """
-    agg_fields = []
-
-    fields = xtx.get_children_of_field(schema)
-    parents = list(filter(lambda x: x.value == obj, fields))
-
-    agg_fields = list(filter(lambda x: x.directive.is_aggregation and isinstance(x.value, dsl.Object), parents))
-
-    return agg_fields
-
-
-def get_fields_as_list(entity: dsl.Base | dsl.Object) -> list:
-    """Returns all fields ob a object including its supertype as list.
-
-    Args:
-        entity (object): entity.Object
-
-    Returns:
-        list: [entity.Field]
-    """
+def diagram_fields(entity: dsl.Base | dsl.Object) -> list[dsl.Field]:
+    """Keep inherited fields first in diagrams, ahead of synthetic object IDs."""
     fields = []
 
     # Support multiple supertypes
     for supertype in entity.supertypes:
-        super_fields = get_fields_as_list(supertype)
+        super_fields = diagram_fields(supertype)
         fields.extend(super_fields)
 
     # Add own fields, overriding inherited ones if needed

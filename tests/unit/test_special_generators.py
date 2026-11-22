@@ -93,6 +93,11 @@ def test_i18n_builds_do_not_leak_locale_configuration() -> None:
     assert not second.exists("fr.yaml")
 
 
+def test_i18n_validates_translation_paths_as_artifact_paths() -> None:
+    with pytest.raises(ValueError, match=r"artifact path cannot contain '\.\.'"):
+        build(generator_name="i18n", raw_schema=SCHEMA, config={"locale": "../en"})
+
+
 def test_plantuml_returns_markdown_and_exact_png_bytes(monkeypatch: pytest.MonkeyPatch) -> None:
     responses = (b"enum", b"base", b"overview")
     calls: list[str] = []
@@ -102,9 +107,26 @@ def test_plantuml_returns_markdown_and_exact_png_bytes(monkeypatch: pytest.Monke
         return responses[len(calls) - 1]
 
     monkeypatch.setattr(plantuml.PlantUML, "processes", processes)
-    files = build(generator_name="plantuml", raw_schema=SCHEMA)
+    schema = (
+        SCHEMA
+        + """
+    type Team {
+        label: String
+    }
 
-    assert files.text("plantuml.md")
+    type Owner extends Details {
+        users: [User]! @composition
+        teams: [Team]! @aggregation
+    }
+    """
+    )
+    files = build(generator_name="plantuml", raw_schema=schema)
+
+    markdown = files.text("plantuml.md")
+    assert "Owner --* User" in markdown
+    assert "Owner --o Team" in markdown
+    owner_fields = markdown.split("class Owner ", 1)[1].split("}", 1)[0]
+    assert owner_fields.index("value: String") < owner_fields.index("id: ID")
     assert files.bytes("plantuml.enums.png") == b"enum"
     assert files.bytes("plantuml.bases.png") == b"base"
     assert files.bytes("plantuml.overview.png") == b"overview"

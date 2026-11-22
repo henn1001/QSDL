@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+import yaml
 from textx.exceptions import TextXSemanticError
 
 from qsdl.dsl.textx import parse_schema
@@ -297,17 +298,27 @@ def test_synthetic_operation_models_have_independent_package_nodes(monkeypatch: 
         raw_schema="""
         extend api @spring-package("pkg") {
             search(name: String?, description: String?): String @path("search")
-            run(label: String): String @path("run") @method(POST)
+            run_job(label: String): String @path("run") @method(POST) @consumes("") @produces("")
         }
         """,
         directive_specs=generator.directive_specs,
     )
     files = generator.generate(schema, generator.config_class())
     assert files.exists("src/main/java/app/api/pkg/contract/SearchFilter.java")
-    assert files.exists("src/main/java/app/api/pkg/contract/RunRequest.java")
+    assert files.exists("src/main/java/app/api/pkg/contract/Run_jobRequest.java")
+    api = files.text("src/main/java/app/api/pkg/web/DefaultApi.java")
+    assert 'consumes = {"application/json"}' in api
+    assert 'produces = {"application/json"}' in api
+
+    openapi = yaml.safe_load(files.text("src/main/resources/openapi.yaml"))
+    post = openapi["paths"]["/run"]["post"]
+    assert post["requestBody"]["content"]["application/json"]["schema"]["title"] == "RunJobRequest"
+    assert "application/json" in post["responses"]["200"]["content"]
 
     original = schema.types[0].directives.get(SPRING_PACKAGE)
-    filter_ref, request_ref = (recipients[name] for name in ("SearchFilter", "RunRequest"))
+    filter_ref, request_ref = (recipients[name] for name in ("SearchFilter", "Run_jobRequest"))
+    assert all(field.directive.is_query for field in filter_ref.fields)
+    assert not request_ref.fields[0].directive.is_query
     for ref in (filter_ref, request_ref):
         node = ref.directives.get(SPRING_PACKAGE)
         assert node is ref.directives[0] and node is not original

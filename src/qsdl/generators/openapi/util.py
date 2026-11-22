@@ -19,10 +19,7 @@ import qsdl.dsl.util as qutil
 from qsdl import dsl
 from qsdl.generators.directive_payloads import scalar_mapping
 
-from .config import OPENAPI_SCALAR, OpenApiScalarMapping
-
-# the parsed schema definition.
-schema: dsl.Schema = None
+from .config import OPENAPI_SCALAR
 
 # used to flag paths as used in order to prevent path duplicates in
 # OpenAPI
@@ -55,25 +52,21 @@ custom_type_formats = {
 }
 
 
-def _scalar_mapping(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> OpenApiScalarMapping | None:
-    return scalar_mapping(entity, OPENAPI_SCALAR) if isinstance(entity, dsl.Scalar) else None
-
-
 def custom_type(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str:
     """Converts builtin types to generator specific types."""
-    mapping = _scalar_mapping(entity)
+    mapping = scalar_mapping(entity, OPENAPI_SCALAR)
     return mapping.type if mapping else custom_types.get(entity.name, entity.name)
 
 
 def custom_type_format(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
     """Converts builtin types to generator specific types."""
-    mapping = _scalar_mapping(entity)
+    mapping = scalar_mapping(entity, OPENAPI_SCALAR)
     return mapping.format if mapping and mapping.format is not None else custom_type_formats.get(entity.name)
 
 
 def custom_type_pattern(entity: dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object) -> str | None:
     """Converts builtin types to generator specific types."""
-    mapping = _scalar_mapping(entity)
+    mapping = scalar_mapping(entity, OPENAPI_SCALAR)
     return mapping.pattern if mapping else None
 
 
@@ -116,16 +109,10 @@ def is_path_unique(operation_path: str) -> bool:
     return ret
 
 
-def get_namespaces() -> list:
-    """Return all NameSpaces.
-
-    Returns:
-        list[str]: All NameSpaces
-    """
-    namespaces = []
-
-    for api in xtx.get_children_of_api(schema):
-        if (namespace := qutil.render_namespace(api)) and namespace not in namespaces:
-            namespaces.append(namespace)
-
-    return namespaces
+def get_namespaces(schema: dsl.Schema) -> list[str]:
+    """Return distinct OpenAPI tags in API declaration order."""
+    return list(
+        dict.fromkeys(
+            namespace for api in xtx.get_children_of_api(schema) if (namespace := qutil.render_namespace(api))
+        )
+    )

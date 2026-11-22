@@ -118,10 +118,8 @@ class OpenApiGenerator(Generator):
             id_type = "string"
             id_type_format = None
 
-        # sets the id type and schema
         util.custom_types["ID"] = id_type
         util.custom_type_formats["ID"] = id_type_format
-        util.schema = schema
         util.used_paths = []
 
         template_path = Path(__file__).parent / "template" / "openapi.j2"
@@ -130,6 +128,7 @@ class OpenApiGenerator(Generator):
         context = {
             "schema": schema,
             "operations": parse_operations(schema),
+            "namespaces": util.get_namespaces(schema),
             "models": parse_models(schema),
             "util": util,
             "config": config,

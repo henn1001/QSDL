@@ -21,7 +21,7 @@ from pathlib import PurePosixPath
 type FileContent = str | bytes
 
 
-def _artifact_path(value: str | PurePosixPath) -> PurePosixPath:
+def normalize_artifact_path(value: str | PurePosixPath) -> PurePosixPath:
     """Validate and normalize a logical artifact path."""
     if not isinstance(value, (str, PurePosixPath)):
         raise TypeError(f"artifact path must be str or PurePosixPath, got {value!r}")
@@ -59,7 +59,7 @@ class GeneratedFile:
     content: FileContent
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "path", _artifact_path(self.path))
+        object.__setattr__(self, "path", normalize_artifact_path(self.path))
         object.__setattr__(self, "content", _file_content(self.content))
 
 
@@ -76,7 +76,7 @@ class GeneratedFiles:
 
     def add(self, path: str | PurePosixPath, content: FileContent) -> None:
         """Add an artifact, rejecting duplicate paths."""
-        artifact = GeneratedFile(_artifact_path(path), _file_content(content))
+        artifact = GeneratedFile(normalize_artifact_path(path), _file_content(content))
         if artifact.path in self._files:
             raise ValueError(f"duplicate generated artifact path: {artifact.path.as_posix()!r}")
         self._files[artifact.path] = artifact
@@ -95,28 +95,28 @@ class GeneratedFiles:
 
     def replace(self, path: str | PurePosixPath, content: FileContent) -> None:
         """Replace an existing artifact explicitly."""
-        artifact_path = _artifact_path(path)
+        artifact_path = normalize_artifact_path(path)
         if artifact_path not in self._files:
             raise KeyError(artifact_path)
         self._files[artifact_path] = GeneratedFile(artifact_path, _file_content(content))
 
     def text(self, path: str | PurePosixPath) -> str:
         """Return text content for an artifact."""
-        artifact = self._files[_artifact_path(path)]
+        artifact = self._files[normalize_artifact_path(path)]
         if not isinstance(artifact.content, str):
             raise TypeError(f"artifact content is binary: {artifact.path.as_posix()!r}")
         return artifact.content
 
     def bytes(self, path: str | PurePosixPath) -> bytes:
         """Return binary content for an artifact."""
-        artifact = self._files[_artifact_path(path)]
+        artifact = self._files[normalize_artifact_path(path)]
         if not isinstance(artifact.content, bytes):
             raise TypeError(f"artifact content is text: {artifact.path.as_posix()!r}")
         return artifact.content
 
     def exists(self, path: str | PurePosixPath) -> bool:
         """Return whether an artifact path is present."""
-        return _artifact_path(path) in self._files
+        return normalize_artifact_path(path) in self._files
 
     def paths(self) -> tuple[PurePosixPath, ...]:
         """Return artifact paths in deterministic order."""
@@ -132,7 +132,7 @@ class GeneratedFiles:
         staged_paths: set[PurePosixPath] = set()
 
         for artifact in other:
-            artifact_path = _artifact_path(artifact.path)
+            artifact_path = normalize_artifact_path(artifact.path)
             result_path = artifact_path if prefix_path == PurePosixPath(".") else prefix_path / artifact_path
             staged_artifact = GeneratedFile(result_path, artifact.content)
             if staged_artifact.path in self._files or staged_artifact.path in staged_paths:
@@ -156,4 +156,4 @@ def _prefix_path(value: str | PurePosixPath) -> PurePosixPath:
     """Validate an extension prefix, allowing the explicit no-prefix value."""
     if (isinstance(value, str) and value == ".") or (isinstance(value, PurePosixPath) and value == PurePosixPath(".")):
         return PurePosixPath(".")
-    return _artifact_path(value)
+    return normalize_artifact_path(value)
