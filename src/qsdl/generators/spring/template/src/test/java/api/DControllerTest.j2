@@ -8,7 +8,7 @@ package {{api.package.controller}};
 {{ util.macro_imports(self._TemplateReference__context.name, api) }}
 
 @WebMvcTest({{model.name}}Controller.class)
-@Import({{ "{" }}{{model.name}}MapperImpl.class{% for mapper in model.all_object_mappers %}, {{mapper.name}}MapperImpl.class{% endfor %}{{ "}" }})
+@Import(TestConfiguration.class)
 class {{model.name}}ControllerTest {
 
     @MockitoBean

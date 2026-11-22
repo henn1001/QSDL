@@ -3,12 +3,6 @@
  */
 package app;
 
-import app.api.catalog.persistence.CategoryRepository;
-import app.api.catalog.persistence.PetRepository;
-import app.api.catalog.persistence.TagRepository;
-import app.api.media.persistence.PetMediaRepository;
-import app.api.order.persistence.OrderItemRepository;
-import app.api.order.persistence.OrderRepository;
 import app.shared.persistence.BaseRepositoryImpl;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
@@ -19,6 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("h2")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnableJpaRepositories(
-        basePackageClasses = {CategoryRepository.class, TagRepository.class, PetRepository.class, OrderItemRepository.class, OrderRepository.class, PetMediaRepository.class},
+        basePackages = "app",
         repositoryBaseClass = BaseRepositoryImpl.class)
 public abstract class AbstractDataJpaTest {}

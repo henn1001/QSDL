@@ -10,7 +10,7 @@ package {{base_package}};
 @ActiveProfiles("h2")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnableJpaRepositories(
-        basePackageClasses = {{"{"}}{% for model in models if model.is_object %}{{model.name}}Repository.class{{ ", " if not loop.last }}{% endfor %}{{"}"}},
+        basePackages = "{{base_package}}",
         repositoryBaseClass = BaseRepositoryImpl.class)
 public abstract class AbstractDataJpaTest {}
 {{""}}

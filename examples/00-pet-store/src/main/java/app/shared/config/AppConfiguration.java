@@ -3,12 +3,6 @@
  */
 package app.shared.config;
 
-import app.api.catalog.persistence.CategoryRepository;
-import app.api.catalog.persistence.PetRepository;
-import app.api.catalog.persistence.TagRepository;
-import app.api.media.persistence.PetMediaRepository;
-import app.api.order.persistence.OrderItemRepository;
-import app.api.order.persistence.OrderRepository;
 import app.shared.persistence.BaseRepositoryImpl;
 import app.shared.util.JsonMergePatchConverter;
 import app.shared.util.JsonUtil;
@@ -48,7 +42,7 @@ import tools.jackson.dataformat.yaml.YAMLMapper;
 @Configuration
 @EnableScheduling
 @EnableJpaRepositories(
-        basePackageClasses = {CategoryRepository.class, TagRepository.class, PetRepository.class, OrderItemRepository.class, OrderRepository.class, PetMediaRepository.class},
+        basePackages = "app",
         repositoryBaseClass = BaseRepositoryImpl.class)
 public class AppConfiguration {
 

@@ -13,11 +13,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import app.TestConfiguration;
 import app.TestUtils;
 import app.api.order.OrderService;
 import app.api.order.contract.Order;
 import app.api.order.contract.OrderRequest;
-import app.api.order.mapping.OrderMapperImpl;
 import app.shared.constants.ErrorCode;
 import app.shared.model.AppError;
 import app.shared.model.CursorPage;
@@ -36,7 +36,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(OrderController.class)
-@Import({OrderMapperImpl.class})
+@Import(TestConfiguration.class)
 class OrderControllerTest {
 
     @MockitoBean

@@ -10,7 +10,7 @@ package {{package.config}};
 @EnableScheduling
 {% if database == "HIBERNATE" %}
 @EnableJpaRepositories(
-        basePackageClasses = {{"{"}}{% for model in models if model.is_object %}{{model.name}}Repository.class{{ ", " if not loop.last }}{% endfor %}{{"}"}},
+        basePackages = "{{base_package}}",
         repositoryBaseClass = BaseRepositoryImpl.class)
 {% endif%}
 public class AppConfiguration {

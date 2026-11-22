@@ -233,20 +233,6 @@ def _get_mapper_imports(model_class: spring.ModelClass | None) -> list[str]:
     return list(imports)
 
 
-def _get_mapper_impl_imports(model_class: spring.ModelClass | None) -> list[str]:
-    """Collect mapper implementations required by a controller slice test."""
-    if not model_class:
-        return []
-
-    imports = {f"import {model_class.package.mapper}.{model_class.name}MapperImpl;"}
-    for mapper in model_class.all_object_mappers:
-        nested = util.get_model_for(mapper.name)
-        if nested:
-            imports.add(f"import {nested.package.mapper}.{nested.name}MapperImpl;")
-
-    return list(imports)
-
-
 def generate_imports_for_template(
     template_name: str, api_or_model: spring.ApiClass | spring.ModelClass | None
 ) -> list[str]:
@@ -425,7 +411,7 @@ def generate_imports_for_template(
         ],
         "DControllerTest.j2": [
             # Model-specific imports
-            *_get_mapper_impl_imports(model_class),
+            f"import {util.Store.config.base_package}.TestConfiguration;",
             f"import {util.Store.config.base_package}.TestUtils;",
             f"import {util.Store.package.enum}.ErrorCode;",
             f"import {util.Store.package.util}.JsonMergePatchConverter.MediaTypeExtension;",
@@ -525,15 +511,6 @@ def generate_imports_for_template(
             f"import {util.Store.package.shared_repository}.BaseRepositoryImpl;" if is_db else None,
             f"import {util.Store.package.util}.JsonMergePatchConverter;",
             f"import {util.Store.package.util}.JsonUtil;",
-            *(
-                [
-                    f"import {model.package.repository}.{model.name}Repository;"
-                    for model in util.Store.models
-                    if model.is_object
-                ]
-                if is_db
-                else []
-            ),
             "import com.fasterxml.jackson.annotation.JsonProperty;",
             "import java.io.IOException;",
             "import java.io.InputStream;",
@@ -680,11 +657,6 @@ def generate_imports_for_template(
         ],
         "AbstractDataJpaTest.j2": [
             f"import {util.Store.package.shared_repository}.BaseRepositoryImpl;",
-            *[
-                f"import {model.package.repository}.{model.name}Repository;"
-                for model in util.Store.models
-                if model.is_object
-            ],
             "import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;",
             "import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;",
             "import org.springframework.data.jpa.repository.config.EnableJpaRepositories;",

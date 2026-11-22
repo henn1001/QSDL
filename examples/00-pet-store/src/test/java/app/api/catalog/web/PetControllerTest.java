@@ -13,12 +13,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import app.TestConfiguration;
 import app.TestUtils;
 import app.api.catalog.PetService;
 import app.api.catalog.contract.Pet;
 import app.api.catalog.contract.PetRequest;
-import app.api.catalog.mapping.CategoryMapperImpl;
-import app.api.catalog.mapping.PetMapperImpl;
 import app.shared.constants.ErrorCode;
 import app.shared.model.AppError;
 import app.shared.model.CursorPage;
@@ -37,7 +36,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(PetController.class)
-@Import({PetMapperImpl.class, CategoryMapperImpl.class})
+@Import(TestConfiguration.class)
 class PetControllerTest {
 
     @MockitoBean

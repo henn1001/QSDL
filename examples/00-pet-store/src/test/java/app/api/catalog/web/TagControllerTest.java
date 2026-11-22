@@ -13,11 +13,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import app.TestConfiguration;
 import app.TestUtils;
 import app.api.catalog.TagService;
 import app.api.catalog.contract.Tag;
 import app.api.catalog.contract.TagRequest;
-import app.api.catalog.mapping.TagMapperImpl;
 import app.shared.constants.ErrorCode;
 import app.shared.model.AppError;
 import app.shared.model.CursorPage;
@@ -36,7 +36,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(TagController.class)
-@Import({TagMapperImpl.class})
+@Import(TestConfiguration.class)
 class TagControllerTest {
 
     @MockitoBean

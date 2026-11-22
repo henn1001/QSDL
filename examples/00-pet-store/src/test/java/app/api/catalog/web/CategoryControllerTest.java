@@ -13,11 +13,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import app.TestConfiguration;
 import app.TestUtils;
 import app.api.catalog.CategoryService;
 import app.api.catalog.contract.Category;
 import app.api.catalog.contract.CategoryRequest;
-import app.api.catalog.mapping.CategoryMapperImpl;
 import app.shared.constants.ErrorCode;
 import app.shared.model.AppError;
 import app.shared.model.CursorPage;
@@ -36,7 +36,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CategoryController.class)
-@Import({CategoryMapperImpl.class})
+@Import(TestConfiguration.class)
 class CategoryControllerTest {
 
     @MockitoBean

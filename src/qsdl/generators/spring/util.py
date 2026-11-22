@@ -586,22 +586,6 @@ def extract_fields_for_mapper(ref: dsl.Base | dsl.Object) -> list[dsl.Field]:
     return nested_objects
 
 
-def extract_all_object_mappers(ref: dsl.Base | dsl.Object, visited: set[str] | None = None) -> list[dsl.Object]:
-    """Transitively collect nested Object models whose MapStruct mappers are needed at runtime."""
-    if visited is None:
-        visited = {ref.name}
-
-    object_mappers: list[dsl.Object] = []
-    for nested_field in extract_fields_for_mapper(ref):
-        if not isinstance(nested_field.value, dsl.Object) or nested_field.value.name in visited:
-            continue
-        visited.add(nested_field.value.name)
-        object_mappers.append(nested_field.value)
-        object_mappers.extend(extract_all_object_mappers(nested_field.value, visited))
-
-    return object_mappers
-
-
 def build_filter_models() -> list[spring.ModelClass]:
     """Build filter models from operations with query parameters.
 
