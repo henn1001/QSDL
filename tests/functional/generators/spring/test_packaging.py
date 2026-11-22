@@ -138,12 +138,18 @@ class TestSpringPackaging:
         SpringTestUtils.assert_not_contains(other_api, "customPing()")
 
     def test_spring_controller_keeps_target_package(self) -> None:
-        """@spring-controller should merge custom operations into the target package."""
+        """Merged operations follow declaration order, independent of controller ownership."""
         schema = """\
+            extend api @spring-controller("Target") @spring-package("custom") {
+                before: Void @path("before")
+            }
+
             type Target @namespace("Target") @spring-package("target") {
                 name: String!
 
-                extend api @generate("CREATE") {}
+                extend api @generate("CREATE") {
+                    inside: Void @path("inside")
+                }
             }
 
             extend api @spring-controller("Target") @spring-package("custom") {
@@ -160,6 +166,10 @@ class TestSpringPackaging:
             "public ResponseEntity<Void> ping()",
         )
         assert not SpringTestUtils.file_exists(files, "src/main/java/app/api/custom/web/TargetController.java")
+        api_content = SpringTestUtils.read_file(files, "src/main/java/app/api/target/web/TargetApi.java")
+        for content in (api_content, controller_content):
+            assert content.index("before()") < content.index("inside()") < content.index("createTarget(")
+            assert content.index("createTarget(") < content.index("ping()")
 
     def test_api_namespace_can_split_api_and_model_packages(self) -> None:
         """API-local namespaces should not break imports for generated model services."""

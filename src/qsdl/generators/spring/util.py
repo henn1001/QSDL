@@ -405,6 +405,7 @@ def _prefer_api(first: spring.ApiClass, second: spring.ApiClass) -> spring.ApiCl
 def sort_api_controller(api_list: list[spring.ApiClass]) -> list[spring.ApiClass]:
     """Reorganize API controllers and merge operations when appropriate."""
     api_store: list[spring.ApiClass] = []
+    operation_order = {id(op): (i, j) for i, api in enumerate(api_list) for j, op in enumerate(api.operations)}
 
     for api in api_list:
         matching = [existing for existing in api_store if _apis_can_merge(existing, api)]
@@ -424,6 +425,10 @@ def sort_api_controller(api_list: list[spring.ApiClass]) -> list[spring.ApiClass
                 api.operations.extend(existing.operations)
 
         api_store.append(api)
+
+    # Controller ownership should not change the order of its API declarations.
+    for api in api_store:
+        api.operations.sort(key=lambda op: operation_order[id(op)])
 
     return api_store
 
