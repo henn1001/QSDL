@@ -57,8 +57,14 @@ png = files.bytes("plantuml.overview.png")
 ## Invoke a generator directly
 
 `build()` and `generate()` activate the selected generator's definitions
-automatically. If you call a generator instance's method yourself, pass its
-`directive_specs` to `parse_schema()`:
+automatically. On schema validation failure, they raise
+`qsdl.dsl.diagnostics.SchemaValidationError`; its `diagnostics` tuple contains
+the core and generator-specific errors. A failure to read, parse, or link the
+schema yields a single blocking diagnostic.
+
+If you call a generator instance's method yourself, pass its `directive_specs`
+to `parse_schema()`. Direct calls fail fast by default; pass `collect_errors=True`
+to get the same diagnostic collection as `build()`:
 
 ```python
 from qsdl.dsl.textx import parse_schema

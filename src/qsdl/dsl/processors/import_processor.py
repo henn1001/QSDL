@@ -17,11 +17,14 @@
 from pathlib import Path
 from typing import Protocol, cast
 
-from textx import get_location
+from textx import get_location, get_model
 from textx.exceptions import TextXSemanticError
+from textx.metamodel import MetaAttr
+from textx.model import ObjCrossRef
 from textx.scoping.providers import PlainNameImportURI
 
 from qsdl import dsl
+from qsdl.dsl.diagnostics import reporter_for
 
 
 class ImportStatement(Protocol):
@@ -29,6 +32,8 @@ class ImportStatement(Protocol):
 
     importURI: str
     _tx_loaded_models: list[dsl.Schema]
+    _tx_position: int
+    _tx_position_end: int
 
 
 type ModelKey = Path | int
@@ -59,8 +64,43 @@ def _model_label(schema: dsl.Schema) -> str:
     return str(source_path) if source_path is not None else f"<anonymous:{id(schema)}>"
 
 
+class ImportLoadError(TextXSemanticError):
+    """An import that prevents textX from constructing a linked model."""
+
+
+class AmbiguousReferenceError(TextXSemanticError):
+    """A reference for which textX found more than one candidate in a file."""
+
+
+def _import_location(source: Path, statement: ImportStatement, encoding: str) -> dict[str, str | int]:
+    # textX has recorded the token offsets, but exposes its parser only after loading imports.
+    try:
+        prefix = source.read_text(encoding=encoding)[: statement._tx_position]
+    except (OSError, UnicodeDecodeError):
+        return {"filename": str(source)}
+    return {
+        "filename": str(source),
+        "line": prefix.count("\n") + 1,
+        "col": len(prefix) - prefix.rfind("\n"),
+        "nchar": statement._tx_position_end - statement._tx_position,
+    }
+
+
 class CanonicalImportURI(PlainNameImportURI):
     """Load QSDL imports by canonical path without provider-level state."""
+
+    def __call__(self, obj: object, attr: MetaAttr, obj_ref: ObjCrossRef) -> object | None:
+        try:
+            return super().__call__(obj, attr, obj_ref)
+        except TextXSemanticError as exc:
+            if not reporter_for(obj).collecting or exc.message != f"name {obj_ref.obj_name} is not unique.":
+                raise
+            # During import lookup, textX can report the searched file instead of the reference's file.
+            model = get_model(obj)
+            line, col = model._tx_parser.pos_to_linecol(obj_ref.position)
+            raise AmbiguousReferenceError(
+                exc.message, line=line, col=col, nchar=len(obj_ref.obj_name), filename=model._tx_filename
+            ) from exc
 
     def _load_referenced_models(self, model: dsl.Schema, encoding: str) -> None:
         """Validate and load imports relative to the importing schema."""
@@ -73,22 +113,36 @@ class CanonicalImportURI(PlainNameImportURI):
 
         for import_statement in imports:
             import_uri = self.importURI_converter(import_statement.importURI)
-            if Path(import_uri).suffix != ".qsdl":
-                raise TextXSemanticError(
-                    f"Imported schema {import_statement.importURI!r} must use the .qsdl extension.",
-                    filename=str(source_path),
+            collecting = reporter_for(model).collecting
+            if "\0" in import_uri:
+                raise ImportLoadError(
+                    f"Imported schema path {import_uri!r} contains an embedded NUL.",
+                    **_import_location(source_path, import_statement, encoding),
                 )
+            if Path(import_uri).suffix != ".qsdl":
+                message = f"Imported schema {import_statement.importURI!r} must use the .qsdl extension."
+                if collecting:
+                    raise ImportLoadError(message, **_import_location(source_path, import_statement, encoding))
+                raise TextXSemanticError(message, filename=str(source_path))
 
-            imported_path = canonical_path(source_path.parent / import_uri)
-            import_statement._tx_loaded_models = model._tx_model_repository.load_models_using_filepattern(
-                str(imported_path),
-                model=model,
-                glob_args=self.glob_args,
-                encoding=encoding,
-                add_to_local_models=True,
-                # Imports use the same active directive specs as the invoking model.
-                model_params=model._tx_model_params,
-            )
+            try:
+                imported_path = canonical_path(source_path.parent / import_uri)
+                import_statement._tx_loaded_models = model._tx_model_repository.load_models_using_filepattern(
+                    str(imported_path),
+                    model=model,
+                    glob_args=self.glob_args,
+                    encoding=encoding,
+                    add_to_local_models=True,
+                    # Share the directive specifications and reporting policy with imports.
+                    model_params=model._tx_model_params,
+                )
+            except (OSError, UnicodeDecodeError) as exc:
+                if not collecting:
+                    raise
+                raise ImportLoadError(
+                    f"Cannot load imported schema {import_statement.importURI!r}: {exc}",
+                    **_import_location(source_path, import_statement, encoding),
+                ) from exc
 
 
 def collect_imported_schemas(schema: dsl.Schema) -> list[dsl.Schema]:
@@ -97,6 +151,7 @@ def collect_imported_schemas(schema: dsl.Schema) -> list[dsl.Schema]:
     TextX safely loads circular graphs and caches imported models. QSDL applies
     its stricter no-cycles rule while traversing the resulting import graph.
     """
+    reporter = reporter_for(schema)
     imported_schemas: list[dsl.Schema] = []
     active: list[ModelKey] = []
     active_labels: list[str] = []
@@ -110,7 +165,9 @@ def collect_imported_schemas(schema: dsl.Schema) -> list[dsl.Schema]:
             location = (
                 get_location(imported_by) if imported_by is not None else {"filename": current_schema._tx_filename}
             )
-            raise TextXSemanticError(f"Circular import detected: {' -> '.join(chain)}", **location)
+            reporter.error("LOG-403", f"Circular import detected: {' -> '.join(chain)}", **location)
+            reporter.namespace_complete = False
+            return
         if key in visited:
             return
 

@@ -19,10 +19,11 @@ from urllib.parse import urlsplit, urlunsplit
 
 import textx.metamodel
 from textx import get_location
-from textx.exceptions import TextXSemanticError
 
 import qsdl.dsl.textx as xtx
 from qsdl import dsl
+from qsdl.dsl.diagnostics import Reporter, reporter_for
+from qsdl.dsl.directives import AGGREGATION, COMPOSITION, METHOD, NAMESPACE, PATH
 
 _PASCAL_CASE_NAME = re.compile(r"[A-Z][A-Za-z0-9]*")
 _ENUM_VALUE_NAME = re.compile(r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*")
@@ -30,7 +31,7 @@ _MEMBER_NAME = re.compile(r"(?:[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[a-z][A-Za-z0-9]*)"
 _NAMESPACE_NAME = re.compile(r"[A-Za-z][A-Za-z0-9]*")
 
 
-def _validate_name(entity: object, name: str, convention: str, pattern: re.Pattern[str]) -> None:
+def _validate_name(entity: object, name: str, convention: str, pattern: re.Pattern[str], code: str) -> None:
     """Validate a model name and report the location of its containing element."""
     if pattern.fullmatch(name) is None:
         entity_type = entity.__class__.__name__
@@ -40,14 +41,15 @@ def _validate_name(entity: object, name: str, convention: str, pattern: re.Patte
         elif isinstance(entity, dsl.Argument):
             context = f" in Operation {entity.parent.name!r}"
         msg = f"The {entity_type} name {name!r}{context} must use {convention}."
-        raise TextXSemanticError(msg, **get_location(entity))
+        reporter_for(entity).error(code, msg, **get_location(entity), invalid=entity)
 
 
-def _get_location(entity: object, schema: dsl.Schema) -> dict[str, object]:
-    """Return a source location, falling back for generated model elements."""
-    if getattr(entity, "is_generated", False):
-        return {"filename": schema._tx_filename}
-    return get_location(entity)
+def _operation_location(operation: dsl.Operation, schema: dsl.Schema, reporter: Reporter) -> dict[str, object]:
+    if not operation.is_generated:
+        return get_location(operation)
+    if reporter.collecting and operation.domain_object is not None:
+        return get_location(operation.domain_object)
+    return {"filename": schema._tx_filename}
 
 
 def validate_declarations(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -89,7 +91,8 @@ def validate_server_url(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
                 f"The server {server!r} must be a relative path beginning with '/' "
                 "or an absolute http:// or https:// URL."
             )
-            raise TextXSemanticError(msg, filename=schema._tx_filename)
+            reporter_for(schema).error("LOG-302", msg, filename=schema._tx_filename)
+            continue
         normalized_servers.append(normalized_server)
 
     schema.servers = normalized_servers
@@ -133,11 +136,14 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
         *xtx.get_children_of_object(schema),
     ]
 
+    reporter = reporter_for(schema)
+    type_codes = {dsl.Scalar: "SYN-001", dsl.Enum: "SYN-002", dsl.Base: "SYN-003", dsl.Object: "SYN-004"}
     for entity in entities:
-        _validate_name(entity, entity.name, "PascalCase", _PASCAL_CASE_NAME)
+        _validate_name(entity, entity.name, "PascalCase", _PASCAL_CASE_NAME, type_codes[type(entity)])
         if entity.name in names:
             msg = "Names for scalars, enums, bases and objects must be unique."
-            raise TextXSemanticError(msg, **get_location(entity))
+            reporter.error("SEM-101", msg, **get_location(entity))
+            reporter.ambiguous_types.add(entity.name)
         names.add(entity.name)
 
         if isinstance(entity, dsl.Enum):
@@ -147,7 +153,7 @@ def validate_type_names(schema: dsl.Schema, metamodel: textx.metamodel.TextXMeta
                         f"The Enum value {value!r} in Enum {entity.name!r} must use "
                         "ALL_CAPS with optional underscore-separated words."
                     )
-                    raise TextXSemanticError(msg, **get_location(entity))
+                    reporter.error("SYN-005", msg, **get_location(entity), invalid=entity)
 
 
 def validate_namespaces(schema: dsl.Schema) -> None:
@@ -168,19 +174,21 @@ def validate_namespaces(schema: dsl.Schema) -> None:
         name = getattr(entity, "name", None)
         label = f"{entity.__class__.__name__} {name!r}" if name is not None else entity.__class__.__name__
         msg = f"The namespace of {label} must be a single alphanumeric identifier beginning with a letter."
-        raise TextXSemanticError(msg, **get_location(entity))
+        reporter = reporter_for(schema)
+        reporter.error("SYN-010", msg, **(node.location if reporter.collecting else get_location(entity)))
+        entity.directives._invalidate(NAMESPACE)
 
 
 def validate_member_names(schema: dsl.Schema) -> None:
     """Validate names of fields, operations, and arguments."""
     for field in xtx.get_children_of_field(schema):
-        _validate_name(field, field.name, "camelCase or snake_case", _MEMBER_NAME)
+        _validate_name(field, field.name, "camelCase or snake_case", _MEMBER_NAME, "SYN-006")
 
     for operation in xtx.get_children_of_operation(schema):
-        _validate_name(operation, operation.name, "camelCase or snake_case", _MEMBER_NAME)
+        _validate_name(operation, operation.name, "camelCase or snake_case", _MEMBER_NAME, "SYN-007")
 
     for argument in xtx.get_children_of_argument(schema):
-        _validate_name(argument, argument.name, "camelCase or snake_case", _MEMBER_NAME)
+        _validate_name(argument, argument.name, "camelCase or snake_case", _MEMBER_NAME, "SYN-008")
 
 
 def validate_enum_values(schema: dsl.Schema) -> None:
@@ -197,25 +205,31 @@ def validate_enum_values(schema: dsl.Schema) -> None:
         for value in enum.values:
             if value in seen:
                 msg = f"The Enum {enum.name} contains the duplicate value {value}."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+                reporter = reporter_for(schema)
+                location = get_location(enum) if reporter.collecting else {"filename": schema._tx_filename}
+                reporter.error("SEM-103", msg, **location, invalid=enum)
             seen.add(value)
 
 
 def validate_reserved_words(schema: dsl.Schema) -> None:
+    reporter = reporter_for(schema)
     errors = []
     first_entity = None
 
     for entity in xtx.get_children_of_object(schema):
-        match = [field for field in entity.effective_fields if field.name.lower() in {"id", "uid", "iv"}]
+        fields = entity.fields if id(entity) in reporter.unavailable_fields else entity.effective_fields
+        match = [field for field in fields if field.name.lower() in {"id", "uid", "iv"}]
 
         if match:
             msg = f"The Object {entity.name} uses a reserved word {', '.join([f'"{x.name}"' for x in match])}."
+            if reporter.collecting:
+                reporter.error("SEM-609", msg, **get_location(entity), invalid=entity)
             errors.append(msg)
             first_entity = first_entity or entity
 
-    if errors:
-        location = get_location(first_entity) if first_entity else {"filename": schema._tx_filename}
-        raise TextXSemanticError("\n".join(errors), **location)
+    if errors and not reporter.collecting:
+        location = get_location(first_entity)
+        reporter.error("SEM-609", "\n".join(errors), **location)
 
 
 def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -230,45 +244,52 @@ def validate_arguments(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaM
     """
     _ = metamodel
 
-    # loop for custom operations
-    operations = xtx.get_children_of_operation(schema)
+    reporter = reporter_for(schema)
 
-    for operation in operations:
+    for operation in xtx.get_children_of_operation(schema):
+        method = operation.directive.method
+        method_available = not operation.directives.is_invalid(METHOD)
         count = 0
         is_ref = False
 
         for argument in operation.arguments:
             if argument.is_query and argument.is_header:
                 msg = f"The Argument {argument.name} of Operation {operation.name} cannot be both query and header."
-                raise TextXSemanticError(msg, **get_location(argument))
+                reporter.error("SEM-903", msg, **get_location(argument), invalid=operation)
+                continue
 
-            # we only wanty limit the request body to one value
             if not argument.is_query and not argument.is_header:
-                count = count + 1
+                count += 1
 
-            if isinstance(argument.value, dsl.Object | dsl.Base):
+            if reporter.reference_available(argument.value.name) and isinstance(argument.value, dsl.Object | dsl.Base):
                 is_ref = True
 
-            # validate that Base types used as query parameters only contain scalar fields
-            if (argument.is_query or operation.directive.method is None) and isinstance(argument.value, dsl.Base):
+            if (
+                (argument.is_query or (method_available and method is None))
+                and isinstance(argument.value, dsl.Base)
+                and reporter.type_available(argument.value)
+            ):
                 for field in argument.value.effective_fields:
+                    if not reporter.reference_available(field.value.name):
+                        reporter.invalid_nodes.add(id(operation))
+                        continue
                     if isinstance(field.value, dsl.Object | dsl.Base):
                         msg = (
                             f"The Base type {argument.value.name} used as query parameter in operation {operation.name} "
                             f"contains a nested type field '{field.name}'. Query parameters with Base types must only contain scalar/enum fields."
                         )
-                        raise TextXSemanticError(msg, **get_location(field))
+                        reporter.error("SEM-906", msg, **get_location(field), invalid=operation)
 
         if is_ref and count > 1:
             msg = (
                 f"The Operation {operation.name} references more than one Object "
                 "or tries to mix them. Currently not supported"
             )
-            raise TextXSemanticError(msg, **get_location(operation))
+            reporter.error("SEM-907", msg, **get_location(operation), invalid=operation)
 
-        if operation.directive.method and operation.directive.method.value == "DELETE" and count:
+        if method is not None and method.value == "DELETE" and count:
             msg = f"The DELETE Operation {operation.name} specifies a body. This is not supported."
-            raise TextXSemanticError(msg, **get_location(operation))
+            reporter.error("SEM-908", msg, **get_location(operation), invalid=operation)
 
 
 def validate_custom_operations_path(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -287,9 +308,11 @@ def validate_custom_operations_path(schema: dsl.Schema, metamodel: textx.metamod
     operations = xtx.get_children_of_operation(schema)
 
     for operation in operations:
+        if operation.directives.is_invalid(PATH):
+            continue
         if not operation.directive.path or not operation.directive.path.value:
             msg = f"The custom Operation {operation.name} needs to specify a path."
-            raise TextXSemanticError(msg, **get_location(operation))
+            reporter_for(schema).error("SEM-803", msg, **get_location(operation), invalid=operation)
 
 
 def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.TextXMetaModel) -> None:
@@ -304,116 +327,182 @@ def validate_field_directives(schema: dsl.Schema, metamodel: textx.metamodel.Tex
     """
     _ = metamodel
 
+    reporter = reporter_for(schema)
     bases = xtx.get_children_of_base(schema)
     objects = xtx.get_children_of_object(schema)
 
     for entity in bases + objects:
         duplicate_relation = []
         for field in entity.fields:
+            reference_available = reporter.reference_available(field.value.name)
+            is_relation = field.directive.is_composition or field.directive.is_aggregation
             # verify that read-only and write-only are not combined
             if field.directive.is_read_only and field.directive.is_write_only:
                 msg = f"The Field {field.name} for {field.parent.name} cannot be both read-only and write-only."
-                raise TextXSemanticError(msg, filename=schema._tx_filename)
+                location = get_location(field) if reporter.collecting else {"filename": schema._tx_filename}
+                reporter.error("SEM-606", msg, **location, invalid=field)
 
             # verify that queries are only used on scalars
-            if (field.directive.is_query or field.directive.is_query_list) and not isinstance(
-                field.value, dsl.Scalar | dsl.Enum
+            if (
+                reference_available
+                and (field.directive.is_query or field.directive.is_query_list)
+                and not isinstance(field.value, dsl.Scalar | dsl.Enum)
             ):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as query."
-                raise TextXSemanticError(msg, **get_location(field))
+                reporter.error("SEM-610", msg, **get_location(field), invalid=field)
 
             # verify that composition and aggregation are mutually exclusive
             if field.directive.is_composition and field.directive.is_aggregation:
                 msg = f"The Field {field.name} for {field.parent.name} cannot be both composition and aggregation."
-                raise TextXSemanticError(msg, **get_location(field))
+                reporter.error("SEM-703", msg, **get_location(field), invalid=field)
 
             # verify that composition is used only on Objects
-            if field.directive.is_composition and not isinstance(field.value, dsl.Object):
+            if reference_available and field.directive.is_composition and not isinstance(field.value, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as composition."
-                raise TextXSemanticError(msg, **get_location(field))
+                reporter.error("SEM-704", msg, **get_location(field), invalid=field)
 
             # verify that aggregation is used only on Objects and array
-            if field.directive.is_aggregation and not isinstance(field.value, dsl.Object):
+            if reference_available and field.directive.is_aggregation and not isinstance(field.value, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a invalid value as aggregation."
-                raise TextXSemanticError(msg, **get_location(field))
+                reporter.error("SEM-704", msg, **get_location(field), invalid=field)
 
-            if (field.directive.is_composition or field.directive.is_aggregation) and not field.is_array:
+            if is_relation and not field.is_array:
                 msg = f"The Field {field.name} for {field.parent.name} declares a non-array as composition/aggregation."
-                raise TextXSemanticError(msg, **get_location(field))
+                reporter.error("SEM-701", msg, **get_location(field), invalid=field)
 
-            if (field.directive.is_composition or field.directive.is_aggregation) and not field.is_required:
+            elif is_relation and not field.is_required:
                 msg = (
                     f"The Field {field.name} for {field.parent.name} declares a non-required array as "
                     "composition/aggregation."
                 )
-                raise TextXSemanticError(msg, **get_location(field))
+                reporter.error("SEM-701", msg, **get_location(field), invalid=field)
 
             # verify that we prevent duplicate relations
-            if field.directive.is_aggregation or field.directive.is_composition:
+            valid_relation = (
+                reference_available
+                and isinstance(field.value, dsl.Object)
+                and isinstance(entity, dsl.Object)
+                and field.value is not entity
+                and field.is_array
+                and field.is_required
+                and not field.directives.is_invalid(COMPOSITION, AGGREGATION)
+                and field.directive.is_composition != field.directive.is_aggregation
+            )
+            if is_relation and (not reporter.collecting or valid_relation):
                 flag = (field.value, field.directive.is_aggregation, field.directive.is_composition)
 
                 if flag not in duplicate_relation:
                     duplicate_relation.append(flag)
                 else:
                     msg = f"The Field {field.name} for {field.parent.name} creates a duplicate relation."
-                    raise TextXSemanticError(msg, **get_location(field))
+                    reporter.error("SEM-707", msg, **get_location(field), invalid=field)
 
             # verify that composition/aggregation is used only in Objects
-            if (field.directive.is_composition or field.directive.is_aggregation) and not isinstance(
-                entity, dsl.Object
-            ):
+            if is_relation and not isinstance(entity, dsl.Object):
                 msg = f"The Field {field.name} for {field.parent.name} declares a relation inside a Base."
-                raise TextXSemanticError(msg, **get_location(field))
+                reporter.error("SEM-706", msg, **get_location(field), invalid=field)
 
             # verify that the relation is not self referencing
-            if field.value is entity:
+            if reference_available and field.value is entity:
                 msg = f"The Field {field.name} for {field.parent.name} references itself."
-                raise TextXSemanticError(msg, **get_location(field))
+                reporter.error("SEM-705", msg, **get_location(field), invalid=field)
 
             # verify that opaque is used only for Bases
-            if field.directive.is_opaque and not isinstance(field.value, dsl.Base):
+            if reference_available and field.directive.is_opaque and not isinstance(field.value, dsl.Base):
                 msg = f"The Field {field.name} for {field.parent.name} declares opaque on a non Base value."
-                raise TextXSemanticError(msg, **get_location(field))
+                reporter.error("SEM-611", msg, **get_location(field), invalid=field)
 
 
-def validate_operations(schema: dsl.Schema) -> None:
-    """Check for duplicate operation names and method/path routes.
-
-    Args:
-        schema (Schema): The parsed schema definition.
-
-    Raises:
-        TextXSemanticError: Exception for logical errors.
-    """
-    names = []
-    routes = []
-
+def validate_operations(schema: dsl.Schema, completed: set[int]) -> None:
+    """Check names across all operations and compare routes of completed operations."""
+    reporter = reporter_for(schema)
     operations = xtx.get_children_of_operation(schema)
+    if reporter.collecting:
+        for operation in operations:
+            _validate_operation_details(schema, operation, reporter)
+
+    names: dict[str, dsl.Operation] = {}
+    routes: dict[tuple[str, str], dsl.Operation] = {}
+    duplicate_routes: list[tuple[dsl.Operation, dsl.Operation, tuple[str, str]]] = []
 
     for operation in operations:
-        names.append(operation.name)
-        routes.append((operation.directive.method.value, operation.directive.path.value))
-
-    if len(names) != len(set(names)):
-        msg = "Duplicate operation names found."
-        raise TextXSemanticError(msg, **_get_location(operations[0], schema))
-
-    if len(routes) != len(set(routes)):
-        msg = "Duplicate operation routes found."
-        raise TextXSemanticError(msg, **_get_location(operations[0], schema))
-
-    # validate that path arguments do not clash with query/body arguments
-    for operation in operations:
-        arg_names = [x.name for x in operation.arguments]
-
-        if len(arg_names) != len(set(arg_names)):
-            msg = f"The Operation {operation.name} contains duplicated argument names."
-            raise TextXSemanticError(msg, **_get_location(operation, schema))
-
-    # validate that pagination is only used for object and base responses
-    for operation in operations:
-        if (operation.directive.is_pageable and not operation.value) or (
-            operation.directive.is_pageable and not isinstance(operation.value, dsl.Object | dsl.Base)
+        if (first := names.get(operation.name)) is not None:
+            _report_collision(
+                schema,
+                reporter,
+                operations[0],
+                first,
+                operation,
+                "SEM-104",
+                "Duplicate operation names found.",
+                operation.name,
+            )
+        else:
+            names[operation.name] = operation
+        if reporter.collecting and (
+            (not operation.is_generated and id(operation) not in completed) or id(operation) in reporter.invalid_nodes
         ):
-            msg = f"The Operation {operation.name} needs to return a 'type' or 'base' when @pagination is used."
-            raise TextXSemanticError(msg, **_get_location(operation, schema))
+            continue
+        route = (operation.directive.method.value, operation.directive.path.value)
+        if (first := routes.get(route)) is not None:
+            duplicate_routes.append((first, operation, route))
+        else:
+            routes[route] = operation
+
+    for first, operation, (method, path) in duplicate_routes:
+        _report_collision(
+            schema,
+            reporter,
+            operations[0],
+            first,
+            operation,
+            "SEM-105",
+            "Duplicate operation routes found.",
+            f"{method} {path}",
+        )
+
+    # Preserve strict error precedence: collisions before operation details.
+    if not reporter.collecting:
+        for operation in operations:
+            _validate_duplicate_arguments(schema, operation, reporter)
+        for operation in operations:
+            _validate_pagination(schema, operation, reporter)
+
+
+def _report_collision(
+    schema: dsl.Schema,
+    reporter: Reporter,
+    first_in_schema: dsl.Operation,
+    first: dsl.Operation,
+    duplicate: dsl.Operation,
+    code: str,
+    message: str,
+    key: str,
+) -> None:
+    if reporter.collecting:
+        message += f" {key!r} is used by {first.name!r} and {duplicate.name!r}."
+        origin = first if duplicate.is_generated and not first.is_generated else duplicate
+    else:
+        origin = first_in_schema
+    reporter.error(code, message, **_operation_location(origin, schema, reporter))
+
+
+def _validate_operation_details(schema: dsl.Schema, operation: dsl.Operation, reporter: Reporter) -> None:
+    _validate_duplicate_arguments(schema, operation, reporter)
+    _validate_pagination(schema, operation, reporter)
+
+
+def _validate_duplicate_arguments(schema: dsl.Schema, operation: dsl.Operation, reporter: Reporter) -> None:
+    names = [argument.name for argument in operation.arguments]
+    if len(names) != len(set(names)):
+        msg = f"The Operation {operation.name} contains duplicated argument names."
+        reporter.error("duplicate-argument", msg, **_operation_location(operation, schema, reporter), invalid=operation)
+
+
+def _validate_pagination(schema: dsl.Schema, operation: dsl.Operation, reporter: Reporter) -> None:
+    value = operation.value
+    if value is not None and not reporter.reference_available(value.name):
+        return
+    if operation.directive.is_pageable and not isinstance(value, dsl.Object | dsl.Base):
+        msg = f"The Operation {operation.name} needs to return a 'type' or 'base' when @pagination is used."
+        reporter.error("SEM-805", msg, **_operation_location(operation, schema, reporter), invalid=operation)

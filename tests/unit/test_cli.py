@@ -1,6 +1,9 @@
 import json
+import subprocess
+import sys
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from qsdl.__main__ import app
@@ -146,6 +149,86 @@ class TestGenerate:
         )
         assert result.exit_code == 0, result.output
 
+    @pytest.mark.parametrize(
+        ("declaration", "directive", "validate_status"),
+        [
+            ("scalar Token @openapi(string)", "openapi", 0),
+            ("type Token { field: String @readOnly() }", "readOnly", 1),
+        ],
+    )
+    def test_rejects_invalid_schema_before_generator_or_writer(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, declaration: str, directive: str, validate_status: int
+    ) -> None:
+        from qsdl.generators import get_definition
+
+        def unexpected_generate(schema: object, config: object, output_path: Path | None) -> None:
+            pytest.fail("generation ran for an invalid schema")
+
+        monkeypatch.setattr(get_definition("openapi").plugin, "generate", unexpected_generate)
+        imported = tmp_path / "common.qsdl"
+        imported.write_text(declaration, encoding="utf-8")
+        root = tmp_path / "root.qsdl"
+        root.write_text('import "common.qsdl"\ntype User { token: Token }\n', encoding="utf-8")
+        output = tmp_path / "out"
+
+        standalone = runner.invoke(app, ["validate", "-i", str(root)])
+        assert standalone.exit_code == validate_status, standalone.output
+        generated = runner.invoke(app, ["generate", "openapi", "-i", str(root), "-o", str(output), "--write-version"])
+        assert generated.exit_code == 1, generated.output
+        assert isinstance(generated.exception, SystemExit)
+        assert f"{imported}:1:" in generated.stderr
+        assert f"Invalid @{directive}" in generated.stderr
+        assert not output.exists()
+
+    def test_reports_syntax_error_without_traceback(self, tmp_path: Path) -> None:
+        schema = tmp_path / "broken.qsdl"
+        schema.write_text("type User { name String }\n", encoding="utf-8")
+        result = subprocess.run(
+            [sys.executable, "-m", "qsdl", "generate", "void", "-i", str(schema)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert result.returncode == 1, result.stderr
+        assert f"{schema}:1:" in result.stderr
+        assert "error [syntax]:" in result.stderr
+        assert "Expected ':'" in result.stderr
+        assert "Traceback" not in result.stderr
+
+    def test_reports_same_core_diagnostics_as_validate(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        from qsdl.generators import get_definition
+
+        def unexpected_generate(*args: object) -> None:
+            pytest.fail("generator invoked with an invalid schema")
+
+        monkeypatch.setattr(get_definition("spring").plugin, "generate", unexpected_generate)
+        (tmp_path / "a.qsdl").write_text('extend api { a: String @path("/a") @method(TRACE) }\n')
+        root = tmp_path / "z.qsdl"
+        root.write_text('import "a.qsdl"\nextend api { b: String @path("/b") @method(OPTIONS) }\n')
+        output = tmp_path / "out"
+
+        standalone = runner.invoke(app, ["validate", "-i", str(root)])
+        generated = runner.invoke(app, ["generate", "spring", "-i", str(root), "-o", str(output), "--write-version"])
+        assert standalone.exit_code == generated.exit_code == 1
+        assert standalone.stderr == generated.stderr
+        assert standalone.stderr.count("error [LOG-204]:") == 2
+        assert not output.exists()
+
+    def test_generator_directive_error_does_not_hide_core_collision(self, tmp_path: Path) -> None:
+        root = tmp_path / "root.qsdl"
+        root.write_text("""
+            scalar Token @openapi(notQuoted)
+            type User { token: Token }
+            extend api { listUsers: String @path("/users") }
+        """)
+
+        standalone = runner.invoke(app, ["validate", "-i", str(root)])
+        generated = runner.invoke(app, ["generate", "openapi", "-i", str(root)])
+        assert standalone.exit_code == generated.exit_code == 1
+        assert "Invalid @openapi" in generated.stderr
+        assert "error [SEM-105]:" in standalone.stderr
+        assert standalone.stderr in generated.stderr
+
     def test_write_version_flag(self, tmp_path: Path) -> None:
         from qsdl import __version__
 
@@ -155,6 +238,72 @@ class TestGenerate:
         )
         assert result.exit_code == 0, result.output
         assert (output / ".qversion").read_text(encoding="utf-8") == __version__
+
+
+class TestValidate:
+    def test_accepts_relative_imports_without_loading_generators_or_writing(self, tmp_path: Path) -> None:
+        imports = tmp_path / "lib"
+        imports.mkdir()
+        (imports / "common.qsdl").write_text("scalar Token @openapi(string)\n", encoding="utf-8")
+        root = tmp_path / "schema.qsdl"
+        root.write_text('import "lib/common.qsdl"\ntype Item { token: Token }\n', encoding="utf-8")
+        before = set(tmp_path.rglob("*"))
+        code = """
+import runpy
+import sys
+
+sys.modules.update(dict.fromkeys(("qsdl.plugins", "qsdl.core", "qsdl.generators")))
+runpy.run_module("qsdl.__main__", run_name="__main__")
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code, "validate", "--input", "schema.qsdl"],
+            cwd=tmp_path,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        assert result.stdout == ""
+        assert "loading metamodel..." in result.stderr
+        assert "loading schema..." in result.stderr
+        assert "running schema validation..." in result.stderr
+        assert "schema validation passed" in result.stderr
+        assert set(tmp_path.rglob("*")) == before
+
+    def test_reports_independent_errors_in_file_and_position_order(self, tmp_path: Path) -> None:
+        imported = tmp_path / "a.qsdl"
+        imported.write_text("type Imported { field: String @readOnly() }\n", encoding="utf-8")
+        root = tmp_path / "z.qsdl"
+        root.write_text(
+            'import "a.qsdl"\ntype First { one: String one: String }\ntype Second { two: String two: String }\n',
+            encoding="utf-8",
+        )
+        result = runner.invoke(app, ["validate", "-i", str(root)])
+        assert result.exit_code == 1, result.output
+        assert not result.stdout
+        lines = result.stderr.splitlines()
+        assert len(lines) == 3
+        assert "\x1b[" not in result.stderr
+        assert lines[0].startswith(f"{imported}:1:31: error [LOG-204]: Invalid @readOnly")
+        assert lines[1].startswith(f"{root}:2:26: error [SEM-102]:")
+        assert lines[2].startswith(f"{root}:3:27: error [SEM-102]:")
+        assert set(tmp_path.iterdir()) == {root, imported}
+
+    def test_colors_diagnostics_when_requested(self, tmp_path: Path) -> None:
+        root = tmp_path / "root.qsdl"
+        root.write_text('servers: ["ftp://example.test"]\n', encoding="utf-8")
+        result = runner.invoke(app, ["validate", "-i", str(root)], env={"FORCE_COLOR": "1", "NO_COLOR": ""}, color=True)
+        assert result.exit_code == 1, result.output
+        assert "\x1b[36m" in result.stderr
+        assert "\x1b[1;31merror\x1b[0m" in result.stderr
+        assert "\x1b[33m[LOG-302]\x1b[0m" in result.stderr
+
+    def test_omits_unknown_position(self, tmp_path: Path) -> None:
+        root = tmp_path / "root.qsdl"
+        root.write_text('servers: ["ftp://example.test"]\n', encoding="utf-8")
+        result = runner.invoke(app, ["validate", "-i", str(root)])
+        assert result.exit_code == 1, result.output
+        assert result.stderr.startswith(f"{root}: error [LOG-302]:")
 
 
 class TestConfig:

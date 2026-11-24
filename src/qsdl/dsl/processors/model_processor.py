@@ -61,12 +61,8 @@ def model_post_processor(schema: dsl.Schema, metamodel: TextXMetaModel) -> None:
 
     # Complete declared operations before CRUD adds its own. CRUD discovery
     # uses the resolved fields rather than just the fields declared locally.
-    parser.complete_operations(schema)
-    parser.add_object_ids(schema)
+    completed = parser.complete_operations(schema)
     parser.generate_crud(schema)
 
-    # Type retention needs references from both declared and generated operations.
-    parser.retain_used_types(schema)
-
     # Check uniqueness across both operation sets, including collisions between them.
-    validator.validate_operations(schema)
+    validator.validate_operations(schema, completed)

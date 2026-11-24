@@ -19,9 +19,9 @@ from collections.abc import Sequence
 from typing import Any, cast, get_args, overload
 
 from textx import get_location, get_model
-from textx.exceptions import TextXSemanticError
 
 from qsdl import dsl
+from qsdl.dsl.diagnostics import reporter_for
 from qsdl.dsl.directives import CORE_SPECS, DIRECTIVE_NAME, HEADERS, ResponseHeader, _HeaderDeclaration
 from qsdl.dsl.models.directive import DirectiveOwner, DirectiveSpec, RawDirective
 
@@ -113,18 +113,24 @@ def validate_directive_specs(specs: Sequence[DirectiveSpec[Any]]) -> dict[str, D
 def bind_directives(owner: DirectiveOwner) -> None:
     """Decode and attach the complete directive list of a textX owner."""
     active_specs = get_model(owner)._tx_model_params.get("directive_specs", {})
+    reporter = reporter_for(owner)
     nodes = []
-    seen = set()
+    seen: set[str] = set()
+    invalid: set[str] = set()
     for capture in owner.directives:
         location = get_location(capture)
         name = capture.name
         if name in seen:
             msg = f"The {_directive_owner_label(owner)} specifies @{name} more than once."
-            raise TextXSemanticError(msg, **location)
+            reporter.error("LOG-203", msg, **location)
+            invalid.add(name)
+            continue
         seen.add(name)
         if DIRECTIVE_NAME.fullmatch(name) is None:
             msg = f"Directive name {name!r} must use camelCase, snake_case, or kebab-case."
-            raise TextXSemanticError(msg, **location)
+            reporter.error("SYN-009", msg, **location)
+            invalid.add(name)
+            continue
 
         raw = RawDirective(name, capture.has_parens, (capture.value or "") if capture.has_parens else None, location)
         spec = CORE_SPECS.get(name)
@@ -134,7 +140,8 @@ def bind_directives(owner: DirectiveOwner) -> None:
             spec = active_specs[name]
             if not isinstance(owner, spec.owners):
                 msg = f"@{name} is not supported on {_directive_owner_label(owner)}."
-                raise TextXSemanticError(msg, **location)
+                reporter.error("LOG-202", msg, **location)
+                continue
 
         if spec is None:
             value = normalize_directive_value(raw.raw_value)
@@ -145,7 +152,11 @@ def bind_directives(owner: DirectiveOwner) -> None:
                     spec.validate_value(value)
             except ValueError as exc:
                 msg = f"Invalid @{name} on {_directive_owner_label(owner)}: {exc}."
-                raise TextXSemanticError(msg, **location) from exc
+                reporter.error("LOG-204", msg, **location, cause=exc)
+                # Generator-only directives cannot invalidate prerequisites of core rules.
+                if name in CORE_SPECS:
+                    invalid.add(name)
+                continue
 
         nodes.append(
             dsl.Directive(
@@ -160,7 +171,7 @@ def bind_directives(owner: DirectiveOwner) -> None:
             )
         )
 
-    owner.directives = dsl.Directives(owner, nodes)
+    owner.directives = dsl.Directives(owner, nodes, invalid=frozenset(invalid))
 
 
 def _value_types(schema: dsl.Schema) -> dict[str, dsl.Scalar | dsl.Enum | dsl.Base | dsl.Object]:
@@ -182,21 +193,34 @@ def _value_types(schema: dsl.Schema) -> dict[str, dsl.Scalar | dsl.Enum | dsl.Ba
     return types
 
 
-def complete_response_headers(schema: dsl.Schema, operation: dsl.Operation) -> None:
-    """Resolve typed declarations after imported types have been merged."""
+def complete_response_headers(schema: dsl.Schema, operation: dsl.Operation) -> bool:
+    """Resolve typed headers, returning whether all header types are usable."""
     directive = operation.directives.get(HEADERS)
     if directive is None:
-        return
+        return not operation.directives.is_invalid(HEADERS)
 
+    reporter = reporter_for(schema)
+    if not reporter.namespace_complete:
+        return False
     value_types = _value_types(schema)
     response_headers = []
+    valid = True
     for declaration in cast(tuple[_HeaderDeclaration, ...], directive.value):
+        if not reporter.reference_available(declaration.type_name):
+            valid = False
+            continue
         value_type = value_types.get(declaration.type_name)
         if value_type is None:
             msg = (
                 f"The response header {declaration.name!r} of Operation {operation.name} "
                 f"references unknown type {declaration.type_name!r}."
             )
-            raise TextXSemanticError(msg, **directive.location)
-        response_headers.append(ResponseHeader(declaration.name, value_type, declaration.is_array))
-    operation.directives._complete_source(HEADERS, tuple(response_headers))
+            reporter.error("unknown-header-type", msg, **directive.location)
+            valid = False
+        elif not reporter.type_available(value_type):
+            valid = False
+        else:
+            response_headers.append(ResponseHeader(declaration.name, value_type, declaration.is_array))
+    if valid:
+        operation.directives._complete_source(HEADERS, tuple(response_headers))
+    return valid

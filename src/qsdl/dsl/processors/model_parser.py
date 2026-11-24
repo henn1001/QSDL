@@ -18,13 +18,24 @@ import re
 from collections.abc import Iterator
 
 from textx import get_location
-from textx.exceptions import TextXSemanticError
 
 import qsdl.dsl.textx as xtx
 import qsdl.dsl.util as qutil
 from qsdl import dsl, logger
 from qsdl.casing import pluralize
-from qsdl.dsl.directives import CONSUMES, FORCE_GENERATE, METHOD, NAMESPACE, PAGINATION, PATH, PRODUCES, READ_ONLY
+from qsdl.dsl.diagnostics import Reporter, reporter_for
+from qsdl.dsl.directives import (
+    COMPOSITION,
+    CONSUMES,
+    FORCE_GENERATE,
+    METHOD,
+    NAMESPACE,
+    OVERRIDE,
+    PAGINATION,
+    PATH,
+    PRODUCES,
+    READ_ONLY,
+)
 from qsdl.exceptions import QsdlException
 
 from . import CrudGeneratorEnum as CrudEnum
@@ -35,6 +46,8 @@ log = logger.getLogger(__name__)
 
 def resolve_fields(schema: dsl.Schema) -> None:
     """Resolve the extends graph parent-first, without changing declaration containment."""
+    reporter = reporter_for(schema)
+    unavailable = reporter.unavailable_fields
     resolved: set[int] = set()
     for entity in schema.types:
         if not isinstance(entity, dsl.Base | dsl.Object) or id(entity) in resolved:
@@ -45,36 +58,52 @@ def resolve_fields(schema: dsl.Schema) -> None:
             current, parents = stack[-1]
             parent = next(parents, None)
             if parent is None:
-                current._resolved_fields = _merge_fields(current)
+                available_parents = [
+                    base
+                    for base in current.supertypes
+                    if reporter.reference_available(base.name) and id(base) not in unavailable
+                ]
+                fields = _merge_fields(current, available_parents)
+                if fields is None or not reporter.reference_available(current.name) or id(current) in unavailable:
+                    unavailable.add(id(current))
+                else:
+                    current._resolved_fields = fields
                 resolved.add(id(current))
                 del active[id(current)]
                 stack.pop()
+            elif not reporter.reference_available(parent.name):
+                unavailable.add(id(current))
             elif id(parent) in active:
                 cycle = [node.name for node, _ in stack[active[id(parent)] :]] + [parent.name]
                 msg = f"Circular inheritance detected in Base supertypes: {' -> '.join(cycle)}"
-                raise TextXSemanticError(msg, **get_location(parent))
+                reporter.error("inheritance-cycle", msg, **get_location(parent))
+                unavailable.update(id(node) for node, _ in stack[active[id(parent)] :])
             elif id(parent) not in resolved:
                 active[id(parent)] = len(stack)
                 stack.append((parent, iter(parent.supertypes)))
 
 
-def _merge_fields(entity: dsl.Base | dsl.Object) -> tuple[dsl.Field, ...]:
+def _merge_fields(entity: dsl.Base | dsl.Object, parents: list[dsl.Base]) -> tuple[dsl.Field, ...] | None:
     inherited: dict[str, list[dsl.Field]] = {}
     overrides = {field.name for field in entity.fields if field.directive.is_override}
-    for parent in entity.supertypes:
+    invalid_overrides = {field.name for field in entity.fields if field.directives.is_invalid(OVERRIDE)}
+    valid = len(parents) == len(entity.supertypes) and not invalid_overrides
+    for parent in parents:
         for field in parent.effective_fields:
             candidates = inherited.setdefault(field.name, [])
             if any(field is candidate for candidate in candidates):
                 continue
-            if candidates and field.name not in overrides:
-                _raise_field_redefinition(entity, candidates[0], field)
+            if candidates and field.name not in overrides | invalid_overrides:
+                _report_field_redefinition(entity, candidates[0], field)
+                valid = False
             candidates.append(field)
 
     fields = {name: candidates[0] for name, candidates in inherited.items()}
     for field in entity.fields:
         duplicate = fields.get(field.name)
-        if duplicate is not None and not field.directive.is_override:
-            _raise_field_redefinition(entity, duplicate, field)
+        if duplicate is not None and not field.directive.is_override and not field.directives.is_invalid(OVERRIDE):
+            _report_field_redefinition(entity, duplicate, field)
+            valid = False
         fields[field.name] = field
 
         changed = next((other for other in inherited.get(field.name, ()) if other.value is not field.value), None)
@@ -85,18 +114,21 @@ def _merge_fields(entity: dsl.Base | dsl.Object) -> tuple[dsl.Field, ...]:
                 changed.parent.name,
                 entity.name,
             )
-    return tuple(fields.values())
+    return tuple(fields.values()) if valid else None
 
 
-def _raise_field_redefinition(entity: dsl.Base | dsl.Object, first: dsl.Field, other: dsl.Field) -> None:
-    log.error(
-        "The field '%s' of '%s' conflicts with a declaration in '%s' while resolving '%s'.",
-        first.name,
-        first.parent.name,
-        other.parent.name,
-        entity.name,
-    )
-    raise TextXSemanticError("Field redefinition without @override is not allowed.", **get_location(other))
+def _report_field_redefinition(entity: dsl.Base | dsl.Object, first: dsl.Field, other: dsl.Field) -> None:
+    reporter = reporter_for(entity)
+    if not reporter.collecting:
+        log.error(
+            "The field '%s' of '%s' conflicts with a declaration in '%s' while resolving '%s'.",
+            first.name,
+            first.parent.name,
+            other.parent.name,
+            entity.name,
+        )
+    code = "SEM-102" if first.parent is entity and other.parent is entity else "LOG-102"
+    reporter.error(code, "Field redefinition without @override is not allowed.", **get_location(other))
 
 
 def id_builder(obj: dsl.Object) -> dsl.Field:
@@ -508,46 +540,76 @@ def retain_used_types(schema: dsl.Schema) -> None:
     ]
 
 
-def add_object_ids(schema: dsl.Schema) -> None:
-    """Prepend synthetic IDs to the effective fields, outside declaration containment."""
-    for obj in xtx.get_children_of_object(schema):
-        obj._resolved_fields = (id_builder(obj), *obj.effective_fields)
-
-
 def generate_crud(schema: dsl.Schema) -> None:
-    """Add automatic CRUD and relationship operations after completing explicit APIs."""
+    """Add synthetic IDs and automatic CRUD after completing explicit APIs."""
     objects = xtx.get_children_of_object(schema)
+    reporter = reporter_for(schema)
+    if not reporter.namespace_complete:
+        return
+    available = {id(obj) for obj in objects if _crud_fields_available(obj, reporter)}
+    # Synthetic IDs do not refer to a schema declaration named ID.
+    for obj in objects:
+        if id(obj) in available:
+            obj._resolved_fields = (id_builder(obj), *obj.effective_fields)
+
+    aggregations: dict[int, list[dsl.Field]] = {}
+    compositions: dict[int, list[dsl.Field]] = {}
+    uncertain_compositions: set[str] = set()
+    for source in objects:
+        if id(source) not in available:
+            # A failed field set may still contain a declared composition. It cannot
+            # provide a route, but its target cannot safely default to root CRUD.
+            fields = source.fields if id(source) in reporter.unavailable_fields else source.effective_fields
+            uncertain_compositions.update(
+                field.value.name
+                for field in fields
+                if field.directive.is_composition or field.directives.is_invalid(COMPOSITION)
+            )
+            continue
+        for field in source.effective_fields:
+            if field.directive.is_aggregation:
+                aggregations.setdefault(id(field.value), []).append(field)
+            if field.directive.is_composition:
+                compositions.setdefault(id(field.value), []).append(field)
 
     # An explicit object API controls automatic CRUD generation. In particular,
     # an empty API intentionally suppresses all automatic CRUD for that object.
     # Objects without an API, or with @generate, proceed to api_builder.
     for obj in objects:
-        if obj.api and (not (generate := obj.api.directive.generate) or not generate.value):
+        if id(obj) not in available:
+            continue
+        if obj.api and (
+            obj.api.directives.is_invalid() or not (generate := obj.api.directive.generate) or not generate.value
+        ):
             continue
 
-        # aggregations
-        agg_fields = qutil.get_aggregation(schema, obj, include_ignored=True)
+        for field in aggregations.get(id(obj), ()):
+            api_builder(obj, field.parent, True, True)
 
-        # build aggregations
-        for field in agg_fields:
-            obj = api_builder(obj, field.parent, True, True)
-
-        # compositions
-        comp_fields = qutil.get_compositions(schema, obj, include_ignored=True)
-        duplicate = len(comp_fields) > 1
-
-        # build compositions
+        if obj.name in uncertain_compositions:
+            continue
+        comp_fields = compositions.get(id(obj), ())
         for field in comp_fields:
-            obj = api_builder(obj, field.parent, False, duplicate)
+            api_builder(obj, field.parent, False, len(comp_fields) > 1)
 
-        # build root objects
         if not comp_fields:
-            obj = api_builder(obj)
+            api_builder(obj)
 
 
-def complete_operations(schema: dsl.Schema) -> None:
-    """Complete the routes, arguments, and typed metadata of declared operations."""
+def _crud_fields_available(obj: dsl.Object, reporter: Reporter) -> bool:
+    return reporter.type_available(obj) and all(
+        id(field) not in reporter.invalid_nodes
+        and not field.directives.is_invalid()
+        and reporter.type_available(field.value)
+        for field in obj.effective_fields
+    )
+
+
+def complete_operations(schema: dsl.Schema) -> set[int]:
+    """Complete declared operations and return the identities of completed nodes."""
     apis = xtx.get_children_of_api(schema)
+    reporter = reporter_for(schema)
+    completed: set[int] = set()
 
     # loop over user defined APIs
     for api in apis:
@@ -555,6 +617,28 @@ def complete_operations(schema: dsl.Schema) -> None:
 
         # loop over operation per API
         for operation in api.operations:
+            if (path := operation.directive.path) and path.value:
+                normalized_path = path.value if path.value.startswith("/") else "/" + path.value
+                operation.directives._complete_source(PATH, normalized_path.removesuffix("/").lower())
+                operation.arguments = path_argument_builder(operation) + operation.arguments
+
+            headers_available = complete_response_headers(schema, operation)
+            if (
+                not headers_available
+                or not path
+                or operation.directives.is_invalid()
+                or api.directives.is_invalid()
+                or (isinstance(api.parent, dsl.Object) and not reporter.type_available(api.parent))
+                or id(operation) in reporter.invalid_nodes
+                or not reporter.type_available(operation.value)
+                or any(
+                    id(arg) in reporter.invalid_nodes or not reporter.type_available(arg.value)
+                    for arg in operation.arguments
+                    if not arg.is_path
+                )
+            ):
+                continue
+
             # assign get if no other method is specified
             if operation.directive.method is None:
                 operation.directives.attach_synthetic(METHOD, "GET")
@@ -562,14 +646,6 @@ def complete_operations(schema: dsl.Schema) -> None:
             # remove void return values
             if operation.value.name == "Void":
                 operation.value = None
-
-            path = operation.directive.path.value
-            path = path if path.startswith("/") else "/" + path
-            operation.directives._complete_source(PATH, path.removesuffix("/").lower())
-
-            # fetch and add path parameters
-            id_arguments = path_argument_builder(operation)
-            operation.arguments = id_arguments + operation.arguments
 
             # loop over operation arguments
             for argument in operation.arguments:
@@ -590,13 +666,16 @@ def complete_operations(schema: dsl.Schema) -> None:
             operation.summary = operation.name
 
             complete_media_defaults(operation)
-            complete_response_headers(schema, operation)
+            completed.add(id(operation))
+
+    return completed
 
 
 def inherit_namespace(api: dsl.Api) -> None:
     """Attach the owning object's namespace to an API that declares none."""
     if (
         api.directive.namespace is None
+        and not api.directives.is_invalid(NAMESPACE)
         and isinstance(api.parent, dsl.Object)
         and (namespace := api.parent.directive.namespace) is not None
     ):

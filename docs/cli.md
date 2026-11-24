@@ -4,10 +4,11 @@ This document describes the QSDL command-line interface, options, input/output h
 
 ## Overview
 
-The QSDL CLI is the primary interface for generating code and specifications from schema definition files. It has three command groups:
+Use the QSDL CLI to validate schemas, generate code and specifications, and manage generator configuration.
 
 ```
 qsdl generate GENERATOR -i INPUT [-o OUTPUT] [-c CONFIG ...] [-S KEY=VALUE ...]
+qsdl validate -i INPUT
 qsdl config (show | init | validate) GENERATOR [...]
 qsdl list
 ```
@@ -15,7 +16,7 @@ qsdl list
 Where:
 
 - **GENERATOR** — A builtin generator name (`openapi`, `spring`, `postgres`, `plantuml`, `i18n`, `void`) or a path to a custom generator (a `.py` file or a package directory with an `__init__.py`). Unknown names fail with the list of available generators.
-- **INPUT** — Path to a `.qsdl` schema file (required for generation).
+- **INPUT** — Path to a `.qsdl` schema file (required for generation and validation).
 
 ## Installation
 
@@ -43,6 +44,20 @@ qsdl generate openapi -i myschema.qsdl
 ```
 
 This outputs files to `srcgen/` next to the input file.
+
+### Validate a Schema
+
+From the repository root, run:
+
+```bash
+qsdl validate -i examples/05-complex/17-multifile-imports/schema.qsdl
+```
+
+`validate` checks the root file and its relative imports without loading a generator or writing artifacts. It ignores generator-specific directive payload rules and validates `servers` URLs only in the root file.
+
+Both `validate` and `generate` log schema-loading and validation progress and report independent schema errors in file and source-position order on standard error. Diagnostics use color in a terminal and keep the same text format when redirected. If QSDL cannot read, parse, or link the schema, both commands report a single blocking diagnostic and skip downstream validation. Schema errors exit with status `1` and prevent generator invocation and artifact writes. A valid schema exits with status `0` from `validate`.
+
+`generate` also checks the selected generator's directive definitions. Use `validate` to check core rules without entering the generation pipeline. See [diagnostic codes](./core/rules.md#diagnostic-codes) for the codes printed by both commands.
 
 ### Show a Generator's Default Configuration
 
@@ -121,6 +136,7 @@ Options:
   --write-version             Write a .qversion file to the output folder.
   --help                      Show this message and exit.
 
+qsdl validate -i INPUT
 qsdl config (show | init | validate) GENERATOR [...]
 qsdl list
 ```
@@ -129,7 +145,7 @@ qsdl list
 
 **`GENERATOR`** — Which generator to use: a builtin name or a path to a custom generator file/directory. Custom generators must export `generator`, an instance of `qsdl.generators.Generator`; loading a path executes that code.
 
-**`INPUT`** — Path to your `.qsdl` schema file, via `-i/--input`. Required for generation.
+**`INPUT`** — Path to your `.qsdl` schema file, via `-i/--input`. Required for generation and validation.
 
 ### Options
 

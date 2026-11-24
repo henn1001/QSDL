@@ -74,9 +74,21 @@ class Directive[T = str | None]:
 class Directives(Sequence[Directive[Any]]):
     """Ordered attachment collection; all lookups return the stored nodes."""
 
-    def __init__(self, owner: DirectiveOwner, nodes: Sequence[Directive[Any]] = ()) -> None:
+    def __init__(
+        self, owner: DirectiveOwner, nodes: Sequence[Directive[Any]] = (), *, invalid: frozenset[str] = frozenset()
+    ) -> None:
         self._owner = owner
-        self._nodes = list(nodes)
+        self._nodes = [node for node in nodes if node.name not in invalid]
+        self._invalid = set(invalid)
+
+    def is_invalid(self, *specs: DirectiveSpec[Any]) -> bool:
+        """Whether any requested directive was rejected, or any directive if none are given."""
+        return any(spec.name in self._invalid for spec in specs) if specs else bool(self._invalid)
+
+    def _invalidate(self, spec: DirectiveSpec[Any]) -> None:
+        """Mark a directive whose value failed validation after binding."""
+        self._invalid.add(spec.name)
+        self._nodes = [node for node in self._nodes if node.name != spec.name]
 
     def __len__(self) -> int:
         return len(self._nodes)

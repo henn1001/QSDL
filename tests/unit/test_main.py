@@ -8,6 +8,8 @@ class TestMain:
 
     def test_module_generate_void(self, tmp_path: Path) -> None:
         """``python -m qsdl`` invokes the CLI and materializes its destination."""
+        schema = tmp_path / "input.qsdl"
+        schema.write_text("type Item { name: String }\n")
         output = tmp_path / "srcgen"
         result = subprocess.run(
             [
@@ -17,7 +19,7 @@ class TestMain:
                 "generate",
                 "void",
                 "-i",
-                "examples/00-pet-store/domain/pet-store.qsdl",
+                str(schema),
                 "-o",
                 str(output),
             ],

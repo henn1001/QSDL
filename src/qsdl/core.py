@@ -86,7 +86,7 @@ def _prepare(
     """Resolve a generator request, configure it, and parse its schema once."""
     generator_name, definition = plugins.resolve(generator_ref)
     config = resolve_config(definition, config_path, raw_config)
-    schema = parse_schema(input_path, raw_schema, directive_specs=definition.directive_specs)
+    schema = parse_schema(input_path, raw_schema, directive_specs=definition.directive_specs, collect_errors=True)
 
     log.info("QSDL Generator: %s", generator_name)
     log.info("QSDL Config: %s", config)
