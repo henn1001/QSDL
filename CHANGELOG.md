@@ -1,6 +1,23 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [6.7.0](https://github.com/henn1001/QSDL/compare/v6.6.0...v6.7.0) (2026-11-24)
+
+### Features
+
+* **cli:** !Attention! new and improved cli ux and add generator plugin API ([725de47](https://github.com/henn1001/QSDL/commit/725de47d434b2e46765b560b9508b208591f39fe))
+* **core:** directive processing overhaul ([3589fec](https://github.com/henn1001/QSDL/commit/3589fec42ce41e2600b45844321d7e2397925836))
+* **packaging:** derive QSDL versions from Git tags ([64698fb](https://github.com/henn1001/QSDL/commit/64698fb8d2af90a2435f4abf5e5ebf2a7eb5dbdd))
+* **spring:** adopt domain-first default layout ([5dca6ec](https://github.com/henn1001/QSDL/commit/5dca6eceaef73a0993b53b83992a4c54b111a3f1))
+* **spring:** improvements to profiles and configuration ([2bf10d6](https://github.com/henn1001/QSDL/commit/2bf10d64cb9b74f0e257d7a432f7e4b8f2dbdc99))
+* **spring:** Upgrade to Boot 4.2 and preserve SPA deep links ([417214d](https://github.com/henn1001/QSDL/commit/417214dc716cd8d6b293d08c04ab47ec13b3a08b))
+
+### Bug Fixes
+
+* remove stringcase to avoid Python syntax warning ([70efabe](https://github.com/henn1001/QSDL/commit/70efabe9d8214f411b2d473d6ce749f76feb90b5))
+* **spring:** minor fix in tests ([a896ac4](https://github.com/henn1001/QSDL/commit/a896ac41975d40851923db2273c513387739a440))
+* **spring:** preserve API declaration order when merging ([d2a8efa](https://github.com/henn1001/QSDL/commit/d2a8efad35ca97f71a4d8a58b7f876b4c3b397a1))
 
 ## [6.6.0](https://github.com/henn1001/QSDL/compare/v6.5.0...v6.6.0) (2026-08-30)
 
