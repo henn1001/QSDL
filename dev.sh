@@ -24,11 +24,14 @@ test-integration() {
   uv run pytest -m integration -n 4 "$@"
 }
 
+test-smoke() {
+  uv run python examples/run-spring-smoke.py "$@"
+}
+
 generate-spring() {
   uv run qsdl generate spring \
     -i examples/00-pet-store/domain/pet-store.qsdl \
-    -o examples/00-pet-store \
-    -S title=PetStore -S group_id=app -S artifact_id=pet-store
+    -o examples/00-pet-store
 }
 
 build() {

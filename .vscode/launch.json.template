@@ -12,7 +12,7 @@
         "-i",
         "examples/00-pet-store/domain/pet-store.qsdl",
         "-o",
-        "xtmp/pet-store"
+        "examples/00-pet-store"
       ],
       "justMyCode": false,
       "console": "integratedTerminal"
@@ -28,7 +28,7 @@
         "-i",
         "examples/00-pet-store/domain/pet-store.qsdl",
         "-o",
-        "xtmp/pet-store-openapi"
+        "examples/00-pet-store-openapi"
       ],
       "justMyCode": false,
       "console": "integratedTerminal"
@@ -44,7 +44,7 @@
         "-i",
         "examples/00-pet-store/domain/pet-store.qsdl",
         "-o",
-        "xtmp/pet-store-plantuml"
+        "examples/00-pet-store-plantuml"
       ],
       "justMyCode": false,
       "console": "integratedTerminal"

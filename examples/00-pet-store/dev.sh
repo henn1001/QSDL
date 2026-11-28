@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE_NAME=pet-store
+IMAGE_NAME=app
 REGISTRY=registry
 
 build() {

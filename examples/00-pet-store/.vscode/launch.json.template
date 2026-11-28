@@ -6,7 +6,7 @@
       "name": "Run H2",
       "request": "launch",
       "mainClass": "app.SpringBootApp",
-      "projectName": "pet-store",
+      "projectName": "app",
       "env": {
         "SPRING_CONFIG_ADDITIONAL_LOCATION": "optional:file:${workspaceFolder}/.env.yaml"
       },
@@ -19,7 +19,7 @@
       "name": "Run PostgreSQL",
       "request": "launch",
       "mainClass": "app.SpringBootApp",
-      "projectName": "pet-store",
+      "projectName": "app",
       "env": {
         "SPRING_CONFIG_ADDITIONAL_LOCATION": "optional:file:${workspaceFolder}/.env.yaml"
       },

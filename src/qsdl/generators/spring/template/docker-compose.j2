@@ -2,7 +2,7 @@ name: {{artifact_id}}
 
 services:
   backend:
-    image: maven:3.9-eclipse-temurin-25
+    image: maven:3.10-eclipse-temurin-25
     command:
       - mvn
       - spring-boot:run
@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
   db:
-    image: postgres:16
+    image: postgres:19
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

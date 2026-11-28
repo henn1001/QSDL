@@ -11,10 +11,10 @@
   </parent>
 
   <groupId>app</groupId>
-  <artifactId>pet-store</artifactId>
+  <artifactId>app</artifactId>
   <version>0.0.0-SNAPSHOT</version>
 
-  <name>PetStore</name>
+  <name>SpringBootApp</name>
   <description></description>
 
   <packaging>jar</packaging>
