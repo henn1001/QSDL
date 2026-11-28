@@ -9,7 +9,6 @@ import app.shared.persistence.BaseRepository;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface TagRepository extends AbstractRepository<TagEntity, Long> {
 
     public Optional<TagEntity> findByPetsIdAndId(Long petId, Long id);

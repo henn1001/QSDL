@@ -9,7 +9,6 @@ import app.shared.persistence.BaseRepository;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface OrderItemRepository extends AbstractRepository<OrderItemEntity, Long> {
 
     public Optional<OrderItemEntity> findByOrderIdAndId(Long orderId, Long id);

@@ -9,6 +9,5 @@ import app.shared.persistence.BaseRepository;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface PetRepository extends AbstractRepository<PetEntity, Long> {
 }
