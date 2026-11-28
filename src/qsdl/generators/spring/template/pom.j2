@@ -22,14 +22,15 @@
   <properties>
     <java.version>25</java.version>
     <!-- some attributes are already defined in spring-boot-starter-parent -->
-    <springdoc-openapi-ui.version>3.2.1</springdoc-openapi-ui.version>
-    <mapstruct.version>1.6.3</mapstruct.version>
-    <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
-    <instancio.version>6.2.2</instancio.version>
     <hypersistence.version>3.16.0</hypersistence.version>
+    <instancio.version>6.2.2</instancio.version>
+    <json-patch-parsson.version>1.1.9</json-patch-parsson.version>
+    <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
+    <mapstruct.version>1.6.3</mapstruct.version>
+    <openfeign-querydsl.version>7.7</openfeign-querydsl.version>
     <record-builder.version>53</record-builder.version>
     <spotless.version>3.12.0</spotless.version>
-    <json-patch-parsson.version>1.1.9</json-patch-parsson.version>
+    <springdoc-openapi-ui.version>3.2.1</springdoc-openapi-ui.version>
 
     <!-- Add additional versions here -->
 
@@ -86,22 +87,9 @@
 
     <!-- Storage -->
     <dependency>
-      <groupId>com.querydsl</groupId>
-      <artifactId>querydsl-apt</artifactId>
-      <version>${querydsl.version}</version>
-      <classifier>jakarta</classifier>
-      <exclusions>
-        <exclusion>
-          <groupId>io.github.classgraph</groupId>
-          <artifactId>classgraph</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.querydsl</groupId>
+      <groupId>io.github.openfeign.querydsl</groupId>
       <artifactId>querydsl-jpa</artifactId>
-      <version>${querydsl.version}</version>
-      <classifier>jakarta</classifier>
+      <version>${openfeign-querydsl.version}</version>
     </dependency>
 {% if use_auditing %}
     <dependency>
@@ -230,24 +218,13 @@
               <artifactId>record-builder-processor</artifactId>
               <version>${record-builder.version}</version>
             </path>
-            <!-- To generate Jakarta compatible model for querydsl -->
             <path>
-              <groupId>com.querydsl</groupId>
+              <groupId>io.github.openfeign.querydsl</groupId>
               <artifactId>querydsl-apt</artifactId>
-              <version>${querydsl.version}</version>
+              <version>${openfeign-querydsl.version}</version>
               <classifier>jakarta</classifier>
             </path>
-            <path>
-              <groupId>jakarta.persistence</groupId>
-              <artifactId>jakarta.persistence-api</artifactId>
-            </path>
-            <path>
-              <groupId>jakarta.annotation</groupId>
-              <artifactId>jakarta.annotation-api</artifactId>
-            </path>
           </annotationProcessorPaths>
-          <!-- To generate Jakarta compatible model for querydsl -->
-          <compilerArgs>-Aquerydsl.generatedAnnotationClass=jakarta.annotation.Generated</compilerArgs>
         </configuration>
       </plugin>
 
